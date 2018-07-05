@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 /**
  * _class maps to the model class in mongoDB (i.e. _class : uk.gov.companieshouse.Transaction)
@@ -23,6 +25,8 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @SuppressWarnings("unused")
 public class MongoConfig {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+
     @Bean
     public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
             BeanFactory beanFactory) {
@@ -31,7 +35,7 @@ public class MongoConfig {
         try {
             mappingConverter.setCustomConversions(beanFactory.getBean(CustomConversions.class));
         } catch (NoSuchBeanDefinitionException ignore) {
-            // will need to output error
+            LOGGER.error("No such bean definition:", ignore);
         }
 
         // Don't save _class to mongo
