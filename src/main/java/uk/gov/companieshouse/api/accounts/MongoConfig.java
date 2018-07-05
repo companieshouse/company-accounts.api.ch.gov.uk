@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 /**
- * @author dparameswaran
  * _class maps to the model class in mongoDB (i.e. _class : uk.gov.companieshouse.Transaction)
  * when using spring data mongo it by default adds a _class key to your collection to be able to
  * handle inheritance. But if your domain model is simple and flat, you can remove it by overriding
