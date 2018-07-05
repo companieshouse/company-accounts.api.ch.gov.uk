@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
  * General application configuration .
  */
 @Configuration
-@SuppressWarnings("unused")
 public class ApplicationConfiguration {
 
     @Autowired

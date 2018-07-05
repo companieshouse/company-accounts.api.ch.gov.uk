@@ -22,7 +22,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  *
  */
 @Configuration
-@SuppressWarnings("unused")
 public class MongoConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
