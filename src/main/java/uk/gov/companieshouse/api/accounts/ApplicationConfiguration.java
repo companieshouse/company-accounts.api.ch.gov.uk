@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import uk.gov.companieshouse.charset.validation.CharSetValidation;
-import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
-
 
 /**
  * General application configuration .
