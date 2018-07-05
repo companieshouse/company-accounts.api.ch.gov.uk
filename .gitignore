@@ -1,3 +1,13 @@
+# IntelliJ files
+.idea
+*.iml
+
+# Eclipse files
+.classpath
+.project
+.settings
+/bin/
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
