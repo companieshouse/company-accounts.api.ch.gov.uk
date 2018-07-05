@@ -6,11 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.companieshouse</groupId>
     <artifactId>company-accounts.api.ch.gov.uk</artifactId>
-    <version>6affa87</version>
+    <version>0db2b2f</version>
     <packaging>jar</packaging>
     <name>company-accounts-api</name>
-    <description>Company accounts API to handle company accounts</description>
-
+    <description>Company accounts API to handle company accounts data</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -77,12 +76,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -99,42 +92,6 @@
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>${aws-java-sdk.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Swagger code gen -->
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-codegen-maven-plugin</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.5.20</version>
-        </dependency>
-
-        <!-- Jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.9.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-        <!-- This is enough for LocalDate to be deserialized using ISO format -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.9.5</version>
         </dependency>
 
         <!--  Test  -->
