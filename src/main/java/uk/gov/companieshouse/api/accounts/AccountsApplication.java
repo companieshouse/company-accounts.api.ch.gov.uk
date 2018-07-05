@@ -13,7 +13,7 @@ public class AccountsApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
 
-        // Returns the configured ${PORT} value in the `start.sh` script - passed in under `server.port`.
+        // Returns the configured ${PORT} value passed in under `server.port`.
         // If no port is configured, return null
         Integer port = Integer.getInteger("server.port");
 
