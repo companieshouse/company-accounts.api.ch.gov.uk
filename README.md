@@ -17,7 +17,6 @@ In order to run the API locally you'll need the following installed on your mach
 The supported environmental variables have been categorised by use case and are as follows.
 
 ### Code Analysis Variables
---------------
 Name                   | Description                                                                                                                               | Mandatory | Default | Example
 ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ------------------
 CODE_ANALYSIS_HOST_URL | The host URL of the code analysis server. See [here](https://docs.sonarqube.org/display/SONAR/Analysis+Parameters)                        | ✓         |         | http://HOST:PORT
@@ -25,7 +24,6 @@ CODE_ANALYSIS_LOGIN    | The analysis server account to use when analysing or pu
 CODE_ANALYSIS_PASSWORD | The analysis server account password. See [here](https://docs.sonarqube.org/display/SONAR/Analysis+Parameters)                            | ✓         |         | password
 
 ### Deployment Variables
---------------
 Name                                   | Description                                                                                                                                                               | Mandatory | Default | Example
 -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ----------------------------------------                                                                                                                                                 | ✓         |         | 1234
 COMPANY_ACCOUNTS_API_PORT              | Configured port application runs on.                                                                                                                                      | ✓         |         | 10095                                                                                                                                                        | ✓         |         | example-bucket
