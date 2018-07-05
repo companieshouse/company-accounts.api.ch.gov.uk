@@ -8,6 +8,7 @@
 .settings
 /bin/
 
+company-accounts.api.ch.gov.uk.jar
 target/
 pom.xml.tag
 pom.xml.releaseBackup
