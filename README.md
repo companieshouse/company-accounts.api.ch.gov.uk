@@ -1,9 +1,7 @@
 # Company Accounts API Service
-=====================
 The Companies House API for handling company accounts. This application is written using the [Spring Boot](http://projects.spring.io/spring-boot/) Java framework.
 
 ## Requirements
------------------
 In order to run the API locally you'll need the following installed on your machine:
 
 - [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
@@ -12,12 +10,10 @@ In order to run the API locally you'll need the following installed on your mach
 - [MongoDB](https://www.mongodb.com)
 
 ## Getting Started
---------------
 1. Run `make`
 2. Run `./start.sh`
 
 ## Environment Variables
---------------
 The supported environmental variables have been categorised by use case and are as follows.
 
 ### Code Analysis Variables
