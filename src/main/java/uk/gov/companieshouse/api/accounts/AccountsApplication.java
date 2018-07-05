@@ -3,9 +3,13 @@ package uk.gov.companieshouse.api.accounts;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @SpringBootApplication
 public class AccountsApplication extends WebMvcConfigurerAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     public static void main(String[] args) {
 
@@ -14,8 +18,7 @@ public class AccountsApplication extends WebMvcConfigurerAdapter {
         Integer port = Integer.getInteger("server.port");
 
         if (port == null) {
-            // When logging has been added, this print line will be replace
-            System.out.println("Failed to start service, no port has been configured");
+            LOGGER.error("Failed to start service, no port has been configured");
             System.exit(0);
         }
 
