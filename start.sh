@@ -10,7 +10,7 @@ if [[ -z "${MESOS_SLAVE_PID}" ]]; then
     source ~/.chs_env/global_env
     source ~/.chs_env/company-accounts.api.ch.gov.uk/env
 
-    PORT="${COMPANY_ACCOUNTS_API_PORT:=10094}"
+    PORT="${COMPANY_ACCOUNTS_API_PORT}"
 
 else
 
@@ -31,6 +31,7 @@ else
 
 fi
 
-#exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/company-accounts.api.ch.gov.uk.jar"
-#exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/accounts.web.ch.gov.uk.jar"
-exec java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=21095 -jar -Dserver.port="${PORT}" "${APP_DIR}/company-accounts.api.ch.gov.uk.jar"
+exec java ${JAVA_MEM_ARGS} -jar -Dserver.port="${PORT}" "${APP_DIR}/company-accounts.api.ch.gov.uk.jar"
+
+# debug settings
+# exec java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=21095 -jar -Dserver.port="${PORT}" "${APP_DIR}/company-accounts.api.ch.gov.uk.jar"
