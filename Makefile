@@ -7,13 +7,6 @@ artifactory_publish := $(shell if [[ -n "$(tag)" ]]; then echo release; else ech
 .PHONY: all
 all: build
 
-.PHONY: submodules
-submodules: api-enumerations/.git
-
-.PHONY: api-enumerations/.git
-	git submodule init
-	git submodule update
-
 .PHONY: clean
 clean:
 	mvn clean
@@ -38,9 +31,7 @@ test-unit: clean
 package:
 	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found: $(artifact_name)"; exit 1; }
 	$(eval tmpdir:=$(shell mktemp -d build-XXXXXXXXXX))
-	cp ./routes.yaml $(tmpdir)
 	cp ./start.sh $(tmpdir)
-	cp -r ./api-enumerations $(tmpdir)
 	cp ./target/$(artifact_name)-$(version).jar $(tmpdir)/$(artifact_name).jar
 	cd $(tmpdir); zip -r ../$(artifact_name)-$(version).zip *
 	rm -rf $(tmpdir)
