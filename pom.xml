@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.companieshouse</groupId>
     <artifactId>company-accounts.api.ch.gov.uk</artifactId>
-    <version>0db2b2f</version>
+    <version>76e23d0</version>
     <packaging>jar</packaging>
     <name>company-accounts-api</name>
     <description>Company accounts API to handle company accounts data</description>
@@ -106,6 +106,10 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito-junit-jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
     </dependencies>
