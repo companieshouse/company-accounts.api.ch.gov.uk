@@ -15,11 +15,9 @@ public class AccountsDBEntity {
 
     @Id
     @Field("_id")
-    @JsonProperty("id")
     private String id;
 
     @Field("data")
-    @JsonProperty("data")
     private AccountsDataDBEntity data;
 
     public AccountsDBEntity build(Accounts accounts) {

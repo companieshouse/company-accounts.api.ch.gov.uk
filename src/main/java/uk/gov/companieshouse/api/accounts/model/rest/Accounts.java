@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Accounts {
 
     @NotNull
-    @Field("period_end_on")
     @JsonProperty("period_end_on")
     private LocalDate periodEndOn;
 
