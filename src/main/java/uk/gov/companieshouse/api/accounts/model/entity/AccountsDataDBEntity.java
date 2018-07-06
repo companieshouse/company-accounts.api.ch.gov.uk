@@ -3,16 +3,17 @@ package uk.gov.companieshouse.api.accounts.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 
-//@JsonPath(path = "$")
-public class AccountsData {
+public class AccountsDataDBEntity {
 
     @Field("id")
     @JsonProperty("id")
@@ -20,9 +21,8 @@ public class AccountsData {
 
     @NotNull
     @Field("period_end_on")
-    //@JsonDeserialize(using = JsonDateDeserializer.class)
     @JsonProperty("period_end_on")
-    private Date periodEndOn;
+    private LocalDate periodEndOn;
 
     @JsonMerge()
     private Map<String, String> links = new HashMap<>();
@@ -30,6 +30,18 @@ public class AccountsData {
     private String kind;
 
     private String etag;
+
+    protected AccountsDataDBEntity build(String id){
+        this.id = id;
+        this.etag = GenerateEtagUtil.generateEtag();
+        this.kind = Kind.ACCOUNT.getValue();
+
+        Map<String, String> links = new HashMap<>();
+        links.put(LinkType.SELF.getLink(), "links/accounts");
+        this.links = links;
+        return this;
+    }
+
 
     /**
      * Get the self link
@@ -103,11 +115,11 @@ public class AccountsData {
         this.id = id;
     }
 
-    public Date getPeriodEndOn() {
+    public LocalDate getPeriodEndOn() {
         return periodEndOn;
     }
 
-    public void setPeriodEndOn(Date periodEndOn) {
+    public void setPeriodEndOn(LocalDate periodEndOn) {
         this.periodEndOn = periodEndOn;
     }
 
