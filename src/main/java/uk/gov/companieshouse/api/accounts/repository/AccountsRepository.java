@@ -5,7 +5,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.AccountsDBEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountsDataDBEntity;
 
 /**
- * Repository interface for {@link AccountsDBEntity} required by Spring
+ * Repository interface for {@link AccountsDBEntity} and its data {@link AccountsDataDBEntity}
  */
 public interface AccountsRepository extends MongoRepository<AccountsDBEntity, String> {
 
