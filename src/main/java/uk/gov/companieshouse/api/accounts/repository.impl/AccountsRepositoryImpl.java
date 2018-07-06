@@ -11,5 +11,4 @@ public class AccountsRepositoryImpl {
     public AccountsRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
-
 }

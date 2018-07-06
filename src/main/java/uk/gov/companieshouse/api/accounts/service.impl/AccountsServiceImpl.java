@@ -10,9 +10,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
 import uk.gov.companieshouse.api.accounts.repository.AccountsRepository;
 import uk.gov.companieshouse.api.accounts.service.AccountsService;
 
-/**
- * An implementation of {@link AccountsService}
- */
 @Service
 public class AccountsServiceImpl implements AccountsService {
 

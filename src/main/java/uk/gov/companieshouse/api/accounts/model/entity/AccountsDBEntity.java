@@ -10,9 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
 
-/**
- * Represents a collection of accounts
- */
 @Document(collection = "accounts")
 public class AccountsDBEntity {
 

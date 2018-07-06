@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.GenerateEtagUtil;
