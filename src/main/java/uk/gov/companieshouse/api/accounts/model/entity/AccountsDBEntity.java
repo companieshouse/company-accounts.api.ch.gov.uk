@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Base64;
 import java.util.UUID;
 import org.springframework.beans.BeanUtils;
@@ -31,7 +29,6 @@ public class AccountsDBEntity {
         return id;
     }
 
-    @JsonIgnore
     public void setId(String id) {
         this.id = id;
     }

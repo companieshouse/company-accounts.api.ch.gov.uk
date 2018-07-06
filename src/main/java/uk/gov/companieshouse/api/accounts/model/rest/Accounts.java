@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 public class Accounts {
 

@@ -1,8 +1,5 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonMerge;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +12,12 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 public class AccountsDataDBEntity {
 
     @Field("id")
-    @JsonProperty("id")
     private String id;
 
     @NotNull
     @Field("period_end_on")
-    @JsonProperty("period_end_on")
     private LocalDate periodEndOn;
 
-    @JsonMerge()
     private Map<String, String> links = new HashMap<>();
 
     private String kind;
@@ -45,7 +39,6 @@ public class AccountsDataDBEntity {
         return id;
     }
 
-    @JsonIgnore
     public void setId(String id) {
         this.id = id;
     }
