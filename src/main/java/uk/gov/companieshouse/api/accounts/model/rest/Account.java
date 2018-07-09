@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
-public class Accounts {
+public class Account {
 
     @NotNull
     @JsonProperty("period_end_on")
@@ -27,8 +27,8 @@ public class Accounts {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Accounts accounts = (Accounts) o;
-        return Objects.equals(periodEndOn, accounts.periodEndOn);
+        Account account = (Account) o;
+        return Objects.equals(periodEndOn, account.periodEndOn);
     }
 
     @Override

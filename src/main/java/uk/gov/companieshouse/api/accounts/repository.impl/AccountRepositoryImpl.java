@@ -3,12 +3,12 @@ package uk.gov.companieshouse.api.accounts.repository.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-public class AccountsRepositoryImpl {
+public class AccountRepositoryImpl {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public AccountsRepositoryImpl(MongoTemplate mongoTemplate) {
+    public AccountRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 }

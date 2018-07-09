@@ -5,25 +5,25 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
-import uk.gov.companieshouse.api.accounts.repository.AccountsRepository;
-import uk.gov.companieshouse.api.accounts.service.AccountsService;
+import uk.gov.companieshouse.api.accounts.model.entity.AccountEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Account;
+import uk.gov.companieshouse.api.accounts.repository.AccountRepository;
+import uk.gov.companieshouse.api.accounts.service.AccountService;
 
 @Service
-public class AccountsServiceImpl implements AccountsService {
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    private AccountsRepository accountsRepository;
+    private AccountRepository accountRepository;
 
     /**
      * {@inheritDoc}
      */
-    public ResponseEntity createAccount(Accounts accounts) {
+    public ResponseEntity createAccount(Account account) {
         try {
-            AccountsEntity accountsEntity = new AccountsEntity().build(accounts);
+            AccountEntity accountEntity = new AccountEntity().build(account);
 
-            AccountsEntity createdAccount = accountsRepository.insert(accountsEntity);
+            AccountEntity createdAccount = accountRepository.insert(accountEntity);
             if (createdAccount != null) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount.getData());
             } else {

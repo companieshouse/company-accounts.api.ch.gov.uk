@@ -7,18 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
-import uk.gov.companieshouse.api.accounts.service.AccountsService;
+import uk.gov.companieshouse.api.accounts.model.rest.Account;
+import uk.gov.companieshouse.api.accounts.service.AccountService;
 
 @RestController
-public class AccountsController {
+public class AccountController {
 
     @Autowired
-    private AccountsService accountsService;
+    private AccountService accountService;
 
     @PostMapping(value = "/transactions/{transactionId}/accounts",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createAccount(@Valid @RequestBody Accounts accounts) {
-        return accountsService.createAccount(accounts);
+    public ResponseEntity createAccount(@Valid @RequestBody Account account) {
+        return accountService.createAccount(account);
     }
 }

@@ -6,22 +6,22 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
+import uk.gov.companieshouse.api.accounts.model.rest.Account;
 
 @Document(collection = "accounts")
-public class AccountsEntity {
+public class AccountEntity {
 
     @Id
     @Field("_id")
     private String id;
 
     @Field("data")
-    private AccountsDataEntity data;
+    private AccountDataEntity data;
 
-    public AccountsEntity build(Accounts accounts) {
+    public AccountEntity build(Account account) {
         this.id = Base64.getUrlEncoder().encodeToString(UUID.randomUUID().toString().substring(0, 20).getBytes());
-        this.data = new AccountsDataEntity().build(this.id);
-        BeanUtils.copyProperties(accounts, this.data);
+        this.data = new AccountDataEntity().build(this.id);
+        BeanUtils.copyProperties(account, this.data);
         return this;
     }
 
@@ -33,11 +33,11 @@ public class AccountsEntity {
         this.id = id;
     }
 
-    public AccountsDataEntity getData() {
+    public AccountDataEntity getData() {
         return data;
     }
 
-    public void setData(AccountsDataEntity data) {
+    public void setData(AccountDataEntity data) {
         this.data = data;
     }
 
