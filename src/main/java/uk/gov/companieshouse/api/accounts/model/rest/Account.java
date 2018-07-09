@@ -18,22 +18,4 @@ public class Account {
     public void setPeriodEndOn(LocalDate periodEndOn) {
         this.periodEndOn = periodEndOn;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Account account = (Account) o;
-        return Objects.equals(periodEndOn, account.periodEndOn);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(periodEndOn);
-    }
 }
