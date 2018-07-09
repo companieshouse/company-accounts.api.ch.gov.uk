@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 public class Account {
