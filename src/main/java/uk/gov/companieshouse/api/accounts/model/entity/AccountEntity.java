@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.model.entity;
 
 import java.util.Base64;
 import java.util.UUID;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -21,7 +20,7 @@ public class AccountEntity {
     public AccountEntity build(Account account) {
         this.id = Base64.getUrlEncoder().encodeToString(UUID.randomUUID().toString().substring(0, 20).getBytes());
         this.data = new AccountDataEntity().build(this.id);
-        BeanUtils.copyProperties(account, this.data);
+        this.data.setPeriodEndOn(account.getPeriodEndOn());
         return this;
     }
 

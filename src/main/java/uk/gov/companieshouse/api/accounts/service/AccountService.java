@@ -17,5 +17,5 @@ public interface AccountService {
      *
      * @return An {@link ResponseEntity}
      */
-    ResponseEntity createAccount(Account account);
+    Account createAccount(Account account);
 }

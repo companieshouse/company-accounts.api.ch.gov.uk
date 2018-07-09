@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,12 @@ public class AccountController {
     @PostMapping(value = "/transactions/{transactionId}/accounts",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createAccount(@Valid @RequestBody Account account) {
-        return accountService.createAccount(account);
+        account = accountService.createAccount(account);
+
+        if (account != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(account);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -2,6 +2,9 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 public class Account {
@@ -10,11 +13,62 @@ public class Account {
     @JsonProperty("period_end_on")
     private LocalDate periodEndOn;
 
+    @JsonProperty("links")
+    private Map<String, String> links = new HashMap<>();
+
+    @JsonProperty("kind")
+    private String kind;
+
+    @JsonProperty("etag")
+    private String etag;
+
     public LocalDate getPeriodEndOn() {
         return periodEndOn;
     }
 
     public void setPeriodEndOn(LocalDate periodEndOn) {
         this.periodEndOn = periodEndOn;
+    }
+
+    public Map<String, String> getLinks() {
+        return links;
+    }
+
+    public void setLinks(Map<String, String> links) {
+        this.links = links;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public String getEtag() {
+        return etag;
+    }
+
+    public void setEtag(String etag) {
+        this.etag = etag;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Account account = (Account) o;
+        return Objects.equals(periodEndOn, account.periodEndOn);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(periodEndOn);
     }
 }
