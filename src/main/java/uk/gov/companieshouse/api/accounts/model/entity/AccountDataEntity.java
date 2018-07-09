@@ -30,7 +30,8 @@ public class AccountDataEntity {
         this.kind = Kind.ACCOUNT.getValue();
 
         Map<String, String> links = new HashMap<>();
-        links.put(LinkType.SELF.getLink(), "links/accounts");
+        
+        links.put(LinkType.SELF.getLink(), "");
         this.links = links;
         return this;
     }
