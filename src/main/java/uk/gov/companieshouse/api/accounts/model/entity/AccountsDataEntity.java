@@ -9,7 +9,7 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 
-public class AccountsDataDBEntity {
+public class AccountsDataEntity {
 
     @Field("id")
     private String id;
@@ -24,7 +24,7 @@ public class AccountsDataDBEntity {
 
     private String etag;
 
-    protected AccountsDataDBEntity build(String id){
+    protected AccountsDataEntity build(String id){
         this.id = id;
         this.etag = GenerateEtagUtil.generateEtag();
         this.kind = Kind.ACCOUNT.getValue();

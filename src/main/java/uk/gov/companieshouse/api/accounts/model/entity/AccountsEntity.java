@@ -9,18 +9,18 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
 
 @Document(collection = "accounts")
-public class AccountsDBEntity {
+public class AccountsEntity {
 
     @Id
     @Field("_id")
     private String id;
 
     @Field("data")
-    private AccountsDataDBEntity data;
+    private AccountsDataEntity data;
 
-    public AccountsDBEntity build(Accounts accounts) {
+    public AccountsEntity build(Accounts accounts) {
         this.id = Base64.getUrlEncoder().encodeToString(UUID.randomUUID().toString().substring(0, 20).getBytes());
-        this.data = new AccountsDataDBEntity().build(this.id);
+        this.data = new AccountsDataEntity().build(this.id);
         BeanUtils.copyProperties(accounts, this.data);
         return this;
     }
@@ -33,11 +33,11 @@ public class AccountsDBEntity {
         this.id = id;
     }
 
-    public AccountsDataDBEntity getData() {
+    public AccountsDataEntity getData() {
         return data;
     }
 
-    public void setData(AccountsDataDBEntity data) {
+    public void setData(AccountsDataEntity data) {
         this.data = data;
     }
 
