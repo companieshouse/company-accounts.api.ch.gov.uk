@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service;
 
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.AccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Account;
 
 /**
