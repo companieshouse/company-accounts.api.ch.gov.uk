@@ -22,10 +22,6 @@ public class AccountController {
     public ResponseEntity createAccount(@Valid @RequestBody Account account) {
         account = accountService.createAccount(account);
 
-        if (account != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(account);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(account);
     }
 }
