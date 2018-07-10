@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service;
 
-import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Account;
@@ -11,11 +10,10 @@ import uk.gov.companieshouse.api.accounts.model.rest.Account;
 public interface AccountService {
 
     /**
-     * Create the {@link AccountEntity} that will be persisted to the DB
-     * from the given {@link Account} object and returns {@link ResponseEntity}
-     * detailing its success or failure
+     * Create the {@link AccountEntity} that will be mapped from the rest request, ready for
+     * persistence to the database.
      *
-     * @return An {@link ResponseEntity}
+     * @return A mapped {@link Account} object from the data inserted to the database
      */
     Account createAccount(Account account);
 }
