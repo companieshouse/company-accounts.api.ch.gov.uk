@@ -8,12 +8,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @SpringBootApplication
-public class AccountsApplication extends WebMvcConfigurerAdapter {
+public class AccountsApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
