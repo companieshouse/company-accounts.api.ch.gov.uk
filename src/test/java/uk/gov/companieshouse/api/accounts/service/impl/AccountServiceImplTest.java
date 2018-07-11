@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -39,6 +40,7 @@ public class AccountServiceImplTest {
     }
 
     @Test
+    @DisplayName("Tests the successful creation of an account resource")
     public void canCreateAccount() {
         Account result = accountService.createAccount(account);
         assertNotNull(result);
