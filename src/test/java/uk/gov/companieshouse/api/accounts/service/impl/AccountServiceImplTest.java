@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Account;
 import uk.gov.companieshouse.api.accounts.repository.AccountRepository;
+import uk.gov.companieshouse.api.accounts.transformer.AccountTransformer;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -31,11 +32,15 @@ public class AccountServiceImplTest {
     @Mock
     private AccountRepository accountRepository;
 
+    @Mock
+    private AccountTransformer accountTransformer;
+
     @InjectMocks
     private AccountServiceImpl accountService;
 
     @BeforeEach
     public void setUp() {
+        when(accountTransformer.transform(account)).thenReturn(createdAccountEntity);
         when(accountRepository.insert(any(AccountEntity.class))).thenReturn(createdAccountEntity);
     }
 
