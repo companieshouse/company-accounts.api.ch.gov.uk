@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -42,6 +43,7 @@ public class AccountControllerTest {
     }
 
     @Test
+    @DisplayName("Tests the successful creation of an account resource")
     public void canCreateAccount() {
 
         ResponseEntity response = accountController.createAccount(account);
