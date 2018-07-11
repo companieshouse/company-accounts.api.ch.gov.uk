@@ -25,29 +25,27 @@ public class AccountServiceImpl implements AccountService {
      */
 
     public Account createAccount(Account account) {
+        generateEtagLinksKind(account);
+
         AccountDataEntity accountDataEntity = new AccountDataEntity();
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(account, accountDataEntity);
 
-        //set properties etag, link
-        generateEtagLinksKind(accountDataEntity);
         accountEntity.setData(accountDataEntity);
 
-        AccountEntity createdAccount = accountRepository.insert(accountEntity);
-
-        BeanUtils.copyProperties(createdAccount.getData(), account);
+        accountRepository.insert(accountEntity);
 
         return account;
     }
 
-    private void generateEtagLinksKind(AccountDataEntity accountDataEntity) {
-        accountDataEntity.setEtag(GenerateEtagUtil.generateEtag());
-        accountDataEntity.setKind(Kind.ACCOUNT.getValue());
+    private void generateEtagLinksKind(Account account) {
+        account.setEtag(GenerateEtagUtil.generateEtag());
+        account.setKind(Kind.ACCOUNT.getValue());
 
         Map<String, String> links = new HashMap<>();
 
         links.put(LinkType.SELF.getLink(), "");
-        accountDataEntity.setLinks(links);
+        account.setLinks(links);
     }
 
 }
