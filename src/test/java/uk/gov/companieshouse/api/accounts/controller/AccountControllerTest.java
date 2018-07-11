@@ -45,13 +45,10 @@ public class AccountControllerTest {
     @Test
     @DisplayName("Tests the successful creation of an account resource")
     public void canCreateAccount() {
-
         ResponseEntity response = accountController.createAccount(account);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertTrue(new Equals(createdAccount).matches(response.getBody()));
-
     }
-
 }
