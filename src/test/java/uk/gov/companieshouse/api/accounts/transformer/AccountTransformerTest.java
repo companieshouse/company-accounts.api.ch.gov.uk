@@ -33,7 +33,6 @@ public class AccountTransformerTest {
 
         Assertions.assertNotNull(accountEntity);
         Assertions.assertNull(accountEntity.getData().getEtag());
-        Assertions.assertNull(accountEntity.getData().getId());
         Assertions.assertNull(accountEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), accountEntity.getData().getLinks());
         Assertions.assertNull(accountEntity.getData().getPeriodEndOn());
