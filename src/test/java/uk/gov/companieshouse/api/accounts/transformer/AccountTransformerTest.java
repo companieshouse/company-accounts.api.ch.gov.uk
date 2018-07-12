@@ -45,12 +45,13 @@ public class AccountTransformerTest {
         account.setEtag("etag");
         account.setKind("kind");
         account.setLinks(new HashMap<>());
-        account.setPeriodEndOn(LocalDate.of(20181, 1, 1));
+        account.setPeriodEndOn(LocalDate.of(2018, 1, 1));
 
         AccountEntity accountEntity = accountTransformer.transform(account);
 
         Assertions.assertNotNull(accountEntity);
         Assertions.assertEquals("etag", accountEntity.getData().getEtag());
+        Assertions.assertEquals(LocalDate.of(2018, 1, 1), accountEntity.getData().getPeriodEndOn());
         Assertions.assertEquals("kind", accountEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), accountEntity.getData().getLinks());
     }
