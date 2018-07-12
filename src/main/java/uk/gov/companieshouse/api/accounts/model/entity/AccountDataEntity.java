@@ -8,9 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class AccountDataEntity {
 
-    @Field("id")
-    private String id;
-
     @NotNull
     @Field("period_end_on")
     private LocalDate periodEndOn;
@@ -20,14 +17,6 @@ public class AccountDataEntity {
     private String kind;
 
     private String etag;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public LocalDate getPeriodEndOn() {
         return periodEndOn;
