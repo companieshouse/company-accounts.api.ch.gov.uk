@@ -172,7 +172,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>uk.gov.companieshouse.api.accounts.AccountsApplication
+                            <mainClass>uk.gov.companieshouse.api.accounts.CompanyAccountsApplication
                             </mainClass>
                             <layout>ZIP</layout>
                         </configuration>

@@ -17,38 +17,38 @@ import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.Account;
-import uk.gov.companieshouse.api.accounts.service.AccountService;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class AccountControllerTest {
+public class CompanyAccountControllerTest {
 
     @Mock
-    private Account account;
+    private CompanyAccount companyAccount;
 
     @Mock
-    private Account createdAccount;
+    private CompanyAccount createdCompanyAccount;
 
     @Mock
-    private AccountService accountService;
+    private CompanyAccountService companyAccountService;
 
     @InjectMocks
-    private AccountController accountController;
+    private CompanyAccountController companyAccountController;
 
     @BeforeEach
     public void setUp(){
-        when(accountService.createAccount(account)).thenReturn(createdAccount);
+        when(companyAccountService.createCompanyAccount(companyAccount)).thenReturn(createdCompanyAccount);
     }
 
     @Test
-    @DisplayName("Tests the successful creation of an account resource")
+    @DisplayName("Tests the successful creation of an companyAccount resource")
     public void canCreateAccount() {
-        ResponseEntity response = accountController.createAccount(account);
+        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccount);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertTrue(new Equals(createdAccount).matches(response.getBody()));
+        assertTrue(new Equals(createdCompanyAccount).matches(response.getBody()));
     }
 }

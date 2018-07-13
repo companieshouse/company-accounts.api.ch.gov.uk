@@ -12,7 +12,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @SpringBootApplication
-public class AccountsApplication {
+public class CompanyAccountsApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
@@ -27,7 +27,7 @@ public class AccountsApplication {
             System.exit(0);
         }
 
-        SpringApplication.run(AccountsApplication.class, args);
+        SpringApplication.run(CompanyAccountsApplication.class, args);
     }
 
     @Bean
