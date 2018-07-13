@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class AccountDataEntity {
+public class CompanyAccountDataEntity {
 
     @NotNull
     @Field("period_end_on")

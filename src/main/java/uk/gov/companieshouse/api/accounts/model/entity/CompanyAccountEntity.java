@@ -5,14 +5,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "accounts")
-public class AccountEntity {
+public class CompanyAccountEntity {
 
     @Id
     @Field("_id")
     private String id;
 
     @Field("data")
-    private AccountDataEntity data;
+    private CompanyAccountDataEntity data;
 
     public String getId() {
         return id;
@@ -22,11 +22,11 @@ public class AccountEntity {
         this.id = id;
     }
 
-    public AccountDataEntity getData() {
+    public CompanyAccountDataEntity getData() {
         return data;
     }
 
-    public void setData(AccountDataEntity data) {
+    public void setData(CompanyAccountDataEntity data) {
         this.data = data;
     }
 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
-public class Account {
+public class CompanyAccount {
 
     @NotNull
     @JsonProperty("period_end_on")
