@@ -96,14 +96,10 @@ public class TransactionInterceptorTest {
      * @return ResponseEntity<> with the desired transaction
      */
     private ResponseEntity<Transaction> createOpenDummyTransaction(boolean isOpen) {
-        Transaction openTransaction = new Transaction();
+        Transaction transaction = new Transaction();
 
-        if (isOpen) {
-            openTransaction.setStatus(TransactionStatus.OPEN.getStatus());
-        } else {
-            openTransaction.setStatus(TransactionStatus.CLOSED.getStatus());
-        }
+        transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
 
-        return new ResponseEntity<>(openTransaction, HttpStatus.OK);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 }
