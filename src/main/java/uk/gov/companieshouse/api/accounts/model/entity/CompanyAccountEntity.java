@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "accounts")
-public class CompanyAccountEntity {
+public class CompanyAccountEntity implements BaseEntity{
 
     @Id
     @Field("_id")
