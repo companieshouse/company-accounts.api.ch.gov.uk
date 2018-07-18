@@ -59,10 +59,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createOpenDummyTransaction(true));
 
-        boolean result = transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object());
-
-        assertTrue(result);
+        assertTrue(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
@@ -71,10 +68,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createOpenDummyTransaction(false));
 
-        boolean result = transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object());
-
-        assertFalse(result);
+        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
@@ -83,10 +77,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        boolean result = transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object());
-
-        assertFalse(result);
+        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     /**
