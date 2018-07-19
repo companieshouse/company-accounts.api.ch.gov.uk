@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +44,8 @@ public class TransactionInterceptorTest {
 
     @BeforeEach
     public void setUp() {
-        Map<String, String> pathVariables = ImmutableMap.of("transactionId", "5555");
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("transactionId", "5555");
 
         when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
                 .thenReturn(pathVariables);
