@@ -6,7 +6,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
 @Service
-public interface AbstractService<C extends RestObject, E extends BaseEntity, K> {
+public interface AbstractService<C extends RestObject, E extends BaseEntity> {
 
     public C save(C rest);
 

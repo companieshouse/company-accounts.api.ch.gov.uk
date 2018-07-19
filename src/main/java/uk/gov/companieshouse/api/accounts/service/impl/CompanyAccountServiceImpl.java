@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -13,12 +14,12 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
-public class CompanyAccountServiceImpl extends AbstractServiceImpl<CompanyAccount, CompanyAccountEntity, String> implements CompanyAccountService  {
+public class CompanyAccountServiceImpl extends AbstractServiceImpl<CompanyAccount, CompanyAccountEntity> implements CompanyAccountService  {
 
     @Autowired
     public CompanyAccountServiceImpl(
             @Qualifier("companyAccountRepository") MongoRepository<CompanyAccountEntity, String> mongoRepository,
-            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccountEntity, CompanyAccount> companyAccountTransformer) {
+            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccount, CompanyAccountEntity> companyAccountTransformer) {
         super(mongoRepository, companyAccountTransformer);
     }
 
@@ -31,6 +32,6 @@ public class CompanyAccountServiceImpl extends AbstractServiceImpl<CompanyAccoun
 
     @Override
     public void addKind(CompanyAccount rest) {
-        rest.setKind("company-accounts");
+        rest.setKind(Kind.ACCOUNT.getValue());
     }
 }

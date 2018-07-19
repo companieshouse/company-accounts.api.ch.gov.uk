@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
  */
 @Component
 public class CompanyAccountTransformer implements
-        GenericTransformer<CompanyAccountEntity, CompanyAccount> {
+        GenericTransformer<CompanyAccount, CompanyAccountEntity> {
 
 
     @Override
