@@ -58,7 +58,7 @@ public class TransactionInterceptorTest {
     @DisplayName("Tests the interceptor with an existing transaction that is open")
     public void testPreHandleWithOpenTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
-                .thenReturn(createOpenDummyTransaction(true));
+                .thenReturn(createDummyTransaction(true));
 
         assertTrue(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
@@ -67,7 +67,7 @@ public class TransactionInterceptorTest {
     @DisplayName("Tests the interceptor with an existing transaction that is closed")
     public void testPreHandleWithClosedTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
-                .thenReturn(createOpenDummyTransaction(false));
+                .thenReturn(createDummyTransaction(false));
 
         assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
