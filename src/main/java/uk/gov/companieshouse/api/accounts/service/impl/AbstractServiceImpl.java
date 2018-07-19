@@ -25,9 +25,10 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     @Override
     public C save(C rest) {
         addEtag(rest);
-        addLinks(rest);
         addKind(rest);
+        addLinks(rest);
         E baseEntity = genericTransformer.transform(rest);
+        addID(baseEntity);
         mongoRepository.save(baseEntity);
         return rest;
     }
@@ -37,5 +38,8 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
         rest.setEtag(GenerateEtagUtil.generateEtag());
     }
 
-
+    @Override
+    public void addID(BaseEntity entity) {
+        entity.setId("generated id");
+    }
 }
