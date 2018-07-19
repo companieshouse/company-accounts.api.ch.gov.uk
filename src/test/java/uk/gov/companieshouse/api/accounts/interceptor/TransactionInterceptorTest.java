@@ -87,7 +87,7 @@ public class TransactionInterceptorTest {
      * @param isOpen - true = open, false - closed
      * @return ResponseEntity<> with the desired transaction
      */
-    private ResponseEntity<Transaction> createOpenDummyTransaction(boolean isOpen) {
+    private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
 
         transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
