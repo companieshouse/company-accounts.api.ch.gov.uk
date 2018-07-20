@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.interceptor;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -79,6 +80,7 @@ public class TransactionInterceptorTest {
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        verify(httpServletResponse).setStatus(HttpStatus.NOT_FOUND.value());
     }
 
     /**
