@@ -41,14 +41,12 @@ public class CompanyAccountServiceImplTest {
     @BeforeEach
     public void setUp() {
         when(companyAccountTransformer.transform(companyAccount)).thenReturn(createdCompanyAccountEntity);
-        when(companyAccountRepository.insert(any(CompanyAccountEntity.class))).thenReturn(
-                createdCompanyAccountEntity);
     }
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
     public void canCreateAccount() {
-        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccount);
+        CompanyAccount result = companyAccountService.save(companyAccount);
         assertNotNull(result);
         assertEquals(companyAccount, result);
 

@@ -21,12 +21,6 @@ public class CompanyAccountTransformerTest {
     private CompanyAccountTransformer companyAccountTransformer = new CompanyAccountTransformer();
 
     @Test
-    @DisplayName("Tests account transformer with null values which should throw an exception")
-    public void testTransformerWithNull() {
-        assertThrows(IllegalArgumentException.class, () -> companyAccountTransformer.transform(null));
-    }
-
-    @Test
     @DisplayName("Tests account transformer with empty object which should result in null values")
     public void testTransformerWithEmptyObject() {
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(new CompanyAccount());
