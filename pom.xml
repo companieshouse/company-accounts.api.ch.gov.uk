@@ -31,6 +31,7 @@
         <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
         <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
         <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
+        <aspcetj-version>1.8.0</aspcetj-version>
 
         <!-- Maven and Surefire plugins -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -93,6 +94,11 @@
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspcetj-version}</version>
         </dependency>
 
         <!--  Test  -->
