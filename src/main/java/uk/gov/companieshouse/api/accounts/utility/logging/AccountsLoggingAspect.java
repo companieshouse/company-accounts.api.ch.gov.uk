@@ -24,15 +24,15 @@ public class AccountsLoggingAspect {
   @Autowired
   private ApiLogging apiLogging;
 
-  @Pointcut("execution(* uk.gov.companieshouse.api.accounts.controller.*.*(..))")
-  public void controllerMethods() {
 
+  @Pointcut("execution(* uk.gov.companieshouse.api.accounts.controller.*.*(..))")
+  private void controllerMethods() {
+    //Defines the point cut for controller methods, the method body kept empty purposefully.
   }
 
-
   @Pointcut("execution(* uk.gov.companieshouse.api.accounts.service.*.*(..))")
-  public void serviceMethods() {
-
+  private void serviceMethods() {
+    //Defines the point cut for controller methods, the method body kept empty purposefully.
   }
 
 
