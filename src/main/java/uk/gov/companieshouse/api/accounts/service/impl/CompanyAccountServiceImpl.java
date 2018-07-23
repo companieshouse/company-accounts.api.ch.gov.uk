@@ -25,9 +25,9 @@ public class CompanyAccountServiceImpl extends AbstractServiceImpl<CompanyAccoun
 
     @Override
     public void addLinks(CompanyAccount rest) {
-        Map<String, String> links = new HashMap<>();
-        links.put(LinkType.SELF.getLink(), "self link");
-        rest.setLinks(links);
+//        Map<String, String> links = new HashMap<>();
+//        links.put(LinkType.SELF.getLink(), "");
+//        rest.setLinks(links);
     }
 
     @Override
