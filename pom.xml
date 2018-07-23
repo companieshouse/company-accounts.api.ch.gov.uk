@@ -29,7 +29,7 @@
         <api-helper-java.version>1.0.0-rc1</api-helper-java.version>
         <structured-logging.version>1.2.0-rc1</structured-logging.version>
         <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
-        <environment-reader-library.version>1.1.0-rc2</environment-reader-library.version>
+        <environment-reader-library.version>1.2.0-rc1</environment-reader-library.version>
         <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
         <aspcetj-version>1.8.0</aspcetj-version>
 
