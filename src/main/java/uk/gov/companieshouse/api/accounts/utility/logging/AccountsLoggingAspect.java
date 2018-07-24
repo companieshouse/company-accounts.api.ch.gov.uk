@@ -55,7 +55,7 @@ public class AccountsLoggingAspect {
   @AfterThrowing(pointcut = "serviceMethods()", throwing = "exception")
   public void logControllerException(JoinPoint joinPoint, Exception exception) {
     if (exception instanceof RuntimeException) {
-      LOG.error(String.format("%s caused exception %s", methodName(joinPoint), exception));
+      LOG.error(String.format("%s Error occurred : %s", methodName(joinPoint), exception));
     }
   }
 
