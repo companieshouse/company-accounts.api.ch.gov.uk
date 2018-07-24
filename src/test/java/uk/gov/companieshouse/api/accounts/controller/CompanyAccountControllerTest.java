@@ -39,7 +39,7 @@ public class CompanyAccountControllerTest {
 
     @BeforeEach
     public void setUp(){
-        when(companyAccountService.createCompanyAccount(companyAccount)).thenReturn(createdCompanyAccount);
+        when(companyAccountService.save(companyAccount)).thenReturn(createdCompanyAccount);
     }
 
     @Test
