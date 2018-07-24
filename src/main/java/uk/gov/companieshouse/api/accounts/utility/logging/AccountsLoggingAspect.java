@@ -27,32 +27,39 @@ public class AccountsLoggingAspect {
 
   @Pointcut("execution(* uk.gov.companieshouse.api.accounts.controller.*.*(..))")
   private void controllerMethods() {
-    //Defines the point cut for controller methods, the method body kept empty purposefully.
+    //Defines the point cut for controller methods, the method body kept empty on purpose.
   }
 
   @Pointcut("execution(* uk.gov.companieshouse.api.accounts.service.*.*(..))")
   private void serviceMethods() {
-    //Defines the point cut for controller methods, the method body kept empty purposefully.
+    //Defines the point cut for controller methods, the method body kept empty on purpose.
   }
 
 
-  @Before("controllerMethods() || serviceMethods()")
+  @Before("serviceMethods()")
   public void logControllerMethodTrace(JoinPoint joinPoint) {
     if (apiLogging.isMethodTraceEnabled()) {
-      LOG.info(String.format("Entering into %s",
-          getMethodName(joinPoint)));
+      LOG.debug(String.format("Entering into %s with arguments :",
+          methodName(joinPoint), joinPoint.getArgs()));
     }
   }
 
-  @AfterReturning(pointcut = "controllerMethods() || serviceMethods()", returning = "retVal")
+  @AfterReturning(pointcut = "serviceMethods()", returning = "retVal")
   public void logControllerAfter(JoinPoint joinPoint, Object retVal) {
     if (apiLogging.isMethodTraceEnabled()) {
       LOG.debug(
-          String.format("Exited : %s with return value %s", getMethodName(joinPoint), retVal));
+          String.format("Exited : %s with return value %s", methodName(joinPoint), retVal));
     }
   }
 
-  @Around("controllerMethods() || serviceMethods()")
+  @AfterThrowing(pointcut = "serviceMethods()", throwing = "exception")
+  public void logControllerException(JoinPoint joinPoint, Exception exception) {
+    if (exception instanceof RuntimeException) {
+      LOG.error(String.format("%s caused exception %s", methodName(joinPoint), exception));
+    }
+  }
+
+  @Around("controllerMethods()")
   public void logControllerPerformanceStats(ProceedingJoinPoint joinPoint) throws Throwable {
     long startTime = System.currentTimeMillis();
 
@@ -62,21 +69,14 @@ public class AccountsLoggingAspect {
     long timeTaken = System.currentTimeMillis() - startTime;
 
     if (apiLogging.isPerformanceStatsEnabled()) {
-      LOG.debug(String.format("The method %s Started At %s",
-          getMethodName(joinPoint), startTime));
+      LOG.debug(String.format("Controller %s called At %s",
+          methodName(joinPoint), startTime));
       LOG.debug(String.format("%s Completed in: %s milliseconds",
-          getMethodName(joinPoint), timeTaken));
+          methodName(joinPoint), timeTaken));
     }
   }
 
-  @AfterThrowing(pointcut = "controllerMethods() || serviceMethods()", throwing = "exception")
-  public void logControllerException(JoinPoint joinPoint, Exception exception) {
-    if (exception instanceof RuntimeException) {
-      LOG.error(String.format("%s caused exception %s", getMethodName(joinPoint), exception));
-    }
-  }
-
-  private String getMethodName(JoinPoint joinPoint) {
+  private String methodName(JoinPoint joinPoint) {
     return String.format("%s.%s",
         joinPoint.getSignature().getDeclaringTypeName(),
         joinPoint.getSignature().getName());
