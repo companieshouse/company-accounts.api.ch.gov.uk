@@ -10,22 +10,12 @@ public class CompanyAccountDataEntity extends BaseDataEntity {
     @Field("period_end_on")
     private LocalDate periodEndOn;
 
-    private String kind;
-
     public LocalDate getPeriodEndOn() {
         return periodEndOn;
     }
 
     public void setPeriodEndOn(LocalDate periodEndOn) {
         this.periodEndOn = periodEndOn;
-    }
-
-    public String getKind() {
-        return kind;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
     }
 
 }
