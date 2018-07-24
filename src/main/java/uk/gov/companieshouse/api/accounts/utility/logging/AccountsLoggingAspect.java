@@ -55,7 +55,7 @@ public class AccountsLoggingAspect {
   @AfterThrowing(pointcut = "serviceMethods()", throwing = "exception")
   public void logControllerException(JoinPoint joinPoint, Exception exception) {
     if (exception instanceof RuntimeException) {
-      LOG.error(String.format("%s Error occurred : %s", methodName(joinPoint), exception));
+      LOG.error(String.format("%s Error occurred : %s", methodName(joinPoint), exception.getMessage()));
     }
   }
 
@@ -69,8 +69,8 @@ public class AccountsLoggingAspect {
     long timeTaken = System.currentTimeMillis() - startTime;
 
     if (apiLogging.isPerformanceStatsEnabled()) {
-      LOG.debug(String.format("Controller %s called At %s",
-          methodName(joinPoint), startTime));
+      LOG.debug(String.format("%s called At %s",
+          methodName(joinPoint), startTime);
       LOG.debug(String.format("%s Completed in: %s milliseconds",
           methodName(joinPoint), timeTaken));
     }
