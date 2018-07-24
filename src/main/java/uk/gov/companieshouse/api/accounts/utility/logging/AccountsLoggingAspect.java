@@ -70,7 +70,7 @@ public class AccountsLoggingAspect {
 
     if (apiLogging.isPerformanceStatsEnabled()) {
       LOG.debug(String.format("%s called At %s",
-          methodName(joinPoint), startTime);
+          methodName(joinPoint), startTime));
       LOG.debug(String.format("%s Completed in: %s milliseconds",
           methodName(joinPoint), timeTaken));
     }
