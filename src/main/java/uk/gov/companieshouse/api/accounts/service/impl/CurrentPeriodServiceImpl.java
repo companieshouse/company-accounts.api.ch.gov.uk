@@ -27,6 +27,6 @@ public class CurrentPeriodServiceImpl extends
 
     @Override
     public void addKind(CurrentPeriod rest) {
-        rest.setKind("small-full-accounts-accounting-period#current");
+        rest.setKind("small-full-accounts#current-period");
     }
 }
