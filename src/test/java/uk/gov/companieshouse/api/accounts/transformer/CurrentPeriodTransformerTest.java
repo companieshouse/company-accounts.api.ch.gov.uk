@@ -51,6 +51,7 @@ public class CurrentPeriodTransformerTest {
         Assertions.assertEquals(Integer.valueOf(5),
                 currentPeriodEntity.getData().getBalanceSheetEntity()
                         .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals("kind", currentPeriodEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), currentPeriodEntity.getData().getLinks());
     }
 }
