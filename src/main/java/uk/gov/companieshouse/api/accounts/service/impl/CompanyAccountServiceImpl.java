@@ -17,8 +17,8 @@ public class CompanyAccountServiceImpl extends
     @Autowired
     public CompanyAccountServiceImpl(
             @Qualifier("companyAccountRepository") MongoRepository<CompanyAccountEntity, String> mongoRepository,
-            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccount, CompanyAccountEntity> companyAccountTransformer) {
-        super(mongoRepository, companyAccountTransformer);
+            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccount, CompanyAccountEntity> transformer) {
+        super(mongoRepository, transformer);
     }
 
     @Override

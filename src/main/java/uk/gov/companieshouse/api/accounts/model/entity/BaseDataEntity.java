@@ -9,6 +9,8 @@ public class BaseDataEntity {
 
     private String etag;
 
+    private String kind;
+
     public String getEtag() {
         return etag;
     }
@@ -23,6 +25,14 @@ public class BaseDataEntity {
 
     public void setLinks(Map<String, String> links) {
         this.links = links;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
     }
 
 }
