@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountControllerTest {
+    @Mock
+    private HttpServletRequest mockRequest;
 
     @Mock
     private CompanyAccount companyAccount;
@@ -45,7 +48,7 @@ public class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
     public void canCreateAccount() {
-        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccount);
+        ResponseEntity response = companyAccountController.createCompanyAccount(mockRequest, "0111001", companyAccount);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

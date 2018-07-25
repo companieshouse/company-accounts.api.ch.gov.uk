@@ -40,6 +40,5 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
 
     @Override
     public void addID(BaseEntity entity) {
-        entity.setId("generated id");
     }
 }
