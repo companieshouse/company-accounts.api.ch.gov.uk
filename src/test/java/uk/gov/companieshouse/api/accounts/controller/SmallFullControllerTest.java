@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,13 +40,22 @@ public class SmallFullControllerTest {
 
         @BeforeEach
         public void setUp(){
-            when(smallFullService.save(smallFull)).thenReturn(createdSmallFull);
+            try {
+                when(smallFullService.save(smallFull, "")).thenReturn(createdSmallFull);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
 
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
         public void canCreateSmallFull() {
-            ResponseEntity response = smallFullController.create(smallFull);
+            ResponseEntity response = null;
+            try {
+                response = smallFullController.create(smallFull);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
 
             assertNotNull(response);
             assertEquals(HttpStatus.CREATED, response.getStatusCode());

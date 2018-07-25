@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,13 +40,22 @@ public class CompanyAccountControllerTest {
 
     @BeforeEach
     public void setUp(){
-        when(companyAccountService.save(companyAccount)).thenReturn(createdCompanyAccount);
+        try {
+            when(companyAccountService.save(companyAccount, "")).thenReturn(createdCompanyAccount);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
     public void canCreateAccount() {
-        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccount);
+        ResponseEntity response = null;
+        try {
+            response = companyAccountController.createCompanyAccount(companyAccount);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

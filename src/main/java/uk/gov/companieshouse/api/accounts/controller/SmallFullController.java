@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,15 @@ public class SmallFullController {
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(@Valid @RequestBody SmallFull smallFull) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(smallFullService.save(smallFull));
-    }
+    public ResponseEntity create(@Valid @RequestBody SmallFull smallFull)
+            throws NoSuchAlgorithmException {
+        //TODO accountNumber should be retrieved from the Transaction after it becomes available via the interceptor
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[6];
+        random.nextBytes(bytes);
+        String accountNumber = new String(bytes);
 
+        SmallFull result = smallFullService.save(smallFull, accountNumber);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
 }

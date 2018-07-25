@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,12 @@ public class SmallFullServiceImplTest {
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
         public void canCreateAccount() {
-            SmallFull result = smallFullService.save(smallFull);
+            SmallFull result = null;
+            try {
+                result = smallFullService.save(smallFull, "");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
             assertNotNull(result);
             assertEquals(smallFull, result);
 
