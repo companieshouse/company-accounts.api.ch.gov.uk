@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class CurrentPeriodDataEntity extends BaseDataEntity {
 
     @Field("balance_sheet")
-    BalanceSheetEntity balanceSheetEntity;
+    private BalanceSheetEntity balanceSheetEntity;
 
     public BalanceSheetEntity getBalanceSheetEntity() {
         return balanceSheetEntity;
