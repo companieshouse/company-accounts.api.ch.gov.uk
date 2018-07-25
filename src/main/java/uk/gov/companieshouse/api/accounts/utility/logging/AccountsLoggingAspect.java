@@ -43,9 +43,8 @@ public class AccountsLoggingAspect {
   public void logServiceMethodTrace(JoinPoint joinPoint) {
     if (apiLogging.isMethodTraceEnabled()) {
       String logMessage = String
-          .format("Entering into %s with arguments :%s", methodName(joinPoint),
-              methodParameters(joinPoint));
-      LOG.debug(logMessage);
+          .format("Entering into %s with arguments :", methodName(joinPoint));
+      LOG.info(logMessage, methodParameters(joinPoint));
     }
   }
 
@@ -87,11 +86,11 @@ public class AccountsLoggingAspect {
         joinPoint.getSignature().getName());
   }
 
-  private Map<String, String> methodParameters(JoinPoint joinPoint) {
-    Map<String, String> parameterMap = new HashMap<>();
+  private Map<String, Object> methodParameters(JoinPoint joinPoint) {
+    Map<String, Object> parameterMap = new HashMap<>();
     Arrays.stream(joinPoint.getArgs())
         .forEach(
-            objecct -> parameterMap.put(objecct.getClass().getName(), objecct.toString())
+            objecct -> parameterMap.put(objecct.getClass().getName(), objecct)
         );
     return parameterMap;
   }
