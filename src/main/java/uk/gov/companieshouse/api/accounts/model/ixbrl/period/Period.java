@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.smallfull.period;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.period;
 
 public class Period {
 

@@ -1,8 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.smallfull;
+package uk.gov.companieshouse.api.accounts.model.ixbrl;
 
-import uk.gov.companieshouse.api.accounts.model.smallfull.balancesheet.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.smallfull.notes.Notes;
-import uk.gov.companieshouse.api.accounts.model.smallfull.period.Period;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 
 public class AccountType {
 

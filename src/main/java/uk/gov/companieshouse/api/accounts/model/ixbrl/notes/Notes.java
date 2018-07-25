@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.smallfull.notes;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.notes;
 
 public class Notes {
 

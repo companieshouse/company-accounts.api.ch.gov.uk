@@ -1,10 +1,11 @@
-package uk.gov.companieshouse.api.accounts.model.smallfull.notes;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
-public class PostBalanceSheetEvents {
+public class BalanceSheet {
 
     private String currentPeriodDateFormatted;
     private String previousPeriodDateFormatted;
-    private String postBalanceSheetEventsInfo;
+
+    private CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid;
 
     public String getCurrentPeriodDateFormatted() {
         return currentPeriodDateFormatted;
@@ -22,13 +23,11 @@ public class PostBalanceSheetEvents {
         this.previousPeriodDateFormatted = previousPeriodDateFormatted;
     }
 
-    public String getPostBalanceSheetEventsInfo() {
-        return postBalanceSheetEventsInfo;
+    public CalledUpSharedCapitalNotPaid getCalledUpSharedCapitalNotPaid() {
+        return calledUpSharedCapitalNotPaid;
     }
 
-    public void setPostBalanceSheetEventsInfo(String postBalanceSheetEventsInfo) {
-        this.postBalanceSheetEventsInfo = postBalanceSheetEventsInfo;
+    public void setCalledUpSharedCapitalNotPaid(CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid) {
+        this.calledUpSharedCapitalNotPaid = calledUpSharedCapitalNotPaid;
     }
 }
-
-
