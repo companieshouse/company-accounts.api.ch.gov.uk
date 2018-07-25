@@ -21,7 +21,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 public class MongoConfig {
 
     @Autowired
-    private MongoDbConnectionPoolProperties configuration;
+    private MongoDbConnectionPoolProperties connectionPoolConfig;
 
     /**
      * _class maps to the model class in mongoDB (i.e. _class : uk.gov.companieshouse.Transaction)
@@ -49,9 +49,9 @@ public class MongoConfig {
     @Bean
     public MongoClientOptions mongoClientOptions() {
         return MongoClientOptions.builder()
-            .minConnectionsPerHost(configuration.getMinSize())
-            .maxConnectionIdleTime(configuration.getMaxConnectionIdleTimeMS())
-            .maxConnectionLifeTime(configuration.getMaxConnectionLifeTimeMS())
+            .minConnectionsPerHost(connectionPoolConfig.getMinSize())
+            .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS())
+            .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS())
             .build();
     }
 }
