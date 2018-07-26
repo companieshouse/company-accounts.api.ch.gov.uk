@@ -20,6 +20,6 @@ public class CompanyAccountController {
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(companyAccountService.save(companyAccount));
+        return ResponseEntity.status(HttpStatus.CREATED).body(companyAccountService.createCompanyAccount(companyAccount));
     }
 }
