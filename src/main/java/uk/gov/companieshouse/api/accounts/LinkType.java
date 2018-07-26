@@ -4,7 +4,7 @@ public enum LinkType {
     SELF("self"), RESOURCE("resource");
     private String link;
 
-    private LinkType(String link) {
+    LinkType(String link) {
         this.link = link;
     }
 
