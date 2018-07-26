@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts;
 
 public enum Kind {
 
-    ACCOUNT("accounts"),
+    COMPANY_ACCOUNTS("company-accounts"),
     SMALL_FULL_ACCOUNT("accounts#smallfull");
 
     private String value;
