@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-@MockitoSettings(strictness = Strictness.WARN)
+//@MockitoSettings(strictness = Strictness.WARN)
 public class CompanyAccountServiceImplTest {
 
     @InjectMocks
@@ -72,8 +73,8 @@ public class CompanyAccountServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(companyAccountTransformer.transform(Matchers.any(CompanyAccount.class))).thenReturn(companyAccountEntityMock);
-        when(companyAccountTransformer.transform(Matchers.any(CompanyAccountEntity.class))).thenReturn(companyAccountMock);
+        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(Matchers.any(CompanyAccount.class));
+        doReturn(companyAccountMock).when(companyAccountTransformer).transform(Matchers.any(CompanyAccountEntity.class));
 
 
         when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
