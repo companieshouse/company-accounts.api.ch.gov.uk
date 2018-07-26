@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -68,33 +68,28 @@ public class CompanyAccountServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(Matchers.any(CompanyAccount.class));
-        doReturn(companyAccountMock).when(companyAccountTransformer).transform(Matchers.any(CompanyAccountEntity.class));
 
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 
-        when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
-
+        when(httpServletRequest.getSession()).thenReturn(httpSessionMock);
+        when(httpSessionMock.getAttribute("transaction")).thenReturn(createDummyTransaction(true));
         when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
-
-        Map<String, String> links = new HashMap<>();
-        links.put(LinkType.SELF.getLink(), "selfLinkTest");
-        when(companyAccountDataEntityMock.getLinks()).thenReturn(links);
-
+        when(companyAccountDataEntityMock.getLinks()).thenReturn(createLinksMap());
     }
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
     void canCreateAccount() {
-        when(httpServletRequest.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute("transaction")).thenReturn(createDummyTransaction(true));
+        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
+                .any(CompanyAccount.class));
+        doReturn(companyAccountMock).when(companyAccountTransformer).transform(ArgumentMatchers
+                .any(CompanyAccountEntity.class));
 
+        when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
 
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
-
-        CompanyAccount result = companyAccountService.createCompanyAccount(new CompanyAccount());
+        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccountMock);
         assertNotNull(result);
         assertEquals(companyAccountMock, result);
-
     }
 
     /**
@@ -105,15 +100,21 @@ public class CompanyAccountServiceImplTest {
      */
     private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
-
         transaction.setId("id");
-
         transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
-
-        Map<String, String> links = new HashMap<>();
-        links.put(LinkType.SELF.getLink(), "selfLinkTest");
-        transaction.setLinks(links);
+        transaction.setLinks(createLinksMap());
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
+    }
+
+    /**
+     * creates an a links map with a test self link
+     *
+     * @return populated links map
+     */
+    private Map<String, String> createLinksMap() {
+        Map<String, String> links = new HashMap<>();
+        links.put(LinkType.SELF.getLink(), "selfLinkTest");
+        return links;
     }
 }
