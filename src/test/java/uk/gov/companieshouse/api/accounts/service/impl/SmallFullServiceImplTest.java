@@ -45,13 +45,8 @@ public class SmallFullServiceImplTest {
 
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
-        public void canCreateAccount() {
-            SmallFull result = null;
-            try {
-                result = smallFullService.save(smallFull, "");
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
+        public void canCreateAccount() throws NoSuchAlgorithmException {
+            SmallFull result = smallFullService.save(smallFull, "");
             assertNotNull(result);
             assertEquals(smallFull, result);
 

@@ -46,13 +46,8 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
-    public void canCreateAccount() {
-        CompanyAccount result = null;
-        try {
-            result = companyAccountService.save(companyAccount, "");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+    public void canCreateAccount() throws NoSuchAlgorithmException {
+        CompanyAccount result = companyAccountService.save(companyAccount, "");
         assertNotNull(result);
         assertEquals(companyAccount, result);
 
