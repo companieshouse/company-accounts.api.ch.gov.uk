@@ -3,8 +3,12 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,13 +42,22 @@ public class CurrentPeriodControllerTest {
 
     @BeforeEach
     public void setUp() {
-        when(currentPeriodService.save(currentPeriod)).thenReturn(createdCurrentPeriod);
+        try {
+            when(currentPeriodService.save(any(CurrentPeriod.class), anyString())).thenReturn(createdCurrentPeriod);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateAccount() {
-        ResponseEntity response = currentPeriodController.create(currentPeriod);
+        ResponseEntity response = null;
+        try {
+            response = currentPeriodController.create(currentPeriod);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

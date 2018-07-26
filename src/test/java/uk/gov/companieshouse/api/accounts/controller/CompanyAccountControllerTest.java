@@ -3,6 +3,9 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
@@ -41,7 +44,7 @@ public class CompanyAccountControllerTest {
     @BeforeEach
     public void setUp(){
         try {
-            when(companyAccountService.save(companyAccount, "")).thenReturn(createdCompanyAccount);
+            when(companyAccountService.save(any(CompanyAccount.class), anyString())).thenReturn(createdCompanyAccount);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
