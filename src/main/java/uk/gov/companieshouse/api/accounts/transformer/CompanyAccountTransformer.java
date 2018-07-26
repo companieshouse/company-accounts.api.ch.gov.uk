@@ -25,7 +25,9 @@ public class CompanyAccountTransformer implements
 
     @Override
     public CompanyAccount transform(CompanyAccountEntity companyAccountEntity) {
-        return null;
+        CompanyAccount companyAccount = new CompanyAccount();
+        BeanUtils.copyProperties(companyAccountEntity.getData(), companyAccount);
+        return companyAccount;
     }
 
 }
