@@ -38,13 +38,13 @@ public class CompanyAccountControllerTest {
     private CompanyAccountController companyAccountController;
 
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         when(companyAccountService.createCompanyAccount(companyAccount)).thenReturn(createdCompanyAccount);
     }
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
-    public void canCreateAccount() {
+    void canCreateAccount() {
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccount);
 
         assertNotNull(response);

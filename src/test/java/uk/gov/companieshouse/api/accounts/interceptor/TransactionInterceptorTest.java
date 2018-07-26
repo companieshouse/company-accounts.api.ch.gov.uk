@@ -48,7 +48,7 @@ public class TransactionInterceptorTest {
     private HttpSession httpSessionMock;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
 
@@ -61,7 +61,7 @@ public class TransactionInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is open")
-    public void testPreHandleWithOpenTransaction() {
+    void testPreHandleWithOpenTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
@@ -72,7 +72,7 @@ public class TransactionInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is closed")
-    public void testPreHandleWithClosedTransaction() {
+    void testPreHandleWithClosedTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
@@ -83,7 +83,7 @@ public class TransactionInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor with a non-existing transaction")
-    public void testPreHandleWithNonExistingTransaction() {
+    void testPreHandleWithNonExistingTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 

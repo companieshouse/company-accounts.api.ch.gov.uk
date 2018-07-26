@@ -24,7 +24,7 @@ public class CompanyAccountTransformerTest {
 
     @Test
     @DisplayName("Tests rest to entity account transformer with empty object which should result in null values")
-    public void testRestToEntityTransformerWithEmptyObject() {
+    void testRestToEntityTransformerWithEmptyObject() {
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(new CompanyAccount());
 
         Assertions.assertNotNull(companyAccountEntity);
@@ -36,7 +36,7 @@ public class CompanyAccountTransformerTest {
 
     @Test
     @DisplayName("Tests rest to entity account transformer with populated object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    void testRestToEntityTransformerWithPopulatedObject() {
         CompanyAccount companyAccount = new CompanyAccount();
         companyAccount.setEtag("etag");
         companyAccount.setKind("kind");
@@ -54,7 +54,7 @@ public class CompanyAccountTransformerTest {
 
     @Test
     @DisplayName("Tests entity to rest account transformer with empty object which should result in null values")
-    public void testEntityToRestTransformerWithEmptyObject() {
+    void testEntityToRestTransformerWithEmptyObject() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> companyAccountTransformer.transform(new CompanyAccountEntity()));
 
         assertEquals("Source must not be null", ex.getMessage());
@@ -62,7 +62,7 @@ public class CompanyAccountTransformerTest {
 
     @Test
     @DisplayName("Tests entity to rest account transformer with populated object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    void testEntityToRestTransformerWithPopulatedObject() {
         CompanyAccountDataEntity companyAccountDataEntity =  new CompanyAccountDataEntity();
         companyAccountDataEntity.setEtag("etag");
         companyAccountDataEntity.setKind("kind");
