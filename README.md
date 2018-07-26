@@ -31,5 +31,3 @@ MONGODB_URL                            | Mongo database URL.                    
 MONGO_CONNECTION_POOL_MIN_SIZE         | Mongo Database connection pool size (Min)                                                                                 | ✗         | 0       | 1
 MONGO_CONNECTION_MAX_IDLE_TIME         | Mongo Database connection idle time, 0 for no idle time                                                                   | ✗         | 0       | 0
 MONGO_CONNECTION_MAX_LIFE_TIME         | Mongo Database connection life time, 0 for infinite life time.                                                            | ✗         | 0       | 0
-METHOD_TRACE_ENABLED                   | API Logging method trace enable or disable.                                                                               | ✗         | false   | true - logs before and after traces
-PERFORMANCE_STATS_ENABLED              | API Logging performance stats enable or disable.                                                                          | ✗         | false   | true - logs performance stats
