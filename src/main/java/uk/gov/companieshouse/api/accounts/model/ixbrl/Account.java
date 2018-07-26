@@ -4,7 +4,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 
-public class AccountType {
+public class Account {
 
     private Period period;
     private BalanceSheet balanceSheet;
