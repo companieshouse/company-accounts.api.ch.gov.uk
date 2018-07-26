@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,48 +21,42 @@ import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class SmallFullControllerTest {
 
 
-        @Mock
-        private SmallFull smallFull;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private Transaction transaction;
+    @Mock
+    private SmallFull smallFull;
+    @Mock
+    private SmallFull createdSmallFull;
+    @Mock
+    private SmallFullService smallFullService;
+    @InjectMocks
+    private SmallFullController smallFullController;
 
-        @Mock
-        private SmallFull createdSmallFull;
-
-        @Mock
-        private SmallFullService smallFullService;
-
-        @InjectMocks
-        private SmallFullController smallFullController;
-
-        @BeforeEach
-        public void setUp(){
-            try {
-                when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Test
-        @DisplayName("Tests the successful creation of a smallFull resource")
-        public void canCreateSmallFull() {
-            ResponseEntity response = null;
-            try {
-                response = smallFullController.create(smallFull);
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-
-            assertNotNull(response);
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
-            assertTrue(new Equals(createdSmallFull).matches(response.getBody()));
-        }
+    @BeforeEach
+    public void setUp() throws NoSuchAlgorithmException {
+        when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
+        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(transaction.getCompanyNumber()).thenReturn("123456");
     }
+
+    @Test
+    @DisplayName("Tests the successful creation of a smallFull resource")
+    public void canCreateSmallFull() throws NoSuchAlgorithmException {
+        ResponseEntity response = smallFullController.create(smallFull, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertTrue(new Equals(createdSmallFull).matches(response.getBody()));
+    }
+}

@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -30,35 +31,31 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 public class CompanyAccountControllerTest {
 
     @Mock
+    private HttpServletRequest request;
+    @Mock
+    private Transaction transaction;
+    @Mock
     private CompanyAccount companyAccount;
-
     @Mock
     private CompanyAccount createdCompanyAccount;
-
     @Mock
     private CompanyAccountService companyAccountService;
-
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
     @BeforeEach
-    public void setUp(){
-        try {
-            when(companyAccountService.save(any(CompanyAccount.class), anyString())).thenReturn(createdCompanyAccount);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+    public void setUp() throws NoSuchAlgorithmException {
+        when(companyAccountService.save(any(CompanyAccount.class), anyString()))
+                .thenReturn(createdCompanyAccount);
+        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(transaction.getCompanyNumber()).thenReturn("123456");
     }
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
-    public void canCreateAccount() {
-        ResponseEntity response = null;
-        try {
-            response = companyAccountController.createCompanyAccount(companyAccount);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+    public void canCreateAccount() throws NoSuchAlgorithmException {
+        ResponseEntity response = companyAccountController
+                .createCompanyAccount(companyAccount, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

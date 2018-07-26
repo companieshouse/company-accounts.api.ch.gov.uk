@@ -34,6 +34,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             String transactionId = pathVariables.get("transactionId");
             ResponseEntity<Transaction> transaction = transactionManager
                     .getTransaction(transactionId, request.getHeader("X-Request-Id"));
+            request.setAttribute("transaction", transaction);
             return isTransactionIsOpen(transaction);
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
