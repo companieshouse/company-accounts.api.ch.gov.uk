@@ -12,9 +12,9 @@ import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEntity> implements
         AbstractService<C, E> {
 
-    private MongoRepository mongoRepository;
+    protected MongoRepository mongoRepository;
 
-    private GenericTransformer<C, E> genericTransformer;
+    protected GenericTransformer<C, E> genericTransformer;
 
     public AbstractServiceImpl(MongoRepository mongoRepository,
             GenericTransformer<C, E> genericTransformer) {
