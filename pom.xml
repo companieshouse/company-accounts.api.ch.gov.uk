@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.companieshouse</groupId>
     <artifactId>company-accounts.api.ch.gov.uk</artifactId>
-    <version>unversioned</version>
+    <version>bd953f0</version>
     <packaging>jar</packaging>
     <name>company-accounts-api</name>
     <description>Company accounts API to handle company accounts data</description>
@@ -31,6 +31,7 @@
         <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
         <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
         <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
+        <httpclient.version>4.5.6</httpclient.version>
 
         <!-- Maven and Surefire plugins -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -84,15 +85,15 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-rest-webmvc</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!--  Test  -->
@@ -113,7 +114,6 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson-datatype-jsr310.version}</version>
         </dependency>
-
     </dependencies>
 
     <profiles>
