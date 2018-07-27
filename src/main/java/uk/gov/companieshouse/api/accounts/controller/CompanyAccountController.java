@@ -26,7 +26,7 @@ public class CompanyAccountController {
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
         CompanyAccount result = companyAccountService
                 .save(companyAccount, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);

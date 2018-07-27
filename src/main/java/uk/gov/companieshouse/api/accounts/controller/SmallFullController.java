@@ -26,7 +26,8 @@ public class SmallFullController {
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getSession()
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         SmallFull result = smallFullService.save(smallFull, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);

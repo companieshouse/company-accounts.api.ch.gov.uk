@@ -26,7 +26,7 @@ public class CurrentPeriodController {
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
         CurrentPeriod result = currentPeriodService
                 .save(currentPeriod, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
