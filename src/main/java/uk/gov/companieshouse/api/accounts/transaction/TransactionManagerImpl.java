@@ -24,7 +24,7 @@ public class TransactionManagerImpl implements TransactionManager {
     private static final String ID_PARAMETER = "{id}";
     private static final String X_REQUEST_ID = "X-Request-Id";
 
-    // represents the Authorization header name in the request
+    /** represents the Authorization header name in the request */
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private static final RestTemplate restTemplate = createRestTemplate();
