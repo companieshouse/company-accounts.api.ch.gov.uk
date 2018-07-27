@@ -3,5 +3,5 @@ group: api
 # XXX Make sure all service with /transaction/ based routes have a weight LOWER than 1000
 weight: 900
 routes:
-   1: /transactions/(.*)/company-accounts.*
-   2: /private/company-accounts/.*
+   1: ^/transactions/(.*)/company-accounts.*
+   2: ^/private/company-accounts/.*
