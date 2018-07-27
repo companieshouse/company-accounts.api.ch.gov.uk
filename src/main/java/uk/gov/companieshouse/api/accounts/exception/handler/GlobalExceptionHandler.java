@@ -11,32 +11,41 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import uk.gov.companieshouse.api.accounts.exception.ApiException;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
-  @ExceptionHandler(value = { DataAccessException.class, IOException.class,
-      IllegalArgumentException.class, IllegalStateException.class, NullPointerException.class, RuntimeException.class, Exception.class})
+  @ExceptionHandler(value = {DataAccessException.class, IOException.class,
+      IllegalArgumentException.class, IllegalStateException.class, NullPointerException.class,
+      RuntimeException.class, Exception.class})
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   protected void handleException(Exception ex) {
-    getExceptionMap(ex, getExceptionMessage(ex));
+    logError(ex, getExceptionMessage(ex));
   }
 
-  @ExceptionHandler(value = { NoHandlerFoundException.class })
+  @ExceptionHandler(value = {NoHandlerFoundException.class})
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   protected void handleNoHandlerFoundException(Exception ex) {
-    getExceptionMap(ex,  ExceptionMessage.NO_HANDLER_FOUND_EXCEPTION);
+    logError(ex, ExceptionMessage.NO_HANDLER_FOUND_EXCEPTION);
+  }
+
+  @ExceptionHandler(value = {ApiException.class})
+  protected void handleApiException(ApiException apiex) {
+    logError(apiex, apiex.exceptionMessage);
+    throw new ResponseStatusException(getHttpStatus(apiex), apiex.exceptionMessage.getMessage());
   }
 
 
-  private void getExceptionMap(Exception ex, ExceptionMessage exceptionMessage) {
+  private void logError(Exception ex, ExceptionMessage exceptionMessage) {
     HashMap<String, Object> message = new HashMap<>();
     message.put("message", ex.getMessage());
-    message.put("error", exceptionMessage.getMessage());
-    LOGGER.error(exceptionMessage.getMessage(), message);
+    message.put("error", exceptionMessage.getError());
+    LOGGER.error(exceptionMessage.getMessage(), ex, message);
   }
 
   private ExceptionMessage getExceptionMessage(Exception ex) {
@@ -61,4 +70,12 @@ public class GlobalExceptionHandler {
     return ExceptionMessage.EXCEPTION;
   }
 
+  private HttpStatus getHttpStatus(ApiException apiEx) {
+    switch (apiEx.exceptionMessage) {
+      case ACCOUNT_LINK_PRESENT:
+        return HttpStatus.CONFLICT;
+      default:
+    }
+    return null;
+  }
 }
