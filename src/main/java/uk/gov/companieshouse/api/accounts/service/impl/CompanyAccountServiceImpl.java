@@ -63,7 +63,7 @@ public class CompanyAccountServiceImpl extends
     }
 
     private String createCompanyAccountSelfLink(CompanyAccountEntity entity, ResponseEntity<Transaction> transaction) {
-        return getTransactionSelfLink(transaction) + "/company-accounts/" + entity.getId() + "";
+        return getTransactionSelfLink(transaction) + "/company-accounts/" + entity.getId();
     }
 
     private String getTransactionSelfLink(ResponseEntity<Transaction> transaction) {
