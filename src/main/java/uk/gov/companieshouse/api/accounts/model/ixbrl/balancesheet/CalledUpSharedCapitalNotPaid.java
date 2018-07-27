@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
 public class CalledUpSharedCapitalNotPaid {
+
     private int currentAmount;
     private int previousAmount;
 
