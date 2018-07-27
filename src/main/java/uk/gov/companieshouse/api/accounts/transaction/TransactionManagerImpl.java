@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -152,7 +153,10 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestEntity - the request entity object
      */
     private void patchTransaction(String url, HttpEntity requestEntity) {
-        restTemplate.exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
+        ResponseEntity<?> response = restTemplate.exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+            // insert error exceptions here
+        }
     }
 
     /**
