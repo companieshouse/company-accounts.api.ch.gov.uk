@@ -4,7 +4,6 @@ public class BalanceSheet {
 
     private String currentPeriodDateFormatted;
     private String previousPeriodDateFormatted;
-
     private CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid;
 
     public String getCurrentPeriodDateFormatted() {
@@ -27,7 +26,8 @@ public class BalanceSheet {
         return calledUpSharedCapitalNotPaid;
     }
 
-    public void setCalledUpSharedCapitalNotPaid(CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid) {
+    public void setCalledUpSharedCapitalNotPaid(
+        CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid) {
         this.calledUpSharedCapitalNotPaid = calledUpSharedCapitalNotPaid;
     }
 }
