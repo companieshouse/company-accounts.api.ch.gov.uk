@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -25,7 +26,7 @@ public class CompanyAccountController {
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getAttribute("transaction");
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
         CompanyAccount result = companyAccountService
                 .save(companyAccount, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
