@@ -74,6 +74,18 @@ public class GlobalExceptionHandler {
     switch (apiEx.exceptionMessage) {
       case ACCOUNT_LINK_PRESENT:
         return HttpStatus.CONFLICT;
+      case ACCOUNT_TYPE_PRESENT:
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+      case TRANSACTION_STATUS_NOT_OPEN:
+      case DUPLICATE_PERIOD_END_ON_DATE:
+      case INVALID_ACCOUNT_TYPE:
+      case ACCOUNT_TYPE_LINK_ABSENT:
+        return HttpStatus.BAD_REQUEST;
+      case TRANSACTION_NOT_FOUND:
+      case ACCOUNT_NOT_FOUND:
+        return HttpStatus.NOT_FOUND;
+      case INTERNAL_ERROR:
+        return HttpStatus.INTERNAL_SERVER_ERROR;
       default:
     }
     return null;
