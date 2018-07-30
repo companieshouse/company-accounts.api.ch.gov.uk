@@ -52,6 +52,6 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
   @Override
   public void addInterceptors(final InterceptorRegistry registry) {
     registry.addInterceptor(transactionInterceptor)
-        .addPathPatterns("/transactions/{transactionId}/company-accounts");
+        .addPathPatterns("/transactions/{transactionId}/**");
   }
 }

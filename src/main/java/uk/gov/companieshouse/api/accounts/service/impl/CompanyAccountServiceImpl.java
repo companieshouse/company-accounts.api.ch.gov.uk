@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,7 +30,20 @@ public class CompanyAccountServiceImpl extends
     }
 
     @Override
+    public String getResourceName() {
+        return "company-account";
+    }
+
+    @Override
     public void addKind(CompanyAccount rest) {
         rest.setKind(Kind.ACCOUNT.getValue());
+    }
+
+    @Override
+    public String generateID(String value) throws NoSuchAlgorithmException {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 }

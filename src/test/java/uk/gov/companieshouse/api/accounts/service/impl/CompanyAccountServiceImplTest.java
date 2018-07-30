@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,8 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of an companyAccount resource")
-    public void canCreateAccount() {
-        CompanyAccount result = companyAccountService.save(companyAccount);
+    public void canCreateAccount() throws NoSuchAlgorithmException {
+        CompanyAccount result = companyAccountService.save(companyAccount, "");
         assertNotNull(result);
         assertEquals(companyAccount, result);
 

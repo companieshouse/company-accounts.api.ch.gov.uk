@@ -11,25 +11,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @RestController
-public class SmallFullController {
+public class CurrentPeriodController {
 
     @Autowired
-    private SmallFullService smallFullService;
+    private CurrentPeriodService currentPeriodService;
 
-    @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
+    @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
+    public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession()
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        SmallFull result = smallFullService.save(smallFull, transaction.getCompanyNumber());
+        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+        CurrentPeriod result = currentPeriodService
+                .save(currentPeriod, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
     }
 }
