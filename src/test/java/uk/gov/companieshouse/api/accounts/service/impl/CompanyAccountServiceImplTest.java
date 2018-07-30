@@ -93,7 +93,7 @@ public class CompanyAccountServiceImplTest {
         assertEquals(companyAccountMock, result);
     }
 
-    /**
+    /**uk.gov.companieshouse.api.accounts.controller.CompanyAccountControllerTest
      * creates an open or closed dummy transaction depending on the boolean passed into method
      *
      * @param isOpen - true = open, false - closed

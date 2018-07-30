@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +34,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public class CompanyAccountControllerTest {
 
     @Mock
-    HttpSession session;
+    private HttpSession httpSessionMock;
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -44,23 +45,13 @@ public class CompanyAccountControllerTest {
     private CompanyAccount createdCompanyAccount;
     @Mock
     private CompanyAccountService companyAccountService;
-
-    @Mock
-    private HttpSession httpSessionMock;
-
-    @Mock
-    private Map<String, String> links;
   
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(companyAccountService.save(any(CompanyAccount.class), anyString()))
-                .thenReturn(createdCompanyAccount);
-        when(request.getSession()).thenReturn(httpSessionMock);
-        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(transaction.getCompanyNumber()).thenReturn("123456");
+        doReturn(createdCompanyAccount).when(companyAccountService).createCompanyAccount(any(CompanyAccount.class));
     }
 
     @Test

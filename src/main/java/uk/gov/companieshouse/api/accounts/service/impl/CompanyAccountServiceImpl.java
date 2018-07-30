@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -102,7 +103,7 @@ public class CompanyAccountServiceImpl extends
     }
 
     private static ResponseEntity<Transaction> getTransactionFromSession(HttpServletRequest request) {
-        return (ResponseEntity) request.getSession().getAttribute("transaction");
+        return (ResponseEntity) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     private String getCompanyAccountSelfLink(CompanyAccountEntity companyAccountEntity) {
