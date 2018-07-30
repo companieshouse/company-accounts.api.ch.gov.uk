@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -27,8 +28,14 @@ public class SmallFullServiceImpl extends
 
     @Override
     public void addKind(SmallFull rest) {
-
+        rest.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
     }
+
+    @Override
+    public String getResourceName() {
+        return "small-full";
+    }
+
 
 }
 

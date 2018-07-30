@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
-    void canCreateAccount() {
+    void canCreateAccount() throws NoSuchAlgorithmException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
         doReturn(companyAccountMock).when(companyAccountTransformer).transform(ArgumentMatchers
@@ -87,7 +87,8 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
 
-        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccountMock);
+        CompanyAccount result = companyAccountService.save(companyAccount, "");
+  
         assertNotNull(result);
         assertEquals(companyAccountMock, result);
     }

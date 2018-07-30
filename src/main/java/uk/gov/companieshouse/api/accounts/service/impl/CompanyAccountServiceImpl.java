@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -76,6 +79,11 @@ public class CompanyAccountServiceImpl extends
     }
 
     @Override
+    public String getResourceName() {
+        return "company-account";
+    }
+
+    @Override
     public void addKind(CompanyAccount rest) {
         rest.setKind("company-accounts");
     }
@@ -94,5 +102,13 @@ public class CompanyAccountServiceImpl extends
 
     private String getCompanyAccountSelfLink(CompanyAccountEntity companyAccountEntity) {
         return companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
+    }
+
+    @Override
+    public String generateID(String value) throws NoSuchAlgorithmException {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 }

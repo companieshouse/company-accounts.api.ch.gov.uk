@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,8 @@ public class CurrentPeriodServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCresteCurrentPeriod() {
-        CurrentPeriod result = currentPeriodService.save(currentPeriod);
+    public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
+        CurrentPeriod result = currentPeriodService.save(currentPeriod, "");
         assertNotNull(result);
         assertEquals(currentPeriod, result);
 
