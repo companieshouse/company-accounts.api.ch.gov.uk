@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
@@ -27,6 +29,11 @@ public class CurrentPeriodServiceImpl extends
 
     @Override
     public void addKind(CurrentPeriod rest) {
-        rest.setKind("small-full-accounts#current-period");
+        rest.setKind(Kind.CURRENT_PERIOD.getValue());
+    }
+
+    @Override
+    public String getResourceName() {
+        return "current-period";
     }
 }
