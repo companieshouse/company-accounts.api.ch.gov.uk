@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
-
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountControllerTest {
@@ -40,6 +40,10 @@ public class CompanyAccountControllerTest {
     private CompanyAccount createdCompanyAccount;
     @Mock
     private CompanyAccountService companyAccountService;
+
+    @Mock
+    private HttpSession httpSessionMock;
+
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
@@ -47,7 +51,8 @@ public class CompanyAccountControllerTest {
     public void setUp() throws NoSuchAlgorithmException {
         when(companyAccountService.save(any(CompanyAccount.class), anyString()))
                 .thenReturn(createdCompanyAccount);
-        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(request.getSession()).thenReturn(httpSessionMock);
+        when(httpSessionMock.getAttribute(anyString())).thenReturn(transaction);
         when(transaction.getCompanyNumber()).thenReturn("123456");
     }
 

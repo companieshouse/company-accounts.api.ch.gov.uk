@@ -87,7 +87,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
 
-        CompanyAccount result = companyAccountService.save(companyAccount, "");
+        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccountMock);
   
         assertNotNull(result);
         assertEquals(companyAccountMock, result);

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,8 @@ public class CurrentPeriodControllerTest {
     private CurrentPeriod createdCurrentPeriod;
     @Mock
     private CurrentPeriodService currentPeriodService;
+    @Mock
+    private HttpSession httpSessionMock;
     @InjectMocks
     private CurrentPeriodController currentPeriodController;
 
@@ -46,7 +49,8 @@ public class CurrentPeriodControllerTest {
     public void setUp() throws NoSuchAlgorithmException {
         when(currentPeriodService.save(any(CurrentPeriod.class), anyString()))
                 .thenReturn(createdCurrentPeriod);
-        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(request.getSession()).thenReturn(httpSessionMock);
+        when(httpSessionMock.getAttribute(anyString())).thenReturn(transaction);
         when(transaction.getCompanyNumber()).thenReturn("123456");
     }
 

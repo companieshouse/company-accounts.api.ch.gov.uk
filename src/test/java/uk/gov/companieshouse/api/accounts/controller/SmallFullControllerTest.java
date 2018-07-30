@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,13 +41,18 @@ public class SmallFullControllerTest {
     private SmallFull createdSmallFull;
     @Mock
     private SmallFullService smallFullService;
+
+    @Mock
+    private HttpSession httpSessionMock;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
         when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
-        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(request.getSession()).thenReturn(httpSessionMock);
+        when(httpSessionMock.getAttribute(anyString())).thenReturn(transaction);
         when(transaction.getCompanyNumber()).thenReturn("123456");
     }
 

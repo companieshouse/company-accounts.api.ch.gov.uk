@@ -24,8 +24,7 @@ public class CompanyAccountController {
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-            HttpServletRequest request)
-            throws NoSuchAlgorithmException {
+            HttpServletRequest request) throws NoSuchAlgorithmException {
         Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
         CompanyAccount result = companyAccountService
                 .save(companyAccount, transaction.getCompanyNumber());

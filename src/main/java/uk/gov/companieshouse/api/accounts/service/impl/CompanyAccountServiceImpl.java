@@ -88,6 +88,11 @@ public class CompanyAccountServiceImpl extends
         rest.setKind("company-accounts");
     }
 
+    @Override
+    public void addID(CompanyAccountEntity entity) {
+
+    }
+
     public void addEntityID(CompanyAccountEntity entity) {
         entity.setId(UUID.randomUUID().toString());
     }
@@ -105,7 +110,7 @@ public class CompanyAccountServiceImpl extends
     }
 
     @Override
-    public String generateID(String value) throws NoSuchAlgorithmException {
+    public String generateID(String value) {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);

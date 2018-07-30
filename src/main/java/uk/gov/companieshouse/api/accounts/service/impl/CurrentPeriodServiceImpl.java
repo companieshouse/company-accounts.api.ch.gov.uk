@@ -33,6 +33,11 @@ public class CurrentPeriodServiceImpl extends
     }
 
     @Override
+    public void addID(CurrentPeriodEntity entity) {
+
+    }
+
+    @Override
     public String getResourceName() {
         return "current-period";
     }
