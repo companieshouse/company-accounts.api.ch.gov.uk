@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ public class TransactionInterceptorTest {
     private TransactionManager transactionManagerMock;
 
     @Mock
+    HttpSession session;
+
+    @Mock
     private HttpServletRequest httpServletRequest;
 
     @Mock
@@ -47,7 +51,6 @@ public class TransactionInterceptorTest {
     public void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
-
         when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
                 .thenReturn(pathVariables);
         when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
@@ -58,6 +61,7 @@ public class TransactionInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is open")
     public void testPreHandleWithOpenTransaction() {
+        when(httpServletRequest.getSession()).thenReturn(session);
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
@@ -67,6 +71,7 @@ public class TransactionInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is closed")
     public void testPreHandleWithClosedTransaction() {
+        when(httpServletRequest.getSession()).thenReturn(session);
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
