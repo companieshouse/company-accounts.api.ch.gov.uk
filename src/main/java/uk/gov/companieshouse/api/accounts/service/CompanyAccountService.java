@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 /**
  * A service for {@link CompanyAccountEntity} and its data {@link CompanyAccountDataEntity}
  */
-public interface CompanyAccountService extends AbstractService<CompanyAccount, CompanyAccountEntity>{
+public interface CompanyAccountService {
 
     CompanyAccount createCompanyAccount(CompanyAccount companyAccount);
 

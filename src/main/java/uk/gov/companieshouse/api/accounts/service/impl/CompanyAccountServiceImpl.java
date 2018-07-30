@@ -4,36 +4,33 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
-import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 
 @Service
-public class CompanyAccountServiceImpl extends
-        AbstractServiceImpl<CompanyAccount, CompanyAccountEntity> implements CompanyAccountService {
+public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Autowired
     private TransactionManager transactionManager;
 
     @Autowired
-    public CompanyAccountServiceImpl(
-            @Qualifier("companyAccountRepository") MongoRepository<CompanyAccountEntity, String> mongoRepository,
-            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccount, CompanyAccountEntity> transformer) {
-        super(mongoRepository, transformer);
-    }
+    private CompanyAccountRepository companyAccountRepository;
+
+    @Autowired
+    private CompanyAccountTransformer companyAccountTransformer;
 
     /**
      * {@inheritDoc}
@@ -42,23 +39,25 @@ public class CompanyAccountServiceImpl extends
         HttpServletRequest request = getRequestFromContext();
         Transaction transaction = getTransactionFromSession(request);
 
-        String id = UUID.randomUUID().toString();
+        String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
         addEtag(companyAccount);
-        addSelfLinks(companyAccount, companyAccountLink);
+        addLinks(companyAccount, companyAccountLink);
 
-        CompanyAccountEntity companyAccountEntity = genericTransformer.transform(companyAccount);
+        CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(companyAccount);
 
         companyAccountEntity.setId(id);
-        mongoRepository.insert(companyAccountEntity);
+        companyAccountRepository.insert(companyAccountEntity);
 
-        transactionManager.updateTransaction(transaction.getId(), request.getHeader("X-Request-Id"), getCompanyAccountSelfLink(companyAccountEntity));
+        transactionManager.updateTransaction(transaction.getId(),
+                request.getHeader("X-Request-Id"),
+                getCompanyAccountSelfLink(companyAccountEntity));
 
         return companyAccount;
     }
 
-    public void addSelfLinks(CompanyAccount companyAccount, String companyAccountLink) {
+    private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
         Map<String, String> map = new HashMap<>();
         map.put(LinkType.SELF.getLink(), companyAccountLink);
         companyAccount.setLinks(map);
@@ -72,24 +71,13 @@ public class CompanyAccountServiceImpl extends
         return transaction.getLinks().get(LinkType.SELF.getLink());
     }
 
-    @Override
-    public void addLinks(CompanyAccount rest) {
 
-    }
-
-    @Override
-    public String getResourceName() {
-        return "company-account";
-    }
-
-    @Override
-    public void addKind(CompanyAccount rest) {
+    private void addKind(CompanyAccount rest) {
         rest.setKind("company-accounts");
     }
 
-    @Override
-    public void addID(CompanyAccountEntity entity) {
-
+    private void addEtag(CompanyAccount rest) {
+        rest.setEtag(GenerateEtagUtil.generateEtag());
     }
 
     private static HttpServletRequest getRequestFromContext() {
@@ -104,8 +92,7 @@ public class CompanyAccountServiceImpl extends
         return companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
     }
 
-    @Override
-    public String generateID(String value) {
+    public String generateID() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);

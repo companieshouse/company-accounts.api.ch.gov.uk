@@ -67,8 +67,6 @@ public class CompanyAccountServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 
         when(httpServletRequest.getSession()).thenReturn(httpSessionMock);
@@ -79,7 +77,7 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
-    void canCreateAccount() throws NoSuchAlgorithmException {
+    void canCreateAccount() {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
