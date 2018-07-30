@@ -38,9 +38,9 @@ public class SmallFullControllerTest {
 
 
     @Mock
-    private HttpServletRequest request;
-    @Mock
     HttpSession session;
+    @Mock
+    private HttpServletRequest request;
     @Mock
     private Transaction transaction;
     @Mock
@@ -61,7 +61,8 @@ public class SmallFullControllerTest {
         when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
+        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
+                .thenReturn(companyAccount);
         when(transaction.getCompanyNumber()).thenReturn("123456");
         when(companyAccount.getLinks()).thenReturn(links);
         when(links.get("self")).thenReturn("7890");

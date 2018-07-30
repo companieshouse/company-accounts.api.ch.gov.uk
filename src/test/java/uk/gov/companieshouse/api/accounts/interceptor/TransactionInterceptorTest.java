@@ -32,15 +32,12 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 @TestInstance(Lifecycle.PER_CLASS)
 public class TransactionInterceptorTest {
 
-    @InjectMocks
-    private TransactionInterceptor transactionInterceptor;
-
-    @Mock
-    private TransactionManager transactionManagerMock;
-
     @Mock
     HttpSession session;
-
+    @InjectMocks
+    private TransactionInterceptor transactionInterceptor;
+    @Mock
+    private TransactionManager transactionManagerMock;
     @Mock
     private HttpServletRequest httpServletRequest;
 
@@ -65,7 +62,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
-        assertTrue(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertTrue(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
@@ -75,7 +73,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
-        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
@@ -84,7 +83,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
         verify(httpServletResponse).setStatus(HttpStatus.NOT_FOUND.value());
     }
 
@@ -97,7 +97,8 @@ public class TransactionInterceptorTest {
     private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
 
-        transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
+        transaction.setStatus(
+                isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }

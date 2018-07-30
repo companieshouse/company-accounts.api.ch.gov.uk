@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,9 +34,9 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public class CompanyAccountControllerTest {
 
     @Mock
-    private HttpServletRequest request;
-    @Mock
     HttpSession session;
+    @Mock
+    private HttpServletRequest request;
     @Mock
     private Transaction transaction;
     @Mock
@@ -53,7 +52,8 @@ public class CompanyAccountControllerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(companyAccountService.save(any(CompanyAccount.class), anyString())).thenReturn(createdCompanyAccount);
+        when(companyAccountService.save(any(CompanyAccount.class), anyString()))
+                .thenReturn(createdCompanyAccount);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(transaction.getCompanyNumber()).thenReturn("123456");
