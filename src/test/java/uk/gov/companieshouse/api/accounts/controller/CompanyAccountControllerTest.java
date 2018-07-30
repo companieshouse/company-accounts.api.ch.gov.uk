@@ -8,7 +8,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -30,29 +33,31 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountControllerTest {
 
-  @Mock
-  private HttpServletRequest mockRequest;
+    @Mock
+    HttpSession session;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private Transaction transaction;
+    @Mock
+    private CompanyAccount companyAccount;
+    @Mock
+    private CompanyAccount createdCompanyAccount;
+    @Mock
+    private CompanyAccountService companyAccountService;
+    @Mock
+    private Map<String, String> links;
+    @InjectMocks
+    private CompanyAccountController companyAccountController;
 
-  @Mock
-  private HttpServletRequest request;
-  @Mock
-  private Transaction transaction;
-  @Mock
-  private CompanyAccount companyAccount;
-  @Mock
-  private CompanyAccount createdCompanyAccount;
-  @Mock
-  private CompanyAccountService companyAccountService;
-  @InjectMocks
-  private CompanyAccountController companyAccountController;
-
-  @BeforeEach
-  public void setUp() throws NoSuchAlgorithmException {
-    when(companyAccountService.save(any(CompanyAccount.class), anyString()))
-        .thenReturn(createdCompanyAccount);
-    when(request.getAttribute(anyString())).thenReturn(transaction);
-    when(transaction.getCompanyNumber()).thenReturn("123456");
-  }
+    @BeforeEach
+    public void setUp() throws NoSuchAlgorithmException {
+        when(companyAccountService.save(any(CompanyAccount.class), anyString()))
+                .thenReturn(createdCompanyAccount);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+        when(transaction.getCompanyNumber()).thenReturn("123456");
+    }
 
   @Test
   @DisplayName("Tests the successful creation of an companyAccount resource")

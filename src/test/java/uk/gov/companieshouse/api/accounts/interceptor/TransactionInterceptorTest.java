@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,12 +32,12 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 @TestInstance(Lifecycle.PER_CLASS)
 public class TransactionInterceptorTest {
 
+    @Mock
+    HttpSession session;
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
-
     @Mock
     private TransactionManager transactionManagerMock;
-
     @Mock
     private HttpServletRequest httpServletRequest;
 
@@ -47,7 +48,6 @@ public class TransactionInterceptorTest {
     public void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
-
         when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
                 .thenReturn(pathVariables);
         when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
@@ -58,19 +58,23 @@ public class TransactionInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is open")
     public void testPreHandleWithOpenTransaction() {
+        when(httpServletRequest.getSession()).thenReturn(session);
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
-        assertTrue(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertTrue(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is closed")
     public void testPreHandleWithClosedTransaction() {
+        when(httpServletRequest.getSession()).thenReturn(session);
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
-        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
@@ -79,7 +83,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        assertFalse(transactionInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequest, httpServletResponse, new Object()));
         verify(httpServletResponse).setStatus(HttpStatus.NOT_FOUND.value());
     }
 
@@ -92,7 +97,8 @@ public class TransactionInterceptorTest {
     private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
 
-        transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
+        transaction.setStatus(
+                isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
