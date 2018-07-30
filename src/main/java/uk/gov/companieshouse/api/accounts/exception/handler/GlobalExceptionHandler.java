@@ -21,21 +21,13 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-
-  @ExceptionHandler(value = NoSuchAlgorithmException.class)
-  protected ResponseEntity<Object> handleConflict(NoSuchAlgorithmException ex, WebRequest
-      request) {
-    String bodyOfResponse = "An internal exception has occurred";
-    return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(),
-        HttpStatus.INTERNAL_SERVER_ERROR, request);
-  }
+  private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
   @ExceptionHandler(value = {DataAccessException.class, IOException.class,
       IllegalArgumentException.class, IllegalStateException.class, NullPointerException.class,
-      RuntimeException.class, Exception.class})
+      RuntimeException.class, NoSuchAlgorithmException.class, Exception.class})
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   protected void handleException(Exception ex) {
     logError(ex, getExceptionMessage(ex));
@@ -58,26 +50,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     HashMap<String, Object> message = new HashMap<>();
     message.put("message", ex.getMessage());
     message.put("error", exceptionMessage.getError());
-    LOG.error(exceptionMessage.getMessage(), ex, message);
+    LOGGER.error(exceptionMessage.getMessage(), ex, message);
   }
 
   private ExceptionMessage getExceptionMessage(Exception ex) {
     if (ex instanceof DataAccessException) {
       return ExceptionMessage.DATA_ACCESS_EXCEPTION;
-    }
-    if (ex instanceof IOException) {
+    } else if (ex instanceof IOException) {
       return ExceptionMessage.IO_EXCEPTION;
-    }
-    if (ex instanceof IllegalArgumentException) {
+    } else if (ex instanceof IllegalArgumentException) {
       return ExceptionMessage.ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (ex instanceof IllegalStateException) {
+    } else if (ex instanceof IllegalStateException) {
       return ExceptionMessage.ILLEGAL_STATE_EXCEPTION;
-    }
-    if (ex instanceof NullPointerException) {
+    } else if (ex instanceof NullPointerException) {
       return ExceptionMessage.NULL_POINTER_EXCEPTION;
-    }
-    if (ex instanceof RuntimeException) {
+    } else if (ex instanceof RuntimeException) {
       return ExceptionMessage.RUN_TIME_EXCEPTION;
     }
     return ExceptionMessage.EXCEPTION;
