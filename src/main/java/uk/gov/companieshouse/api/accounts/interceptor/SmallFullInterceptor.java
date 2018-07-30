@@ -17,7 +17,6 @@ import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
-
     @Autowired
     private SmallFullService smallFullService;
 
@@ -28,7 +27,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         SmallFullEntity smallFullEntity = new SmallFullEntity();
         SmallFullDataEntity smallFullDataEntity = new SmallFullDataEntity();
         Map<String, String> links = new HashMap<>();
-        links.put("self", StringUtils.substringBeforeLast(request.getRequestURI(), "/"));
+        links.put("self", StringUtils.substringBeforeLast(request.getRequestURI(), "/small-full")
+                + "/small-full");
         smallFullDataEntity.setLinks(links);
         smallFullEntity.setData(smallFullDataEntity);
         SmallFullEntity smallFull = smallFullService.findByExample(smallFullEntity);

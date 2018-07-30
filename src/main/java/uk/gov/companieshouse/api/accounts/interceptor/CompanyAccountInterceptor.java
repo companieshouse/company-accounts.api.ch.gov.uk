@@ -28,7 +28,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         CompanyAccountEntity companyAccountEntity = new CompanyAccountEntity();
         CompanyAccountDataEntity companyAccountDataEntity = new CompanyAccountDataEntity();
         Map<String, String> link = new HashMap<>();
-        link.put("self", StringUtils.substringBeforeLast(request.getRequestURI(), "/"));
+        link.put("self", StringUtils.substringBeforeLast(request.getRequestURI(), "/small-full"));
         companyAccountDataEntity.setLinks(link);
         companyAccountEntity.setData(companyAccountDataEntity);
         CompanyAccountEntity result = companyAccountService.findByExample(companyAccountEntity);
