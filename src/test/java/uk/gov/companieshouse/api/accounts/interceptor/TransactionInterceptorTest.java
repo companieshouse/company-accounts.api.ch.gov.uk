@@ -32,12 +32,12 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 @TestInstance(Lifecycle.PER_CLASS)
 public class TransactionInterceptorTest {
 
+    @Mock
+    HttpSession session;
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
-
     @Mock
     private TransactionManager transactionManagerMock;
-
     @Mock
     private HttpServletRequest httpServletRequestMock;
 
@@ -86,7 +86,6 @@ public class TransactionInterceptorTest {
     void testPreHandleWithNonExistingTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
         assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
         verify(httpServletResponseMock).setStatus(HttpStatus.NOT_FOUND.value());
     }
@@ -100,7 +99,8 @@ public class TransactionInterceptorTest {
     private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
 
-        transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
+        transaction.setStatus(
+                isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
