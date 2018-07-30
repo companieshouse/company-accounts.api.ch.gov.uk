@@ -82,8 +82,6 @@ public class CompanyAccountServiceImplTest {
     void canCreateAccount() throws NoSuchAlgorithmException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
-        doReturn(companyAccountMock).when(companyAccountTransformer).transform(ArgumentMatchers
-                .any(CompanyAccountEntity.class));
 
         when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
 

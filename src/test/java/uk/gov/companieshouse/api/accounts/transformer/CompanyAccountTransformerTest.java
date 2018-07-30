@@ -51,35 +51,5 @@ public class CompanyAccountTransformerTest {
         assertEquals("kind", companyAccountEntity.getData().getKind());
         assertEquals(new HashMap<>(), companyAccountEntity.getData().getLinks());
     }
-
-    @Test
-    @DisplayName("Tests entity to rest account transformer with empty object which should result in null values")
-    void testEntityToRestTransformerWithEmptyObject() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> companyAccountTransformer.transform(new CompanyAccountEntity()));
-
-        assertEquals("Source must not be null", ex.getMessage());
-    }
-
-    @Test
-    @DisplayName("Tests entity to rest account transformer with populated object and validates values returned")
-    void testEntityToRestTransformerWithPopulatedObject() {
-        CompanyAccountDataEntity companyAccountDataEntity =  new CompanyAccountDataEntity();
-        companyAccountDataEntity.setEtag("etag");
-        companyAccountDataEntity.setKind("kind");
-        companyAccountDataEntity.setLinks(new HashMap<>());
-        companyAccountDataEntity.setPeriodEndOn(LocalDate.of(2018, 1, 1));
-
-
-        CompanyAccountEntity companyAccountEntity = new CompanyAccountEntity();
-        companyAccountEntity.setData(companyAccountDataEntity);
-
-        CompanyAccount companyAccount = companyAccountTransformer.transform(companyAccountEntity);
-
-        Assertions.assertNotNull(companyAccount);
-        assertEquals("etag", companyAccount.getEtag());
-        assertEquals(LocalDate.of(2018, 1, 1), companyAccountEntity.getData().getPeriodEndOn());
-        assertEquals("kind", companyAccount.getKind());
-        assertEquals(new HashMap<>(), companyAccount.getLinks());
-    }
 }
 

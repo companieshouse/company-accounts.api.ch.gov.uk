@@ -44,30 +44,30 @@ public class CompanyAccountServiceImpl extends
         HttpServletRequest request = getRequestFromContext();
         ResponseEntity<Transaction> transaction = getTransactionFromSession(request);
 
+        String id = UUID.randomUUID().toString();
+        String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
         addEtag(companyAccount);
+        addSelfLinks(companyAccount, companyAccountLink);
 
         CompanyAccountEntity companyAccountEntity = genericTransformer.transform(companyAccount);
 
-        addEntityID(companyAccountEntity);
-        addEntityLinks(companyAccountEntity, transaction);
-
+        companyAccountEntity.setId(id);
         mongoRepository.insert(companyAccountEntity);
 
         transactionManager.updateTransaction(transaction.getBody().getId(), request.getHeader("X-Request-Id"), getCompanyAccountSelfLink(companyAccountEntity));
 
-        return genericTransformer.transform(companyAccountEntity);
+        return companyAccount;
     }
 
-    public void addEntityLinks(CompanyAccountEntity entity, ResponseEntity<Transaction> transaction) {
+    public void addSelfLinks(CompanyAccount companyAccount, String companyAccountLink) {
         Map<String, String> map = new HashMap<>();
-        String selfLink = createCompanyAccountSelfLink(entity, transaction);
-        map.put(LinkType.SELF.getLink(), selfLink);
-        entity.getData().setLinks(map);
+        map.put(LinkType.SELF.getLink(), companyAccountLink);
+        companyAccount.setLinks(map);
     }
 
-    private String createCompanyAccountSelfLink(CompanyAccountEntity entity, ResponseEntity<Transaction> transaction) {
-        return getTransactionSelfLink(transaction) + "/company-accounts/" + entity.getId();
+    private String createSelfLink(ResponseEntity<Transaction> transaction, String id) {
+        return getTransactionSelfLink(transaction) + "/company-accounts/" + id;
     }
 
     private String getTransactionSelfLink(ResponseEntity<Transaction> transaction) {
@@ -92,10 +92,6 @@ public class CompanyAccountServiceImpl extends
     @Override
     public void addID(CompanyAccountEntity entity) {
 
-    }
-
-    public void addEntityID(CompanyAccountEntity entity) {
-        entity.setId(UUID.randomUUID().toString());
     }
 
     private static HttpServletRequest getRequestFromContext() {
