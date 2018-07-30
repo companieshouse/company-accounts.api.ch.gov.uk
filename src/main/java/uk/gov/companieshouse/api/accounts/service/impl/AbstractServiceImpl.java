@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -12,9 +16,9 @@ import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEntity> implements
         AbstractService<C, E> {
 
-    private MongoRepository mongoRepository;
+    public MongoRepository mongoRepository;
 
-    private GenericTransformer<C, E> genericTransformer;
+    public GenericTransformer<C, E> genericTransformer;
 
     public AbstractServiceImpl(MongoRepository mongoRepository,
             GenericTransformer<C, E> genericTransformer) {
@@ -23,12 +27,12 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public C save(C rest) {
+    public C save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
         addEtag(rest);
         addKind(rest);
         addLinks(rest);
         E baseEntity = genericTransformer.transform(rest);
-        addID(baseEntity);
+        baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
         return rest;
     }
@@ -39,6 +43,11 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public void addID(BaseEntity entity) {
+    public String generateID(String value) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        String unencryptedId = value + getResourceName();
+        byte[] id = digest.digest(
+                unencryptedId.getBytes(StandardCharsets.UTF_8));
+        return Base64.getUrlEncoder().encodeToString(id);
     }
 }
