@@ -1,16 +1,14 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -42,7 +40,7 @@ public class CompanyAccountServiceImpl extends
      */
     public CompanyAccount createCompanyAccount(CompanyAccount companyAccount) {
         HttpServletRequest request = getRequestFromContext();
-        ResponseEntity<Transaction> transaction = getTransactionFromSession(request);
+        Transaction transaction = getTransactionFromSession(request);
 
         String id = UUID.randomUUID().toString();
         String companyAccountLink = createSelfLink(transaction, id);
@@ -55,7 +53,7 @@ public class CompanyAccountServiceImpl extends
         companyAccountEntity.setId(id);
         mongoRepository.insert(companyAccountEntity);
 
-        transactionManager.updateTransaction(transaction.getBody().getId(), request.getHeader("X-Request-Id"), getCompanyAccountSelfLink(companyAccountEntity));
+        transactionManager.updateTransaction(transaction.getId(), request.getHeader("X-Request-Id"), getCompanyAccountSelfLink(companyAccountEntity));
 
         return companyAccount;
     }
@@ -66,12 +64,12 @@ public class CompanyAccountServiceImpl extends
         companyAccount.setLinks(map);
     }
 
-    private String createSelfLink(ResponseEntity<Transaction> transaction, String id) {
+    private String createSelfLink(Transaction transaction, String id) {
         return getTransactionSelfLink(transaction) + "/company-accounts/" + id;
     }
 
-    private String getTransactionSelfLink(ResponseEntity<Transaction> transaction) {
-        return transaction.getBody().getLinks().get(LinkType.SELF.getLink());
+    private String getTransactionSelfLink(Transaction transaction) {
+        return transaction.getLinks().get(LinkType.SELF.getLink());
     }
 
     @Override
@@ -98,8 +96,8 @@ public class CompanyAccountServiceImpl extends
         return ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
-    private static ResponseEntity<Transaction> getTransactionFromSession(HttpServletRequest request) {
-        return (ResponseEntity) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+    private static Transaction getTransactionFromSession(HttpServletRequest request) {
+        return (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     private String getCompanyAccountSelfLink(CompanyAccountEntity companyAccountEntity) {

@@ -97,13 +97,13 @@ public class CompanyAccountServiceImplTest {
      * @param isOpen - true = open, false - closed
      * @return ResponseEntity<> with the desired transaction
      */
-    private ResponseEntity<Transaction> createDummyTransaction(boolean isOpen) {
+    private Transaction createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
         transaction.setId("id");
         transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
         transaction.setLinks(createLinksMap());
 
-        return new ResponseEntity<>(transaction, HttpStatus.OK);
+        return transaction;
     }
 
     /**
