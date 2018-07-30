@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-<<<<<<<HEAD
-    =======
 import java.security.NoSuchAlgorithmException;
->>>>>>>origin/develop
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
