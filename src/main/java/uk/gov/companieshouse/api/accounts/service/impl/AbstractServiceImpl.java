@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Optional;
+import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -35,6 +37,15 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
         baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
         return rest;
+    }
+
+    @Override
+    public E findByExample(E example) {
+        Optional<E> optional = (Optional<E>) mongoRepository.findOne(Example.of(example));
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 
     @Override
