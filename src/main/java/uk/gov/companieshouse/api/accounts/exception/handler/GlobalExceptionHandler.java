@@ -3,22 +3,35 @@ package uk.gov.companieshouse.api.accounts.exception.handler;
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.companieshouse.api.accounts.exception.ApiException;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+  private static final Logger LOG = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+
+  @ExceptionHandler(value = NoSuchAlgorithmException.class)
+  protected ResponseEntity<Object> handleConflict(NoSuchAlgorithmException ex, WebRequest
+      request) {
+    String bodyOfResponse = "An internal exception has occurred";
+    return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(),
+        HttpStatus.INTERNAL_SERVER_ERROR, request);
+  }
 
   @ExceptionHandler(value = {DataAccessException.class, IOException.class,
       IllegalArgumentException.class, IllegalStateException.class, NullPointerException.class,
@@ -45,7 +58,7 @@ public class GlobalExceptionHandler {
     HashMap<String, Object> message = new HashMap<>();
     message.put("message", ex.getMessage());
     message.put("error", exceptionMessage.getError());
-    LOGGER.error(exceptionMessage.getMessage(), ex, message);
+    LOG.error(exceptionMessage.getMessage(), ex, message);
   }
 
   private ExceptionMessage getExceptionMessage(Exception ex) {
