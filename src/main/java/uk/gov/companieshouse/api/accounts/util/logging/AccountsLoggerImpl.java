@@ -4,11 +4,10 @@ import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPL
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-public class LogBuilderImpl implements LogBuilder {
+public class AccountsLoggerImpl implements AccountsLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
@@ -20,7 +19,7 @@ public class LogBuilderImpl implements LogBuilder {
 
   private String accountsId;
 
-  public LogBuilderImpl(String requestId, String userId, String transactionId, String accountsId) {
+  public AccountsLoggerImpl(String requestId, String userId, String transactionId, String accountsId) {
     this.requestId = requestId;
     this.userId = userId;
     this.transactionId = transactionId;

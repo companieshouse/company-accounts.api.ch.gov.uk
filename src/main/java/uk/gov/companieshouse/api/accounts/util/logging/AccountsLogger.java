@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.util.logging;
 /**
  * Builds logs for
  */
-public interface LogBuilder {
+public interface AccountsLogger {
 
   void logStartOfRequestProcessing(String message);
 

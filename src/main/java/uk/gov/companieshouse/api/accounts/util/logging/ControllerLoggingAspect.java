@@ -1,26 +1,13 @@
 package uk.gov.companieshouse.api.accounts.util.logging;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Aspect
 @Component
@@ -42,7 +29,7 @@ public class ControllerLoggingAspect {
     Object result = joinPoint.proceed();
     long responseTime = System.currentTimeMillis() - startTime;
 
-    LogBuilder logBuilder = getLogBuilder(joinPoint);
+    AccountsLogger logBuilder = getLogBuilder(joinPoint);
     logBuilder.logStartOfRequestProcessing(String.format("Start Request %s",
         methodName(joinPoint)));
 
@@ -51,7 +38,9 @@ public class ControllerLoggingAspect {
   }
 
   private String methodName(JoinPoint joinPoint) {
-    return joinPoint.getSignature().getName();
+    return String.format("%s.%s",
+        joinPoint.getSignature().getDeclaringTypeName(),
+        joinPoint.getSignature().getName());
   }
 
   private String requestId(HttpServletRequest request) {
@@ -62,10 +51,10 @@ public class ControllerLoggingAspect {
     return request.getHeader(ERIC_IDENTITY);
   }
 
-  private LogBuilder getLogBuilder(JoinPoint joinPoint) {
+  private AccountsLogger getLogBuilder(JoinPoint joinPoint) {
     HttpServletRequest request = getRequest(joinPoint);
     String accountId = "";
-    return new LogBuilderImpl(requestId(request), userId(request),
+    return new AccountsLoggerImpl(requestId(request), userId(request),
         transactionId(joinPoint), accountId);
   }
 
