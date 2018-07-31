@@ -88,10 +88,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         return (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
-    private String getCompanyAccountSelfLink(CompanyAccountEntity companyAccountEntity) {
-        return companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
-    }
-
     public String generateID() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
