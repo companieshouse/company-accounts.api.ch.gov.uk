@@ -52,7 +52,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         transactionManager.updateTransaction(transaction.getId(),
                 request.getHeader("X-Request-Id"),
-                getCompanyAccountSelfLink(companyAccountEntity));
+                companyAccountLink);
 
         return companyAccount;
     }
