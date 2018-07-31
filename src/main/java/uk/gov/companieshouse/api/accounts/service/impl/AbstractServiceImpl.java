@@ -34,7 +34,6 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
         E baseEntity = genericTransformer.transform(rest);
         baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
-
         return rest;
     }
 
