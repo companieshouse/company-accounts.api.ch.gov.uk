@@ -70,8 +70,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     private String getTransactionSelfLink(Transaction transaction) {
         return transaction.getLinks().get(LinkType.SELF.getLink());
     }
-
-
+    
     private void addKind(CompanyAccount rest) {
         rest.setKind("company-accounts");
     }
