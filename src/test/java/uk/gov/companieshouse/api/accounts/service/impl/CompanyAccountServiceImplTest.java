@@ -86,7 +86,7 @@ public class CompanyAccountServiceImplTest {
     }
 
     /**
-     * creates an open or closed dummy transaction depending on the boolean passed into method
+     * creates an open or closed dummy transaction depending on the status passed into method
      *
      * @param status - transaction status
      * @return Transaction object with the desired transaction
