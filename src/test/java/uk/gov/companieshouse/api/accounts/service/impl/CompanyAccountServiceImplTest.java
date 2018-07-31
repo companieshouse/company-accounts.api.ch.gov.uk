@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -81,6 +82,7 @@ public class CompanyAccountServiceImplTest {
   
         assertNotNull(result);
         assertEquals(companyAccountMock, result);
+        verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
     /**
