@@ -32,11 +32,6 @@ public class SmallFullServiceImpl extends
     }
 
     @Override
-    public void addID(SmallFullEntity entity) {
-
-    }
-
-    @Override
     public String getResourceName() {
         return "small-full";
     }
