@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -69,20 +70,40 @@ public class SmallFullInterceptorTest {
 
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
         when(companyAccountDataEntity.getLinks()).thenReturn(links);
-        when(links.get("small_full_accounts")).thenReturn("linkToSmallFull");
 
         when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
         when(smallFullDataEntity.getLinks()).thenReturn(links);
-        when(links.get("self")).thenReturn("linkToSmallFull");
     }
 
     @Test
-    @DisplayName("Tests the interceptor returns correctly after a specific URI is provided")
-    public void testReturnsTheCorrectEntityForTheURI() throws NoSuchAlgorithmException {
+    @DisplayName("Tests the interceptor returns correctly when all is valid")
+    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException {
+        when(links.get("small_full_accounts")).thenReturn("linkToSmallFull");
+        when(links.get("self")).thenReturn("linkToSmallFull");
         when(smallFullService.generateID(anyString())).thenReturn("123456");
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
         verify(smallFullService, times(1)).findById(anyString());
         verify(session, times(1)).setAttribute(anyString(), any(SmallFullEntity.class));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
+    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException {
+        when(links.get("small_full_accounts")).thenReturn("linkToSmallFull");
+        when(links.get("self")).thenReturn("linkToSmallFull");
+        when(smallFullService.findById(anyString())).thenReturn(null);
+        assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor returns false when the two links do not match")
+    public void testReturnsFalseForLinksThatDoNotMatch() throws NoSuchAlgorithmException {
+        when(links.get("small_full_accounts")).thenReturn("BadLinkToSmallFull");
+        when(links.get("self")).thenReturn("linkToSmallFull");
+        when(smallFullService.findById(anyString())).thenReturn(null);
+        assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
     }
 }

@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -62,23 +64,45 @@ public class CompanyAccountInterceptorTest {
         when(httpServletRequest.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(transaction.getLinks()).thenReturn(links);
-        when(links.get("company_account")).thenReturn("linkToCompanyAccount");
 
-        when(httpServletRequest.getRequestURI())
-                .thenReturn("/transactions/123/company-accounts/456");
         when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
 
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
         when(companyAccountDataEntity.getLinks()).thenReturn(links);
-        when(links.get("self")).thenReturn("linkToCompanyAccount");
+
     }
 
     @Test
-    @DisplayName("Tests the interceptor returns correctly after a specific URI is provided")
-    public void testReturnsTheCorrectEntityForTheURI() {
-        companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+    @DisplayName("Tests the interceptor returns correctly when all is valid")
+    public void testReturnsCorrectlyOnValidConditions() {
+        when(links.get("company_account")).thenReturn("linkToCompanyAccount");
+        when(links.get("self")).thenReturn("linkToCompanyAccount");
+        when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
+        assertTrue(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
         verify(companyAccountService, times(1)).findById(anyString());
         verify(session, times(1)).setAttribute(anyString(), any(CompanyAccountEntity.class));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
+    public void testReturnsFalseForAFailedLookup() {
+        when(links.get("company_account")).thenReturn("linkToCompanyAccount");
+        when(links.get("self")).thenReturn("linkToCompanyAccount");
+        when(companyAccountService.findById(anyString())).thenReturn(null);
+        assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
+        verify(companyAccountService, times(1)).findById(anyString());
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor returns false when the two links do not match")
+    public void testReturnsFalseForLinksThatDoNotMatch() {
+        when(links.get("company_account")).thenReturn("BadlinkToCompanyAccount");
+        when(links.get("self")).thenReturn("linkToCompanyAccount");
+        when(companyAccountService.findById(anyString())).thenReturn(null);
+        assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
+        verify(companyAccountService, times(1)).findById(anyString());
     }
 }
