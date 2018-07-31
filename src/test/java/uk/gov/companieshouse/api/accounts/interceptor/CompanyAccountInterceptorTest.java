@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,14 +20,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountInterceptorTest {
 
@@ -37,19 +39,38 @@ public class CompanyAccountInterceptorTest {
     @Mock
     private CompanyAccountEntity companyAccountEntity;
     @Mock
+    private CompanyAccountDataEntity companyAccountDataEntity;
+    @Mock
+    private Transaction transaction;
+    @Mock
     private CompanyAccountService companyAccountService;
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
     private HttpServletResponse httpServletResponse;
+    @Mock
+    private Map<String, String> links;
     @InjectMocks
     private CompanyAccountInterceptor companyAccountInterceptor;
 
     @BeforeEach
     public void setUp() {
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+        when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
+                .thenReturn(pathVariables);
         when(httpServletRequest.getSession()).thenReturn(session);
-        when(httpServletRequest.getRequestURI()).thenReturn("/transactions/123/company-accounts/456");
-        when(companyAccountService.findByExample(any(CompanyAccountEntity.class))).thenReturn(companyAccountEntity);
+        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+        when(transaction.getLinks()).thenReturn(links);
+        when(links.get("company_account")).thenReturn("linkToCompanyAccount");
+
+        when(httpServletRequest.getRequestURI())
+                .thenReturn("/transactions/123/company-accounts/456");
+        when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
+
+        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
+        when(companyAccountDataEntity.getLinks()).thenReturn(links);
+        when(links.get("self")).thenReturn("linkToCompanyAccount");
     }
 
     @Test
@@ -57,7 +78,7 @@ public class CompanyAccountInterceptorTest {
     public void testReturnsTheCorrectEntityForTheURI() {
         companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
-        verify(companyAccountService, times(1)).findByExample(any(CompanyAccountEntity.class));
+        verify(companyAccountService, times(1)).findById(anyString());
         verify(session, times(1)).setAttribute(anyString(), any(CompanyAccountEntity.class));
     }
 }

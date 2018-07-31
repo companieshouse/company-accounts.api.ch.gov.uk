@@ -10,7 +10,7 @@ public interface AbstractService<C extends RestObject, E extends BaseEntity> {
 
     public C save(C rest, String companyAccountId) throws NoSuchAlgorithmException;
 
-    public E findByExample(E example);
+    public E findById(String id);
 
     public void addEtag(C rest);
 

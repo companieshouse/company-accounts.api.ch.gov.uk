@@ -1,18 +1,17 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
@@ -20,20 +19,43 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private SmallFullService smallFullService;
 
+    /**
+     * This class validates a Small-full account exists for the given CompanyAccount. Validation is
+     * carried out via a database lookup for the SmallFullEntity Object then matching the retrieved
+     * Entities 'self' link to the session stored CompanyAccountEntities 'small_full_accounts' link.
+     * Providing this validation passes it assigns the SmallFullEntity to the session.
+     *
+     * @param request - current HTTP request
+     * @param response - current HTTP response
+     * @param handler - chosen handler to execute, for type and/or instance evaluation
+     * @return true if the execution chain should proceed with the next interceptor or the handler
+     * itself.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) {
-        SmallFullEntity smallFullEntity = new SmallFullEntity();
-        SmallFullDataEntity smallFullDataEntity = new SmallFullDataEntity();
-        Map<String, String> links = new HashMap<>();
-        links.put("self", StringUtils.substringBeforeLast(request.getRequestURI(), "/small-full")
-                + "/small-full");
-        smallFullDataEntity.setLinks(links);
-        smallFullEntity.setData(smallFullDataEntity);
-        SmallFullEntity smallFull = smallFullService.findByExample(smallFullEntity);
+            Object handler) throws NoSuchAlgorithmException {
         HttpSession session = request.getSession();
-        session.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
-        return true;
+        Transaction transaction = (Transaction) request.getSession()
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        if (transaction != null && companyAccountEntity != null) {
+            String companyNumber = transaction.getCompanyNumber();
+            String smallFullId = smallFullService.generateID(companyNumber);
+            SmallFullEntity smallFull = smallFullService.findById(smallFullId);
+
+            if (smallFull != null) {
+                String companyAccountLink = companyAccountEntity.getData().getLinks()
+                        .get("small_full_accounts");
+                String smallFullSelf = smallFull.getData().getLinks().get("self");
+
+                if (companyAccountLink.equals(smallFullSelf)) {
+                    session.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

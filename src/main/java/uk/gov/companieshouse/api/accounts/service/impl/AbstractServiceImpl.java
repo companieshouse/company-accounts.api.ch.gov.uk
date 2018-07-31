@@ -40,8 +40,8 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public E findByExample(E example) {
-        Optional<E> optional = (Optional<E>) mongoRepository.findOne(Example.of(example));
+    public E findById(String id){
+        Optional<E> optional = (Optional<E>)  mongoRepository.findById(id);
         if (optional.isPresent()) {
             return optional.get();
         }
