@@ -67,7 +67,7 @@ public class CompanyAccountServiceImplTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 
         when(httpServletRequest.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute("transaction")).thenReturn(createDummyTransaction(true));
+        when(httpSessionMock.getAttribute("transaction")).thenReturn(createDummyTransaction(TransactionStatus.OPEN));
         when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
     }
 
@@ -86,13 +86,13 @@ public class CompanyAccountServiceImplTest {
     /**
      * creates an open or closed dummy transaction depending on the boolean passed into method
      *
-     * @param isOpen - true = open, false - closed
+     * @param status - transaction status
      * @return Transaction object with the desired transaction
      */
-    private Transaction createDummyTransaction(boolean isOpen) {
+    private Transaction createDummyTransaction(TransactionStatus status) {
         Transaction transaction = new Transaction();
         transaction.setId("id");
-        transaction.setStatus(isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
+        transaction.setStatus(status.getStatus());
         transaction.setLinks(createLinksMap());
 
         return transaction;
