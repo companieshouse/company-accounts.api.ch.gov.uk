@@ -1,26 +1,23 @@
 package uk.gov.companieshouse.api.accounts.util.logging;
 
-import static java.util.stream.Collectors.toList;
+    import static java.util.stream.Collectors.toList;
 
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+    import java.util.Arrays;
+    import java.util.List;
+    import javax.servlet.http.HttpServletRequest;
+    import org.aspectj.lang.JoinPoint;
+    import org.aspectj.lang.ProceedingJoinPoint;
+    import org.aspectj.lang.annotation.Around;
+    import org.aspectj.lang.annotation.Aspect;
+    import org.aspectj.lang.annotation.Pointcut;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Component;
+    import uk.gov.companieshouse.api.accounts.util.AccountsUtility;
 
 @Aspect
 @Component
 public class ControllerLoggingAspect {
-
-  private static final String REQUEST_ID = "X-Request-Id";
-
-  private static final String ERIC_IDENTITY = "Eric-Identity";
 
   @Pointcut("execution(* uk.gov.companieshouse.api.accounts.controller.*.*(..))")
   private void controllerMethods() {
@@ -31,6 +28,10 @@ public class ControllerLoggingAspect {
   public void logTraceAndStats(ProceedingJoinPoint joinPoint) throws Throwable {
     AccountsLogger logger = getLogger(joinPoint);
     String methodName = getMethodName(joinPoint);
+
+    logger.logStartOfRequestProcessing(String.format(AccountsUtility.START_OF_RQUEST_MSG.value(),
+        methodName));
+
     long startTime = System.currentTimeMillis();
     //Do not change, the target method will not progress without this.
     Object result = null;
@@ -39,18 +40,18 @@ public class ControllerLoggingAspect {
       result = joinPoint.proceed();
     } catch (Throwable t) {
       //possible internal server errors
-      logger.logError("Error Occured", new Exception(t),
+      logger.logError(AccountsUtility.ERROR_MSG.value(), new Exception(),
           HttpStatus.INTERNAL_SERVER_ERROR.value());
     } finally {
       long responseTime = System.currentTimeMillis() - startTime;
       int statusCode =
           result != null ? statusCode(result) : HttpStatus.INTERNAL_SERVER_ERROR.value();
 
-      logger.logStartOfRequestProcessing(String.format("Start Request %s",
-          methodName));
+      String endMsg =
+          result != null ? AccountsUtility.SUCCESS_MSG.value() : AccountsUtility.FAILURE_MSG.value();
 
-      logger.logEndOfRequestProcessing(String.format("End of Request %s Successfully Completed",
-          methodName), statusCode, responseTime);
+      logger.logEndOfRequestProcessing(String.format(AccountsUtility.END_OF_REQUEST_MSG.value(),
+          methodName, endMsg), statusCode, responseTime);
     }
   }
 
@@ -61,11 +62,11 @@ public class ControllerLoggingAspect {
   }
 
   private String requestId(HttpServletRequest request) {
-    return request.getHeader(REQUEST_ID);
+    return request.getHeader(AccountsUtility.REQUEST_ID.value());
   }
 
   private String userId(HttpServletRequest request) {
-    return request.getHeader(ERIC_IDENTITY);
+    return request.getHeader(AccountsUtility.ERIC_IDENTITY.value());
   }
 
   private AccountsLogger getLogger(JoinPoint joinPoint) {
@@ -93,10 +94,10 @@ public class ControllerLoggingAspect {
   }
 
   /**
-   * The HTTP status code when the request was successfully handled
-   * returns an internal server error when the response is null.
+   * The HTTP status code when the request was successfully handled returns an internal server error
+   * when the response is null.
+   *
    * @param result - Response from the controller.
-   * @return
    */
   private int statusCode(Object result) {
     if (result instanceof ResponseEntity) {
