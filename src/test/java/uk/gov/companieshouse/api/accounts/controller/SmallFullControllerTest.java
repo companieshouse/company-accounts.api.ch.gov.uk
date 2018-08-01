@@ -21,17 +21,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
-
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CompanyAccountControllerTest {
+public class SmallFullControllerTest {
+
 
     @Mock
     HttpSession session;
@@ -42,31 +46,35 @@ public class CompanyAccountControllerTest {
     @Mock
     private CompanyAccount companyAccount;
     @Mock
-    private CompanyAccount createdCompanyAccount;
+    private SmallFull smallFull;
     @Mock
-    private CompanyAccountService companyAccountService;
+    private SmallFull createdSmallFull;
+    @Mock
+    private SmallFullService smallFullService;
     @Mock
     private Map<String, String> links;
     @InjectMocks
-    private CompanyAccountController companyAccountController;
+    private SmallFullController smallFullController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(companyAccountService.save(any(CompanyAccount.class), anyString()))
-                .thenReturn(createdCompanyAccount);
+        when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
+                .thenReturn(companyAccount);
         when(transaction.getCompanyNumber()).thenReturn("123456");
+        when(companyAccount.getLinks()).thenReturn(links);
+        when(links.get("self")).thenReturn("7890");
     }
 
     @Test
-    @DisplayName("Tests the successful creation of an companyAccount resource")
-    public void canCreateAccount() throws NoSuchAlgorithmException {
-        ResponseEntity response = companyAccountController
-                .createCompanyAccount(companyAccount, request);
+    @DisplayName("Tests the successful creation of a smallFull resource")
+    public void canCreateSmallFull() throws NoSuchAlgorithmException {
+        ResponseEntity response = smallFullController.create(smallFull, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertTrue(new Equals(createdCompanyAccount).matches(response.getBody()));
+        assertTrue(new Equals(createdSmallFull).matches(response.getBody()));
     }
 }

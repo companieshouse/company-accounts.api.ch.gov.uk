@@ -11,24 +11,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @RestController
-public class CompanyAccountController {
+public class CurrentPeriodController {
 
     @Autowired
-    private CompanyAccountService companyAccountService;
+    private CurrentPeriodService currentPeriodService;
 
-    @PostMapping(value = "/transactions/{transactionId}/company-accounts",
+    @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
+    public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
         Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
-        CompanyAccount result = companyAccountService
-                .save(companyAccount, transaction.getCompanyNumber());
+        CurrentPeriod result = currentPeriodService
+                .save(currentPeriod, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
     }
 }

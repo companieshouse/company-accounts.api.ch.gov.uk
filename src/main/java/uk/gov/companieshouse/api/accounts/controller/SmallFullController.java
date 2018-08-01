@@ -11,24 +11,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @RestController
-public class CompanyAccountController {
+public class SmallFullController {
 
     @Autowired
-    private CompanyAccountService companyAccountService;
+    private SmallFullService smallFullService;
 
-    @PostMapping(value = "/transactions/{transactionId}/company-accounts",
+    @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
+    public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
-        CompanyAccount result = companyAccountService
-                .save(companyAccount, transaction.getCompanyNumber());
+        Transaction transaction = (Transaction) request.getSession()
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        SmallFull result = smallFullService.save(smallFull, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

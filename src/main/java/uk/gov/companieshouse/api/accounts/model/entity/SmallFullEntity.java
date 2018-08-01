@@ -4,17 +4,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "accounts")
-public class CompanyAccountEntity extends BaseEntity{
+public class SmallFullEntity extends BaseEntity{
 
     @Field("data")
-    private CompanyAccountDataEntity data;
+    private SmallFullDataEntity data;
 
-    public CompanyAccountDataEntity getData() {
+    public SmallFullDataEntity getData() {
         return data;
     }
 
-    public void setData(CompanyAccountDataEntity data) {
+    public void setData(SmallFullDataEntity data) {
         this.data = data;
     }
-
 }
