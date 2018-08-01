@@ -36,24 +36,11 @@ public class GlobalExceptionHandler {
   private void logError(Exception ex, ExceptionMessage exceptionMessage) {
     HashMap<String, Object> message = new HashMap<>();
     message.put("message", ex.getMessage());
-    message.put("error", exceptionMessage.getError());
-    LOGGER.error(exceptionMessage.getMessage(), ex, message);
+    message.put("error", exceptionMessage.getMessage());
+    LOGGER.error(exceptionMessage.getError(), ex, message);
   }
 
   private ExceptionMessage getExceptionMessage(Exception ex) {
-    if (ex instanceof DataAccessException) {
-      return ExceptionMessage.DATA_ACCESS_EXCEPTION;
-    } else if (ex instanceof IOException) {
-      return ExceptionMessage.IO_EXCEPTION;
-    } else if (ex instanceof IllegalArgumentException) {
-      return ExceptionMessage.ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if (ex instanceof IllegalStateException) {
-      return ExceptionMessage.ILLEGAL_STATE_EXCEPTION;
-    } else if (ex instanceof NullPointerException) {
-      return ExceptionMessage.NULL_POINTER_EXCEPTION;
-    } else if (ex instanceof RuntimeException) {
-      return ExceptionMessage.RUN_TIME_EXCEPTION;
-    }
-    return ExceptionMessage.EXCEPTION;
+    return ExceptionMessage.getExceptionMessage(ex);
   }
 }
