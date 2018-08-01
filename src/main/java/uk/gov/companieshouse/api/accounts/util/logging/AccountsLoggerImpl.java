@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.util.logging;
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -15,15 +16,12 @@ public class AccountsLoggerImpl implements AccountsLogger {
 
   private String userId;
 
-  private String transactionId;
+  private List<String> resourceIds;
 
-  private String accountsId;
-
-  public AccountsLoggerImpl(String requestId, String userId, String transactionId, String accountsId) {
+  public AccountsLoggerImpl(String requestId, String userId, List<String> resourceIds) {
     this.requestId = requestId;
     this.userId = userId;
-    this.transactionId = transactionId;
-    this.accountsId = accountsId;
+    this.resourceIds = resourceIds;
   }
 
   public void logStartOfRequestProcessing(String message) {
@@ -58,7 +56,6 @@ public class AccountsLoggerImpl implements AccountsLogger {
   }
 
   private void addValues(Map logData) {
-    putValue(logData, "transaction_id", transactionId);
-    putValue(logData, "accounts_id", accountsId);
+    putValue(logData, "resources", resourceIds);
   }
 }

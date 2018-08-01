@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,15 @@ public class AccountsLoggerTest {
 
   @BeforeEach
   void setUp() {
+    List<String> resources = new ArrayList<>();
+    resources.add("transactionId");
+    resources.add("accountId");
     accountsLogger = new AccountsLoggerImpl("requestId",
-        "userId", "transactionId", "accountId");
+        "userId", resources);
   }
 
   @Test
-  public void verifyLogger() {
+  public void loggerUsingStructuredLogging() {
     List<InstanceField> fields = Fields.allDeclaredFieldsOf(accountsLogger).instanceFields()
         .stream()
         .filter(field -> field.name().equals("LOGGER")).collect(toList());
