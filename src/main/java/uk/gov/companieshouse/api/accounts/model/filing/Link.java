@@ -8,7 +8,7 @@ public class Link {
     private String relationship;
 
     @JsonProperty("href")
-    private String link;
+    private String href;
 
     public String getRelationship() {
         return relationship;
@@ -18,11 +18,11 @@ public class Link {
         this.relationship = relationship;
     }
 
-    public String getLink() {
-        return link;
+    public String getHref() {
+        return href;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setHref(String href) {
+        this.href = href;
     }
 }
