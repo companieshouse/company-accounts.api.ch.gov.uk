@@ -21,9 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
@@ -32,7 +29,6 @@ import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
 public class SmallFullInterceptorTest {
 
@@ -55,32 +51,32 @@ public class SmallFullInterceptorTest {
     @Mock
     private HttpServletResponse httpServletResponse;
     @Mock
-    private Map<String, String> links;
+    private Map<String, String> companyAccountLinks;
+    @Mock
+    private Map<String, String> smallFullLinks;
     @InjectMocks
     private SmallFullInterceptor smallFullInterceptor;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws NoSuchAlgorithmException {
         when(httpServletRequest.getSession()).thenReturn(session);
-        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
+        when(session.getAttribute(anyString())).thenReturn(transaction)
                 .thenReturn(companyAccountEntity);
         when(smallFullService.findById(anyString())).thenReturn(smallFullEntity);
         when(transaction.getCompanyNumber()).thenReturn("123456");
-
-        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
-        when(companyAccountDataEntity.getLinks()).thenReturn(links);
-
-        when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
-        when(smallFullDataEntity.getLinks()).thenReturn(links);
+        when(smallFullService.generateID(anyString())).thenReturn("123456");
     }
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException {
-        when(links.get("small_full_accounts")).thenReturn("linkToSmallFull");
-        when(links.get("self")).thenReturn("linkToSmallFull");
-        when(smallFullService.generateID(anyString())).thenReturn("123456");
+        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
+        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountLinks);
+
+        when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
+        when(smallFullDataEntity.getLinks()).thenReturn(smallFullLinks);
+        when(companyAccountLinks.get("small_full_accounts")).thenReturn("linkToSmallFull");
+        when(smallFullLinks.get("self")).thenReturn("linkToSmallFull");
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
         verify(smallFullService, times(1)).findById(anyString());
@@ -90,8 +86,6 @@ public class SmallFullInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
     public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException {
-        when(links.get("small_full_accounts")).thenReturn("linkToSmallFull");
-        when(links.get("self")).thenReturn("linkToSmallFull");
         when(smallFullService.findById(anyString())).thenReturn(null);
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
@@ -100,8 +94,6 @@ public class SmallFullInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false when the two links do not match")
     public void testReturnsFalseForLinksThatDoNotMatch() throws NoSuchAlgorithmException {
-        when(links.get("small_full_accounts")).thenReturn("BadLinkToSmallFull");
-        when(links.get("self")).thenReturn("linkToSmallFull");
         when(smallFullService.findById(anyString())).thenReturn(null);
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
