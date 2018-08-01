@@ -1,9 +1,12 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.notes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PostBalanceSheetEvents {
 
+    @JsonProperty("current_period_date_formatted")
     private String currentPeriodDateFormatted;
-    private String previousPeriodDateFormatted;
+    @JsonProperty("post_balance_sheet_events_info")
     private String postBalanceSheetEventsInfo;
 
     public String getCurrentPeriodDateFormatted() {
@@ -12,14 +15,6 @@ public class PostBalanceSheetEvents {
 
     public void setCurrentPeriodDateFormatted(String currentPeriodDateFormatted) {
         this.currentPeriodDateFormatted = currentPeriodDateFormatted;
-    }
-
-    public String getPreviousPeriodDateFormatted() {
-        return previousPeriodDateFormatted;
-    }
-
-    public void setPreviousPeriodDateFormatted(String previousPeriodDateFormatted) {
-        this.previousPeriodDateFormatted = previousPeriodDateFormatted;
     }
 
     public String getPostBalanceSheetEventsInfo() {
