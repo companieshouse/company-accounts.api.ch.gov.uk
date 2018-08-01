@@ -8,7 +8,7 @@ public class Period {
     private String currentPeriodStartOn;
     @JsonProperty("current_period_ends_on")
     private String currentPeriodEndsOn;
-    @JsonProperty("previous_period_start_n")
+    @JsonProperty("previous_period_start_on")
     private String previousPeriodStartOn;
     @JsonProperty("previous_period_ends_on")
     private String previousPeriodEndsOn;
