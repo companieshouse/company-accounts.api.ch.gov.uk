@@ -8,10 +8,13 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 
 public class Account {
 
+    @JsonProperty("period")
     private Period period;
     @JsonProperty("balance_sheet")
     private BalanceSheet balanceSheet;
+    @JsonProperty("notes")
     private Notes notes;
+    @JsonProperty("company")
     private Company company;
 
     public Period getPeriod() {
