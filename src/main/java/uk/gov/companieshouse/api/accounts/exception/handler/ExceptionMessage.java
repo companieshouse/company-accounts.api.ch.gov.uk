@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.exception.handler;
 
-import org.springframework.web.servlet.NoHandlerFoundException;
-
 public enum ExceptionMessage {
   NO_HANDLER_FOUND_EXCEPTION("No Handler Found for the requested resouce",
       "NoHandlerFoundException"),
