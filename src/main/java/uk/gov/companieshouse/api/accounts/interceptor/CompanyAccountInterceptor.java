@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -46,7 +47,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         HttpSession session = request.getSession();
         if (transaction != null && companyAccountEntity != null) {
             String accountsLink = transaction.getLinks().get("company_account");
-            String accountsSelf = companyAccountEntity.getData().getLinks().get("self");
+            String accountsSelf = companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
             if (accountsLink.equals(accountsSelf)) {
                 session.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
                         companyAccountEntity);

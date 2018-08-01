@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -48,7 +49,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             if (smallFull != null) {
                 String companyAccountLink = companyAccountEntity.getData().getLinks()
                         .get("small_full_accounts");
-                String smallFullSelf = smallFull.getData().getLinks().get("self");
+                String smallFullSelf = smallFull.getData().getLinks().get(LinkType.SELF.getLink());
 
                 if (companyAccountLink.equals(smallFullSelf)) {
                     session.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
