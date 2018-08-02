@@ -19,10 +19,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
     @Autowired
     private SmallFullService smallFullService;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * This class validates a Small-full account exists for the given CompanyAccount. Validation is
@@ -46,8 +45,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (transaction != null && companyAccountEntity != null) {
-            String companyNumber = transaction.getCompanyNumber();
-            String smallFullId = smallFullService.generateID(companyNumber);
+            String companyAccountId = companyAccountEntity.getId();
+            String smallFullId = smallFullService.generateID(companyAccountId);
             SmallFullEntity smallFull = smallFullService.findById(smallFullId);
 
             if (smallFull != null) {

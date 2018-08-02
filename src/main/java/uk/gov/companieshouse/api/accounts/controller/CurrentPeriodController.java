@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @RestController
 public class CurrentPeriodController {
@@ -26,9 +26,10 @@ public class CurrentPeriodController {
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         CurrentPeriod result = currentPeriodService
-                .save(currentPeriod, transaction.getCompanyNumber());
+                .save(currentPeriod, companyAccountEntity.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
     }
