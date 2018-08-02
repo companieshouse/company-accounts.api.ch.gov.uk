@@ -13,12 +13,16 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Component
 public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private CompanyAccountService companyAccountService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * This class extracts the 'company_account' parameter passed via the URI then validates it.
@@ -54,6 +58,12 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
                 return true;
             }
         }
+        StringBuilder sb = new StringBuilder("CompanyAccountInterceptor failed on preHandle");
+        if (transaction != null) {
+            sb.append(" for transaction ").append(transaction.toString());
+        }
+        sb.append(".");
+        LOGGER.error(sb.toString());
         return false;
     }
 }

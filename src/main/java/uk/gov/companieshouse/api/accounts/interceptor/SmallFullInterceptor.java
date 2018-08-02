@@ -13,12 +13,16 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private SmallFullService smallFullService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * This class validates a Small-full account exists for the given CompanyAccount. Validation is
@@ -57,6 +61,12 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
+        StringBuilder sb = new StringBuilder("SmallFullInterceptor failed on preHandle");
+        if (transaction != null) {
+            sb.append(" for transaction ").append(transaction.toString());
+        }
+        sb.append(".");
+        LOGGER.error(sb.toString());
         return false;
     }
 }
