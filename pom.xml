@@ -29,9 +29,8 @@
         <api-helper-java.version>1.0.0-rc1</api-helper-java.version>
         <structured-logging.version>1.2.0-rc1</structured-logging.version>
         <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
-        <environment-reader-library.version>1.2.0-rc1</environment-reader-library.version>
+        <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
         <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
-        <aspectj.version>1.8.0</aspectj.version>
 
         <!-- Maven and Surefire plugins -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -99,9 +98,9 @@
             <version>${aspectj.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson-datatype-jsr310.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <!--  Test  -->
@@ -117,6 +116,12 @@
             <version>${mockito-junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-datatype-jsr310.version}</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>
