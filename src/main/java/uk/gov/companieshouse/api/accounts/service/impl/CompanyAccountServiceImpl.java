@@ -19,6 +19,8 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
@@ -31,6 +33,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * {@inheritDoc}
@@ -50,9 +54,14 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         companyAccountEntity.setId(id);
         companyAccountRepository.insert(companyAccountEntity);
 
-        transactionManager.updateTransaction(transaction.getId(),
+        boolean isPatchSuccess = transactionManager.updateTransaction(transaction.getId(),
                 request.getHeader("X-Request-Id"),
                 companyAccountLink);
+
+        if (!isPatchSuccess) {
+            LOGGER.error("Failed to patch transaction");
+            return null;
+        }
 
         return companyAccount;
     }
@@ -72,7 +81,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
     
     private void addKind(CompanyAccount rest) {
-        rest.setKind("company-accounts");
+        rest.setKind("company-accounts#company-accounts");
     }
 
     private void addEtag(CompanyAccount rest) {
