@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.api.accounts.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -18,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.controller.CompanyAccountController;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -93,8 +98,18 @@ public class ControllerLoggingAspectTest {
     when(request.getSession()).thenReturn(session);
     when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
     when(transaction.getCompanyNumber()).thenReturn(COMPANY_ACCOUNT_ID);
-    proxy.createCompanyAccount(request, "transaction_id", companyAccount);
+    Object response = proxy.createCompanyAccount(request, "transaction_id", companyAccount);
     verify(companyAccountService, times(1)).save(companyAccount, COMPANY_ACCOUNT_ID);
+    verifyCompanyAccountResponse(response);
+  }
+
+  private void verifyCompanyAccountResponse(Object response) {
+    assertNotNull(response);
+    assertTrue(response instanceof ResponseEntity);
+    ResponseEntity responseEntity = (ResponseEntity) response;
+    assertTrue(((ResponseEntity) response).getStatusCode().equals(HttpStatus.CREATED));
+    assertNotNull(responseEntity.getBody());
+    assertNotNull(responseEntity.getBody() instanceof CompanyAccount);
   }
 
 
