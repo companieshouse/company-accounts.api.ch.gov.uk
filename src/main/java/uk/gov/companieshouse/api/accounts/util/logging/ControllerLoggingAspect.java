@@ -1,19 +1,19 @@
 package uk.gov.companieshouse.api.accounts.util.logging;
 
-    import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toList;
 
-    import java.util.Arrays;
-    import java.util.List;
-    import javax.servlet.http.HttpServletRequest;
-    import org.aspectj.lang.JoinPoint;
-    import org.aspectj.lang.ProceedingJoinPoint;
-    import org.aspectj.lang.annotation.Around;
-    import org.aspectj.lang.annotation.Aspect;
-    import org.aspectj.lang.annotation.Pointcut;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.stereotype.Component;
-    import uk.gov.companieshouse.api.accounts.util.AccountsUtility;
+import java.util.Arrays;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.util.AccountsUtility;
 
 @Aspect
 @Component
@@ -39,8 +39,9 @@ public class ControllerLoggingAspect {
     try {
       result = joinPoint.proceed();
     } catch (Throwable t) {
-      //possible internal server errors
-      logger.logError(AccountsUtility.ERROR_MSG.value(), new Exception(),
+      //Log the error, possibly this Error is not currently handled by the GlobalExceptionHandler
+      logger.logError(AccountsUtility.ERROR_MSG.value(),
+          new Exception("An error has occurred", t.getCause()),
           HttpStatus.INTERNAL_SERVER_ERROR.value());
     } finally {
       long responseTime = System.currentTimeMillis() - startTime;
@@ -48,7 +49,8 @@ public class ControllerLoggingAspect {
           result != null ? statusCode(result) : HttpStatus.INTERNAL_SERVER_ERROR.value();
 
       String endMsg =
-          result != null ? AccountsUtility.SUCCESS_MSG.value() : AccountsUtility.FAILURE_MSG.value();
+          result != null ? AccountsUtility.SUCCESS_MSG.value()
+              : AccountsUtility.FAILURE_MSG.value();
 
       logger.logEndOfRequestProcessing(String.format(AccountsUtility.END_OF_REQUEST_MSG.value(),
           methodName, endMsg), statusCode, responseTime);
@@ -80,7 +82,9 @@ public class ControllerLoggingAspect {
   private HttpServletRequest getRequest(JoinPoint joinPoint) {
     return (HttpServletRequest) Arrays.stream(joinPoint.getArgs())
         .filter(arg -> arg instanceof HttpServletRequest)
-        .collect(toList()).get(0);
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "JoinPoint arguments do not contain a HttpServletRequest"));
   }
 
   /**
