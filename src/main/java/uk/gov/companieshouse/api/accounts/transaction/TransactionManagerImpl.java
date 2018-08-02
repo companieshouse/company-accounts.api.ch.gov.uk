@@ -21,6 +21,8 @@ public class TransactionManagerImpl implements TransactionManager {
 
     @Autowired
     private TransactionServiceProperties configuration;
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     private static final String ID_PARAMETER = "{id}";
     private static final String X_REQUEST_ID = "X-Request-Id";
@@ -155,7 +157,7 @@ public class TransactionManagerImpl implements TransactionManager {
     private void patchTransaction(String url, HttpEntity requestEntity) {
         ResponseEntity<?> response = restTemplate.exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
         if (response.getStatusCode() != HttpStatus.OK) {
-            // insert error exceptions here
+            LOGGER.error("Failed to patch transaction");
         }
     }
 
