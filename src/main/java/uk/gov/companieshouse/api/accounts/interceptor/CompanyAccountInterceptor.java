@@ -19,10 +19,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
     @Autowired
     private CompanyAccountService companyAccountService;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * This class extracts the 'company_account' parameter passed via the URI then validates it.
@@ -41,17 +40,22 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) {
+
         Map<String, String> pathVariables = (Map) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         String companyAccountId = pathVariables.get("companyAccountId");
+
         CompanyAccountEntity companyAccountEntity = companyAccountService
                 .findById(companyAccountId);
         Transaction transaction = (Transaction) request.getSession()
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         HttpSession session = request.getSession();
+
         if (transaction != null && companyAccountEntity != null) {
             String accountsLink = transaction.getLinks().get(LinkType.COMPANY_ACCOUNT.getLink());
-            String accountsSelf = companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
+            String accountsSelf = companyAccountEntity.getData().getLinks()
+                    .get(LinkType.SELF.getLink());
+
             if (accountsLink.equals(accountsSelf)) {
                 session.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
                         companyAccountEntity);

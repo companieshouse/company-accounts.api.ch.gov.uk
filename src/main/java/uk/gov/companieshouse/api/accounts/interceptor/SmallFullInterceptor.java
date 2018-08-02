@@ -39,11 +39,13 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws NoSuchAlgorithmException {
+
         HttpSession session = request.getSession();
         Transaction transaction = (Transaction) request.getSession()
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
         if (transaction != null && companyAccountEntity != null) {
             String companyAccountId = companyAccountEntity.getId();
             String smallFullId = smallFullService.generateID(companyAccountId);
