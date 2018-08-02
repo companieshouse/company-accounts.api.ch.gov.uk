@@ -48,7 +48,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
             if (smallFull != null) {
                 String companyAccountLink = companyAccountEntity.getData().getLinks()
-                        .get("small_full_accounts");
+                        .get(LinkType.SMALL_FULL.getLink());
                 String smallFullSelf = smallFull.getData().getLinks().get(LinkType.SELF.getLink());
 
                 if (companyAccountLink.equals(smallFullSelf)) {

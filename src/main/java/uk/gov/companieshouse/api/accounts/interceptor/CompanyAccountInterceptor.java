@@ -46,7 +46,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         HttpSession session = request.getSession();
         if (transaction != null && companyAccountEntity != null) {
-            String accountsLink = transaction.getLinks().get("company_account");
+            String accountsLink = transaction.getLinks().get(LinkType.COMPANY_ACCOUNT.getLink());
             String accountsSelf = companyAccountEntity.getData().getLinks().get(LinkType.SELF.getLink());
             if (accountsLink.equals(accountsSelf)) {
                 session.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
