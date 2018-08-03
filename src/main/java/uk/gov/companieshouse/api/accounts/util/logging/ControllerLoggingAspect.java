@@ -34,6 +34,7 @@ public class ControllerLoggingAspect {
   public Object logTraceAndStats(ProceedingJoinPoint joinPoint) throws Throwable {
     AccountsLogger logger = getLogger(joinPoint);
     String methodName = getMethodName(joinPoint);
+    String endMsg = null;
 
     logger.logStartOfRequestProcessing(String.format(AccountsUtility.START_OF_RQUEST_MSG.value(),
         methodName));
@@ -45,15 +46,14 @@ public class ControllerLoggingAspect {
     result = joinPoint.proceed();
 
     long responseTime = System.currentTimeMillis() - startTime;
-    int statusCode =
-        result != null ? statusCode(result) : HttpStatus.INTERNAL_SERVER_ERROR.value();
+    int statusCode = statusCode(result);
 
-    String endMsg =
-        result != null ? AccountsUtility.SUCCESS_MSG.value()
+    endMsg = reqCompletedSuccessFully(statusCode)
+         ? AccountsUtility.SUCCESS_MSG.value()
             : AccountsUtility.FAILURE_MSG.value();
 
     logger.logEndOfRequestProcessing(String.format(AccountsUtility.END_OF_REQUEST_MSG.value(),
-        methodName, endMsg), statusCode, responseTime);
+        methodName, endMsg), statusCode(result), responseTime);
     return result;
   }
 
@@ -79,9 +79,9 @@ public class ControllerLoggingAspect {
   /**
    * Helper to get the HttpServletRequest so that we can get the requestID and the userID.
    *
-   * Though this should never happen, the IllegalArgumentException is thrown
-   * when the controller method doesn't include the HttpServletRequest.
-   * Ias it won't be possible to log details such as the UserID.
+   * Though this should never happen, the IllegalArgumentException is thrown when the controller
+   * method doesn't include the HttpServletRequest. Ias it won't be possible to log details such as
+   * the UserID.
    */
   private HttpServletRequest getRequest(JoinPoint joinPoint) {
     return (HttpServletRequest) Arrays.stream(joinPoint.getArgs())
@@ -107,9 +107,16 @@ public class ControllerLoggingAspect {
    * @param result - Response from the controller.
    */
   private int statusCode(Object result) {
-    if (result instanceof ResponseEntity) {
+    if (result != null && result instanceof ResponseEntity) {
       return ((ResponseEntity) result).getStatusCode().value();
     }
     return HttpStatus.INTERNAL_SERVER_ERROR.value();
+  }
+
+  private boolean reqCompletedSuccessFully(int statusCode){
+    return statusCode == HttpStatus.CREATED.value()
+        || statusCode == HttpStatus.NO_CONTENT.value()
+        || statusCode == HttpStatus.OK.value()
+        ? true : false;
   }
 }
