@@ -6,13 +6,9 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -44,10 +40,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject createCompanyAccount(CompanyAccount companyAccount) {
-        HttpServletRequest request = getRequestFromContext();
-        Transaction transaction = getTransactionFromSession(request);
-
+    public ResponseObject createCompanyAccount(CompanyAccount companyAccount, Transaction transaction, String requestId) {
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
@@ -69,9 +62,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         }
 
         try {
-            transactionManager.updateTransaction(transaction.getId(),
-                    request.getHeader("X-Request-Id"),
-                    companyAccountLink);
+            transactionManager.updateTransaction(transaction.getId(), requestId, companyAccountLink);
         } catch (PatchException pe) {
             LOGGER.error(pe);
             return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
@@ -100,14 +91,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private void addEtag(CompanyAccount rest) {
         rest.setEtag(GenerateEtagUtil.generateEtag());
-    }
-
-    private static HttpServletRequest getRequestFromContext() {
-        return ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-    }
-
-    private static Transaction getTransactionFromSession(HttpServletRequest request) {
-        return (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     public String generateID() {

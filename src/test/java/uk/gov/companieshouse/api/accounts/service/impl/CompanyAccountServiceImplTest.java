@@ -2,15 +2,17 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,13 +22,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.companieshouse.api.accounts.LinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.transaction.PatchException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
@@ -46,9 +48,6 @@ public class CompanyAccountServiceImplTest {
     private CompanyAccountEntity companyAccountEntityMock;
 
     @Mock
-    private CompanyAccountDataEntity companyAccountDataEntityMock;
-
-    @Mock
     private CompanyAccountRepository companyAccountRepository;
 
     @Mock
@@ -57,31 +56,61 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private TransactionManager transactionManagerMock;
 
-    @Mock
-    private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private HttpSession httpSessionMock;
-
-    @BeforeEach
-    void setUp() {
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
-
-        when(httpServletRequest.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute("transaction")).thenReturn(createDummyTransaction(TransactionStatus.OPEN));
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
-    }
-
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
-    void canCreateAccount() {
+    void createAccountWithSuccess() {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
-        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccountMock);
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
   
-        assertNotNull(result);
-        assertEquals(companyAccountMock, result);
+        assertNotNull(response);
+        assertNotNull(response.getData());
+        verify(companyAccountRepository).insert(companyAccountEntityMock);
+    }
+
+    @Test
+    @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key scenario")
+    void createAccountWithDuplicateKeyFailure() {
+        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
+                .any(CompanyAccount.class));
+
+        when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(DuplicateKeyException.class));
+
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+
+        assertNotNull(response);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
+        verify(companyAccountRepository).insert(companyAccountEntityMock);
+    }
+
+    @Test
+    @DisplayName("Tests the unsuccessful creation of an company account resource due to mongo error scenario")
+    void createAccountWithMongoExceptionFailure() {
+        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
+                .any(CompanyAccount.class));
+
+        when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(MongoException.class));
+
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+
+        assertNotNull(response);
+        assertEquals(ResponseStatus.MONGO_ERROR, response.getStatus());
+        verify(companyAccountRepository).insert(companyAccountEntityMock);
+    }
+
+    @Test
+    @DisplayName("Tests the successful creation of an company account resource with a transaction patch failure")
+    void createAccountWithTransactionPatchFailure() throws PatchException {
+        doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
+                .any(CompanyAccount.class));
+
+        doThrow(mock(PatchException.class)).when(transactionManagerMock).updateTransaction(anyString(), anyString(), anyString());
+
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+
+        assertNotNull(response);
+        assertEquals(ResponseStatus.TRANSACTION_PATCH_ERROR, response.getStatus());
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
