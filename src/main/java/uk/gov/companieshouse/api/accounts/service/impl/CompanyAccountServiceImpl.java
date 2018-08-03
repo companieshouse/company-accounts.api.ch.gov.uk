@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
@@ -39,7 +43,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public CompanyAccount createCompanyAccount(CompanyAccount companyAccount) throws Exception {
+    public ResponseObject createCompanyAccount(CompanyAccount companyAccount) {
         HttpServletRequest request = getRequestFromContext();
         Transaction transaction = getTransactionFromSession(request);
 
@@ -52,13 +56,24 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(companyAccount);
 
         companyAccountEntity.setId(id);
-        companyAccountRepository.insert(companyAccountEntity);
 
-        transactionManager.updateTransaction(transaction.getId(),
-                request.getHeader("X-Request-Id"),
-                companyAccountLink);
+        try {
+            companyAccountRepository.insert(companyAccountEntity);
+            transactionManager.updateTransaction(transaction.getId(),
+                    request.getHeader("X-Request-Id"),
+                    companyAccountLink);
+        } catch (DuplicateKeyException dke) {
+            LOGGER.error(dke);
+            return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
+        } catch (MongoException me) {
+            LOGGER.error(me);
+            return new ResponseObject(ResponseStatus.MONGO_ERROR);
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+            return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
+        }
 
-        return companyAccount;
+        return new ResponseObject(ResponseStatus.SUCCESS, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {

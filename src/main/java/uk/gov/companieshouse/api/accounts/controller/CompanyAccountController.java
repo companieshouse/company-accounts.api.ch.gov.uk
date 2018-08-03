@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 
 @RestController
 public class CompanyAccountController {
@@ -22,17 +23,15 @@ public class CompanyAccountController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
             HttpServletRequest request) {
-        CompanyAccount result = null;
-        try {
-            result = companyAccountService.createCompanyAccount(companyAccount);
-        } catch (Exception e) {
-            if (e.getMessage().equals("Failed to patch transaction ")) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new CompanyAccount());
-            }
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccount);
+
+        switch(response.getStatus()) {
+            case SUCCESS:
+                return ResponseEntity.status(HttpStatus.CREATED).body(response.getData());
+            case DUPLICATE_KEY_ERROR:
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-
     }
 }
