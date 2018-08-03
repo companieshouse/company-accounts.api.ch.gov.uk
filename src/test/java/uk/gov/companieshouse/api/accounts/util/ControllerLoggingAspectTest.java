@@ -92,7 +92,7 @@ public class ControllerLoggingAspectTest {
   }
 
   @Test
-  public void controlledAspectIsTriggered() throws Throwable {
+  public void controllerAspectIsTriggered() throws Throwable {
     when(companyAccountService.save(any(CompanyAccount.class), anyString()))
         .thenReturn(createdCompanyAccount);
     when(request.getSession()).thenReturn(session);
