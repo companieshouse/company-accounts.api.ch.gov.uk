@@ -11,6 +11,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class AccountsLoggerImpl implements AccountsLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+  private static final String LOG_MSG_KEY = "message";
+  private static final String STATUS_CODE_KEY = "status_code";
 
   private String requestId;
 
@@ -27,7 +29,7 @@ public class AccountsLoggerImpl implements AccountsLogger {
   public void logStartOfRequestProcessing(String message) {
     Map<String, Object> logData = new HashMap();
     addValues(logData);
-    putValue(logData, "message", message);
+    putValue(logData, LOG_MSG_KEY, message);
     putValue(logData, "identity", userId);
     LOGGER.infoContext(requestId, "", logData);
   }
@@ -35,8 +37,8 @@ public class AccountsLoggerImpl implements AccountsLogger {
   public void logEndOfRequestProcessing(String message, int statusCode, final long responseTime) {
     Map<String, Object> logData = new HashMap();
     addValues(logData);
-    putValue(logData, "message", message);
-    putValue(logData, "status_code", statusCode);
+    putValue(logData, LOG_MSG_KEY, message);
+    putValue(logData, STATUS_CODE_KEY, statusCode);
     putValue(logData, "response_time", responseTime);
     LOGGER.infoContext(requestId, "", logData);
   }
@@ -44,8 +46,8 @@ public class AccountsLoggerImpl implements AccountsLogger {
   public void logError(String message, Exception exception, int statusCode) {
     Map<String, Object> logData = new HashMap();
     addValues(logData);
-    putValue(logData, "message", message);
-    putValue(logData, "status_code", statusCode);
+    putValue(logData, LOG_MSG_KEY, message);
+    putValue(logData, STATUS_CODE_KEY, statusCode);
     LOGGER.errorContext(requestId, exception, logData);
   }
 

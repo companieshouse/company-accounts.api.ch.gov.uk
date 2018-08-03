@@ -94,10 +94,9 @@ public class ControllerLoggingAspect {
   /**
    * path variables such as transaction_id, account_it etc as a list of String.
    */
-  private List<String> pathVariables(JoinPoint joinPoint) {
+  private List pathVariables(JoinPoint joinPoint) {
     return Arrays.stream(joinPoint.getArgs())
         .filter(arg -> arg instanceof String)
-        .map(arg -> arg.toString())
         .collect(toList());
   }
 
