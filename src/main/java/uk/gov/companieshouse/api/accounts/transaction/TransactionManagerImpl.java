@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Component
 public class TransactionManagerImpl implements TransactionManager {
