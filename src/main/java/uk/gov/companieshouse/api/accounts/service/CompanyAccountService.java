@@ -9,6 +9,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
  */
 public interface CompanyAccountService {
 
-    CompanyAccount createCompanyAccount(CompanyAccount companyAccount);
+    CompanyAccount createCompanyAccount(CompanyAccount companyAccount) throws Exception;
 
 }

@@ -39,7 +39,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public CompanyAccount createCompanyAccount(CompanyAccount companyAccount) {
+    public CompanyAccount createCompanyAccount(CompanyAccount companyAccount) throws Exception {
         HttpServletRequest request = getRequestFromContext();
         Transaction transaction = getTransactionFromSession(request);
 
@@ -54,14 +54,9 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         companyAccountEntity.setId(id);
         companyAccountRepository.insert(companyAccountEntity);
 
-        boolean isPatchSuccess = transactionManager.updateTransaction(transaction.getId(),
+        transactionManager.updateTransaction(transaction.getId(),
                 request.getHeader("X-Request-Id"),
                 companyAccountLink);
-
-        if (!isPatchSuccess) {
-            LOGGER.error("Failed to patch transaction");
-            return null;
-        }
 
         return companyAccount;
     }

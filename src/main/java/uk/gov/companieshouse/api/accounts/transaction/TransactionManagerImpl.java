@@ -58,7 +58,7 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestId - id of the request
      * @param link - link of the resource to add to the transaction resources
      */
-    public void updateTransaction(String transactionId, String requestId, String link) {
+    public void updateTransaction(String transactionId, String requestId, String link) throws Exception {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("resources", createResourceMap(link));
 
@@ -69,7 +69,9 @@ public class TransactionManagerImpl implements TransactionManager {
 
         HttpEntity requestEntity = new HttpEntity(requestBody, requestHeaders);
 
-        patchTransaction(getPatchUrl(transactionId), requestEntity);
+        if (!patchTransaction(getPatchUrl(transactionId), requestEntity)) {
+            throw new Exception("Failed to patch transaction");
+        }
     }
 
     /**
@@ -152,11 +154,11 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param url - url to send the get request
      * @param requestEntity - the request entity object
      */
-    private void patchTransaction(String url, HttpEntity requestEntity) {
+    private boolean patchTransaction(String url, HttpEntity requestEntity) {
         ResponseEntity<?> response = restTemplate.exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
-        if (response.getStatusCode() != HttpStatus.OK) {
-            // insert error exceptions here
-        }
+
+        return (response.getStatusCode() != HttpStatus.OK);
+
     }
 
     /**

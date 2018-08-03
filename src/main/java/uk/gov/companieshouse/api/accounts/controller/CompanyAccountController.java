@@ -22,7 +22,17 @@ public class CompanyAccountController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
             HttpServletRequest request) {
-        CompanyAccount result = companyAccountService.createCompanyAccount(companyAccount);
+        CompanyAccount result = null;
+        try {
+            result = companyAccountService.createCompanyAccount(companyAccount);
+        } catch (Exception e) {
+            if (e.getMessage().equals("Failed to patch transaction ")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new CompanyAccount());
+            }
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
     }
 }
