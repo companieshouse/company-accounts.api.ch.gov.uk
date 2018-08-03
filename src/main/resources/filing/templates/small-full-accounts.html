@@ -364,7 +364,7 @@ ul li {
                   <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
                 </xbrli:period>
               </xbrli:context>
-              {{if $previous_period_start_on}}
+              {{if $previous_period_end_on}}
                 <xbrli:context id="PY_END">
                   <xbrli:entity>
                     <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
