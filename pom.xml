@@ -53,10 +53,51 @@
 
     <jackson.version>2.9.0.pr4</jackson.version>
 
+
     <!-- Repositories -->
     <artifactoryResolveSnapshotRepo>libs-snapshot-local</artifactoryResolveSnapshotRepo>
     <artifactoryResolveReleaseRepo>libs-release-local</artifactoryResolveReleaseRepo>
   </properties>
+
+    <dependencies>
+        <!-- Compile -->
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>environment-reader-library</artifactId>
+            <version>${environment-reader-library.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-helper-java</artifactId>
+            <version>${api-helper-java.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>${sonar-maven-plugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>structured-logging</artifactId>
+            <version>${structured-logging.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
   <dependencies>
     <!-- Compile -->

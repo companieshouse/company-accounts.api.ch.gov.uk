@@ -1,8 +1,12 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
+ import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CalledUpSharedCapitalNotPaid {
 
+    @JsonProperty("current_amount")
     private int currentAmount;
+    @JsonProperty("previous_amount")
     private int previousAmount;
 
     public int getCurrentAmount() {
