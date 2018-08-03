@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Component
 public class TransactionManagerImpl implements TransactionManager {
@@ -60,7 +58,7 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestId - id of the request
      * @param link - link of the resource to add to the transaction resources
      */
-    public void updateTransaction(String transactionId, String requestId, String link) throws Exception {
+    public void updateTransaction(String transactionId, String requestId, String link) throws PatchException {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("resources", createResourceMap(link));
 
@@ -72,7 +70,7 @@ public class TransactionManagerImpl implements TransactionManager {
         HttpEntity requestEntity = new HttpEntity(requestBody, requestHeaders);
 
         if (!patchTransaction(getPatchUrl(transactionId), requestEntity)) {
-            throw new Exception("Failed to patch transaction");
+            throw new PatchException("Failed to patch transaction");
         }
     }
 

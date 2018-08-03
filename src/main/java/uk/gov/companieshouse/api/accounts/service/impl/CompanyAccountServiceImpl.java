@@ -20,6 +20,7 @@ import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.transaction.PatchException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
@@ -59,17 +60,20 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         try {
             companyAccountRepository.insert(companyAccountEntity);
-            transactionManager.updateTransaction(transaction.getId(),
-                    request.getHeader("X-Request-Id"),
-                    companyAccountLink);
         } catch (DuplicateKeyException dke) {
             LOGGER.error(dke);
             return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException me) {
             LOGGER.error(me);
             return new ResponseObject(ResponseStatus.MONGO_ERROR);
-        } catch (Exception ex) {
-            LOGGER.error(ex);
+        }
+
+        try {
+            transactionManager.updateTransaction(transaction.getId(),
+                    request.getHeader("X-Request-Id"),
+                    companyAccountLink);
+        } catch (PatchException pe) {
+            LOGGER.error(pe);
             return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
         }
 
