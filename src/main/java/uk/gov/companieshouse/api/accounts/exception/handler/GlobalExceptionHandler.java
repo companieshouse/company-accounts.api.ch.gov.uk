@@ -14,6 +14,12 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+
+/**
+ * GlobalExceptionHandler defines handlers for generic exceptions.
+ *
+ * Api Specific Errors are handled in the Controller.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
