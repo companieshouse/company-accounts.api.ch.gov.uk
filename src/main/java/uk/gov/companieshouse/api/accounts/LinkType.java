@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts;
 
 public enum LinkType {
     SELF("self"),
+    RESOURCE("resource"),
     COMPANY_ACCOUNT("company_account"),
     SMALL_FULL("small_full_accounts"),
     ACCOUNTING_POLICY_NOTE("accounting_policy_note"),
