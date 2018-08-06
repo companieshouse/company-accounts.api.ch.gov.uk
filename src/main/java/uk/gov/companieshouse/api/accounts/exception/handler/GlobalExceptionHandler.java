@@ -28,25 +28,19 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = {NoHandlerFoundException.class})
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
   protected void handleNoHandlerFoundException(Exception ex) {
-    logError(ex, ExceptionMessage.NO_HANDLER_FOUND_EXCEPTION);
+    logError(ex);
   }
 
-  @ExceptionHandler(value = {DataAccessException.class, IOException.class,
-      IllegalArgumentException.class, IllegalStateException.class, NullPointerException.class,
-      NoSuchAlgorithmException.class, RuntimeException.class, Exception.class})
+  @ExceptionHandler(value = {RuntimeException.class, Exception.class})
   @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
   protected void handleException(Exception ex) {
-    logError(ex, getExceptionMessage(ex));
+    logError(ex);
   }
 
-  private void logError(Exception ex, ExceptionMessage exceptionMessage) {
+  private void logError(Exception ex) {
     HashMap<String, Object> message = new HashMap<>();
     message.put("message", ex.getMessage());
-    message.put("error", exceptionMessage.getMessage());
-    LOGGER.error(exceptionMessage.getError(), ex, message);
-  }
-
-  private ExceptionMessage getExceptionMessage(Exception ex) {
-    return ExceptionMessage.getExceptionMessage(ex);
+    message.put("error", ex.getClass());
+    LOGGER.error(ex, message);
   }
 }
