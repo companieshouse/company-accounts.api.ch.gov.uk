@@ -2,10 +2,7 @@ package uk.gov.companieshouse.api.accounts.exception.handler;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
