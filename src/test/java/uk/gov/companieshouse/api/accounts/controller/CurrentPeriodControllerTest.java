@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,27 +35,44 @@ public class CurrentPeriodControllerTest {
 
     @Mock
     private HttpServletRequest request;
+
     @Mock
-    private HttpSession session;
+    private HttpSession httpSessionMock;
+
     @Mock
     private CompanyAccountEntity companyAccountEntity;
+
+    @Mock
+    private SmallFull smallFull;
+
+    @Mock
+    private HttpSession session;
+
     @Mock
     private CurrentPeriod currentPeriod;
+
     @Mock
     private CurrentPeriod createdCurrentPeriod;
+
     @Mock
     private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private Map<String, String> links;
+
     @InjectMocks
     private CurrentPeriodController currentPeriodController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
+
         when(currentPeriodService.save(any(CurrentPeriod.class), anyString()))
                 .thenReturn(createdCurrentPeriod);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
                 .thenReturn(companyAccountEntity);
         when(companyAccountEntity.getId()).thenReturn("123456");
+
     }
 
     @Test

@@ -23,11 +23,6 @@ public class CurrentPeriodServiceImpl extends
     }
 
     @Override
-    public void addLinks(CurrentPeriod rest) {
-
-    }
-
-    @Override
     public void addKind(CurrentPeriod rest) {
         rest.setKind(Kind.CURRENT_PERIOD.getValue());
     }

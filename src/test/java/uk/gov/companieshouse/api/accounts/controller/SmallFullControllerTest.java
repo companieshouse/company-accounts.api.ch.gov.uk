@@ -31,19 +31,24 @@ import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SmallFullControllerTest {
 
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private CompanyAccountEntity companyAccountEntity;
+
+    @Mock
+    private SmallFull smallFull;
+
+    @Mock
+    private SmallFull createdSmallFull;
+
+    @Mock
+    private SmallFullService smallFullService;
 
     @Mock
     HttpSession session;
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private CompanyAccountEntity companyAccountEntity;
-    @Mock
-    private SmallFull smallFull;
-    @Mock
-    private SmallFull createdSmallFull;
-    @Mock
-    private SmallFullService smallFullService;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
@@ -54,6 +59,7 @@ public class SmallFullControllerTest {
         when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
                 .thenReturn(companyAccountEntity);
         when(companyAccountEntity.getId()).thenReturn("123456");
+
     }
 
     @Test

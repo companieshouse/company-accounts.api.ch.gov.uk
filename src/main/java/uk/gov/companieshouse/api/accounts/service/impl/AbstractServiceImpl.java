@@ -32,7 +32,6 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     public C save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
         addEtag(rest);
         addKind(rest);
-        addLinks(rest);
         E baseEntity = genericTransformer.transform(rest);
         baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
