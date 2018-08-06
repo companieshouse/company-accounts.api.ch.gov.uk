@@ -39,53 +39,55 @@ public class TransactionInterceptorTest {
     @Mock
     private TransactionManager transactionManagerMock;
     @Mock
-    private HttpServletRequest httpServletRequest;
+    private HttpServletRequest httpServletRequestMock;
 
     @Mock
-    private HttpServletResponse httpServletResponse;
+    private HttpServletResponse httpServletResponseMock;
+
+    @Mock
+    private HttpSession httpSessionMock;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
-        when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
-                .thenReturn(pathVariables);
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
 
-        httpServletResponse.setContentType("text/html");
+        when(httpServletRequestMock.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
+                .thenReturn(pathVariables);
+        when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("1111");
+
+        httpServletResponseMock.setContentType("text/html");
     }
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is open")
-    public void testPreHandleWithOpenTransaction() {
-        when(httpServletRequest.getSession()).thenReturn(session);
+    void testPreHandleWithOpenTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
-        assertTrue(transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object()));
+        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
+
+        assertTrue(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is closed")
-    public void testPreHandleWithClosedTransaction() {
-        when(httpServletRequest.getSession()).thenReturn(session);
+    void testPreHandleWithClosedTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
-        assertFalse(transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object()));
+        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
+
+        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor with a non-existing transaction")
-    public void testPreHandleWithNonExistingTransaction() {
+    void testPreHandleWithNonExistingTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        assertFalse(transactionInterceptor
-                .preHandle(httpServletRequest, httpServletResponse, new Object()));
-        verify(httpServletResponse).setStatus(HttpStatus.NOT_FOUND.value());
+        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        verify(httpServletResponseMock).setStatus(HttpStatus.NOT_FOUND.value());
     }
 
     /**
