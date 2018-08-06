@@ -20,37 +20,44 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
-    @Autowired
-    private TransactionInterceptor transactionInterceptor;
+  public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
+  private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
+<<<<<<< HEAD
     public static void main(String[] args) {
+=======
+  @Autowired
+  private TransactionInterceptor transactionInterceptor;
 
-        // Returns the configured ${PORT} value passed in under `server.port`.
-        // If no port is configured, return null
-        Integer port = Integer.getInteger("server.port");
+  public static void main(String[] args) {
+>>>>>>> origin/develop
 
-        if (port == null) {
-            LOGGER.error("Failed to start service, no port has been configured");
-            System.exit(0);
-        }
+    // Returns the configured ${PORT} value passed in under `server.port`.
+    // If no port is configured, return null
+    Integer port = Integer.getInteger("server.port");
 
-        SpringApplication.run(CompanyAccountsApplication.class, args);
+    if (port == null) {
+      LOGGER.error("Failed to start service, no port has been configured");
+      System.exit(0);
     }
 
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    SpringApplication.run(CompanyAccountsApplication.class, args);
+  }
 
-        return objectMapper;
-    }
+  @Bean
+  @Primary
+  public ObjectMapper objectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(transactionInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/**");
-    }
+    return objectMapper;
+  }
+
+  @Override
+  public void addInterceptors(final InterceptorRegistry registry) {
+    registry.addInterceptor(transactionInterceptor)
+        .addPathPatterns("/transactions/{transactionId}/**");
+  }
 }
