@@ -2,22 +2,20 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.AccountsType;
+import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
+import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.CalledUpSharedCapitalNotPaid;
@@ -28,6 +26,9 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.IxbrlGenerator;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorConnection;
+import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
@@ -40,11 +41,15 @@ public class FilingServiceImpl implements FilingService {
     private static final String DOCUMENT_RENDER_SERVICE_END_POINT = "/document-render/store";
     private static final String DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR = "DOCUMENT_RENDER_SERVICE_HOST";
     private static final String IXBRL_LOCATION = "s3://%s/%s/%s";
+    private static final String LINK_RELATIONSHIP = "accounts";
+    private static final String PERIOD_END_ON = "period_end_on";
     private static final String SMALL_FULL_ACCOUNT = "small-full";
-    private static final String TYPE_TEXT_HTML = "text/html";
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private IxbrlGenerator ixbrlGenerator;
+
     private EnvironmentReader environmentReader;
 
     /**
@@ -59,7 +64,7 @@ public class FilingServiceImpl implements FilingService {
         Transaction transaction = getTransaction(transactionId);
 
         if (SMALL_FULL_ACCOUNT.equals(transaction.getKind())) {
-            filing = generateAccountFiling(getAccountType(SMALL_FULL_ACCOUNT));
+            filing = generateAccountFiling(transaction, getAccountType(SMALL_FULL_ACCOUNT));
         }
 
         return filing;
@@ -86,21 +91,17 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generate the filing for the account type passed in.
      */
-    private Filing generateAccountFiling(AccountsType accountsType)
+    private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
         throws IOException {
         Filing filing = null;
         Object accountObj = getAccountInformation(accountsType.getAccountType());
 
         if (accountObj != null) {
-            String ixbrlLocation =
-                callServiceToGenerateIXBRL(accountsType,
-                    generateJson(accountsType.getAccountType(), accountObj));
-
-            //callServiceToGenerateIXBRL2(accountsType, accountObj);
+            String ixbrlLocation = callIxbrlGenerator(accountsType,
+                generateJson(accountsType.getAccountType(), accountObj));
 
             if (ixbrlLocation != null && isValidIXBL()) {
-                //TODO create the filing. Copy across from abridged since filing model has not changed.
-                filing = createAccountFiling();
+                filing = createAccountFiling(transaction, accountsType, ixbrlLocation);
             }
         }
 
@@ -108,7 +109,9 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     *
+     * Generate the json for the passed-in account. This is used in the request body when
+     * calling the service.
+     * *
      * @param accountType
      * @return
      */
@@ -123,9 +126,72 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generates the filing based on the Filing model.
      */
-    private Filing createAccountFiling() {
-        //TODO generates the filing
-        return new Filing();
+    private Filing createAccountFiling(Transaction transaction, AccountsType accountsType,
+        String ixbrlLocation) throws IOException {
+        Filing filing = new Filing();
+
+        //TODO periodEndOn is the "Current Period's end date" from the API call. Waiting for the API changes.
+        LocalDate periodEndDate = LocalDate.now();
+
+        filing.setCompanyNumber(transaction.getCompanyNumber());
+        filing.setDescriptionIdentifier(accountsType.getAccountType());
+        filing.setKind(accountsType.getKind());
+        filing.setDescription(getFilingDescription(accountsType, periodEndDate));
+        filing.setDescriptionValues(getDescriptionValues(periodEndDate));
+        filing.setData(getFilingData(periodEndDate, ixbrlLocation));
+
+        return filing;
+    }
+
+    /**
+     * Get the filing data, it contains period end date and the links (ixbrl location and
+     * relationship link).
+     *
+     * @return {@link Data}
+     */
+    private Data getFilingData(LocalDate periodEndDate, String ixbrlLocation) {
+        Data data = new Data();
+        data.setPeriodEndOn(periodEndDate);
+        data.setLinks(getFilingLinks(ixbrlLocation));
+
+        return data;
+    }
+
+    /**
+     * Get the Link containing the ixbrl location and the relationship link e.g. accounts.
+     *
+     * @return {@link List<Link>}
+     */
+    private List<Link> getFilingLinks(String ixbrlLocation) {
+        Link link = new Link();
+        link.setRelationship(LINK_RELATIONSHIP);
+        link.setHref(ixbrlLocation);
+
+        return Arrays.asList(link);
+    }
+
+    /**
+     * Get the description values, which currently contains the period end date. This data is
+     * required for the filing description.
+     */
+    private Map<String, String> getDescriptionValues(LocalDate periodEndDate) {
+        Map<String, String> descriptionValues = new HashMap<>();
+        descriptionValues.put(PERIOD_END_ON, periodEndDate.toString());
+
+        return descriptionValues;
+    }
+
+    /**
+     * Get the description for the filing. The description for the account type is retrieved by
+     * using DocumentDescriptionHelper class.
+     */
+    private String getFilingDescription(AccountsType accountsType, LocalDate periodEndDate)
+        throws IOException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(PERIOD_END_ON, periodEndDate);
+
+        return DocumentDescriptionHelper
+            .getDescription(accountsType.getFilingDescriptionKey(), parameters);
     }
 
     /**
@@ -138,6 +204,7 @@ public class FilingServiceImpl implements FilingService {
         if ("true".equals(getMandatoryEnvVariable(DISABLE_IXBRL_VALIDATION_ENV_VAR))) {
             //TODO TNEP validation needs to be added. Copy logic from abridged. Next PR
         }
+
         return isIxbrlValid;
     }
 
@@ -148,81 +215,35 @@ public class FilingServiceImpl implements FilingService {
      * @param requestBody - the body of the http request.
      * @return The location where the service has stored the generated ixbrl.
      */
-    private String callServiceToGenerateIXBRL(AccountsType accountsType, String requestBody)
+    private String callIxbrlGenerator(AccountsType accountsType, String requestBody)
         throws IOException {
         if (requestBody != null) {
-            HttpURLConnection connection = createConnectionForAccount(accountsType);
-
-            try {
-                try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
-                    out.write(requestBody.getBytes(StandardCharsets.UTF_8));
-                    out.flush();
-                }
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_CREATED) {
-                    return connection.getHeaderField("Location");
-                }
-            } finally {
-                connection.disconnect();
-            }
-        }
-
-        return null;
-    }
-
-
-    private String callServiceToGenerateIXBRL2(AccountsType accountsType, Object requestBody)
-        throws IOException {
-        String location = getIXBRLLocation(accountsType);
-        if (location != null && requestBody != null) {
-
-            HttpHeaders requestHeaders = new HttpHeaders();
-
-            requestHeaders.set("Authorization", getAPIAuthorization());
-            requestHeaders.set("assetId", accountsType.getAssetId());
-            requestHeaders.set("Location", location);
-            requestHeaders.set("templateName", accountsType.getTemplateName());
-            requestHeaders.set("Accept", TYPE_TEXT_HTML);
-            requestHeaders.add("Content-Type", TYPE_TEXT_HTML);
-
-            HttpEntity<Account> entity = new HttpEntity<>((Account) requestBody, requestHeaders);
-
-            RestTemplate restTemplate = new RestTemplate();
-            String serviceUrl = getServiceURL();
-            ResponseEntity<String> response = restTemplate
-                .exchange(serviceUrl, HttpMethod.POST, entity, String.class);
-
-            //String response = restTemplate.postForObject(serviceUrl, entity, String.class);
-            if (response.getStatusCode() == HttpStatus.CREATED) {
-                return response.getHeaders().get("Location").toString();
-            }
+            DocumentGeneratorConnection connection = getDocumentGeneratorConnection(accountsType,
+                requestBody);
+            return ixbrlGenerator.generateIXBRL(connection);
         }
 
         return null;
     }
 
     /**
-     * Get the connection information needed to call the service that generates the IXBRL.
-     *
-     * @param accountsType Account type. e.g. small full, abridged, etc.
-     * @return {@link HttpURLConnection}
+     * Create DocumentGeneratorConnectionImpl instance containing the document render's request
+     * settings. e.g. Method, Service URL, Body, etc.
      */
-    private HttpURLConnection createConnectionForAccount(AccountsType accountsType)
-        throws IOException {
-
-        //TODO this will change. Get information from environment variables.
-        String serviceUrl = getServiceURL();
-        HttpURLConnection connection = (HttpURLConnection) new URL(serviceUrl).openConnection();
-
+    private DocumentGeneratorConnection getDocumentGeneratorConnection(
+        AccountsType accountsType,
+        String requestBody) {
+        DocumentGeneratorConnection connection = new DocumentGeneratorConnection();
         connection.setRequestMethod("POST");
-        connection.setRequestProperty("Authorization", getAPIAuthorization());
-        connection.setRequestProperty("assetId", accountsType.getAssetId());
-        connection.setRequestProperty("Content-Type", TYPE_TEXT_HTML);
-        connection.setRequestProperty("Accept", TYPE_TEXT_HTML);
-        connection.setRequestProperty("Location", getIXBRLLocation(accountsType));
-        connection.setRequestProperty("templateName", accountsType.getTemplateName());
-        connection.setDoOutput(true);
+        connection.setServiceURL(getServiceURL());
+        connection.setRequestBody(requestBody);
+        connection.setAuthorizationProperty(getAPIAuthorization());
+        connection.setAssetId(accountsType.getAssetId());
+        connection.setContentType(MediaType.TEXT_HTML_VALUE);
+        connection.setAcceptType(MediaType.TEXT_HTML_VALUE);
+        connection.setLocation(getIXBRLLocation(accountsType));
+        connection.setTemplateName(accountsType.getTemplateName());
+        connection.setSetDoOutPut(true);
 
         return connection;
     }
@@ -243,6 +264,7 @@ public class FilingServiceImpl implements FilingService {
                     accountsType.getAssetId(),
                     accountsType.getResourceKey());
         }
+
         return null;
     }
 
@@ -254,7 +276,7 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Build the service URL that will be used to create the IXBRL. E.g.
+     * Build the document render service URL.
      *
      * @return the document render service end point e.g. "http://chs-dev:4082/document-render/store"
      */
@@ -278,15 +300,14 @@ public class FilingServiceImpl implements FilingService {
 
 
     /**
-     * Generate the json for the passed-in account. This will be used in the request body when
-     * calling the service.
+     * Generates the json for small full account.
      *
      * @return The account marshaled to JSON and converted to String.
      */
     private String generateCompanyAccountJSON(Account account)
         throws JsonProcessingException {
         JSONObject accountsRequestBody = new JSONObject();
-        accountsRequestBody.put("small_full_accounts", convertObjectToJson(account));
+        accountsRequestBody.put("small_full_account", convertObjectToJson(account));
 
         return accountsRequestBody.toString();
     }
@@ -326,6 +347,7 @@ public class FilingServiceImpl implements FilingService {
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
         account.setCompany(getCompany());
+
         return account;
     }
 
@@ -374,6 +396,4 @@ public class FilingServiceImpl implements FilingService {
 
         return balanceSheet;
     }
-
-
 }

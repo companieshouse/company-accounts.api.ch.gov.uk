@@ -21,7 +21,7 @@ public enum AccountsType {
     private String resourceKey;
     private String filingDescriptionKey;
 
-    private AccountsType(String accountType, String templateName, String kind, String resourceKey, String filingDescriptionKey) {
+    AccountsType(String accountType, String templateName, String kind, String resourceKey, String filingDescriptionKey) {
         this.accountType = accountType;
         this.templateName = templateName;
         this.kind = kind;
@@ -33,11 +33,7 @@ public enum AccountsType {
         return accountType;
     }
 
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
-    public String getAssetId() {
+      public String getAssetId() {
         return ASSET_ID;
     }
 
@@ -45,16 +41,8 @@ public enum AccountsType {
         return templateName;
     }
 
-    public void setTemplateName(String templateName) {
-        this.templateName = templateName;
-    }
-    
-    public String getKind() {
+      public String getKind() {
 		return kind;
-	}
-
-	public void setKind(String kind) {
-		this.kind = kind;
 	}
 
     public String getResourceKey() {
