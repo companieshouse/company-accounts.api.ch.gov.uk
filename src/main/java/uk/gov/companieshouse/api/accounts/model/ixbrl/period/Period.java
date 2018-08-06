@@ -1,10 +1,16 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.period;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Period {
 
+    @JsonProperty("current_period_start_on")
     private String currentPeriodStartOn;
+    @JsonProperty("current_period_ends_on")
     private String currentPeriodEndsOn;
+    @JsonProperty("previous_period_start_on")
     private String previousPeriodStartOn;
+    @JsonProperty("previous_period_ends_on")
     private String previousPeriodEndsOn;
 
     public String getCurrentPeriodStartOn() {
