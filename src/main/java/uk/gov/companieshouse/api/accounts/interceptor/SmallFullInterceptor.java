@@ -12,10 +12,15 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+/**
+ * The SmallFullInterceptor interceptor validates that the Smallfull entity is in the correct state
+ * for the calling request. It insures a Smallfull resource exists and matches the one stored in the
+ * CompanyAccount provided in the session. This interceptor will fail if the CompanyAccount
+ * interceptor has not run prior to its own execution.
+ */
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
@@ -41,33 +46,34 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             Object handler) throws NoSuchAlgorithmException {
 
         HttpSession session = request.getSession();
-        Transaction transaction = (Transaction) request.getSession()
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) session
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-
-        if (transaction != null && companyAccountEntity != null) {
-            String companyAccountId = companyAccountEntity.getId();
-            String smallFullId = smallFullService.generateID(companyAccountId);
-            SmallFullEntity smallFull = smallFullService.findById(smallFullId);
-
-            if (smallFull != null) {
-                String companyAccountLink = companyAccountEntity.getData().getLinks()
-                        .get(LinkType.SMALL_FULL.getLink());
-                String smallFullSelf = smallFull.getData().getLinks().get(LinkType.SELF.getLink());
-
-                if (companyAccountLink.equals(smallFullSelf)) {
-                    session.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
-                    return true;
-                }
-            }
+        if (companyAccountEntity == null) {
+            LOGGER.error(
+                    "SmallFullInterceptor failed on preHandle: Failed to retrieve a companyAccountEntity from the session.");
+            return false;
         }
-        StringBuilder sb = new StringBuilder("SmallFullInterceptor failed on preHandle");
-        if (transaction != null) {
-            sb.append(" for transaction ").append(transaction.toString());
+
+        String companyAccountId = companyAccountEntity.getId();
+        String smallFullId = smallFullService.generateID(companyAccountId);
+        SmallFullEntity smallFull = smallFullService.findById(smallFullId);
+        if (smallFull == null) {
+            LOGGER.error(
+                    "SmallFullInterceptor failed on preHandle: Failed to retrieve a SmallFull account from the Database.");
+            return false;
         }
-        sb.append(".");
-        LOGGER.error(sb.toString());
-        return false;
+
+        String companyAccountLink = companyAccountEntity.getData().getLinks()
+                .get(LinkType.SMALL_FULL.getLink());
+        String smallFullSelf = smallFull.getData().getLinks().get(LinkType.SELF.getLink());
+        if (!companyAccountLink.equals(smallFullSelf)) {
+            LOGGER.error(
+                    "SmallFullInterceptor failed on preHandle: The SmallFull self link does not exist in the CompanyAccounts links");
+            return false;
+        }
+
+        session.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
+        return true;
+
     }
 }

@@ -41,7 +41,7 @@ public class CompanyAccountControllerTest {
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
-
+    
     @InjectMocks
     private CompanyAccountController companyAccountController;
 

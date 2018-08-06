@@ -63,6 +63,6 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         registry.addInterceptor(companyAccountInterceptor)
                 .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
         registry.addInterceptor(smallFullInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/*");
     }
 }
