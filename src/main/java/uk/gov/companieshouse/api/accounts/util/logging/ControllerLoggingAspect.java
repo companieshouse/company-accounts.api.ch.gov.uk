@@ -10,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -33,15 +34,13 @@ public class ControllerLoggingAspect {
   @Around("controllerMethods()")
   public Object logTraceAndStats(ProceedingJoinPoint joinPoint) throws Throwable {
     AccountsLogger logger = getLogger(joinPoint);
-    String methodName = getMethodName(joinPoint);
-    String endMsg = null;
+    String endMsg;
 
-    logger.logStartOfRequestProcessing(String.format(AccountsUtility.START_OF_RQUEST_MSG.value(),
-        methodName));
+    logger.logStartOfRequestProcessing();
 
     long startTime = System.currentTimeMillis();
 
-    Object result = null;
+    Object result;
     //Do not change, the target method will not progress without this.
     result = joinPoint.proceed();
 
@@ -49,18 +48,13 @@ public class ControllerLoggingAspect {
     int statusCode = statusCode(result);
 
     endMsg = reqCompletedSuccessFully(statusCode)
-         ? AccountsUtility.SUCCESS_MSG.value()
-            : AccountsUtility.FAILURE_MSG.value();
+        ? AccountsUtility.SUCCESS_MSG.value()
+        : AccountsUtility.FAILURE_MSG.value();
 
-    logger.logEndOfRequestProcessing(String.format(AccountsUtility.END_OF_REQUEST_MSG.value(),
-        methodName, endMsg), statusCode(result), responseTime);
+    logger.logEndOfRequestProcessing(
+        statusCode(result),
+        responseTime);
     return result;
-  }
-
-  private String getMethodName(JoinPoint joinPoint) {
-    return String.format("%s.%s",
-        joinPoint.getSignature().getDeclaringTypeName(),
-        joinPoint.getSignature().getName());
   }
 
   private String requestId(HttpServletRequest request) {
@@ -71,9 +65,14 @@ public class ControllerLoggingAspect {
     return request.getHeader(AccountsUtility.ERIC_IDENTITY.value());
   }
 
+  private String requestPath(HttpServletRequest request) {
+    return request.getRequestURI();
+  }
+
   private AccountsLogger getLogger(JoinPoint joinPoint) {
     HttpServletRequest request = getRequest(joinPoint);
-    return new AccountsLoggerImpl(requestId(request), userId(request), pathVariables(joinPoint));
+    return new AccountsLoggerImpl(requestPath(request), request.getMethod(), requestId(request),
+        userId(request));
   }
 
   /**
@@ -92,15 +91,6 @@ public class ControllerLoggingAspect {
   }
 
   /**
-   * path variables such as transaction_id, account_it etc as a list of String.
-   */
-  private List pathVariables(JoinPoint joinPoint) {
-    return Arrays.stream(joinPoint.getArgs())
-        .filter(arg -> arg instanceof String)
-        .collect(toList());
-  }
-
-  /**
    * The HTTP status code when the request was successfully handled returns an internal server error
    * when the response is null.
    *
@@ -113,7 +103,7 @@ public class ControllerLoggingAspect {
     return HttpStatus.INTERNAL_SERVER_ERROR.value();
   }
 
-  private boolean reqCompletedSuccessFully(int statusCode){
+  private boolean reqCompletedSuccessFully(int statusCode) {
     return statusCode == HttpStatus.CREATED.value()
         || statusCode == HttpStatus.NO_CONTENT.value()
         || statusCode == HttpStatus.OK.value()

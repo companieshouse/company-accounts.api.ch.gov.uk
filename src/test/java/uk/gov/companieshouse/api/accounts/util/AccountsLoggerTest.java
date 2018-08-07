@@ -22,8 +22,8 @@ public class AccountsLoggerTest {
     List<String> resources = new ArrayList<>();
     resources.add("transactionId");
     resources.add("accountId");
-    accountsLogger = new AccountsLoggerImpl("requestId",
-        "userId", resources);
+    accountsLogger = new AccountsLoggerImpl("/smallfull","POST","requestId",
+        "userId");
   }
 
   @Test

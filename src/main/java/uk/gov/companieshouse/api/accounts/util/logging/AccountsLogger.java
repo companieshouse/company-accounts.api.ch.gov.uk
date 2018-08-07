@@ -5,9 +5,9 @@ package uk.gov.companieshouse.api.accounts.util.logging;
  */
 public interface AccountsLogger {
 
-  void logStartOfRequestProcessing(String message);
+  void logStartOfRequestProcessing();
 
-  void logEndOfRequestProcessing(String message, int statusCode, long responseTime);
+  void logEndOfRequestProcessing(int statusCode, long responseTime);
 
-  void logError(String message, Exception exception, int statusCode);
+  void logError(String message, Exception exception, int statusCode, long responseTime);
 }

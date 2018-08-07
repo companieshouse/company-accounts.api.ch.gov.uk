@@ -82,16 +82,9 @@ public class ControllerLoggingAspectTest {
   public void logTraceAndStats() throws Throwable {
     Object[] methodParameters = {request, "transactionId", companyAccount};
     when(joinPoint.getArgs()).thenReturn(methodParameters);
-    when(joinPoint.getSignature()).thenReturn(methodSignature);
-
+    stubRequest();
     constrollerLoggingAspect.logTraceAndStats(joinPoint);
-
     verify(joinPoint, times(1)).proceed();
-    //the signature is called 2 times, once
-    //to get the method name and then to get the declared type.
-    verify(joinPoint, times(2)).getSignature();
-    //verify the declaringType is called.
-    verify(methodSignature, times(1)).getDeclaringTypeName();
     //verify the X-Request-Id is fetched
     verify(request, times(1)).getHeader(REQUEST_ID);
     //verify the Eric-Identity is fetched
@@ -99,7 +92,8 @@ public class ControllerLoggingAspectTest {
   }
 
   @Test
-  public void aspectTriggeredWhenResponseSuccessful() throws Throwable {
+  public void aspectTriggeredWhenResponseSuccessful() {
+    stubRequest();
     stubApiResponse(SUCCESS);
     Object response = proxy.createCompanyAccount(companyAccount, request);
     verify(companyAccountService, times(1)).createCompanyAccount(companyAccount, transaction,
@@ -108,13 +102,20 @@ public class ControllerLoggingAspectTest {
   }
 
   @Test
-  public void aspectTriggeredWhenFailed() throws Throwable {
+  public void aspectTriggeredWhenFailed() {
+    stubRequest();
     stubApiResponse(DUPLICATE_KEY_ERROR);
     Object response = proxy.createCompanyAccount(companyAccount, request);
     verify(companyAccountService, times(1)).createCompanyAccount(companyAccount, transaction,
         "1234567890GB");
     verifyFailureResponse(response);
   }
+
+  private void stubRequest() {
+    when(request.getMethod()).thenReturn("POST");
+    when(request.getRequestURI()).thenReturn("transaction/123456-10209-100/company-account");
+  }
+
 
   private void stubApiResponse(ResponseStatus status){
     when(companyAccountService
