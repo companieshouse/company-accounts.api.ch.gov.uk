@@ -1,12 +1,17 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoCursorNotFoundException;
 import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.LinkType;
@@ -98,5 +103,13 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);
         return Base64.getUrlEncoder().encodeToString(bytes);
+    }
+
+    public CompanyAccountEntity findById(String id) {
+        Optional<CompanyAccountEntity> optional = (Optional<CompanyAccountEntity>)  companyAccountRepository.findById(id);
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 }

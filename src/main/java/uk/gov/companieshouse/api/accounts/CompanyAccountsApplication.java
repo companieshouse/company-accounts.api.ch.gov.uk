@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -23,6 +24,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
   @Autowired
   private TransactionInterceptor transactionInterceptor;
+
+  @Autowired
+  private CompanyAccountInterceptor companyAccountInterceptor;
 
   public static void main(String[] args) {
 
@@ -53,5 +57,8 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
   public void addInterceptors(final InterceptorRegistry registry) {
     registry.addInterceptor(transactionInterceptor)
         .addPathPatterns("/transactions/{transactionId}/**");
+    registry.addInterceptor(companyAccountInterceptor)
+            .addPathPatterns(
+                    "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
   }
 }
