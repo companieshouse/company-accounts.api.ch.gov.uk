@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,51 +20,44 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
 public class SmallFullControllerTest {
 
-
-    @Mock
-    HttpSession session;
     @Mock
     private HttpServletRequest request;
+
     @Mock
     private Transaction transaction;
-    @Mock
-    private CompanyAccount companyAccount;
+
     @Mock
     private SmallFull smallFull;
+
     @Mock
     private SmallFull createdSmallFull;
+
     @Mock
     private SmallFullService smallFullService;
+
     @Mock
-    private Map<String, String> links;
+    private HttpSession httpSessionMock;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(smallFullService.save(any(SmallFull.class), anyString())).thenReturn(createdSmallFull);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
-                .thenReturn(companyAccount);
-        when(transaction.getCompanyNumber()).thenReturn("123456");
-        when(companyAccount.getLinks()).thenReturn(links);
-        when(links.get("self")).thenReturn("7890");
+        doReturn(httpSessionMock).when(request).getSession();
+        doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(createdSmallFull).when(smallFullService).save(any(SmallFull.class), anyString());
+        doReturn("123456").when(transaction).getCompanyNumber();
     }
 
     @Test
