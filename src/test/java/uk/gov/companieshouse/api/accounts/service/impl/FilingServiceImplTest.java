@@ -138,7 +138,7 @@ public class FilingServiceImplTest {
     }
 
     /**
-     * Check the returned filing matches the expected filing's data
+     * Check the returned filing matches the expected filing's data.
      *
      * @param filing
      */

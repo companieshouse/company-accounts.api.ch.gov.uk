@@ -26,8 +26,8 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.IxbrlGenerator;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorConnection;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.IxbrlGenerator;
 import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
@@ -55,7 +55,10 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generate a filing with the ixbrl location that is generated for transaction and accounts id.
      *
+     * @param transactionId - transaction id
+     * @param accountsId - accounts id
      * @return {@link Filing}
+     * @throws IOException
      */
     @Override
     public Filing generateAccountFiling(String transactionId, String accountsId)
@@ -76,6 +79,9 @@ public class FilingServiceImpl implements FilingService {
 
     /**
      * Get the transaction for the transaction id by calling the SDK.
+     *
+     * @param transactionId - transaction id
+     * @return
      */
     private Transaction getTransaction(String transactionId) {
         //TODO below code to be replaced by SDK call. Functionality not there yet.
@@ -90,6 +96,12 @@ public class FilingServiceImpl implements FilingService {
 
     /**
      * Generate the filing for the account type passed in.
+     *
+     * @param transaction - transaction id
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @return {@link Filing} - null or filing with the filing information (e.g. ixbrl location,
+     * accounts name, etc)
+     * @throws IOException
      */
     private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
         throws IOException {
@@ -109,11 +121,13 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Generate the json for the passed-in account. This is used in the request body when
-     * calling the service.
-     * *
-     * @param accountType
-     * @return
+     * Generate the json for the passed-in account. This is used in the request body when calling
+     * the service.
+     *
+     * @param accountType - Account type information (e.g. small-full, abridged, etc)
+     * @param accountObj - The account's type object that's being processed (e.g. Account)
+     * @return null or ixbrl location
+     * @throws JsonProcessingException
      */
     private String generateJson(String accountType, Object accountObj)
         throws JsonProcessingException {
@@ -125,6 +139,12 @@ public class FilingServiceImpl implements FilingService {
 
     /**
      * Generates the filing based on the Filing model.
+     *
+     * @param transaction - transaction information
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @param ixbrlLocation - the location where the ixbrl is stored.
+     * @return
+     * @throws IOException
      */
     private Filing createAccountFiling(Transaction transaction, AccountsType accountsType,
         String ixbrlLocation) throws IOException {
@@ -147,6 +167,8 @@ public class FilingServiceImpl implements FilingService {
      * Get the filing data, it contains period end date and the links (ixbrl location and
      * relationship link).
      *
+     * @param periodEndDate - accounts end date
+     * @param ixbrlLocation - the location where ixbrl is stored
      * @return {@link Data}
      */
     private Data getFilingData(LocalDate periodEndDate, String ixbrlLocation) {
@@ -160,6 +182,7 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Get the Link containing the ixbrl location and the relationship link e.g. accounts.
      *
+     * @param ixbrlLocation - the location where ixbrl is stored
      * @return {@link List<Link>}
      */
     private List<Link> getFilingLinks(String ixbrlLocation) {
@@ -173,6 +196,9 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Get the description values, which currently contains the period end date. This data is
      * required for the filing description.
+     *
+     * @param periodEndDate - account's period end date
+     * @return {@link Map<String,String>} containing period end date, to match filing model
      */
     private Map<String, String> getDescriptionValues(LocalDate periodEndDate) {
         Map<String, String> descriptionValues = new HashMap<>();
@@ -184,6 +210,11 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Get the description for the filing. The description for the account type is retrieved by
      * using DocumentDescriptionHelper class.
+     *
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @param periodEndDate - account's period end date
+     * @return accounts description.
+     * @throws IOException
      */
     private String getFilingDescription(AccountsType accountsType, LocalDate periodEndDate)
         throws IOException {
@@ -211,8 +242,8 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generates the ixbrl by calling the document render service.
      *
-     * @param accountsType - account type. e.g. small-full, abridged (when migrated)
-     * @param requestBody - the body of the http request.
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @param requestBody - the http request request (json format)
      * @return The location where the service has stored the generated ixbrl.
      */
     private String callIxbrlGenerator(AccountsType accountsType, String requestBody)
@@ -229,6 +260,10 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Create DocumentGeneratorConnectionImpl instance containing the document render's request
      * settings. e.g. Method, Service URL, Body, etc.
+     *
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @param requestBody - the http request request (json format).
+     * @return {@link DocumentGeneratorConnection} with the document render service settings.
      */
     private DocumentGeneratorConnection getDocumentGeneratorConnection(
         AccountsType accountsType,
@@ -250,11 +285,11 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Returns the location where the ixbrl is stored once it has been generated by the service.
-     * E.g. "s3://dev-pdf-bucket/chs-dev/accounts/small_full_accounts"
-     * "s3://dev-pdf-bucket/chs-dev/accounts/abridged_accounts"
+     * get the location the document render service needs to stored the ixbrl document. e.g.
+     * "s3://dev-pdf-bucket/chs-dev/accounts/small_full_accounts"
      *
-     * @return the location for the account type passed in.
+     * @param accountsType - Account type information: account type, ixbrl's template name, account
+     * @return
      */
     private String getIXBRLLocation(AccountsType accountsType) {
         if (SMALL_FULL_ACCOUNT.equals(accountsType.getAccountType())) {
@@ -299,11 +334,12 @@ public class FilingServiceImpl implements FilingService {
         return environmentReader.getMandatoryString(envVariable);
     }
 
-
     /**
      * Generates the json for small full account.
      *
+     * @param account - small full's account information.
      * @return The account marshaled to JSON and converted to String.
+     * @throws JsonProcessingException
      */
     private String generateCompanyAccountJSON(Account account)
         throws JsonProcessingException {
@@ -316,7 +352,9 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Marshall object to json.
      *
+     * @param obj - object is being processed. e.g. Account object
      * @return {@link JSONObject}
+     * @throws JsonProcessingException
      */
     private <T> JSONObject convertObjectToJson(T obj) throws JsonProcessingException {
         return new JSONObject(objectMapper.writeValueAsString(obj));

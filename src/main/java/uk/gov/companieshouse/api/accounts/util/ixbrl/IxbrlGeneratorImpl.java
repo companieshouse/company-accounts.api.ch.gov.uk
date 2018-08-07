@@ -23,9 +23,11 @@ public class IxbrlGeneratorImpl implements IxbrlGenerator {
 
 
     /**
-     * Get the connection information needed to call the service that generates the ixbrl.
+     * Set the http connection information needed to call the document render service .
      *
+     * @param generatorConnection - the settings to call the document render service
      * @return {@link HttpURLConnection}
+     * @throws IOException
      */
     private HttpURLConnection createConnectionForAccount(DocumentGeneratorConnection generatorConnection)
         throws IOException {
@@ -49,7 +51,9 @@ public class IxbrlGeneratorImpl implements IxbrlGenerator {
     /**
      * Generates the ixbrl by calling the document render service.
      *
+     * @param generatorConnection - the settings to call the document render service
      * @return The location where the service has stored the generated ixbrl.
+     * @throws IOException
      */
     private String callDocumentRenderService(DocumentGeneratorConnection generatorConnection)
         throws IOException {
@@ -75,5 +79,4 @@ public class IxbrlGeneratorImpl implements IxbrlGenerator {
 
         return null;
     }
-
 }
