@@ -51,10 +51,10 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                 .addPathPatterns("/transactions/{transactionId}/**");
         registry.addInterceptor(companyAccountInterceptor)
                 .addPathPatterns(
-                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
         registry.addInterceptor(smallFullInterceptor)
                 .addPathPatterns(
-                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full**");
     }
 
     @Bean

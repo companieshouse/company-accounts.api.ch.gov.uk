@@ -64,6 +64,7 @@ public class SmallFullInterceptorTest {
         when(smallFullService.findById(anyString())).thenReturn(smallFullEntity);
         when(companyAccountEntity.getId()).thenReturn("12345");
         when(smallFullService.generateID(anyString())).thenReturn("123456");
+        when(httpServletRequest.getMethod()).thenReturn("GET");
     }
 
     @Test

@@ -45,6 +45,10 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws NoSuchAlgorithmException {
 
+        if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI().endsWith("small-full") ) {
+            return true;
+        }
+
         HttpSession session = request.getSession();
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) session
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
