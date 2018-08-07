@@ -60,8 +60,7 @@ public class SmallFullInterceptorTest {
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
         when(httpServletRequest.getSession()).thenReturn(session);
-        when(session.getAttribute(anyString())).thenReturn(transaction)
-                .thenReturn(companyAccountEntity);
+        when(session.getAttribute(anyString())).thenReturn(companyAccountEntity);
         when(smallFullService.findById(anyString())).thenReturn(smallFullEntity);
         when(companyAccountEntity.getId()).thenReturn("12345");
         when(smallFullService.generateID(anyString())).thenReturn("123456");

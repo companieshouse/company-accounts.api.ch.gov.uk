@@ -68,7 +68,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
             LOGGER.error(
                     "CompanyAccountInterceptor failed on preHandle: Failed to retrieve a CompanyAccount for "
                             + transaction
-                            .toString() + ".");
+                            .getId() + ".");
             return false;
         }
 
@@ -77,9 +77,9 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         Map<String, Resources> resourcesList = transaction.getResources();
         if (!isLinkInResourceMap(resourcesList, accountsSelf)) {
             LOGGER.error(
-                    "CompanyAccountInterceptor failed on preHandle: Failed to find the CompanyAccount self link in the Transactions links"
+                    "CompanyAccountInterceptor failed on preHandle: Failed to find the CompanyAccount self link in the Transactions links "
                             + transaction
-                            .toString() + ".");
+                            .getId() + ".");
             return false;
         }
 

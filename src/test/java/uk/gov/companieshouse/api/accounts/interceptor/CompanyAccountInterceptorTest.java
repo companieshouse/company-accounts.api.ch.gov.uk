@@ -22,13 +22,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.transaction.Resources;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,8 +50,6 @@ public class CompanyAccountInterceptorTest {
     @Mock
     private HttpServletResponse httpServletResponse;
     @Mock
-    private Map<String, String> transactionLinks;
-    @Mock
     private Map<String, String> companyAccountslinks;
     @InjectMocks
     private CompanyAccountInterceptor companyAccountInterceptor;
@@ -60,6 +58,7 @@ public class CompanyAccountInterceptorTest {
     public void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("companyAccountId", "123456");
+
         when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
                 .thenReturn(pathVariables);
         when(httpServletRequest.getSession()).thenReturn(session);
@@ -70,12 +69,19 @@ public class CompanyAccountInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() {
-        when(transaction.getLinks()).thenReturn(transactionLinks);
+        Map<String, Resources> resourcesList = new HashMap<>();
+        Map<String, String> link = new HashMap<>();
+        link.put("resource", "linkToCompanyAccount");
+        Resources resource = new Resources();
+        resource.setKind(Kind.COMPANY_ACCOUNTS.getValue());
+        resource.setLinks(link);
+        resourcesList.put("", resource);
+
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
         when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountslinks);
         when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
-        when(transactionLinks.get("company_account")).thenReturn("linkToCompanyAccount");
         when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
+        when(transaction.getResources()).thenReturn(resourcesList);
         assertTrue(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
         verify(companyAccountService, times(1)).findById(anyString());
