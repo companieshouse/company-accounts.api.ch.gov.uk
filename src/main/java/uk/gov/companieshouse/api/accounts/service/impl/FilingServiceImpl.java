@@ -35,7 +35,7 @@ import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 @Service
 public class FilingServiceImpl implements FilingService {
 
-    private static final String API_KEY = "CHS_API_KEY";
+    private static final String API_KEY_ENV_VAR = "CHS_API_KEY";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String DOCUMENT_BUCKET_NAME_ENV_VAR = "DOCUMENT_BUCKET_NAME";
     private static final String DOCUMENT_RENDER_SERVICE_END_POINT = "/document-render/store";
@@ -80,7 +80,7 @@ public class FilingServiceImpl implements FilingService {
     private Transaction getTransaction(String transactionId) {
         //TODO below code to be replaced by SDK call. Functionality not there yet.
         Transaction transaction = new Transaction();
-        transaction.setCompanyNumber("SC344891");
+        transaction.setCompanyNumber("12345678");
         transaction.setStatus(TransactionStatus.CLOSED.getStatus());
         transaction.setId(transactionId);
         transaction.setKind(SMALL_FULL_ACCOUNT);
@@ -130,7 +130,7 @@ public class FilingServiceImpl implements FilingService {
         String ixbrlLocation) throws IOException {
         Filing filing = new Filing();
 
-        //TODO periodEndOn is the "Current Period's end date" from the API call. Waiting for the API changes.
+        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes.
         LocalDate periodEndDate = LocalDate.now();
 
         filing.setCompanyNumber(transaction.getCompanyNumber());
@@ -234,6 +234,7 @@ public class FilingServiceImpl implements FilingService {
         AccountsType accountsType,
         String requestBody) {
         DocumentGeneratorConnection connection = new DocumentGeneratorConnection();
+
         connection.setRequestMethod("POST");
         connection.setServiceURL(getServiceURL());
         connection.setRequestBody(requestBody);
@@ -272,7 +273,7 @@ public class FilingServiceImpl implements FilingService {
      * Get the API key needed to call the service.
      */
     private String getAPIAuthorization() {
-        return getMandatoryEnvVariable(API_KEY);
+        return getMandatoryEnvVariable(API_KEY_ENV_VAR);
     }
 
     /**
@@ -318,10 +319,7 @@ public class FilingServiceImpl implements FilingService {
      * @return {@link JSONObject}
      */
     private <T> JSONObject convertObjectToJson(T obj) throws JsonProcessingException {
-        String jsonString = "";
-        jsonString = objectMapper.writeValueAsString(obj);
-
-        return new JSONObject(jsonString);
+        return new JSONObject(objectMapper.writeValueAsString(obj));
     }
 
     /**
