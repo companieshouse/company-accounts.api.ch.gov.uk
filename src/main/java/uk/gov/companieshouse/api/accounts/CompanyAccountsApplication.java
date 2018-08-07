@@ -1,9 +1,8 @@
 package uk.gov.companieshouse.api.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,8 +19,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
 
-    @Autowired
-    private TransactionInterceptor transactionInterceptor;
+    public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
@@ -29,7 +28,8 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     @Autowired
     private CompanyAccountInterceptor companyAccountInterceptor;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+    @Autowired
+    private TransactionInterceptor transactionInterceptor;
 
     public static void main(String[] args) {
 
@@ -45,6 +45,18 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         SpringApplication.run(CompanyAccountsApplication.class, args);
     }
 
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(transactionInterceptor)
+                .addPathPatterns("/transactions/{transactionId}/**");
+        registry.addInterceptor(companyAccountInterceptor)
+                .addPathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
+        registry.addInterceptor(smallFullInterceptor)
+                .addPathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+    }
+
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
@@ -56,13 +68,4 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         return objectMapper;
     }
 
-    @Override
-    public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(transactionInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/**");
-        registry.addInterceptor(companyAccountInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
-        registry.addInterceptor(smallFullInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
-    }
 }
