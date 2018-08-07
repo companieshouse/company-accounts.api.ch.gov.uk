@@ -1,9 +1,8 @@
 package uk.gov.companieshouse.api.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,46 +18,46 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
 
-  public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
-  private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
-  @Autowired
-  private TransactionInterceptor transactionInterceptor;
+    @Autowired
+    private TransactionInterceptor transactionInterceptor;
 
-  @Autowired
-  private CompanyAccountInterceptor companyAccountInterceptor;
+    @Autowired
+    private CompanyAccountInterceptor companyAccountInterceptor;
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    // Returns the configured ${PORT} value passed in under `server.port`.
-    // If no port is configured, return null
-    Integer port = Integer.getInteger("server.port");
+        // Returns the configured ${PORT} value passed in under `server.port`.
+        // If no port is configured, return null
+        Integer port = Integer.getInteger("server.port");
 
-    if (port == null) {
-      LOGGER.error("Failed to start service, no port has been configured");
-      System.exit(0);
+        if (port == null) {
+            LOGGER.error("Failed to start service, no port has been configured");
+            System.exit(0);
+        }
+
+        SpringApplication.run(CompanyAccountsApplication.class, args);
     }
 
-    SpringApplication.run(CompanyAccountsApplication.class, args);
-  }
+    @Bean
+    @Primary
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-  @Bean
-  @Primary
-  public ObjectMapper objectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-    objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return objectMapper;
+    }
 
-    return objectMapper;
-  }
-
-  @Override
-  public void addInterceptors(final InterceptorRegistry registry) {
-    registry.addInterceptor(transactionInterceptor)
-        .addPathPatterns("/transactions/{transactionId}/**");
-    registry.addInterceptor(companyAccountInterceptor)
-            .addPathPatterns(
-                    "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
-  }
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(transactionInterceptor)
+                .addPathPatterns("/transactions/{transactionId}/**");
+        registry.addInterceptor(companyAccountInterceptor)
+                .addPathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
+    }
 }
