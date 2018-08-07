@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -38,33 +38,40 @@ public class CurrentPeriodControllerTest {
 
     @Mock
     private HttpServletRequest request;
+
     @Mock
-    private HttpSession session;
+    private HttpSession httpSessionMock;
+
     @Mock
     private Transaction transaction;
+
     @Mock
     private SmallFull smallFull;
+
     @Mock
     private CurrentPeriod currentPeriod;
+
     @Mock
     private CurrentPeriod createdCurrentPeriod;
+
     @Mock
     private CurrentPeriodService currentPeriodService;
+
     @Mock
     private Map<String, String> links;
+
     @InjectMocks
     private CurrentPeriodController currentPeriodController;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(currentPeriodService.save(any(CurrentPeriod.class), anyString()))
-                .thenReturn(createdCurrentPeriod);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(session.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
-        when(transaction.getCompanyNumber()).thenReturn("123456");
-        when(smallFull.getLinks()).thenReturn(links);
-        when(links.get("self")).thenReturn("7890");
+        doReturn(createdCurrentPeriod).when(currentPeriodService).save(any(CurrentPeriod.class), anyString());
+        doReturn(httpSessionMock).when(request).getSession();
+        doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
+        doReturn("123456").when(transaction).getCompanyNumber();
+        doReturn(links).when(smallFull).getLinks();
+        doReturn("7890").when(links).get("self");
     }
 
     @Test
