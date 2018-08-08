@@ -63,6 +63,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) session
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
+            debugMap.put("message", "CompanyAccountInterceptor error: no transaction in request session");
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
