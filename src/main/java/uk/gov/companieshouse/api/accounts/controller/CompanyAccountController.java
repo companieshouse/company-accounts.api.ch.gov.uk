@@ -18,8 +18,8 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 @RestController
 public class CompanyAccountController {
 
-    @Autowired
-    private CompanyAccountService companyAccountService;
+  @Autowired
+  private CompanyAccountService companyAccountService;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
             produces = MediaType.APPLICATION_JSON_VALUE)

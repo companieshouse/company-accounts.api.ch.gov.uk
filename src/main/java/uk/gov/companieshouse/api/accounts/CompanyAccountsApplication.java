@@ -17,7 +17,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
-
   public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
   private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
