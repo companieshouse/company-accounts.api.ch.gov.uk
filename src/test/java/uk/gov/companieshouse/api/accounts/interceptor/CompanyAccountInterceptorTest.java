@@ -1,4 +1,5 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +30,11 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.transaction.Resources;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountInterceptorTest {
+
     @Mock
     private HttpSession session;
     @Mock
@@ -49,6 +53,7 @@ public class CompanyAccountInterceptorTest {
     private Map<String, String> companyAccountslinks;
     @InjectMocks
     private CompanyAccountInterceptor companyAccountInterceptor;
+
     @BeforeEach
     public void setUp() {
         Map<String, String> pathVariables = new HashMap<>();
@@ -59,6 +64,7 @@ public class CompanyAccountInterceptorTest {
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
     }
+
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() {

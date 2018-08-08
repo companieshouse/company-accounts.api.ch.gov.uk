@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -27,7 +28,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
