@@ -10,7 +10,7 @@ public interface AbstractService<C extends RestObject, E extends BaseEntity> {
 
     void addEtag(C rest);
 
-    void addLinks(C rest);
+    public E findById(String id);
 
     void addKind(C rest);
 

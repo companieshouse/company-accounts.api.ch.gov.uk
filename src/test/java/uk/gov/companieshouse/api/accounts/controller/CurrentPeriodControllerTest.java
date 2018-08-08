@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -21,18 +21,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodControllerTest {
 
@@ -43,10 +40,13 @@ public class CurrentPeriodControllerTest {
     private HttpSession httpSessionMock;
 
     @Mock
-    private Transaction transaction;
+    private CompanyAccountEntity companyAccountEntity;
 
     @Mock
     private SmallFull smallFull;
+
+    @Mock
+    private HttpSession session;
 
     @Mock
     private CurrentPeriod currentPeriod;
@@ -65,13 +65,14 @@ public class CurrentPeriodControllerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        doReturn(createdCurrentPeriod).when(currentPeriodService).save(any(CurrentPeriod.class), anyString());
-        doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn("123456").when(transaction).getCompanyNumber();
-        doReturn(links).when(smallFull).getLinks();
-        doReturn("7890").when(links).get("self");
+
+        when(currentPeriodService.save(any(CurrentPeriod.class), anyString()))
+                .thenReturn(createdCurrentPeriod);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()))
+                .thenReturn(companyAccountEntity);
+        when(companyAccountEntity.getId()).thenReturn("123456");
+
     }
 
     @Test

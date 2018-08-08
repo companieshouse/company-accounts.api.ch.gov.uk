@@ -13,4 +13,6 @@ public interface CompanyAccountService {
 
     ResponseObject createCompanyAccount(CompanyAccount companyAccount, Transaction transaction, String requestId);
 
+    CompanyAccountEntity findById(String id);
+
 }
