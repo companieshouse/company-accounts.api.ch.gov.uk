@@ -53,6 +53,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) throws NoSuchAlgorithmException {
 
+        //The GET and POST mappings are the same URL, on a POST the small-full will not exist as yet
+        //so we do not want to run this interceptor.
         if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
                 .endsWith("small-full")) {
             return true;
