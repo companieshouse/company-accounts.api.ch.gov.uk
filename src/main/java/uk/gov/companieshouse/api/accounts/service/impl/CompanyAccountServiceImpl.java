@@ -1,46 +1,99 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import java.security.NoSuchAlgorithmException;
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.api.accounts.Kind;
+import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.transaction.PatchException;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
+import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public class CompanyAccountServiceImpl extends
-        AbstractServiceImpl<CompanyAccount, CompanyAccountEntity> implements CompanyAccountService {
+public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Autowired
-    public CompanyAccountServiceImpl(
-            @Qualifier("companyAccountRepository") MongoRepository<CompanyAccountEntity, String> mongoRepository,
-            @Qualifier("companyAccountTransformer") GenericTransformer<CompanyAccount, CompanyAccountEntity> transformer) {
-        super(mongoRepository, transformer);
+    private TransactionManager transactionManager;
+
+    @Autowired
+    private CompanyAccountRepository companyAccountRepository;
+
+    @Autowired
+    private CompanyAccountTransformer companyAccountTransformer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+
+    /**
+     * {@inheritDoc}
+     */
+    public ResponseObject createCompanyAccount(CompanyAccount companyAccount, Transaction transaction, String requestId) {
+        String id = generateID();
+        String companyAccountLink = createSelfLink(transaction, id);
+        addKind(companyAccount);
+        addEtag(companyAccount);
+        addLinks(companyAccount, companyAccountLink);
+
+        CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(companyAccount);
+
+        companyAccountEntity.setId(id);
+
+        try {
+            companyAccountRepository.insert(companyAccountEntity);
+        } catch (DuplicateKeyException dke) {
+            LOGGER.error(dke);
+            return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
+        } catch (MongoException me) {
+            LOGGER.error(me);
+            return new ResponseObject(ResponseStatus.MONGO_ERROR);
+        }
+
+        try {
+            transactionManager.updateTransaction(transaction.getId(), requestId, companyAccountLink);
+        } catch (PatchException pe) {
+            LOGGER.error(pe);
+            return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
+        }
+
+        return new ResponseObject(ResponseStatus.SUCCESS, companyAccount);
     }
 
-    @Override
-    public void addLinks(CompanyAccount rest) {
-
+    private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
+        Map<String, String> map = new HashMap<>();
+        map.put(LinkType.SELF.getLink(), companyAccountLink);
+        companyAccount.setLinks(map);
     }
 
-    @Override
-    public String getResourceName() {
-        return "company-account";
+    private String createSelfLink(Transaction transaction, String id) {
+        return getTransactionSelfLink(transaction) + "/company-accounts/" + id;
     }
 
-    @Override
-    public void addKind(CompanyAccount rest) {
-        rest.setKind(Kind.ACCOUNT.getValue());
+    private String getTransactionSelfLink(Transaction transaction) {
+        return transaction.getLinks().get(LinkType.SELF.getLink());
+    }
+    
+    private void addKind(CompanyAccount rest) {
+        rest.setKind("company-accounts#company-accounts");
     }
 
-    @Override
-    public String generateID(String value) throws NoSuchAlgorithmException {
+    private void addEtag(CompanyAccount rest) {
+        rest.setEtag(GenerateEtagUtil.generateEtag());
+    }
+
+    public String generateID() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);
