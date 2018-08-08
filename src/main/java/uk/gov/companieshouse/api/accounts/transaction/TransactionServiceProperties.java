@@ -1,22 +1,17 @@
 package uk.gov.companieshouse.api.accounts.transaction;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix="transactions")
 public class TransactionServiceProperties {
-    @NotBlank
     private String rootUri;
 
-    @NotBlank
     private String baseUrl;
 
-    @NotBlank
     private String patchUrl;
 
-    @NotBlank
     private String apiKey;
 
     public String getRootUri() {
