@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
@@ -29,7 +30,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+
     @Autowired
     private SmallFullService smallFullService;
 
