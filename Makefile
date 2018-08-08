@@ -31,6 +31,7 @@ test-unit: clean
 package:
 	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found: $(artifact_name)"; exit 1; }
 	$(eval tmpdir:=$(shell mktemp -d build-XXXXXXXXXX))
+	cp ./routes.yaml $(tmpdir)
 	cp ./start.sh $(tmpdir)
 	cp ./target/$(artifact_name)-$(version).jar $(tmpdir)/$(artifact_name).jar
 	cd $(tmpdir); zip -r ../$(artifact_name)-$(version).zip *
