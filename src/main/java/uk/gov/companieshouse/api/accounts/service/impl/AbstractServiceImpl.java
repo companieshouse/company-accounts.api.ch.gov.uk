@@ -1,21 +1,30 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import com.mongodb.MongoException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.service.AbstractService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEntity> implements
         AbstractService<C, E> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     public MongoRepository mongoRepository;
 
@@ -34,7 +43,17 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
         addLinks(rest);
         E baseEntity = genericTransformer.transform(rest);
         baseEntity.setId(generateID(companyAccountId));
+
+        try {
+            mongoRepository.insert(baseEntity);
+        } catch (DuplicateKeyException | MongoException e) {
+            LOGGER.error(e);
+            throw e;
+        }
+
         mongoRepository.save(baseEntity);
+
+
         return rest;
     }
 

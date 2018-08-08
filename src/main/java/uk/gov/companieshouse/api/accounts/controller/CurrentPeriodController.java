@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -24,11 +26,20 @@ public class CurrentPeriodController {
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
-            HttpServletRequest request)
-            throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
-        CurrentPeriod result = currentPeriodService
-                .save(currentPeriod, transaction.getCompanyNumber());
+            HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getSession()
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        CurrentPeriod result = null;
+        try {
+            result = currentPeriodService
+                    .save(currentPeriod, transaction.getCompanyNumber());
+        } catch (DuplicateKeyException dke) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (NoSuchAlgorithmException | MongoException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
     }
