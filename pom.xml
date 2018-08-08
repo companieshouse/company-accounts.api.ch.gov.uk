@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.companieshouse</groupId>
@@ -15,7 +14,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.3.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
@@ -31,6 +30,7 @@
         <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
         <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
         <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
+        <company-accounts-library.version>5a6005b</company-accounts-library.version>
         <httpclient.version>4.5.6</httpclient.version>
 
         <!-- Maven and Surefire plugins -->
@@ -42,7 +42,7 @@
         <!-- JUnit testing -->
         <junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
         <mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
-        
+
         <!-- Jacoco -->
         <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
 
@@ -94,6 +94,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>company-accounts-library</artifactId>
+            <version>${company-accounts-library.version}</version>
+      </dependency>
+      <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
@@ -104,7 +109,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--  Test  -->
+        <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -125,8 +130,8 @@
     </dependencies>
 
     <profiles>
-        <!-- release-publish is the profile that is activated when the build server builds and
-             publishes a release project to the cloud artifactory -->
+        <!-- release-publish is the profile that is activated when the build 
+            server builds and publishes a release project to the cloud artifactory -->
         <profile>
             <id>release-publish</id>
             <activation>
@@ -145,8 +150,8 @@
                 </repository>
             </distributionManagement>
         </profile>
-        <!-- dev-publish is the profile that is activated when the build server builds and publishes
-             a dev snapshot project to the cloud artifactory -->
+        <!-- dev-publish is the profile that is activated when the build 
+            server builds and publishes a dev snapshot project to the cloud artifactory -->
         <profile>
             <id>dev-publish</id>
             <activation>
@@ -165,9 +170,10 @@
                 </repository>
             </distributionManagement>
         </profile>
-        <!-- dev is the profile that is activated by default. This is only for developers as it does
-             not publish to any repository. It just downloads dependencies, compiles code and builds jar
-             for running the application and then runs the tests. -->
+        <!-- dev is the profile that is activated by default. This is only 
+            for developers as it does not publish to any repository. It just downloads 
+            dependencies, compiles code and builds jar for running the application and 
+            then runs the tests. -->
         <profile>
             <id>dev</id>
             <activation>
@@ -230,24 +236,24 @@
                         </dependencies>
                     </plugin>
                     <plugin>
-                      <groupId>org.jacoco</groupId>
-                      <artifactId>jacoco-maven-plugin</artifactId>
-                      <version>${jacoco-maven-plugin.version}</version>
-                      <executions>
-                        <execution>
-                          <id>default-prepare-agent</id>
-                          <goals>
-                            <goal>prepare-agent</goal>
-                          </goals>
-                        </execution>
-                        <execution>
-                          <id>default-report</id>
-                          <phase>prepare-package</phase>
-                          <goals>
-                            <goal>report</goal>
-                          </goals>
-                        </execution>
-                      </executions>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
