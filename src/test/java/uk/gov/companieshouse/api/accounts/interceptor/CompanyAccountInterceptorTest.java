@@ -56,30 +56,17 @@ public class CompanyAccountInterceptorTest {
 
     @BeforeEach
     public void setUp() {
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
-        when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
-                .thenReturn(pathVariables);
         when(httpServletRequest.getSession()).thenReturn(session);
         when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
     }
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() {
-        Map<String, Resources> resourcesList = new HashMap<>();
-        Map<String, String> link = new HashMap<>();
-        link.put("resource", "linkToCompanyAccount");
-        Resources resource = new Resources();
-        resource.setKind(Kind.COMPANY_ACCOUNTS.getValue());
-        resource.setLinks(link);
-        resourcesList.put("", resource);
-        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
-        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountslinks);
+        setUpPathVariable();
+        setUpReourceList("linkToCompanyAccount");
+        setUpCompanyAccount();
         when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
-        when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
-        when(transaction.getResources()).thenReturn(resourcesList);
         assertTrue(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
         verify(companyAccountService, times(1)).findById(anyString());
@@ -88,7 +75,16 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
+    public void testReturnsFalseForATransactionIsNull() {
+        when(session.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(null);
+        assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
     public void testReturnsFalseForAFailedLookup() {
+        setUpPathVariable();
         when(companyAccountService.findById(anyString())).thenReturn(null);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
@@ -98,21 +94,37 @@ public class CompanyAccountInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false when the two links do not match")
     public void testReturnsFalseForLinksThatDoNotMatch() {
+        setUpPathVariable();
+        setUpReourceList("badLink");
+        setUpCompanyAccount();
         when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
-        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
-        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountslinks);
-        when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
+        assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
+        verify(companyAccountService, times(1)).findById(anyString());
+    }
+
+    private void setUpPathVariable() {
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+        when(httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
+                .thenReturn(pathVariables);
+    }
+
+    private void setUpReourceList(String linkToAdd) {
         Map<String, Resources> resourcesList = new HashMap<>();
         Map<String, String> link = new HashMap<>();
-        link.put("resource", "badLink");
+        link.put("resource", linkToAdd);
         Resources resource = new Resources();
         resource.setKind(Kind.COMPANY_ACCOUNTS.getValue());
         resource.setLinks(link);
         resourcesList.put("", resource);
         when(transaction.getResources()).thenReturn(resourcesList);
-        assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
-        verify(companyAccountService, times(1)).findById(anyString());
+    }
+
+    private void setUpCompanyAccount() {
+        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
+        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountslinks);
+        when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
     }
 
 }

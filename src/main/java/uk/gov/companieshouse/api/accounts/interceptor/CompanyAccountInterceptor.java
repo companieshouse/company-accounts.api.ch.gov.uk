@@ -63,9 +63,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) session
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
-            LOGGER.debugRequest(request,
-                    "CompanyAccountInterceptor error: Failed to retrieve a transaction from the session.",
-                    debugMap);
+            LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
