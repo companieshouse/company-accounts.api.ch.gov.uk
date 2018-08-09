@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.util.ixbrl;
+package uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

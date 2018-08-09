@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.util.ixbrl;
+package uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator;
 
 public class DocumentGeneratorConnection {
     private String requestMethod;
