@@ -6,9 +6,11 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -26,28 +28,27 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private TransactionManager transactionManager;
-
     @Autowired
     private CompanyAccountRepository companyAccountRepository;
-
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
 
     /**
      * {@inheritDoc}
      */
-    public ResponseObject createCompanyAccount(CompanyAccount companyAccount, Transaction transaction, String requestId) {
+    public ResponseObject createCompanyAccount(CompanyAccount companyAccount,
+            Transaction transaction, String requestId) {
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
         addEtag(companyAccount);
         addLinks(companyAccount, companyAccountLink);
 
-        CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(companyAccount);
+        CompanyAccountEntity companyAccountEntity = companyAccountTransformer
+                .transform(companyAccount);
 
         companyAccountEntity.setId(id);
 
@@ -62,7 +63,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         }
 
         try {
-            transactionManager.updateTransaction(transaction.getId(), requestId, companyAccountLink);
+            transactionManager
+                    .updateTransaction(transaction.getId(), requestId, companyAccountLink);
         } catch (PatchException pe) {
             LOGGER.error(pe);
             return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
@@ -84,7 +86,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     private String getTransactionSelfLink(Transaction transaction) {
         return transaction.getLinks().get(LinkType.SELF.getLink());
     }
-    
+
     private void addKind(CompanyAccount rest) {
         rest.setKind("company-accounts#company-accounts");
     }
@@ -98,5 +100,14 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);
         return Base64.getUrlEncoder().encodeToString(bytes);
+    }
+
+    public CompanyAccountEntity findById(String id) {
+        Optional<CompanyAccountEntity> optional = (Optional<CompanyAccountEntity>) companyAccountRepository
+                .findById(id);
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 }
