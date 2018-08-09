@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.SUCCESS;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ServiceResponseResolver;
 
 @RestController
 public class CompanyAccountController {
@@ -21,23 +24,20 @@ public class CompanyAccountController {
     @Autowired
     private CompanyAccountService companyAccountService;
 
-    @PostMapping(value = "/transactions/{transactionId}/company-accounts",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-            HttpServletRequest request) {
+    @Autowired
+    private ServiceResponseResolver serviceResponseResolver;
 
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+    @PostMapping(value = "/transactions/{transactionId}/company-accounts",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
+        HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request.getSession()
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccount, transaction, requestId);
-
-        switch(response.getStatus()) {
-            case SUCCESS:
-                return ResponseEntity.status(HttpStatus.CREATED).body(response.getData());
-            case DUPLICATE_KEY_ERROR:
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        ResponseObject response = companyAccountService
+            .createCompanyAccount(companyAccount, transaction, requestId);
+        return serviceResponseResolver.resolve(response);
     }
 }

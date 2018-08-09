@@ -22,6 +22,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ServiceResponseResolver;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -41,6 +42,9 @@ public class CompanyAccountControllerTest {
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
+
+    @Mock
+    private ServiceResponseResolver exceptionResolver;
   
     @InjectMocks
     private CompanyAccountController companyAccountController;
@@ -58,6 +62,9 @@ public class CompanyAccountControllerTest {
     void canCreateAccountSuccesfully()  {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS, companyAccountMock);
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        when(exceptionResolver.resolve(responseObject)).thenReturn(responseEntity);
+
 
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
@@ -73,6 +80,9 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR, companyAccountMock);
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
 
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        when(exceptionResolver.resolve(responseObject)).thenReturn(responseEntity);
+
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
         assertNotNull(response);
@@ -84,6 +94,9 @@ public class CompanyAccountControllerTest {
     void canCreateAccountWithInternalError()  {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.MONGO_ERROR, companyAccountMock);
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        when(exceptionResolver.resolve(responseObject)).thenReturn(responseEntity);
+
 
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
