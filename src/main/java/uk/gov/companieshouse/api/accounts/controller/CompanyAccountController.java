@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,16 +23,18 @@ public class CompanyAccountController {
     private CompanyAccountService companyAccountService;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-            HttpServletRequest request) {
+        HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getSession()
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccount, transaction, requestId);
+        ResponseObject response = companyAccountService
+            .createCompanyAccount(companyAccount, transaction, requestId);
 
-        switch(response.getStatus()) {
+        switch (response.getStatus()) {
             case SUCCESS:
                 return ResponseEntity.status(HttpStatus.CREATED).body(response.getData());
             case DUPLICATE_KEY_ERROR:
@@ -39,5 +42,15 @@ public class CompanyAccountController {
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping(value = "/transactions/{transactionId}/company-accounts",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getCompanyAccount(HttpServletRequest request) {
+
+        CompanyAccount companyAccount = (CompanyAccount) request.getSession()
+            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        return ResponseEntity.status(HttpStatus.OK).body(companyAccount);
+
     }
 }
