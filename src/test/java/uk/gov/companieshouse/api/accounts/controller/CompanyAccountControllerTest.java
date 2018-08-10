@@ -63,8 +63,6 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS, companyAccountMock);
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
-        when(apiResponseGenerator.generateApiResponse(responseObject)).thenReturn(responseEntity);
-
 
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
@@ -81,7 +79,8 @@ public class CompanyAccountControllerTest {
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        when(apiResponseGenerator.generateApiResponse(responseObject)).thenReturn(responseEntity);
+        when(apiResponseGenerator.generateApiResponse(responseObject.getStatus(), responseObject.getData(),
+            responseObject.getErrorData())).thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
@@ -95,7 +94,8 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.MONGO_ERROR, companyAccountMock);
         when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        when(apiResponseGenerator.generateApiResponse(responseObject)).thenReturn(responseEntity);
+        when(apiResponseGenerator.generateApiResponse(responseObject.getStatus(), responseObject.getData(),
+            responseObject.getErrorData())).thenReturn(responseEntity);
 
 
         ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
