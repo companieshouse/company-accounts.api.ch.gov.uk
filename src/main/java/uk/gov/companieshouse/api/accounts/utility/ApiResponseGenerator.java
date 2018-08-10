@@ -3,16 +3,15 @@ package uk.gov.companieshouse.api.accounts.utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.service.response.ErrorData;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 
 @Component
 public class ApiResponseGenerator {
 
     /**
-     * Builds a Response Entity based on the supplied status, entity and error data.
-     * @param responseObject
+     * Builds a Response Entity based on the
+     * status, entity and error data encapsulated in the ResponseObject.
+     * @param responseObject - response received from the service methods
      * @return
      */
     public ResponseEntity getApiResponse(ResponseObject responseObject) {
@@ -20,9 +19,9 @@ public class ApiResponseGenerator {
             case SUCCESS_CREATED:
                 return ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
             case DUPLICATE_KEY_ERROR:
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
             default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

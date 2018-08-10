@@ -1,12 +1,8 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoException;
-import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +34,6 @@ public class CurrentPeriodController {
         ResponseObject<CurrentPeriod> result = currentPeriodService
             .save(currentPeriod, transaction.getCompanyNumber());
 
-        return apiResponseGenerator
-            .getApiResponse(result);
+        return apiResponseGenerator.getApiResponse(result);
     }
 }

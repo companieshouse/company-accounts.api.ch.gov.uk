@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.ID_GENERATION_ERROR;
 
 import com.mongodb.MongoException;
@@ -11,8 +10,6 @@ import java.util.Base64;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
