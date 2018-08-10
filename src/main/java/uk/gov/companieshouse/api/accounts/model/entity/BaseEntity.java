@@ -1,9 +1,10 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
+import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class BaseEntity {
+public class BaseEntity implements Serializable {
 
     @Id
     @Field("_id")
