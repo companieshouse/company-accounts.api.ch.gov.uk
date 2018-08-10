@@ -4,7 +4,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class BaseEntity implements Serializable {
+public class BaseEntity {
 
     @Id
     @Field("_id")

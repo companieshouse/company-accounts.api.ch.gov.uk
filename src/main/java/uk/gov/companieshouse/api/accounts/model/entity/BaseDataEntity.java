@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseDataEntity implements Serializable {
+public class BaseDataEntity {
 
     private Map<String, String> links = new HashMap<>();
 
