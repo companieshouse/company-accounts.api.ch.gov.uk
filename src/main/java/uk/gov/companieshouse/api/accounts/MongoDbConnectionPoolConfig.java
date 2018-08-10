@@ -5,7 +5,7 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 @Component
-public class MongoDbConnectionPoolProperties {
+public class MongoDbConnectionPoolConfig {
 
     private Integer minSize;
     private int maxConnectionIdleTimeMS;
@@ -16,10 +16,10 @@ public class MongoDbConnectionPoolProperties {
      * Mongo Connection Pool settings. Sets default values in case
      * the environment variables are not supplied.
      */
-    public MongoDbConnectionPoolProperties() {
+    public MongoDbConnectionPoolConfig() {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
-        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.minSize : 1;
+        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null ? this.minSize : 1;
 
         this.maxConnectionIdleTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.maxConnectionIdleTimeMS : 0;
         this.maxConnectionLifeTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null ? this.maxConnectionLifeTimeMS : 0;
