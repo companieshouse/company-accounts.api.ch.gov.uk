@@ -19,7 +19,7 @@ public class MongoDbConnectionPoolProperties {
     public MongoDbConnectionPoolProperties() {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
-        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.minSize : 1;
+        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null ? this.minSize : 1;
 
         this.maxConnectionIdleTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.maxConnectionIdleTimeMS : 0;
         this.maxConnectionLifeTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null ? this.maxConnectionLifeTimeMS : 0;
