@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
