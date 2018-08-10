@@ -28,8 +28,7 @@ public class SmallFullController {
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-            HttpServletRequest request)
-            throws NoSuchAlgorithmException {
+            HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getSession()
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
