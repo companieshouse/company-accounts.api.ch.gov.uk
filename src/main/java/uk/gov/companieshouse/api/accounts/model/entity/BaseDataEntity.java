@@ -1,9 +1,10 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseDataEntity {
+public class BaseDataEntity implements Serializable {
 
     private Map<String, String> links = new HashMap<>();
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -44,12 +45,17 @@ public class CompanyAccountController {
         }
     }
 
-    @GetMapping(value = "/transactions/{transactionId}/company-accounts",
+    @GetMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}",
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getCompanyAccount(HttpServletRequest request) {
 
-        CompanyAccount companyAccount = (CompanyAccount) request.getSession()
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount = new CompanyAccount();
+        companyAccount.setPeriodEndOn(companyAccountEntity.getData().getPeriodEndOn());
+        companyAccount.setEtag(companyAccountEntity.getData().getEtag());
+        companyAccount.setKind(companyAccountEntity.getData().getKind());
+        companyAccount.setLinks(companyAccountEntity.getData().getLinks());
         return ResponseEntity.status(HttpStatus.OK).body(companyAccount);
 
     }
