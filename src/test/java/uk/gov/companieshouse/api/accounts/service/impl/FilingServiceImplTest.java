@@ -14,11 +14,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,8 +39,18 @@ import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorConnection;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.IxbrlGenerator;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.CalledUpSharedCapitalNotPaid;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.PostBalanceSheetEvents;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
+import uk.gov.companieshouse.api.accounts.transaction.Filings;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +60,7 @@ public class FilingServiceImplTest {
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
     private static final String ACCOUNTS_ID = "1234561";
     private static final String COMPANY_NUMBER = "12345678";
+    private static final String COMPANY_NAME = "TEST COMPANY LIMITED";
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON_KEY = "period_end_on";
@@ -51,23 +69,49 @@ public class FilingServiceImplTest {
     private static final String DOCUMENT_BUCKET_NAME_ENV_VAR = "DOCUMENT_BUCKET_NAME";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
 
+    private static final String TRANSACTION_DATE_FORMAT = "EEEE, MMM dd, yyyy HH:mm:ss a";
+    private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
+    private static String PREVIOUS_START_ON = "2016-01-01";
+    private static String PREVIOUS_PERIOD_END_ON = "2016-12-01";
+    private static String CURRENT_PERIOD_START_ON = "2017-05-01";
+    private static String CURRENT_PERIOD_END_ON = "2018-05-01";
+    private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
+
+    private Transaction transaction;
+    private String smallFullJson;
+
     @Mock
-    private EnvironmentReader environmentReader;
+    private EnvironmentReader environmentReaderMock;
     @Mock
-    private ObjectMapper mockObjectMapper;
+    private ObjectMapper objectMapperMock;
     @Mock
-    private IxbrlGenerator mockIxbrlGenerator;
+    private IxbrlGenerator ixbrlGeneratorMock;
+    @Mock
+    private AccountsBuilder accountsBuilderMock;
     @InjectMocks
     private FilingServiceImpl filingService = new FilingServiceImpl();
 
-    @DisplayName("Tests the filing is generated without errors. Happy path")
+    @BeforeAll
+    void setUpBeforeAll() throws ParseException {
+        smallFullJson = getSmallFullJson();
+    }
+
+    @BeforeEach
+    void setUp() throws ParseException {
+        transaction = getTransaction();
+    }
+
+    @DisplayName("Tests the filing generation. Happy path")
     @Test
     void shouldGenerateFiling() throws IOException {
-        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn(getSmallFullJson());
-        when(mockIxbrlGenerator
+        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+
+        when(ixbrlGeneratorMock
             .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
 
-        Filing filing = filingService.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID);
+        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
@@ -80,12 +124,54 @@ public class FilingServiceImplTest {
         verifyFilingData(filing);
     }
 
-    @DisplayName("Tests the filing is null when ixbrl location has not been set, ixbrl not generated")
-    @Test
-    void shouldNotGenerateFilingIxbrlLocationNotSet() throws IOException {
-        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn(getSmallFullJson());
 
-        Filing filing = filingService.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID);
+    @DisplayName("Tests the filing not generated when transaction's filing is not set")
+    @Test
+    void shouldNotGenerateFilingAsFilingInTransactionIsNull() throws IOException {
+        transaction.setFilings(null);
+        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+        assertNull(filing);
+    }
+
+    @DisplayName("Tests the filing not generated when Small Full Account not retrieved")
+    @Test
+    void shouldNotGenerateFilingAsAccountIsNull() throws IOException {
+        when(accountsBuilderMock.buildAccount()).thenReturn(null);
+
+        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+        assertNull(filing);
+    }
+
+    @DisplayName("Tests exception being thrown when getting Accounts information")
+    @Test
+    void shouldThrowExceptionWhenAccountThrowException() throws IOException {
+        when(accountsBuilderMock.buildAccount()).thenThrow(IOException.class);
+
+        assertThrows(IOException.class,
+            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
+    }
+
+    @DisplayName("Tests exception being thrown when incorrect json format")
+    @Test
+    void shouldThrownJsonProcessingException() throws IOException {
+        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+
+        when(objectMapperMock.writeValueAsString(any(Object.class)))
+            .thenThrow(JsonProcessingException.class);
+
+        assertThrows(JsonProcessingException.class,
+            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
+    }
+
+    @DisplayName("Tests the filing not generated when ixbrl location has not been set, ixbrl not generated")
+    @Test
+    void shouldNotGenerateFilingAsIxbrlLocationNotSet() throws IOException {
+        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+
+        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
         verifyEnvironmentReaderNumOfCalls(3,
@@ -96,21 +182,23 @@ public class FilingServiceImplTest {
         assertNull(filing);
     }
 
-    @DisplayName("Tests the document render service unavailability - throw exception expected")
+    @DisplayName("Tests exception being thrown when the document render service unavailable")
     @Test
     void shouldThrowExceptionDocumentGeneratorIsUnavailable() throws IOException {
-        when(mockObjectMapper.writeValueAsString(any(Object.class))).thenReturn(getSmallFullJson());
-        when(mockIxbrlGenerator
-            .generateIXBRL(any(DocumentGeneratorConnection.class)))
+        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+
+        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
             .thenThrow(new ConnectException());
 
         assertThrows(ConnectException.class,
-            () -> filingService.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID));
+            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
     }
 
     /**
-     * Check environmentReader is called the passed-in number of times and the argument's value of
-     * these calls matches the passed-in args.
+     * Check environmentReaderMock is called the passed-in number of times and the argument's values
+     * of these calls matches the passed-in args.
      *
      * @param numOfTimes The number of times environment reader is be called.
      * @param args the values the environment reader is called with.
@@ -118,22 +206,25 @@ public class FilingServiceImplTest {
     private void verifyEnvironmentReaderNumOfCalls(int numOfTimes, String... args) {
         ArgumentCaptor<String> envReaderCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(environmentReader, times(numOfTimes)).getMandatoryString(envReaderCaptor.capture());
+        verify(environmentReaderMock, times(numOfTimes))
+            .getMandatoryString(envReaderCaptor.capture());
 
         List<String> capturedEnvVariables = envReaderCaptor.getAllValues();
         Set<String> expectedValues = new HashSet<>(Arrays.asList(args));
 
-        assertTrue(capturedEnvVariables.stream().map(String::toString)
-            .collect(Collectors.toSet())
-            .equals(expectedValues));
+        assertTrue(
+            capturedEnvVariables
+                .stream().map(String::toString)
+                .collect(Collectors.toSet())
+                .equals(expectedValues));
     }
 
     private void verifyObjectMapperNumOfCalls() throws JsonProcessingException {
-        verify(mockObjectMapper, times(1)).writeValueAsString(any(Object.class));
+        verify(objectMapperMock, times(1)).writeValueAsString(any(Object.class));
     }
 
     private void verifyIxbrlGeneratorNumOfCalls() throws IOException {
-        verify(mockIxbrlGenerator, times(1)).
+        verify(ixbrlGeneratorMock, times(1)).
             generateIXBRL(any(DocumentGeneratorConnection.class));
     }
 
@@ -149,8 +240,9 @@ public class FilingServiceImplTest {
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(),
             filing.getDescriptionIdentifier());
 
-        // TODO: filing.getDescription() is not possible to mock with Mockito. It static method. Description = null. Any ideas??
+        // TODO: filing.getDescription() is not possible compare since I cannot mock it to get the description
         // assertEquals(DESCRIPTION, filing.getDescription());
+
         assertNotNull(filing.getDescriptionValues());
         assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getKind(), filing.getKind());
@@ -169,29 +261,36 @@ public class FilingServiceImplTest {
         assertEquals(IXBRL_LOCATION, link.getHref());
     }
 
+    /**
+     * Gets json for small full.
+     *
+     * @return
+     */
     private String getSmallFullJson() {
         String json =
             "{\n"
                 + "  \"small_full_accounts\": {\n"
                 + "    \"period\": {\n"
-                + "      \"previous_period_end_on\": \"2016-01-01\",\n"
-                + "      \"previous_period_start_on\": \"2016-12-01\",\n"
-                + "      \"current_period_end_on\": \"2018-05-01\",\n"
-                + "      \"current_period_start_on\": \"2017-05-01\"\n"
+                + "      \"previous_period_end_on\": \"" + PREVIOUS_PERIOD_END_ON + "\",\n"
+                + "      \"previous_period_start_on\": \"" + PREVIOUS_START_ON + "\",\n"
+                + "      \"current_period_end_on\": \"" + CURRENT_PERIOD_END_ON + "\",\n"
+                + "      \"current_period_start_on\": \"" + CURRENT_PERIOD_START_ON + "\",\n"
                 + "    },\n"
                 + "    \"notes\": {\n"
                 + "      \"post_balance_sheet_events\": {\n"
-                + "        \"current_period_date_formatted\": \"16 December 2017\",\n"
+                + "        \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED
+                + "\",\n"
                 + "        \"post_balance_sheet_events_info\": \"test post balance note\"\n"
                 + "      }\n"
                 + "    },\n"
                 + "    \"balance_sheet\": {\n"
-                + "      \"current_period_date_formatted\": \"16 December 2017\",\n"
+                + "      \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED + "\",\n"
                 + "      \"called_up_shared_capital_not_paid\": {\n"
                 + "        \"current_amount\": 9,\n"
                 + "        \"previous_amount\": 99\n"
                 + "      },\n"
-                + "      \"previous_period_date_formatted\": \"16 December 2017\"\n"
+                + "      \"previous_period_date_formatted\": \"" + PREVIOUS_PERIOD_FORMATTED
+                + "\",\n"
                 + "    },\n"
                 + "    \"company\": {\n"
                 + "      \"company_number\": \"MYRETON RENEWABLE ENERGY LIMITED\",\n"
@@ -201,5 +300,126 @@ public class FilingServiceImplTest {
                 + "}";
 
         return json;
+    }
+
+    /**
+     * Builds transaction object.
+     *
+     * @return
+     * @throws ParseException
+     */
+    private Transaction getTransaction() throws ParseException {
+        Transaction transaction = new Transaction();
+
+        transaction.setId(TRANSACTION_ID);
+        transaction.setClosedAt(getDateFormatted("Friday, Jul 13, 2018 14:04:56 PM"));
+        transaction.setCompanyNumber(COMPANY_NUMBER);
+        transaction.setKind("transaction");
+        transaction.setStatus("closed");
+        transaction.setUpdatedAt(getDateFormatted("Friday, Jul 13, 2018 14:02:56 PM"));
+        transaction.setLinks(getTransactionLinks());
+        transaction.setFilings(getTransactionFilings());
+
+        return transaction;
+    }
+
+    /**
+     * Gets the links for the transaction. Self link.
+     *
+     * @return
+     */
+    private Map<String, String> getTransactionLinks() {
+        Map<String, String> transactionLinks = new HashMap<>();
+        transactionLinks.put("self", "/transactions/" + TRANSACTION_ID);
+        return transactionLinks;
+    }
+
+    /**
+     * Gets the filings' information.
+     *
+     * @return
+     */
+    private Map<String, Filings> getTransactionFilings() {
+
+        Map<String, Filings> filings = new HashMap<>();
+        Filings filing = new Filings();
+        filing.setStatus("processing");
+        filing.setType("accounts#smallfull");
+
+        Map<String, String> filingLinks = new HashMap<>();
+        filingLinks.put("resource", "/transactions/" + TRANSACTION_ID + "/accounts/" + ACCOUNTS_ID);
+        filing.setLinks(filingLinks);
+
+        filings.put(TRANSACTION_ID + "-1", filing);
+
+        return filings;
+    }
+
+    private Date getDateFormatted(String dateInString) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(TRANSACTION_DATE_FORMAT);
+        Date date = formatter.parse(dateInString);
+
+        return date;
+    }
+
+
+    /**
+     * Builds the small full accounts model. Functionality needs to be change.
+     */
+    private Account getSmallFullAccount() {
+        Account account = new Account();
+        account.setPeriod(getAccountPeriod());
+        account.setBalanceSheet(getBalanceSheet());
+        account.setNotes(getNotes());
+        account.setCompany(getCompany());
+
+        return account;
+    }
+
+    private Company getCompany() {
+        Company company = new Company();
+        company.setCompanyName(COMPANY_NAME);
+        company.setCompanyNumber(COMPANY_NAME);
+
+        return company;
+    }
+
+    private Notes getNotes() {
+        Notes notes = new Notes();
+
+        PostBalanceSheetEvents postBalanceSheetEvents = new PostBalanceSheetEvents();
+        postBalanceSheetEvents.setCurrentPeriodDateFormatted(CURRENT_PERIOD_FORMATTED);
+        postBalanceSheetEvents.setPostBalanceSheetEventsInfo("test post balance note");
+
+        notes.setPostBalanceSheetEvents(postBalanceSheetEvents);
+
+        return notes;
+    }
+
+    private Period getAccountPeriod() {
+        Period period = new Period();
+        period.setCurrentPeriodStartOn(CURRENT_PERIOD_START_ON);
+        period.setCurrentPeriodEndsOn(CURRENT_PERIOD_END_ON);
+        period.setPreviousPeriodStartOn(PREVIOUS_START_ON);
+        period.setPreviousPeriodEndsOn(PREVIOUS_PERIOD_END_ON);
+
+        return period;
+    }
+
+    /**
+     * Build BalanceSheet model by using information from database
+     */
+    private BalanceSheet getBalanceSheet() {
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid = new CalledUpSharedCapitalNotPaid();
+        calledUpSharedCapitalNotPaid.setCurrentAmount(9);
+        calledUpSharedCapitalNotPaid.setPreviousAmount(99);
+
+        balanceSheet.setCalledUpSharedCapitalNotPaid(calledUpSharedCapitalNotPaid);
+        balanceSheet.setCurrentPeriodDateFormatted(CURRENT_PERIOD_FORMATTED);
+        balanceSheet.setPreviousPeriodDateFormatted(PREVIOUS_PERIOD_FORMATTED);
+
+        return balanceSheet;
     }
 }

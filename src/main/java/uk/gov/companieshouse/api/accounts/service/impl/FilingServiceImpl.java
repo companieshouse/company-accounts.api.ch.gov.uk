@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,17 +18,12 @@ import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.CalledUpSharedCapitalNotPaid;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.PostBalanceSheetEvents;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
+import uk.gov.companieshouse.api.accounts.transaction.Filings;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorConnection;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.IxbrlGenerator;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
@@ -43,55 +39,56 @@ public class FilingServiceImpl implements FilingService {
     private static final String IXBRL_LOCATION = "s3://%s/%s/%s";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
-    private static final String SMALL_FULL_ACCOUNT = "small-full";
 
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private IxbrlGenerator ixbrlGenerator;
+    @Autowired
+    private AccountsBuilder accountsBuilder;
 
     private EnvironmentReader environmentReader;
 
     /**
-     * Generate a filing with the ixbrl location that is generated for transaction and accounts id.
-     *
-     * @param transactionId - transaction id
-     * @param accountsId - accounts id
-     * @return {@link Filing}
-     * @throws IOException
+     * {@inheritDoc}
      */
     @Override
-    public Filing generateAccountFiling(String transactionId, String accountsId)
+    public Filing generateAccountFiling(Transaction transaction, String accountsId)
         throws IOException {
         Filing filing = null;
-        Transaction transaction = getTransaction(transactionId);
 
-        if (SMALL_FULL_ACCOUNT.equals(transaction.getKind())) {
-            filing = generateAccountFiling(transaction, getAccountType(SMALL_FULL_ACCOUNT));
+        if (isSmallFullKind(getTransactionFilingType(transaction))) {
+            filing = generateAccountFiling(transaction,
+                getAccountType(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType()));
         }
 
         return filing;
     }
 
+    /**
+     * Gets the account type information.
+     *
+     * @param accountTypeName - accounts type name. e.g. small-full, abridged, etc.
+     * @return accounts type information.
+     */
     private AccountsType getAccountType(String accountTypeName) {
         return AccountsType.getAccountsType(accountTypeName);
     }
 
     /**
-     * Get the transaction for the transaction id by calling the SDK.
+     * Get the account kind from the transaction information.
      *
-     * @param transactionId - transaction id
-     * @return
+     * @param transaction - transaction information
+     * @return accounts kind e.g. accounts#smallfull
      */
-    private Transaction getTransaction(String transactionId) {
-        //TODO below code to be replaced by SDK call. Functionality not there yet.
-        Transaction transaction = new Transaction();
-        transaction.setCompanyNumber("12345678");
-        transaction.setStatus(TransactionStatus.CLOSED.getStatus());
-        transaction.setId(transactionId);
-        transaction.setKind(SMALL_FULL_ACCOUNT);
-
-        return transaction;
+    private String getTransactionFilingType(Transaction transaction) {
+        return
+            Optional.ofNullable(transaction.getFilings())
+                .flatMap(map -> map.values()
+                    .stream()
+                    .findFirst())
+                .map(Filings::getType)
+                .orElse(null);
     }
 
     /**
@@ -101,7 +98,7 @@ public class FilingServiceImpl implements FilingService {
      * @param accountsType - Account type information: account type, ixbrl's template name, account
      * @return {@link Filing} - null or filing with the filing information (e.g. ixbrl location,
      * accounts name, etc)
-     * @throws IOException
+     * @throws IOException -
      */
     private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
         throws IOException {
@@ -131,7 +128,7 @@ public class FilingServiceImpl implements FilingService {
      */
     private String generateJson(String accountType, Object accountObj)
         throws JsonProcessingException {
-        if (SMALL_FULL_ACCOUNT.equals(accountType)) {
+        if (isSmallFullType(accountType)) {
             return generateCompanyAccountJSON((Account) accountObj);
         }
         return null;
@@ -292,7 +289,7 @@ public class FilingServiceImpl implements FilingService {
      * @return
      */
     private String getIXBRLLocation(AccountsType accountsType) {
-        if (SMALL_FULL_ACCOUNT.equals(accountsType.getAccountType())) {
+        if (isSmallFullType(accountsType.getAccountType())) {
             return
                 String.format(
                     IXBRL_LOCATION,
@@ -365,8 +362,8 @@ public class FilingServiceImpl implements FilingService {
      *
      * @param accountType the account type, e.g. small-full. Used to build correct object.
      */
-    private Object getAccountInformation(String accountType) {
-        if (SMALL_FULL_ACCOUNT.equals(accountType)) {
+    private Object getAccountInformation(String accountType) throws IOException {
+        if (isSmallFullType(accountType)) {
             return getSmallFullAccount();
         }
 
@@ -374,62 +371,30 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Builds the small full accounts model. Functionality needs to be change.
+     * Checks if filing kind is small#full.
+     *
+     * @param filingType - name of the filing type.
+     * @return true if small full account.
      */
-    private Account getSmallFullAccount() {
-        //TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts information when built in the API.
-        Account account = new Account();
-        account.setPeriod(getAccountPeriod());
-        account.setBalanceSheet(getBalanceSheet());
-        account.setNotes(getNotes());
-        account.setCompany(getCompany());
-
-        return account;
-    }
-
-    private Company getCompany() {
-        Company company = new Company();
-        company.setCompanyName("SC344891");
-        company.setCompanyNumber("MYRETON RENEWABLE ENERGY LIMITED");
-
-        return company;
-    }
-
-    private Notes getNotes() {
-        Notes notes = new Notes();
-        PostBalanceSheetEvents postBalanceSheetEvents = new PostBalanceSheetEvents();
-        postBalanceSheetEvents.setCurrentPeriodDateFormatted("16 December 2017");
-        postBalanceSheetEvents.setPostBalanceSheetEventsInfo("test post balance note");
-        notes.setPostBalanceSheetEvents(postBalanceSheetEvents);
-
-        return notes;
-    }
-
-    private Period getAccountPeriod() {
-        Period period = new Period();
-        period.setCurrentPeriodStartOn("2017-05-01");
-        period.setCurrentPeriodEndsOn("2018-05-01");
-        period.setPreviousPeriodStartOn("2016-12-01");
-        period.setPreviousPeriodEndsOn("2016-01-01");
-
-        return period;
+    private boolean isSmallFullKind(String filingType) {
+        return AccountsType.SMALL_FULL_ACCOUNTS.getKind().equals(filingType);
     }
 
     /**
-     * Build BalanceSheet model by using information from database
+     * Checks if filing type is small full.
+     *
+     * @param filingType - name of the filing type.
+     * @return true if small full account.
      */
-    private BalanceSheet getBalanceSheet() {
-        //TODO: remove hardcoded values for actual db call
-        BalanceSheet balanceSheet = new BalanceSheet();
+    private boolean isSmallFullType(String filingType) {
+        return AccountsType.SMALL_FULL_ACCOUNTS.getAccountType().equals(filingType);
+    }
 
-        CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid = new CalledUpSharedCapitalNotPaid();
-        calledUpSharedCapitalNotPaid.setCurrentAmount(9);
-        calledUpSharedCapitalNotPaid.setPreviousAmount(99);
 
-        balanceSheet.setCalledUpSharedCapitalNotPaid(calledUpSharedCapitalNotPaid);
-        balanceSheet.setCurrentPeriodDateFormatted("16 December 2017");
-        balanceSheet.setPreviousPeriodDateFormatted("16 December 2017");
-
-        return balanceSheet;
+    /**
+     * Get the small full account information.
+     */
+    private Account getSmallFullAccount() throws IOException {
+        return (Account) accountsBuilder.buildAccount();
     }
 }

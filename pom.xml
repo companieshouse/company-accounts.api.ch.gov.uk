@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.gov.companieshouse</groupId>
 	<artifactId>company-accounts.api.ch.gov.uk</artifactId>
-	<version>bdde569</version>
+	<version>824363c</version>
 	<packaging>jar</packaging>
 	<name>company-accounts-api</name>
 	<description>Company accounts API to handle company accounts data</description>
@@ -25,15 +25,15 @@
 		<!-- JDK Version -->
 		<jdk.version>1.8</jdk.version>
 
-        <!-- Dependency Versions -->
-        <api-helper-java.version>1.0.0-rc1</api-helper-java.version>
-        <structured-logging.version>1.2.0-rc1</structured-logging.version>
-        <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
-        <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
-        <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
-        <document-generator-core.version>1.0.0-rc4</document-generator-core.version>
-        <httpclient.version>4.5.6</httpclient.version>
+		<!-- Dependency Versions -->
+		<api-helper-java.version>1.0.0-rc1</api-helper-java.version>
+		<structured-logging.version>1.2.0-rc1</structured-logging.version>
+		<aws-java-sdk.version>1.11.52</aws-java-sdk.version>
+		<environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
 		<company-accounts-library.version>5a6005b</company-accounts-library.version>
+		<jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
+		<httpclient.version>4.5.6</httpclient.version>
+		<document-generator-core.version>1.0.0-rc4</document-generator-core.version>
 
 		<!-- Maven and Surefire plugins -->
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -69,12 +69,6 @@
 			<artifactId>environment-reader-library</artifactId>
 			<version>${environment-reader-library.version}</version>
 		</dependency>
-                <dependency>
-                        <groupId>uk.gov.companieshouse</groupId>
-                        <artifactId>document-generator-core</artifactId>
-                        <version>${document-generator-core.version}</version>
-                        <scope>compile</scope>
-                </dependency> 
 		<dependency>
 			<groupId>uk.gov.companieshouse</groupId>
 			<artifactId>api-helper-java</artifactId>
@@ -112,11 +106,16 @@
 			<artifactId>spring-boot-starter-hateoas</artifactId>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>uk.gov.companieshouse</groupId>
 			<artifactId>company-accounts-library</artifactId>
 			<version>${company-accounts-library.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.gov.companieshouse</groupId>
+			<artifactId>document-generator-core</artifactId>
+			<version>${document-generator-core.version}</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Test -->
@@ -138,9 +137,9 @@
 			<version>${jackson-datatype-jsr310.version}</version>
 		</dependency>
 	</dependencies>
-   
+
 	<profiles>
-		<!-- release-publish is the profile that is activated when the build server 
+		<!-- release-publish is the profile that is activated when the build server
 			builds and publishes a release project to the cloud artifactory -->
 		<profile>
 			<id>release-publish</id>
@@ -160,7 +159,7 @@
 				</repository>
 			</distributionManagement>
 		</profile>
-		<!-- dev-publish is the profile that is activated when the build server 
+		<!-- dev-publish is the profile that is activated when the build server
 			builds and publishes a dev snapshot project to the cloud artifactory -->
 		<profile>
 			<id>dev-publish</id>
@@ -180,9 +179,9 @@
 				</repository>
 			</distributionManagement>
 		</profile>
-		<!-- dev is the profile that is activated by default. This is only for 
-			developers as it does not publish to any repository. It just downloads dependencies, 
-			compiles code and builds jar for running the application and then runs the 
+		<!-- dev is the profile that is activated by default. This is only for
+			developers as it does not publish to any repository. It just downloads dependencies,
+			compiles code and builds jar for running the application and then runs the
 			tests. -->
 		<profile>
 			<id>dev</id>
