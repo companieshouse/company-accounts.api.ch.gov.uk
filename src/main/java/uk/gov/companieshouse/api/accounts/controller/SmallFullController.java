@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @RestController
@@ -29,7 +30,7 @@ public class SmallFullController {
         Transaction transaction = (Transaction) request.getSession()
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        SmallFull result = smallFullService.save(smallFull, transaction.getCompanyNumber());
+        ResponseObject<SmallFull> result = smallFullService.save(smallFull, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

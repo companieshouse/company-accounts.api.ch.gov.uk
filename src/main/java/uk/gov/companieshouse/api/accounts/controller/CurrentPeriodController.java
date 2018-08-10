@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
 
@@ -34,7 +35,7 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request.getSession()
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        CurrentPeriod result = null;
+        ResponseObject<CurrentPeriod> result = null;
         try {
             result = currentPeriodService
                     .save(currentPeriod, transaction.getCompanyNumber());

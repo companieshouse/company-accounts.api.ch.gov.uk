@@ -37,7 +37,7 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public C save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
+    public ResponseObject<C> save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
         addEtag(rest);
         addKind(rest);
         addLinks(rest);
@@ -46,15 +46,17 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
 
         try {
             mongoRepository.insert(baseEntity);
-        } catch (DuplicateKeyException | MongoException e) {
-            LOGGER.error(e);
-            throw e;
+        } catch (DuplicateKeyException exp) {
+            LOGGER.error(exp);
+            return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
+        } catch (MongoException mongoExp) {
+            LOGGER.error(mongoExp);
+            return new ResponseObject(ResponseStatus.MONGO_ERROR);
         }
 
         mongoRepository.save(baseEntity);
 
-
-        return rest;
+        return new ResponseObject(ResponseStatus.SUCCESS, rest);
     }
 
     @Override

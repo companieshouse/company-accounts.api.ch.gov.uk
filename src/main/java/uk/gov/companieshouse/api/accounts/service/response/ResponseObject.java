@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.service.response;
 
-public class ResponseObject {
+import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+
+public class ResponseObject<T extends RestObject> {
 
     private ResponseStatus status;
 
-    private Object data;
+    private T data;
 
     private ErrorData errorData;
 
@@ -12,7 +14,7 @@ public class ResponseObject {
         this.status = status;
     }
 
-    public ResponseObject(ResponseStatus status, Object data) {
+    public ResponseObject(ResponseStatus status, T data) {
         this.status = status;
         this.data = data;
     }
@@ -29,7 +31,7 @@ public class ResponseObject {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
