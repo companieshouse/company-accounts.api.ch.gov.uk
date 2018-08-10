@@ -15,12 +15,16 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
 
 @RestController
 public class SmallFullController {
 
     @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
+    private ApiResponseGenerator apiResponseGenerator;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,6 +35,6 @@ public class SmallFullController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseObject<SmallFull> result = smallFullService.save(smallFull, transaction.getCompanyNumber());
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return apiResponseGenerator.getApiResponse(result);
     }
 }

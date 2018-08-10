@@ -1,11 +1,8 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.SUCCESS;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,11 +33,8 @@ public class CompanyAccountController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject response = companyAccountService
+        ResponseObject result = companyAccountService
             .createCompanyAccount(companyAccount, transaction, requestId);
-        return response.getStatus().equals(SUCCESS)
-            ? ResponseEntity.status(HttpStatus.CREATED).body(response.getData())
-            : apiResponseGenerator.generateApiResponse(response.getStatus(), response.getData(),
-                response.getErrorData());
+        return apiResponseGenerator.getApiResponse(result);
     }
 }

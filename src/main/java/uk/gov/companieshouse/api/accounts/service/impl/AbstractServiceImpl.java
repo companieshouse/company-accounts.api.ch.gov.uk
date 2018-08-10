@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.ID_GENERATION_ERROR;
+
 import com.mongodb.MongoException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -8,6 +11,8 @@ import java.util.Base64;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -37,14 +42,13 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public ResponseObject<C> save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
+    public ResponseObject<C> save(C rest, String companyAccountId) {
         addEtag(rest);
         addKind(rest);
         addLinks(rest);
         E baseEntity = genericTransformer.transform(rest);
-        baseEntity.setId(generateID(companyAccountId));
-
         try {
+        baseEntity.setId(generateID(companyAccountId));
             mongoRepository.insert(baseEntity);
         } catch (DuplicateKeyException exp) {
             LOGGER.error(exp);
@@ -52,11 +56,14 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
         } catch (MongoException mongoExp) {
             LOGGER.error(mongoExp);
             return new ResponseObject(ResponseStatus.MONGO_ERROR);
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error(e);
+            return new ResponseObject(ID_GENERATION_ERROR);
         }
 
         mongoRepository.save(baseEntity);
 
-        return new ResponseObject(ResponseStatus.SUCCESS, rest);
+        return new ResponseObject(ResponseStatus.SUCCESS_CREATED, rest);
     }
 
     @Override

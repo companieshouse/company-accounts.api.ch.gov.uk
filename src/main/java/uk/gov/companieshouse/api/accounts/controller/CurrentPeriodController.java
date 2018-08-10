@@ -26,26 +26,19 @@ public class CurrentPeriodController {
     private CurrentPeriodService currentPeriodService;
 
     @Autowired
-    private ApiResponseGenerator exceptionHandler;
+    private ApiResponseGenerator apiResponseGenerator;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
-            HttpServletRequest request) {
+        HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getSession()
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseObject<CurrentPeriod> result = null;
-        try {
-            result = currentPeriodService
-                    .save(currentPeriod, transaction.getCompanyNumber());
-        } catch (DuplicateKeyException dke) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (NoSuchAlgorithmException | MongoException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        ResponseObject<CurrentPeriod> result = currentPeriodService
+            .save(currentPeriod, transaction.getCompanyNumber());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-
+        return apiResponseGenerator
+            .getApiResponse(result);
     }
 }

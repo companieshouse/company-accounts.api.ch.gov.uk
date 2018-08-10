@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,10 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -41,32 +45,39 @@ public class SmallFullControllerTest {
     private SmallFull smallFull;
 
     @Mock
-    private SmallFull createdSmallFull;
-
-    @Mock
     private SmallFullService smallFullService;
 
     @Mock
     private HttpSession httpSessionMock;
 
+    @Mock
+    private ApiResponseGenerator apiResponseGenerator;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException {
+    public void setUp() {
+        ResponseObject<SmallFull> responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
+            smallFull);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+            .body(responseObject.getData());
+
         doReturn(httpSessionMock).when(request).getSession();
         doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(createdSmallFull).when(smallFullService).save(any(SmallFull.class), anyString());
+        doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
+        doReturn(responseEntity).when(apiResponseGenerator).getApiResponse(responseObject);
         doReturn("123456").when(transaction).getCompanyNumber();
     }
 
     @Test
     @DisplayName("Tests the successful creation of a smallFull resource")
     public void canCreateSmallFull() throws NoSuchAlgorithmException {
+
         ResponseEntity response = smallFullController.create(smallFull, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertTrue(new Equals(createdSmallFull).matches(response.getBody()));
+        assertEquals(smallFull, response.getBody());
     }
 }

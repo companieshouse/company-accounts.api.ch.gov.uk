@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 
 public interface AbstractService<C extends RestObject, E extends BaseEntity> {
 
-    ResponseObject<C> save(C rest, String companyAccountId) throws NoSuchAlgorithmException;
+    ResponseObject<C> save(C rest, String companyAccountId);
 
     E findById(String id);
 
