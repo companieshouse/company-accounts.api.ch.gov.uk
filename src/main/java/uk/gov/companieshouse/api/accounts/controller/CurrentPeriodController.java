@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ServiceResponseResolver;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
 
 @RestController
 public class CurrentPeriodController {
@@ -25,7 +25,7 @@ public class CurrentPeriodController {
     private CurrentPeriodService currentPeriodService;
 
     @Autowired
-    private ServiceResponseResolver exceptionHandler;
+    private ApiResponseGenerator exceptionHandler;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
             produces = MediaType.APPLICATION_JSON_VALUE)

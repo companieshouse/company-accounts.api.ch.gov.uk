@@ -6,6 +6,8 @@ public class ResponseObject {
 
     private Object data;
 
+    private ErrorData errorData;
+
     public ResponseObject(ResponseStatus status) {
         this.status = status;
     }
@@ -29,5 +31,13 @@ public class ResponseObject {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public ErrorData getErrorData() {
+        return errorData;
+    }
+
+    public void setErrorData(ErrorData errorData) {
+        this.errorData = errorData;
     }
 }

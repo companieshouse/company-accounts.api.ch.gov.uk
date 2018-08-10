@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ServiceResponseResolver;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
 
 @RestController
 public class CompanyAccountController {
@@ -25,7 +25,7 @@ public class CompanyAccountController {
     private CompanyAccountService companyAccountService;
 
     @Autowired
-    private ServiceResponseResolver serviceResponseResolver;
+    private ApiResponseGenerator apiResponseGenerator;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,6 +38,9 @@ public class CompanyAccountController {
         String requestId = request.getHeader("X-Request-Id");
         ResponseObject response = companyAccountService
             .createCompanyAccount(companyAccount, transaction, requestId);
-        return serviceResponseResolver.resolve(response);
+        return response.getStatus().equals(SUCCESS)
+            ? ResponseEntity.status(HttpStatus.CREATED).body(response.getData())
+            : apiResponseGenerator.generateApiResponse(response.getStatus(), response.getData(),
+                response.getErrorData());
     }
 }
