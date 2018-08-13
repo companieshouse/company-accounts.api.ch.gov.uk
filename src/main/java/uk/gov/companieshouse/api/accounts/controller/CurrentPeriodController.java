@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -25,6 +26,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CurrentPeriodController {
 
 
@@ -34,8 +36,7 @@ public class CurrentPeriodController {
     @Autowired
     private CurrentPeriodService currentPeriodService;
 
-    @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
@@ -47,8 +48,7 @@ public class CurrentPeriodController {
 
     }
 
-    @GetMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
         HttpSession session = request.getSession();
 
