@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -37,6 +38,8 @@ public class FilingControllerTest {
     @Mock
     private Transaction transactionMock;
     @Mock
+    private CompanyAccountEntity companyAccountEntityMock;
+    @Mock
     private HttpSession httpSessionMock;
     @Mock
     private HttpServletRequest httpServletRequestMock;
@@ -46,39 +49,48 @@ public class FilingControllerTest {
     @BeforeEach
     public void setUp() {
         when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute("transaction")).thenReturn(transactionMock);
+        when(httpSessionMock.getAttribute(anyString()))
+            .thenReturn(transactionMock)
+            .thenReturn(companyAccountEntityMock);
     }
 
     @Test
     @DisplayName("Tests the successful creation of the ixbrl - filing is not null")
     public void shouldGenerateFiling() throws IOException {
-        when(filingServiceMock.generateAccountFiling(any(Transaction.class), anyString()))
+
+        when(filingServiceMock
+            .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
             .thenReturn(new Filing());
 
         response = filingController
             .generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
 
     @Test
     @DisplayName("Tests the unsuccessful creation of the ixbrl - filing is null")
-    public void shouldNotGenerateFiling() throws IOException {
-        when(filingServiceMock.generateAccountFiling(any(Transaction.class), anyString()))
+    void shouldNotGenerateFiling() throws IOException {
+        when(filingServiceMock
+            .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
             .thenReturn(null);
 
         response = filingController
             .generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
 
     @Test
     @DisplayName("Tests the filing generator exception")
-    public void shouldNotGenerateFilingInternalErrorResponse() throws IOException {
-        when(filingServiceMock.generateAccountFiling(any(Transaction.class), anyString()))
+    void shouldNotGenerateFilingInternalErrorResponse() throws IOException {
+        when(filingServiceMock
+            .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
             .thenThrow(IOException.class);
 
         response = filingController
             .generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }

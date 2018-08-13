@@ -8,18 +8,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
+import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
-import uk.gov.companieshouse.api.accounts.transaction.Filings;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
@@ -53,11 +53,11 @@ public class FilingServiceImpl implements FilingService {
      * {@inheritDoc}
      */
     @Override
-    public Filing generateAccountFiling(Transaction transaction, String accountsId)
+    public Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
         throws IOException {
         Filing filing = null;
 
-        if (isSmallFullKind(getTransactionFilingType(transaction))) {
+        if (isSmallFullKind(accountEntity)) {
             filing = generateAccountFiling(transaction,
                 getAccountType(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType()));
         }
@@ -73,22 +73,6 @@ public class FilingServiceImpl implements FilingService {
      */
     private AccountsType getAccountType(String accountTypeName) {
         return AccountsType.getAccountsType(accountTypeName);
-    }
-
-    /**
-     * Get the account kind from the transaction information.
-     *
-     * @param transaction - transaction information
-     * @return accounts kind e.g. accounts#smallfull
-     */
-    private String getTransactionFilingType(Transaction transaction) {
-        return
-            Optional.ofNullable(transaction.getFilings())
-                .flatMap(map -> map.values()
-                    .stream()
-                    .findFirst())
-                .map(Filings::getType)
-                .orElse(null);
     }
 
     /**
@@ -371,13 +355,13 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Checks if filing kind is small#full.
+     * Checks if accountEntity is a small full by checking the links within the data.
      *
-     * @param filingType - name of the filing type.
+     * @param accountEntity - Accounts information.
      * @return true if small full account.
      */
-    private boolean isSmallFullKind(String filingType) {
-        return AccountsType.SMALL_FULL_ACCOUNTS.getKind().equals(filingType);
+    private boolean isSmallFullKind(CompanyAccountEntity accountEntity) {
+        return accountEntity.getData().getLinks().get(LinkType.SMALL_FULL.getLink()) != null;
     }
 
     /**

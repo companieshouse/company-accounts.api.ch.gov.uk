@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,6 +37,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AccountsType;
+import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
@@ -46,7 +50,6 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.PostBalanceSheetEvents;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
-import uk.gov.companieshouse.api.accounts.transaction.Filings;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
@@ -59,6 +62,7 @@ public class FilingServiceImplTest {
 
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
     private static final String ACCOUNTS_ID = "1234561";
+    private static final String SMALL_FULL_ID = "smallFullId";
     private static final String COMPANY_NUMBER = "12345678";
     private static final String COMPANY_NAME = "TEST COMPANY LIMITED";
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
@@ -78,6 +82,7 @@ public class FilingServiceImplTest {
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
 
     private Transaction transaction;
+    private CompanyAccountEntity companyAccountEntity;
     private String smallFullJson;
 
     @Mock
@@ -92,13 +97,14 @@ public class FilingServiceImplTest {
     private FilingServiceImpl filingService = new FilingServiceImpl();
 
     @BeforeAll
-    void setUpBeforeAll() throws ParseException {
+    void setUpBeforeAll() {
         smallFullJson = getSmallFullJson();
     }
 
     @BeforeEach
     void setUp() throws ParseException {
-        transaction = getTransaction();
+        transaction = createTransaction();
+        companyAccountEntity = createAccountEntity();
     }
 
     @DisplayName("Tests the filing generation. Happy path")
@@ -111,7 +117,7 @@ public class FilingServiceImplTest {
         when(ixbrlGeneratorMock
             .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
 
-        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
@@ -124,12 +130,12 @@ public class FilingServiceImplTest {
         verifyFilingData(filing);
     }
 
-
-    @DisplayName("Tests the filing not generated when transaction's filing is not set")
+    @DisplayName("Tests the filing not generated when small full accounts link is not present")
     @Test
-    void shouldNotGenerateFilingAsFilingInTransactionIsNull() throws IOException {
-        transaction.setFilings(null);
-        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+    void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData() throws IOException {
+        companyAccountEntity.getData().setLinks(new HashMap<>());
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
+
         assertNull(filing);
     }
 
@@ -138,7 +144,7 @@ public class FilingServiceImplTest {
     void shouldNotGenerateFilingAsAccountIsNull() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(null);
 
-        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
         assertNull(filing);
     }
 
@@ -148,7 +154,7 @@ public class FilingServiceImplTest {
         when(accountsBuilderMock.buildAccount()).thenThrow(IOException.class);
 
         assertThrows(IOException.class,
-            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
+            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     @DisplayName("Tests exception being thrown when incorrect json format")
@@ -160,7 +166,7 @@ public class FilingServiceImplTest {
             .thenThrow(JsonProcessingException.class);
 
         assertThrows(JsonProcessingException.class,
-            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
+            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     @DisplayName("Tests the filing not generated when ixbrl location has not been set, ixbrl not generated")
@@ -170,7 +176,7 @@ public class FilingServiceImplTest {
 
         when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
 
-        Filing filing = filingService.generateAccountFiling(transaction, ACCOUNTS_ID);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
@@ -193,7 +199,7 @@ public class FilingServiceImplTest {
             .thenThrow(new ConnectException());
 
         assertThrows(ConnectException.class,
-            () -> filingService.generateAccountFiling(transaction, ACCOUNTS_ID));
+            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     /**
@@ -308,7 +314,7 @@ public class FilingServiceImplTest {
      * @return
      * @throws ParseException
      */
-    private Transaction getTransaction() throws ParseException {
+    private Transaction createTransaction() throws ParseException {
         Transaction transaction = new Transaction();
 
         transaction.setId(TRANSACTION_ID);
@@ -317,10 +323,30 @@ public class FilingServiceImplTest {
         transaction.setKind("transaction");
         transaction.setStatus("closed");
         transaction.setUpdatedAt(getDateFormatted("Friday, Jul 13, 2018 14:02:56 PM"));
-        transaction.setLinks(getTransactionLinks());
-        transaction.setFilings(getTransactionFilings());
+        transaction.setLinks(createTransactionLinks());
 
         return transaction;
+    }
+
+    /**
+     * Builds Account Entity object.
+     *
+     * @return
+     * @throws ParseException
+     */
+    private CompanyAccountEntity createAccountEntity() {
+        CompanyAccountEntity account = new CompanyAccountEntity();
+
+        account.setId(ACCOUNTS_ID);
+
+        CompanyAccountDataEntity accountData = new CompanyAccountDataEntity();
+        accountData.setEtag("etagForTesting");
+        accountData.setKind("accounts");
+        accountData.setLinks(createAccountEntityLinks());
+        accountData.setPeriodEndOn(LocalDate.of(2018, 1, 1));
+        account.setData(accountData);
+
+        return account;
     }
 
     /**
@@ -328,31 +354,30 @@ public class FilingServiceImplTest {
      *
      * @return
      */
-    private Map<String, String> getTransactionLinks() {
+    private Map<String, String> createTransactionLinks() {
         Map<String, String> transactionLinks = new HashMap<>();
-        transactionLinks.put("self", "/transactions/" + TRANSACTION_ID);
+        transactionLinks.put(LinkType.SELF.getLink(), "/transactions/" + TRANSACTION_ID);
         return transactionLinks;
     }
 
     /**
-     * Gets the filings' information.
+     * Creates the links for the accounts data.
      *
      * @return
      */
-    private Map<String, Filings> getTransactionFilings() {
+    private Map<String, String> createAccountEntityLinks() {
+        Map<String, String> dataLinks = new HashMap<>();
 
-        Map<String, Filings> filings = new HashMap<>();
-        Filings filing = new Filings();
-        filing.setStatus("processing");
-        filing.setType("accounts#smallfull");
+        dataLinks.put(LinkType.SELF.getLink(),
+            String.format("/transactions//%s//company-accounts//%s", TRANSACTION_ID, ACCOUNTS_ID));
 
-        Map<String, String> filingLinks = new HashMap<>();
-        filingLinks.put("resource", "/transactions/" + TRANSACTION_ID + "/accounts/" + ACCOUNTS_ID);
-        filing.setLinks(filingLinks);
+        dataLinks.put(LinkType.SMALL_FULL.getLink(),
+            String.format("/transactions//%s//company-accounts//%s//small-full//%s",
+                TRANSACTION_ID,
+                ACCOUNTS_ID,
+                SMALL_FULL_ID));
 
-        filings.put(TRANSACTION_ID + "-1", filing);
-
-        return filings;
+        return dataLinks;
     }
 
     private Date getDateFormatted(String dateInString) throws ParseException {
@@ -361,7 +386,6 @@ public class FilingServiceImplTest {
 
         return date;
     }
-
 
     /**
      * Builds the small full accounts model. Functionality needs to be change.
