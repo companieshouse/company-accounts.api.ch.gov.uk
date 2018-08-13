@@ -21,7 +21,7 @@ public class FilingController {
     @Autowired
     private FilingService filingService;
 
-    @GetMapping("/private/transactions/{transactionId}/company-accounts/{accountId}/filings")
+    @GetMapping("/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings")
     public ResponseEntity generateFiling(@PathParam("transactionId") String transactionId,
         @PathParam("accountId") String accountId, HttpServletRequest request) {
 
@@ -30,14 +30,12 @@ public class FilingController {
         try {
             Filing filing = filingService.generateAccountFiling(transaction, accountId);
             if (filing != null) {
-                List<Filing> filings = Arrays.asList(filing);
-                return new ResponseEntity<>(filings, HttpStatus.OK);
+                return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 }
