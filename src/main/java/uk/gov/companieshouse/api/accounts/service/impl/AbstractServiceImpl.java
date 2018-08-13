@@ -14,33 +14,33 @@ import uk.gov.companieshouse.api.accounts.service.AbstractService;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
-public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEntity> implements
-        AbstractService<C, E> {
+public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEntity> implements
+        AbstractService<T, U> {
 
     public MongoRepository mongoRepository;
 
-    public GenericTransformer<C, E> genericTransformer;
+    public GenericTransformer<T, U> genericTransformer;
 
     public AbstractServiceImpl(MongoRepository mongoRepository,
-            GenericTransformer<C, E> genericTransformer) {
+            GenericTransformer<T, U> genericTransformer) {
         this.mongoRepository = mongoRepository;
         this.genericTransformer = genericTransformer;
     }
 
     @Override
-    public C save(C rest, String companyAccountId) throws NoSuchAlgorithmException {
+    public T save(T rest, String companyAccountId) throws NoSuchAlgorithmException {
         addEtag(rest);
         addKind(rest);
         addLinks(rest);
-        E baseEntity = genericTransformer.transform(rest);
+        U baseEntity = genericTransformer.transform(rest);
         baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
         return rest;
     }
 
     @Override
-    public E findById(String id) {
-        Optional<E> optional = (Optional<E>) mongoRepository.findById(id);
+    public U findById(String id) {
+        Optional<U> optional = (Optional<U>) mongoRepository.findById(id);
         if (optional.isPresent()) {
             return optional.get();
         }
@@ -48,7 +48,7 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
     }
 
     @Override
-    public void addEtag(C rest) {
+    public void addEtag(T rest) {
         rest.setEtag(GenerateEtagUtil.generateEtag());
     }
 
