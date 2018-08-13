@@ -8,7 +8,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.util.AccountsLogUtil;
 import uk.gov.companieshouse.api.accounts.util.AccountsLogger;
-import uk.gov.companieshouse.api.accounts.util.AccountsLoggerImpl;
 import uk.gov.companieshouse.api.accounts.util.RequestContext;
 
 @Component
