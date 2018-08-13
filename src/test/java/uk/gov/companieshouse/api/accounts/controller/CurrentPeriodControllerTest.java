@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -33,7 +31,7 @@ import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,7 +51,7 @@ public class CurrentPeriodControllerTest {
     private SmallFull smallFull;
 
     @Mock
-    private  CurrentPeriod currentPeriod;
+    private CurrentPeriod currentPeriod;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -62,7 +60,7 @@ public class CurrentPeriodControllerTest {
     private Map<String, String> links;
 
     @Mock
-    private ApiResponseGenerator apiResponseGenerator;
+    private ApiResponseMapper apiResponseMapper;
 
     @InjectMocks
     private CurrentPeriodController currentPeriodController;
@@ -71,11 +69,15 @@ public class CurrentPeriodControllerTest {
     public void setUp() throws NoSuchAlgorithmException {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
             currentPeriod);
-        doReturn(responseObject).when(currentPeriodService).save(any(CurrentPeriod.class), anyString());
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
-        when(apiResponseGenerator.getApiResponse(responseObject)).thenReturn(responseEntity);
+        doReturn(responseObject).when(currentPeriodService)
+            .save(any(CurrentPeriod.class), anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+            .body(responseObject.getData());
+        when(apiResponseMapper.map(responseObject.getStatus(),
+            responseObject.getData(), responseObject.getErrorData())).thenReturn(responseEntity);
         doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(transaction).when(httpSessionMock)
+            .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();

@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @RestController
 public class SmallFullController {
@@ -22,7 +22,7 @@ public class SmallFullController {
     private SmallFullService smallFullService;
 
     @Autowired
-    private ApiResponseGenerator apiResponseGenerator;
+    private ApiResponseMapper apiResponseMapper;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,6 +32,6 @@ public class SmallFullController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseObject<SmallFull> result = smallFullService.save(smallFull, transaction.getCompanyNumber());
-        return apiResponseGenerator.getApiResponse(result);
+        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 }

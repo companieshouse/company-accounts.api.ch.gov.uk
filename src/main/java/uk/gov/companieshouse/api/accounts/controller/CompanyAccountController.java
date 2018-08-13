@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @RestController
 public class CompanyAccountController {
@@ -22,7 +22,7 @@ public class CompanyAccountController {
     private CompanyAccountService companyAccountService;
 
     @Autowired
-    private ApiResponseGenerator apiResponseGenerator;
+    private ApiResponseMapper apiResponseMapper;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,6 +35,7 @@ public class CompanyAccountController {
         String requestId = request.getHeader("X-Request-Id");
         ResponseObject result = companyAccountService
             .createCompanyAccount(companyAccount, transaction, requestId);
-        return apiResponseGenerator.getApiResponse(result);
+        return apiResponseMapper
+            .map(result.getStatus(), result.getData(), result.getErrorData());
     }
 }

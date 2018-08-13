@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @RestController
 public class CurrentPeriodController {
@@ -22,7 +22,7 @@ public class CurrentPeriodController {
     private CurrentPeriodService currentPeriodService;
 
     @Autowired
-    private ApiResponseGenerator apiResponseGenerator;
+    private ApiResponseMapper apiResponseMapper;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,6 +34,6 @@ public class CurrentPeriodController {
         ResponseObject<CurrentPeriod> result = currentPeriodService
             .save(currentPeriod, transaction.getCompanyNumber());
 
-        return apiResponseGenerator.getApiResponse(result);
+        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 }

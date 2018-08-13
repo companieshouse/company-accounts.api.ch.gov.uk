@@ -2,11 +2,9 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Equals;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +26,7 @@ import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseGenerator;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -51,22 +48,25 @@ public class SmallFullControllerTest {
     private HttpSession httpSessionMock;
 
     @Mock
-    private ApiResponseGenerator apiResponseGenerator;
+    private ApiResponseMapper apiResponseMapper;
 
     @InjectMocks
     private SmallFullController smallFullController;
 
     @BeforeEach
     public void setUp() {
-        ResponseObject<SmallFull> responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
+        ResponseObject<SmallFull> responseObject = new ResponseObject(
+            ResponseStatus.SUCCESS_CREATED,
             smallFull);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
 
         doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(transaction).when(httpSessionMock)
+            .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
-        doReturn(responseEntity).when(apiResponseGenerator).getApiResponse(responseObject);
+        doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
+            responseObject.getData(), responseObject.getErrorData());
         doReturn("123456").when(transaction).getCompanyNumber();
     }
 
