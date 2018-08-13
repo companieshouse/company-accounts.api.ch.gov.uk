@@ -54,7 +54,7 @@ public class CurrentPeriodController {
     public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
         HttpSession session = request.getSession();
 
-        final Map<String, Object> debugMap = new HashMap<String, Object>();
+        final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) session
@@ -75,6 +75,5 @@ public class CurrentPeriodController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(currentPeriodEntity);
-
     }
 }

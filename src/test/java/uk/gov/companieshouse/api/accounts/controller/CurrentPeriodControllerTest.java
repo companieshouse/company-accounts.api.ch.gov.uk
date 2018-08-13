@@ -101,8 +101,9 @@ public class CurrentPeriodControllerTest {
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
         doReturn("123").when(currentPeriodService).generateID(anyString());
         ResponseEntity response = currentPeriodController.get(request);
+
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(new Equals(createdCurrentPeriod).matches(response.getBody()));
+        assertTrue(new Equals(currentPeriodEntity).matches(response.getBody()));
     }
 }
