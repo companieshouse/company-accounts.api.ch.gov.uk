@@ -17,11 +17,11 @@ import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEntity> implements
         AbstractService<T, U> {
 
-    public MongoRepository mongoRepository;
+    private MongoRepository<U, String> mongoRepository;
 
-    public GenericTransformer<T, U> genericTransformer;
+    private GenericTransformer<T, U> genericTransformer;
 
-    public AbstractServiceImpl(MongoRepository mongoRepository,
+    public AbstractServiceImpl(MongoRepository<U, String> mongoRepository,
             GenericTransformer<T, U> genericTransformer) {
         this.mongoRepository = mongoRepository;
         this.genericTransformer = genericTransformer;
@@ -40,11 +40,8 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
     @Override
     public U findById(String id) {
-        Optional<U> optional = (Optional<U>) mongoRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        Optional<U> optional = mongoRepository.findById(id);
+        return optional.orElse(null);
     }
 
     @Override
