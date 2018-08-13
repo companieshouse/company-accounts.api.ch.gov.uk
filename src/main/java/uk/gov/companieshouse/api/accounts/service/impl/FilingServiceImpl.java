@@ -57,7 +57,7 @@ public class FilingServiceImpl implements FilingService {
         throws IOException {
         Filing filing = null;
 
-        if (isSmallFullKind(accountEntity)) {
+        if (isSmallFullAccount(accountEntity)) {
             filing = generateAccountFiling(transaction,
                 getAccountType(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType()));
         }
@@ -360,7 +360,7 @@ public class FilingServiceImpl implements FilingService {
      * @param accountEntity - Accounts information.
      * @return true if small full account.
      */
-    private boolean isSmallFullKind(CompanyAccountEntity accountEntity) {
+    private boolean isSmallFullAccount(CompanyAccountEntity accountEntity) {
         return accountEntity.getData().getLinks().get(LinkType.SMALL_FULL.getLink()) != null;
     }
 
@@ -373,7 +373,6 @@ public class FilingServiceImpl implements FilingService {
     private boolean isSmallFullType(String filingType) {
         return AccountsType.SMALL_FULL_ACCOUNTS.getAccountType().equals(filingType);
     }
-
 
     /**
      * Get the small full account information.
