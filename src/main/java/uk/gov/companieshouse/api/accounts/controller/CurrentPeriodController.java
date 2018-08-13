@@ -4,11 +4,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,6 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -42,7 +39,8 @@ public class CurrentPeriodController {
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
             HttpServletRequest request)
             throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession().getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getSession()
+                .getAttribute(AttributeName.TRANSACTION.getValue());
         CurrentPeriod result = currentPeriodService
                 .save(currentPeriod, transaction.getCompanyNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -68,7 +66,7 @@ public class CurrentPeriodController {
         String companyAccountId = companyAccountEntity.getId();
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodService.findById(currentPeriodId);
-        if (currentPeriodEntity == null){
+        if (currentPeriodEntity == null) {
             debugMap.put("message", "Current Period error: No current period found");
             LOGGER.errorRequest(request, null, debugMap);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
