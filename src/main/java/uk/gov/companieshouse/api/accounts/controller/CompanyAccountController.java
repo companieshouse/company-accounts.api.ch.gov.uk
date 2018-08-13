@@ -13,15 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @RestController
 public class CompanyAccountController {
 
     @Autowired
     private CompanyAccountService companyAccountService;
+
+    @Autowired
+    private CompanyAccountTransformer companyAccountTransformer;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,11 +57,7 @@ public class CompanyAccountController {
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request.getSession()
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        CompanyAccount companyAccount = new CompanyAccount();
-        companyAccount.setPeriodEndOn(companyAccountEntity.getData().getPeriodEndOn());
-        companyAccount.setEtag(companyAccountEntity.getData().getEtag());
-        companyAccount.setKind(companyAccountEntity.getData().getKind());
-        companyAccount.setLinks(companyAccountEntity.getData().getLinks());
+        CompanyAccount companyAccount = companyAccountTransformer.transform(companyAccountEntity);
         return ResponseEntity.status(HttpStatus.OK).body(companyAccount);
 
     }
