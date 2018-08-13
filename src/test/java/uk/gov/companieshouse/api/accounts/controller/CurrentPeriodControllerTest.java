@@ -26,6 +26,9 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
@@ -49,10 +52,16 @@ public class CurrentPeriodControllerTest {
     private SmallFull smallFull;
 
     @Mock
+    private CompanyAccountEntity companyAccountEntity;
+
+    @Mock
     private CurrentPeriod currentPeriod;
 
     @Mock
     private CurrentPeriod createdCurrentPeriod;
+
+    @Mock
+    private CurrentPeriodEntity currentPeriodEntity;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -66,9 +75,12 @@ public class CurrentPeriodControllerTest {
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
         doReturn(createdCurrentPeriod).when(currentPeriodService).save(any(CurrentPeriod.class), anyString());
+        doReturn(currentPeriodEntity).when(currentPeriodService).findById(anyString());
         doReturn(httpSessionMock).when(request).getSession();
         doReturn(transaction).when(httpSessionMock).getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(companyAccountEntity).when(httpSessionMock).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
+        doReturn("12345").when(companyAccountEntity).getId();
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -76,11 +88,21 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCreateAccount() throws NoSuchAlgorithmException {
+    public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
         ResponseEntity response = currentPeriodController.create(currentPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertTrue(new Equals(createdCurrentPeriod).matches(response.getBody()));
+    }
+
+    @Test
+    @DisplayName("Test the retreval of a current period resource")
+    public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
+        doReturn("123").when(currentPeriodService).generateID(anyString());
+        ResponseEntity response = currentPeriodController.get(request);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(new Equals(createdCurrentPeriod).matches(response.getBody()));
     }
 }
