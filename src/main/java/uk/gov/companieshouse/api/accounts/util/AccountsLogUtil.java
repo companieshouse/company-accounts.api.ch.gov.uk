@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.util;
 
 public enum AccountsLogUtil {
-    END_OF_REQUEST_MSG("End of Request %s %s"),
-    START_OF_RQUEST_MSG("Start Request %s %s"),
+    END_OF_REQUEST_MSG("End of Request"),
+    START_OF_RQUEST_MSG("Start Request"),
 
     REQUEST_ID("X-Request-Id"),
     ERIC_IDENTITY("Eric-Identity");

@@ -18,7 +18,7 @@ public class AccountsLoggerImpl implements AccountsLogger {
     private static final String STATUS_CODE_KEY = "status_code";
 
     public void logStartOfRequestProcessing(RequestContext reqCtx) {
-        String startMessage = String.format(START_OF_RQUEST_MSG.value(), action(reqCtx), resource(reqCtx));
+        String startMessage = String.format(START_OF_RQUEST_MSG.value());
         Map<String, Object> logData = new HashMap();
         addValues(logData,reqCtx);
         putValue(logData, LOG_MSG_KEY, startMessage);
@@ -26,7 +26,7 @@ public class AccountsLoggerImpl implements AccountsLogger {
     }
 
     public void logEndOfRequestProcessing(RequestContext reqCtx, int statusCode, final long responseTime) {
-        String endMessage = String.format(END_OF_REQUEST_MSG.value(), action(reqCtx), resource(reqCtx));
+        String endMessage = String.format(END_OF_REQUEST_MSG.value());
         Map<String, Object> logData = new HashMap();
         addValues(logData, reqCtx);
         putValue(logData, LOG_MSG_KEY, endMessage);
@@ -55,25 +55,5 @@ public class AccountsLoggerImpl implements AccountsLogger {
         putValue(logData, "identity", reqCtx.userId());
         putValue(logData, "request-id", reqCtx.id());
         putValue(logData, "method", reqCtx.method());
-    }
-
-    private String resource(RequestContext reqCtx){
-        String []temp = reqCtx.path().split("/");
-        return temp[temp.length -1];
-    }
-
-    private String action(RequestContext reqCtx) {
-        switch (reqCtx.method()) {
-            case "POST":
-                return "Create";
-            case "GET":
-                return "Get";
-            case "PUT":
-                return "Update";
-            case "DELETE":
-                return "Delete";
-            default:
-                return "";
-        }
     }
 }
