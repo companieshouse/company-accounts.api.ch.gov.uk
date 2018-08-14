@@ -60,7 +60,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        final Map<String, Object> debugMap = new HashMap<String, Object>();
+        final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
 
         HttpSession session = request.getSession();
