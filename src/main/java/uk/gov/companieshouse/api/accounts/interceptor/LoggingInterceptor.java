@@ -32,7 +32,7 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
         ModelAndView modelAndView) {
-        Long startTime = Long.valueOf((String) request.getSession().getAttribute(START_TIME_KEY.value()));
+        Long startTime = Long.valueOf((Long) request.getSession().getAttribute(START_TIME_KEY.value()));
         long responseTime = System.currentTimeMillis() - startTime;
         RequestContext requestContext = new RequestContext(requestPath(request),
             request.getMethod(), requestId(request), userId(request));
