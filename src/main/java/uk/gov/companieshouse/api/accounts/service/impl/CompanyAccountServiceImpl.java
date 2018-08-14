@@ -103,11 +103,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     public CompanyAccountEntity findById(String id) {
-        Optional<CompanyAccountEntity> optional = (Optional<CompanyAccountEntity>) companyAccountRepository
-                .findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return companyAccountRepository.findById(id).orElse(null);
     }
 }
