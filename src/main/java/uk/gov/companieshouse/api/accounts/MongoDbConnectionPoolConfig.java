@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
@@ -19,15 +20,14 @@ public class MongoDbConnectionPoolConfig {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
         this.minSize =
-                reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null
-                        ? reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") : 1;
-
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY"))
+                        .orElse(1);
         this.maxConnectionIdleTimeMS =
-                reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null
-                        ? reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") : 0;
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY"))
+                        .orElse(0);
         this.maxConnectionLifeTimeMS =
-                reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null
-                        ? reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") : 0;
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
+                        .orElse(0);
     }
 
     public int getMinSize() {
