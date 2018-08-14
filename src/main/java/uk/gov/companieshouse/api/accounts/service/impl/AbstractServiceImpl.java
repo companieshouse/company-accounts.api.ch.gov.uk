@@ -40,8 +40,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
     @Override
     public U findById(String id) {
-        Optional<U> optional = mongoRepository.findById(id);
-        return optional.orElse(null);
+        return mongoRepository.findById(id).orElse(null);
     }
 
     @Override
