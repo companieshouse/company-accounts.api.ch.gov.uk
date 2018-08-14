@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
+import static uk.gov.companieshouse.api.accounts.util.AccountsLogUtil.START_TIME_KEY;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
         RequestContext requestContext = new RequestContext(requestPath(request),
             request.getMethod(), requestId(request), userId(request));
         Long startTime = System.currentTimeMillis();
-        request.getSession().setAttribute("START_TIME", startTime);
+        request.getSession().setAttribute(START_TIME_KEY.value(), startTime);
         accountsLogger.logStartOfRequestProcessing(requestContext);
         return true;
     }
@@ -30,7 +32,7 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
         ModelAndView modelAndView) {
-        long startTime = Long.valueOf((Long) request.getSession().getAttribute("START_TIME"));
+        Long startTime = Long.valueOf((String) request.getSession().getAttribute(START_TIME_KEY.value()));
         long responseTime = System.currentTimeMillis() - startTime;
         RequestContext requestContext = new RequestContext(requestPath(request),
             request.getMethod(), requestId(request), userId(request));
