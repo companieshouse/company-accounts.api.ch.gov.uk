@@ -12,17 +12,22 @@ public class MongoDbConnectionPoolConfig {
     private int maxConnectionLifeTimeMS;
 
     /**
-     * Constructs the config using environment variables for
-     * Mongo Connection Pool settings. Sets default values in case
-     * the environment variables are not supplied.
+     * Constructs the config using environment variables for Mongo Connection Pool settings. Sets
+     * default values in case the environment variables are not supplied.
      */
     public MongoDbConnectionPoolConfig() {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
-        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null ? this.minSize : 1;
+        this.minSize =
+                reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null
+                        ? reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") : 1;
 
-        this.maxConnectionIdleTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.maxConnectionIdleTimeMS : 0;
-        this.maxConnectionLifeTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null ? this.maxConnectionLifeTimeMS : 0;
+        this.maxConnectionIdleTimeMS =
+                reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null
+                        ? reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") : 0;
+        this.maxConnectionLifeTimeMS =
+                reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null
+                        ? reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") : 0;
     }
 
     public int getMinSize() {
