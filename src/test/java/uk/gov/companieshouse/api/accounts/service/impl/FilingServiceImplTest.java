@@ -35,6 +35,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import uk.gov.companieshouse.accountsDates.AccountsDates;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
@@ -79,6 +81,9 @@ public class FilingServiceImplTest {
 
     private Transaction transaction;
     private String smallFullJson;
+    
+    @Mock
+    private AccountsDates accountsDates;
 
     @Mock
     private EnvironmentReader environmentReaderMock;
@@ -367,7 +372,7 @@ public class FilingServiceImplTest {
      * Builds the small full accounts model. Functionality needs to be change.
      */
     private Account getSmallFullAccount() {
-        Account account = new Account();
+        Account account = new Account(accountsDates);
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
@@ -397,7 +402,7 @@ public class FilingServiceImplTest {
     }
 
     private Period getAccountPeriod() {
-        Period period = new Period();
+        Period period = new Period(accountsDates);
         period.setCurrentPeriodStartOn(CURRENT_PERIOD_START_ON);
         period.setCurrentPeriodEndsOn(CURRENT_PERIOD_END_ON);
         period.setPreviousPeriodStartOn(PREVIOUS_START_ON);
@@ -417,7 +422,7 @@ public class FilingServiceImplTest {
         calledUpSharedCapitalNotPaid.setPreviousAmount(99);
 
         balanceSheet.setCalledUpSharedCapitalNotPaid(calledUpSharedCapitalNotPaid);
-        balanceSheet.setCurrentPeriodDateFormatted(CURRENT_PERIOD_FORMATTED);
+        balanceSheet.setCurrentPeriodDateFormatted(CURRENT_PERIOD_FORMATTED );
         balanceSheet.setPreviousPeriodDateFormatted(PREVIOUS_PERIOD_FORMATTED);
 
         return balanceSheet;
