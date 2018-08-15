@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AccountsType;
@@ -72,7 +72,6 @@ public class FilingServiceImplTest {
     private static final String API_KEY_ENV_VAR = "CHS_API_KEY";
     private static final String DOCUMENT_BUCKET_NAME_ENV_VAR = "DOCUMENT_BUCKET_NAME";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
-
     private static final String TRANSACTION_DATE_FORMAT = "EEEE, MMM dd, yyyy HH:mm:ss a";
     private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
     private static String PREVIOUS_START_ON = "2016-01-01";
@@ -80,10 +79,14 @@ public class FilingServiceImplTest {
     private static String CURRENT_PERIOD_START_ON = "2017-05-01";
     private static String CURRENT_PERIOD_END_ON = "2018-05-01";
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
+    private final String smallFullJson = getSmallFullJson();
+
+    @Captor
+    ArgumentCaptor<String> argCaptor;
 
     private Transaction transaction;
     private CompanyAccountEntity companyAccountEntity;
-    private String smallFullJson;
+    private FilingServiceImpl filingService;
 
     @Mock
     private EnvironmentReader environmentReaderMock;
@@ -93,18 +96,17 @@ public class FilingServiceImplTest {
     private IxbrlGenerator ixbrlGeneratorMock;
     @Mock
     private AccountsBuilder accountsBuilderMock;
-    @InjectMocks
-    private FilingServiceImpl filingService = new FilingServiceImpl();
-
-    @BeforeAll
-    void setUpBeforeAll() {
-        smallFullJson = getSmallFullJson();
-    }
 
     @BeforeEach
-    void setUp() throws ParseException {
+    void setUpBeforeEach() throws ParseException {
         transaction = createTransaction();
         companyAccountEntity = createAccountEntity();
+
+        filingService = new FilingServiceImpl(
+            environmentReaderMock,
+            objectMapperMock,
+            ixbrlGeneratorMock,
+            accountsBuilderMock);
     }
 
     @DisplayName("Tests the filing generation. Happy path")
@@ -116,6 +118,12 @@ public class FilingServiceImplTest {
 
         when(ixbrlGeneratorMock
             .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
+
+        when(environmentReaderMock.getMandatoryString(anyString()))
+            .thenReturn("http://localhost:4082")
+            .thenReturn("apiKeyForTesting")
+            .thenReturn("dev-pdf-bucket/chs-dev")
+            .thenReturn("false");
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
@@ -176,6 +184,11 @@ public class FilingServiceImplTest {
 
         when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
 
+        when(environmentReaderMock.getMandatoryString(anyString()))
+            .thenReturn("http://localhost:4082")
+            .thenReturn("apiKeyForTesting")
+            .thenReturn("dev-pdf-bucket/chs-dev");
+
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         verifyObjectMapperNumOfCalls();
@@ -210,12 +223,11 @@ public class FilingServiceImplTest {
      * @param args the values the environment reader is called with.
      */
     private void verifyEnvironmentReaderNumOfCalls(int numOfTimes, String... args) {
-        ArgumentCaptor<String> envReaderCaptor = ArgumentCaptor.forClass(String.class);
 
         verify(environmentReaderMock, times(numOfTimes))
-            .getMandatoryString(envReaderCaptor.capture());
+            .getMandatoryString(argCaptor.capture());
 
-        List<String> capturedEnvVariables = envReaderCaptor.getAllValues();
+        List<String> capturedEnvVariables = argCaptor.getAllValues();
         Set<String> expectedValues = new HashSet<>(Arrays.asList(args));
 
         assertTrue(

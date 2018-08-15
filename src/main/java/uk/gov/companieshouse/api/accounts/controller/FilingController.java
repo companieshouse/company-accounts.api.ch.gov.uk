@@ -23,7 +23,7 @@ public class FilingController {
 
     @GetMapping("/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings")
     public ResponseEntity generateFiling(@PathParam("transactionId") String transactionId,
-        @PathParam("accountId") String accountId, HttpServletRequest request) {
+        @PathParam("companyAccountId") String accountId, HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request.getSession()
             .getAttribute(AttributeName.TRANSACTION.getValue());

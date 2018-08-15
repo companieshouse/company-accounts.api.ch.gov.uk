@@ -26,7 +26,6 @@ import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGene
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
-import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 @Service
 public class FilingServiceImpl implements FilingService {
@@ -40,14 +39,23 @@ public class FilingServiceImpl implements FilingService {
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private IxbrlGenerator ixbrlGenerator;
-    @Autowired
-    private AccountsBuilder accountsBuilder;
+    private final EnvironmentReader environmentReader;
+    private final ObjectMapper objectMapper;
+    private final IxbrlGenerator ixbrlGenerator;
+    private final AccountsBuilder accountsBuilder;
 
-    private EnvironmentReader environmentReader;
+    @Autowired
+    public FilingServiceImpl(
+        EnvironmentReader environmentReader,
+        ObjectMapper objectMapper,
+        IxbrlGenerator ixbrlGenerator,
+        AccountsBuilder accountsBuilder) {
+
+        this.objectMapper = objectMapper;
+        this.environmentReader = environmentReader;
+        this.ixbrlGenerator = ixbrlGenerator;
+        this.accountsBuilder = accountsBuilder;
+    }
 
     /**
      * {@inheritDoc}
@@ -308,10 +316,6 @@ public class FilingServiceImpl implements FilingService {
      * @return environment variable value.
      */
     private String getMandatoryEnvVariable(String envVariable) {
-        if (environmentReader == null) {
-            environmentReader = new EnvironmentReaderImpl();
-        }
-
         return environmentReader.getMandatoryString(envVariable);
     }
 
