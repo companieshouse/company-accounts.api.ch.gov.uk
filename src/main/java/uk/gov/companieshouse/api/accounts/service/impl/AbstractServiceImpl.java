@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -31,7 +30,6 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     public T save(T rest, String companyAccountId) throws NoSuchAlgorithmException {
         addEtag(rest);
         addKind(rest);
-        addLinks(rest);
         U baseEntity = genericTransformer.transform(rest);
         baseEntity.setId(generateID(companyAccountId));
         mongoRepository.save(baseEntity);
