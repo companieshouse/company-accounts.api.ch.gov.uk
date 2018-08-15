@@ -28,10 +28,11 @@ public class SmallFullController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
             HttpServletRequest request) {
-        Transaction transaction = (Transaction) request.getSession()
+        Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseObject<SmallFull> result = smallFullService.save(smallFull, transaction.getCompanyNumber());
+        ResponseObject<SmallFull> result = smallFullService
+                .save(smallFull, transaction.getCompanyNumber());
         return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 }
