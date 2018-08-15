@@ -26,7 +26,7 @@ public class AccountsLoggerImpl implements AccountsLogger {
         Map<String, Object> logData = new HashMap();
         addValues(logData,reqCtx);
         putValue(logData, LOG_MSG_KEY.value(), startMessage);
-        LOGGER.infoContext(reqCtx.path(), "", logData);
+        LOGGER.infoContext(reqCtx.path(), reqCtx.id(), logData);
     }
 
     public void logEndOfRequestProcessing(RequestContext reqCtx, int statusCode, final long responseTime) {
