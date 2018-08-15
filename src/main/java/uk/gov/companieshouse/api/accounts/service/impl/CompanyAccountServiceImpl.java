@@ -69,7 +69,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
         }
 
-        return new ResponseObject(ResponseStatus.SUCCESS, companyAccount);
+        return new ResponseObject(ResponseStatus.SUCCESS_CREATED, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
