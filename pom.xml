@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.gov.companieshouse</groupId>
 	<artifactId>company-accounts.api.ch.gov.uk</artifactId>
-	<version>824363c</version>
+	<version>unversioned</version>
 	<packaging>jar</packaging>
 	<name>company-accounts-api</name>
 	<description>Company accounts API to handle company accounts data</description>
@@ -30,7 +30,7 @@
 		<structured-logging.version>1.2.0-rc1</structured-logging.version>
 		<aws-java-sdk.version>1.11.52</aws-java-sdk.version>
 		<environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
-		<company-accounts-library.version>5a6005b</company-accounts-library.version>
+		<company-accounts-library.version>b7741cf</company-accounts-library.version>
 		<jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<document-generator-core.version>1.0.0-rc4</document-generator-core.version>
@@ -99,8 +99,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
-		</dependency>
+			</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-hateoas</artifactId>
@@ -122,7 +121,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit-jupiter-engine.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -134,8 +132,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson-datatype-jsr310.version}</version>
-		</dependency>
+			</dependency>
 	</dependencies>
 
 	<profiles>
