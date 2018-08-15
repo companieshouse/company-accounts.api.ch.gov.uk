@@ -6,7 +6,6 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -103,11 +102,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     public CompanyAccountEntity findById(String id) {
-        Optional<CompanyAccountEntity> optional = (Optional<CompanyAccountEntity>) companyAccountRepository
-                .findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return companyAccountRepository.findById(id).orElse(null);
     }
 }

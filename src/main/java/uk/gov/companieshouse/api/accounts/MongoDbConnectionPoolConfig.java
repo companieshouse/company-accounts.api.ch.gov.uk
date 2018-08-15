@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
@@ -12,17 +13,21 @@ public class MongoDbConnectionPoolConfig {
     private int maxConnectionLifeTimeMS;
 
     /**
-     * Constructs the config using environment variables for
-     * Mongo Connection Pool settings. Sets default values in case
-     * the environment variables are not supplied.
+     * Constructs the config using environment variables for Mongo Connection Pool settings. Sets
+     * default values in case the environment variables are not supplied.
      */
     public MongoDbConnectionPoolConfig() {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
-        this.minSize = reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY") != null ? this.minSize : 1;
-
-        this.maxConnectionIdleTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY") != null ? this.maxConnectionIdleTimeMS : 0;
-        this.maxConnectionLifeTimeMS = reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY") != null ? this.maxConnectionLifeTimeMS : 0;
+        this.minSize =
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY"))
+                        .orElse(1);
+        this.maxConnectionIdleTimeMS =
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY"))
+                        .orElse(0);
+        this.maxConnectionLifeTimeMS =
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
+                        .orElse(0);
     }
 
     public int getMinSize() {
