@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.filing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.Links;
-
-import java.util.List;
 import java.util.Map;
 
 public class Filing {

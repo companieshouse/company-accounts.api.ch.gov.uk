@@ -12,8 +12,6 @@ public interface AbstractService<T extends RestObject, U extends BaseEntity> {
 
     void addEtag(T rest);
 
-    void addLinks(T rest);
-
     void addKind(T rest);
 
     String getResourceName();
