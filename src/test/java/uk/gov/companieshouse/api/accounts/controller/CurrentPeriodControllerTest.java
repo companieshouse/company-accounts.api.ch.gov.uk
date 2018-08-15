@@ -68,16 +68,16 @@ public class CurrentPeriodControllerTest {
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
-            currentPeriod);
+                currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-            .save(any(CurrentPeriod.class), anyString());
+                .save(any(CurrentPeriod.class), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(responseObject.getData());
+                .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getErrorData())).thenReturn(responseEntity);
-        doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                responseObject.getData(), responseObject.getErrorData()))
+                .thenReturn(responseEntity);
+        doReturn(transaction).when(request)
+                .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();

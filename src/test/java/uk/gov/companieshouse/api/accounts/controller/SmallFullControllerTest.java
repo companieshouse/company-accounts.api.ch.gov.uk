@@ -56,17 +56,16 @@ public class SmallFullControllerTest {
     @BeforeEach
     public void setUp() {
         ResponseObject<SmallFull> responseObject = new ResponseObject(
-            ResponseStatus.SUCCESS_CREATED,
-            smallFull);
+                ResponseStatus.SUCCESS_CREATED,
+                smallFull);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(responseObject.getData());
+                .body(responseObject.getData());
 
-        doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(transaction).when(request)
+                .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getErrorData());
+                responseObject.getData(), responseObject.getErrorData());
         doReturn("123456").when(transaction).getCompanyNumber();
     }
 
