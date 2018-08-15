@@ -66,21 +66,10 @@ public class FilingServiceImpl implements FilingService {
         Filing filing = null;
 
         if (isSmallFullAccount(accountEntity)) {
-            filing = generateAccountFiling(transaction,
-                getAccountType(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType()));
+            filing = generateAccountFiling(transaction, AccountsType.SMALL_FULL_ACCOUNTS);
         }
 
         return filing;
-    }
-
-    /**
-     * Gets the account type information.
-     *
-     * @param accountTypeName - accounts type name. e.g. small-full, abridged, etc.
-     * @return accounts type information.
-     */
-    private AccountsType getAccountType(String accountTypeName) {
-        return AccountsType.getAccountsType(accountTypeName);
     }
 
     /**
@@ -274,23 +263,18 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * get the location the document render service needs to stored the ixbrl document. e.g.
+     * Get the location the document render service needs to stored the ixbrl document. e.g.
      * "s3://dev-pdf-bucket/chs-dev/accounts/small_full_accounts"
      *
-     * @param accountsType - Account type information: account type, ixbrl's template name, account
      * @return
      */
     private String getIXBRLLocation(AccountsType accountsType) {
-        if (isSmallFullType(accountsType.getAccountType())) {
-            return
-                String.format(
-                    IXBRL_LOCATION,
-                    getMandatoryEnvVariable(DOCUMENT_BUCKET_NAME_ENV_VAR),
-                    accountsType.getAssetId(),
-                    accountsType.getResourceKey());
-        }
-
-        return null;
+        return
+            String.format(
+                IXBRL_LOCATION,
+                getMandatoryEnvVariable(DOCUMENT_BUCKET_NAME_ENV_VAR),
+                accountsType.getAssetId(),
+                accountsType.getResourceKey());
     }
 
     /**
