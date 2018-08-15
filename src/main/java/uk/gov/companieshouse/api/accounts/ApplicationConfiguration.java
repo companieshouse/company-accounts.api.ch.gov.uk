@@ -1,6 +1,10 @@
 package uk.gov.companieshouse.api.accounts;
 
 import com.mongodb.MongoClientOptions;
+
+import uk.gov.companieshouse.accountsDates.AccountsDates;
+import uk.gov.companieshouse.accountsDates.impl.AccountsDatesImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,4 +31,10 @@ public class ApplicationConfiguration {
                 .maxConnectionLifeTime(configuration.getMaxConnectionLifeTimeMS())
                 .build();
     }
+    
+    @Bean
+    public AccountsDates accountsDates() {
+        return new AccountsDatesImpl();
+    }
+  
 }
