@@ -25,17 +25,17 @@ public class CompanyAccountController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request.getSession()
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
         ResponseObject result = companyAccountService
-            .createCompanyAccount(companyAccount, transaction, requestId);
+                .createCompanyAccount(companyAccount, transaction, requestId);
         return apiResponseMapper
-            .map(result.getStatus(), result.getData(), result.getErrorData());
+                .map(result.getStatus(), result.getData(), result.getErrorData());
     }
 }

@@ -25,14 +25,14 @@ public class CurrentPeriodController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountsId}/small-full/current-period",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
-        HttpServletRequest request) {
-        Transaction transaction = (Transaction) request.getSession()
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+            HttpServletRequest request) {
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseObject<CurrentPeriod> result = currentPeriodService
-            .save(currentPeriod, transaction.getCompanyNumber());
+                .save(currentPeriod, transaction.getCompanyNumber());
 
         return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
