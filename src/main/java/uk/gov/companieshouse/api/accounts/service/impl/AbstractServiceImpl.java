@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.ID_GENERATION_ERROR;
 
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Optional;
-import org.springframework.dao.DuplicateKeyException;
+import org.apache.commons.codec.Encoder;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -23,28 +24,27 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEntity> implements
-        AbstractService<C, E> {
-
+public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEntity> implements
+        AbstractService<T, U> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    public MongoRepository mongoRepository;
+    private MongoRepository<U, String> mongoRepository;
 
-    public GenericTransformer<C, E> genericTransformer;
+    private GenericTransformer<T, U> genericTransformer;
 
-    public AbstractServiceImpl(MongoRepository mongoRepository,
-            GenericTransformer<C, E> genericTransformer) {
+    public AbstractServiceImpl(MongoRepository<U, String> mongoRepository,
+            GenericTransformer<T, U> genericTransformer) {
         this.mongoRepository = mongoRepository;
         this.genericTransformer = genericTransformer;
     }
 
     @Override
-    public ResponseObject<C> save(C rest, String companyAccountId) {
+    public ResponseObject<T> save(T rest, String companyAccountId) {
         addEtag(rest);
         addKind(rest);
-        addLinks(rest);
-        E baseEntity = genericTransformer.transform(rest);
-        try {
+        U baseEntity = genericTransformer.transform(rest);
+
+        try{
         baseEntity.setId(generateID(companyAccountId));
             mongoRepository.insert(baseEntity);
         } catch (DuplicateKeyException exp) {
@@ -58,28 +58,22 @@ public abstract class AbstractServiceImpl<C extends RestObject, E extends BaseEn
             return new ResponseObject(ID_GENERATION_ERROR);
         }
 
-        mongoRepository.save(baseEntity);
-
         return new ResponseObject(ResponseStatus.SUCCESS_CREATED, rest);
     }
 
     @Override
-    public E findById(String id) {
-        Optional<E> optional = (Optional<E>) mongoRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+    public U findById(String id) {
+        return mongoRepository.findById(id).orElse(null);
     }
 
     @Override
-    public void addEtag(C rest) {
+    public void addEtag(T rest) {
         rest.setEtag(GenerateEtagUtil.generateEtag());
     }
 
     @Override
     public String generateID(String value) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        MessageDigest digest = MessageDigest.getInstance(MessageDigestAlgorithms.SHA_256);
         String unencryptedId = value + getResourceName();
         byte[] id = digest.digest(
                 unencryptedId.getBytes(StandardCharsets.UTF_8));

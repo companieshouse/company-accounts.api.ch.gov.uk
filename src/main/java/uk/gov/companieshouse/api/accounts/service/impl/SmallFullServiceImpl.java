@@ -22,11 +22,6 @@ public class SmallFullServiceImpl extends
     }
 
     @Override
-    public void addLinks(SmallFull rest) {
-
-    }
-
-    @Override
     public void addKind(SmallFull rest) {
         rest.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
     }
@@ -36,6 +31,4 @@ public class SmallFullServiceImpl extends
         return "small-full";
     }
 
-
 }
-

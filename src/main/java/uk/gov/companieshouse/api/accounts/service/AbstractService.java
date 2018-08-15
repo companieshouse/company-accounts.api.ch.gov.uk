@@ -5,17 +5,15 @@ import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 
-public interface AbstractService<C extends RestObject, E extends BaseEntity> {
+public interface AbstractService<T extends RestObject, U extends BaseEntity> {
 
-    ResponseObject<C> save(C rest, String companyAccountId);
+    ResponseObject<T> save(T rest, String companyAccountId);
 
-    E findById(String id);
+    U findById(String id);
 
-    void addEtag(C rest);
+    void addEtag(T rest);
 
-    void addLinks(C rest);
-
-    void addKind(C rest);
+    void addKind(T rest);
 
     String getResourceName();
 
