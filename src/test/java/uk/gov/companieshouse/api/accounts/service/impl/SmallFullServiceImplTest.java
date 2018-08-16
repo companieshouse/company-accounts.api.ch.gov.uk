@@ -54,7 +54,7 @@ public class SmallFullServiceImplTest {
 
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
-        public void canCreateAccount() throws NoSuchAlgorithmException {
+        public void canCreateAccount() {
             ResponseObject<SmallFull> result = smallFullService.save(smallFull, "");
             assertNotNull(result);
             assertEquals(smallFull, result.getData());
