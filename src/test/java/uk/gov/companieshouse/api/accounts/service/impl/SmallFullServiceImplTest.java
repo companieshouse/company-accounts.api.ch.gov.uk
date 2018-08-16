@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,9 +47,9 @@ public class SmallFullServiceImplTest {
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
         public void canCreateAccount() throws NoSuchAlgorithmException {
-            SmallFull result = smallFullService.save(smallFull, "");
+            ResponseObject<SmallFull> result = smallFullService.save(smallFull, "");
             assertNotNull(result);
-            assertEquals(smallFull, result);
+            assertEquals(smallFull, result.getData());
 
         }
     }

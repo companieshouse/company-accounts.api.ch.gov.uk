@@ -21,7 +21,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -36,26 +38,28 @@ public class CurrentPeriodController {
     @Autowired
     private CurrentPeriodService currentPeriodService;
 
+    @Autowired
+    private ApiResponseMapper apiResponseMapper;
+
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
-            HttpServletRequest request)
-            throws NoSuchAlgorithmException {
-        Transaction transaction = (Transaction) request.getSession()
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-        CurrentPeriod result = currentPeriodService
-                .save(currentPeriod, transaction.getCompanyNumber());
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+            HttpServletRequest request) {
 
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+        ResponseObject<CurrentPeriod> result = currentPeriodService
+                .save(currentPeriod, transaction.getCompanyNumber());
+
+        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
-        HttpSession session = request.getSession();
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
 
-        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) session
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
             debugMap.put("message", "Current Period error: No company account in request session");

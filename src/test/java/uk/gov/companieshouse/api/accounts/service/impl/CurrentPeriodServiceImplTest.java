@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,9 +48,9 @@ public class CurrentPeriodServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
-        CurrentPeriod result = currentPeriodService.save(currentPeriod, "");
+        ResponseObject<CurrentPeriod> result = currentPeriodService.save(currentPeriod, "");
         assertNotNull(result);
-        assertEquals(currentPeriod, result);
+        assertEquals(currentPeriod, result.getData());
 
     }
 }

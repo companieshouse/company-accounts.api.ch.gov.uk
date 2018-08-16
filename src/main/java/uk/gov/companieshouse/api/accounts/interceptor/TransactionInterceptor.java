@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.interceptor;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -36,8 +35,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             String transactionId = pathVariables.get("transactionId");
             ResponseEntity<Transaction> transaction = transactionManager
                     .getTransaction(transactionId, request.getHeader("X-Request-Id"));
-            HttpSession session = request.getSession();
-            session.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
+            request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
             return isTransactionIsOpen(transaction);
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
@@ -49,6 +47,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
      * Returns whether transaction is open or not.
      */
     private boolean isTransactionIsOpen(ResponseEntity<Transaction> transaction) {
-        return (transaction.getBody().getStatus().equals(TransactionStatus.OPEN.getStatus()));
+        return (transaction.getBody() != null && transaction.getBody().getStatus()
+                .equals(TransactionStatus.OPEN.getStatus()));
     }
 }
