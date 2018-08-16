@@ -2,8 +2,10 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +36,9 @@ public class SmallFullServiceImplTest {
         private SmallFullRepository smallFullRepository;
 
         @Mock
+        private MessageDigest messageDigest;
+
+        @Mock
         private SmallFullTransformer smallFullTransformer;
 
         @InjectMocks
@@ -41,7 +46,10 @@ public class SmallFullServiceImplTest {
 
         @BeforeEach
         public void setUp() {
+            smallFullService.setMessageDigest(messageDigest);
             when(smallFullTransformer.transform(smallFull)).thenReturn(createdSmallFullEntity);
+            byte[] b = {12, 10, 56, 120, 13, 15};
+            when(messageDigest.digest(any())).thenReturn(b);
         }
 
         @Test
