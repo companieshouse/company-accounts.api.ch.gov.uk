@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -42,9 +43,9 @@ public class SmallFullController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getCompanyAccount(HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getSession()
+        SmallFullEntity smallFullEntity = (SmallFullEntity) request
             .getAttribute(AttributeName.SMALLFULL.getValue());
 
-        return ResponseEntity.status(HttpStatus.OK).body(smallFull);
+        return ResponseEntity.status(HttpStatus.OK).body(smallFullEntity.getData());
     }
 }
