@@ -15,6 +15,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -26,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,6 +81,7 @@ public class FilingServiceImplTest {
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String TRANSACTION_DATE_FORMAT = "EEEE, MMM dd, yyyy HH:mm:ss a";
     private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
+    private static final String SMALL_FULL_ACCOUNT_JSON_FILE_PATH = "filing/json/small-full-account.json";
     private static String PREVIOUS_START_ON = "2016-01-01";
     private static String PREVIOUS_PERIOD_END_ON = "2016-12-01";
     private final static String FILINGS_DESCRIPTION =
@@ -82,14 +89,14 @@ public class FilingServiceImplTest {
     private static String CURRENT_PERIOD_START_ON = "2017-05-01";
     private static String CURRENT_PERIOD_END_ON = "2018-05-01";
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
-    private final String smallFullJson = getSmallFullJson();
 
     @Captor
-    ArgumentCaptor<String> argCaptor;
+    private ArgumentCaptor<String> argCaptor;
 
     private Transaction transaction;
     private CompanyAccountEntity companyAccountEntity;
     private FilingServiceImpl filingService;
+    private String smallFullAcountJson;
 
     @Mock
     private EnvironmentReader environmentReaderMock;
@@ -101,6 +108,11 @@ public class FilingServiceImplTest {
     private AccountsBuilder accountsBuilderMock;
     @Mock
     private DocumentDescriptionHelper documentDescriptionHelperMock;
+
+    @BeforeAll
+    void setUpBeforeAll() throws IOException, URISyntaxException {
+        smallFullAcountJson = getFileContentFromResource(SMALL_FULL_ACCOUNT_JSON_FILE_PATH);
+    }
 
     @BeforeEach
     void setUpBeforeEach() throws ParseException {
@@ -120,7 +132,8 @@ public class FilingServiceImplTest {
     void shouldGenerateFiling() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class)))
+            .thenReturn(smallFullAcountJson);
 
         when(ixbrlGeneratorMock
             .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
@@ -139,8 +152,7 @@ public class FilingServiceImplTest {
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvironmentReaderNumOfCalls(4,
-            DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
+        verifyEnvironmentReaderNumOfCalls(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
             API_KEY_ENV_VAR,
             DOCUMENT_BUCKET_NAME_ENV_VAR,
             DISABLE_IXBRL_VALIDATION_ENV_VAR);
@@ -192,7 +204,8 @@ public class FilingServiceImplTest {
     void shouldNotGenerateFilingAsIxbrlLocationNotSet() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class)))
+            .thenReturn(smallFullAcountJson);
 
         when(environmentReaderMock.getMandatoryString(anyString()))
             .thenReturn("http://localhost:4082")
@@ -203,8 +216,7 @@ public class FilingServiceImplTest {
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvironmentReaderNumOfCalls(3,
-            DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
+        verifyEnvironmentReaderNumOfCalls(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
             API_KEY_ENV_VAR,
             DOCUMENT_BUCKET_NAME_ENV_VAR);
 
@@ -216,7 +228,8 @@ public class FilingServiceImplTest {
     void shouldThrowExceptionDocumentGeneratorIsUnavailable() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class)))
+            .thenReturn(smallFullAcountJson);
 
         when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
             .thenThrow(new ConnectException());
@@ -229,12 +242,11 @@ public class FilingServiceImplTest {
      * Check environmentReaderMock is called the passed-in number of times and the argument's values
      * of these calls matches the passed-in args.
      *
-     * @param numOfTimes The number of times environment reader is be called.
      * @param args the values the environment reader is called with.
      */
-    private void verifyEnvironmentReaderNumOfCalls(int numOfTimes, String... args) {
+    private void verifyEnvironmentReaderNumOfCalls(String... args) {
 
-        verify(environmentReaderMock, times(numOfTimes))
+        verify(environmentReaderMock, times(args.length))
             .getMandatoryString(argCaptor.capture());
 
         List<String> capturedEnvVariables = argCaptor.getAllValues();
@@ -350,10 +362,10 @@ public class FilingServiceImplTest {
         Map<String, String> dataLinks = new HashMap<>();
 
         dataLinks.put(LinkType.SELF.getLink(),
-            String.format("/transactions//%s//company-accounts//%s", TRANSACTION_ID, ACCOUNTS_ID));
+            String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
 
         dataLinks.put(LinkType.SMALL_FULL.getLink(),
-            String.format("/transactions//%s//company-accounts//%s//small-full//%s",
+            String.format("/transactions/%s/company-accounts/%s/small-full/%s",
                 TRANSACTION_ID,
                 ACCOUNTS_ID,
                 SMALL_FULL_ID));
@@ -429,43 +441,24 @@ public class FilingServiceImplTest {
     }
 
     /**
-     * Gets json for small full.
+     * Get file content.
      *
+     * @param filePathName - contains file location and name.
      * @return
+     * @throws URISyntaxException
+     * @throws IOException
      */
-    private String getSmallFullJson() {
-        String json =
-            "{\n"
-                + "  \"small_full_accounts\": {\n"
-                + "    \"period\": {\n"
-                + "      \"previous_period_end_on\": \"" + PREVIOUS_PERIOD_END_ON + "\",\n"
-                + "      \"previous_period_start_on\": \"" + PREVIOUS_START_ON + "\",\n"
-                + "      \"current_period_end_on\": \"" + CURRENT_PERIOD_END_ON + "\",\n"
-                + "      \"current_period_start_on\": \"" + CURRENT_PERIOD_START_ON + "\",\n"
-                + "    },\n"
-                + "    \"notes\": {\n"
-                + "      \"post_balance_sheet_events\": {\n"
-                + "        \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED
-                + "\",\n"
-                + "        \"post_balance_sheet_events_info\": \"test post balance note\"\n"
-                + "      }\n"
-                + "    },\n"
-                + "    \"balance_sheet\": {\n"
-                + "      \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED + "\",\n"
-                + "      \"called_up_shared_capital_not_paid\": {\n"
-                + "        \"current_amount\": 9,\n"
-                + "        \"previous_amount\": 99\n"
-                + "      },\n"
-                + "      \"previous_period_date_formatted\": \"" + PREVIOUS_PERIOD_FORMATTED
-                + "\",\n"
-                + "    },\n"
-                + "    \"company\": {\n"
-                + "      \"company_number\": \"MYRETON RENEWABLE ENERGY LIMITED\",\n"
-                + "      \"company_name\": \"SC344891\"\n"
-                + "    }\n"
-                + "  }\n"
-                + "}";
+    private String getFileContentFromResource(String filePathName)
+        throws URISyntaxException, IOException {
 
-        return json;
+        Path path = Paths.get(getClass().getClassLoader()
+            .getResource(filePathName).toURI());
+
+        StringBuilder data = new StringBuilder();
+        Stream<String> lines = Files.lines(path);
+        lines.forEach(line -> data.append(line).append("\n"));
+        lines.close();
+
+        return data.toString();
     }
 }
