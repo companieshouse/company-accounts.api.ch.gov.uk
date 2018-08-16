@@ -21,10 +21,10 @@ import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
-import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @Service
@@ -43,18 +43,21 @@ public class FilingServiceImpl implements FilingService {
     private final ObjectMapper objectMapper;
     private final IxbrlGenerator ixbrlGenerator;
     private final AccountsBuilder accountsBuilder;
+    private final DocumentDescriptionHelper documentDescriptionHelper;
 
     @Autowired
     public FilingServiceImpl(
         EnvironmentReader environmentReader,
         ObjectMapper objectMapper,
         IxbrlGenerator ixbrlGenerator,
-        AccountsBuilder accountsBuilder) {
+        AccountsBuilder accountsBuilder,
+        DocumentDescriptionHelper documentDescriptionHelper) {
 
         this.objectMapper = objectMapper;
         this.environmentReader = environmentReader;
         this.ixbrlGenerator = ixbrlGenerator;
         this.accountsBuilder = accountsBuilder;
+        this.documentDescriptionHelper = documentDescriptionHelper;
     }
 
     /**
@@ -90,7 +93,7 @@ public class FilingServiceImpl implements FilingService {
             String ixbrlLocation = callIxbrlGenerator(accountsType,
                 generateJson(accountsType.getAccountType(), accountObj));
 
-            if (ixbrlLocation != null && isValidIXBL()) {
+            if (ixbrlLocation != null && isValidIxbrl()) {
                 filing = createAccountFiling(transaction, accountsType, ixbrlLocation);
             }
         }
@@ -110,7 +113,7 @@ public class FilingServiceImpl implements FilingService {
     private String generateJson(String accountType, Object accountObj)
         throws JsonProcessingException {
         if (isSmallFullType(accountType)) {
-            return generateCompanyAccountJSON((Account) accountObj);
+            return generateSmallFullAccountJSON((Account) accountObj);
         }
         return null;
     }
@@ -128,7 +131,7 @@ public class FilingServiceImpl implements FilingService {
         String ixbrlLocation) throws IOException {
         Filing filing = new Filing();
 
-        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes.
+        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes. (STORY SFA-595)
         LocalDate periodEndDate = LocalDate.now();
 
         filing.setCompanyNumber(transaction.getCompanyNumber());
@@ -199,7 +202,7 @@ public class FilingServiceImpl implements FilingService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PERIOD_END_ON, periodEndDate);
 
-        return DocumentDescriptionHelper
+        return documentDescriptionHelper
             .getDescription(accountsType.getFilingDescriptionKey(), parameters);
     }
 
@@ -207,11 +210,11 @@ public class FilingServiceImpl implements FilingService {
      * Validates the ixbrl against TNEP. This validation is driven by the env. variable and it can
      * be disable.
      */
-    private boolean isValidIXBL() {
+    private boolean isValidIxbrl() {
 
         boolean isIxbrlValid = true;
         if ("true".equals(getMandatoryEnvVariable(DISABLE_IXBRL_VALIDATION_ENV_VAR))) {
-            //TODO TNEP validation needs to be added. Copy logic from abridged. Next PR
+            //TODO TNEP validation needs to be added. Copy logic from abridged. (STORY SFA-574)
         }
 
         return isIxbrlValid;
@@ -310,7 +313,7 @@ public class FilingServiceImpl implements FilingService {
      * @return The account marshaled to JSON and converted to String.
      * @throws JsonProcessingException
      */
-    private String generateCompanyAccountJSON(Account account)
+    private String generateSmallFullAccountJSON(Account account)
         throws JsonProcessingException {
         JSONObject accountsRequestBody = new JSONObject();
         accountsRequestBody.put("small_full_account", convertObjectToJson(account));

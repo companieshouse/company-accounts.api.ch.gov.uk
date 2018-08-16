@@ -22,7 +22,7 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
      * Builds the small full accounts model. Functionality needs to be change.
      */
     private Account getSmallFullAccount() {
-        //TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts information when built in the API.
+        //TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts information when built in the API. (STORY SFA-574)
         Account account = new Account();
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
@@ -34,8 +34,8 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
 
     private Company getCompany() {
         Company company = new Company();
-        company.setCompanyName("SC344891");
-        company.setCompanyNumber("MYRETON RENEWABLE ENERGY LIMITED");
+        company.setCompanyName("TEST COMPANY LIMITED");
+        company.setCompanyNumber("12345678");
 
         return company;
     }

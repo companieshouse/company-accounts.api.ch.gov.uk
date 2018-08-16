@@ -51,6 +51,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.PostBalanceSheetEvents;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
@@ -76,6 +77,8 @@ public class FilingServiceImplTest {
     private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
     private static String PREVIOUS_START_ON = "2016-01-01";
     private static String PREVIOUS_PERIOD_END_ON = "2016-12-01";
+    private final static String FILINGS_DESCRIPTION =
+        "Small full accounts made up to " + PREVIOUS_PERIOD_END_ON;
     private static String CURRENT_PERIOD_START_ON = "2017-05-01";
     private static String CURRENT_PERIOD_END_ON = "2018-05-01";
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
@@ -96,6 +99,8 @@ public class FilingServiceImplTest {
     private IxbrlGenerator ixbrlGeneratorMock;
     @Mock
     private AccountsBuilder accountsBuilderMock;
+    @Mock
+    private DocumentDescriptionHelper documentDescriptionHelperMock;
 
     @BeforeEach
     void setUpBeforeEach() throws ParseException {
@@ -106,7 +111,8 @@ public class FilingServiceImplTest {
             environmentReaderMock,
             objectMapperMock,
             ixbrlGeneratorMock,
-            accountsBuilderMock);
+            accountsBuilderMock,
+            documentDescriptionHelperMock);
     }
 
     @DisplayName("Tests the filing generation. Happy path")
@@ -118,6 +124,10 @@ public class FilingServiceImplTest {
 
         when(ixbrlGeneratorMock
             .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
+
+        //TODO - uncomment when api-enumerations  has been added to the project
+        /*when(documentDescriptionHelperMock.getDescription(anyString(), any(Map.class)))
+            .thenReturn("Small full accounts made up to " + PREVIOUS_PERIOD_END_ON);*/
 
         when(environmentReaderMock.getMandatoryString(anyString()))
             .thenReturn("http://localhost:4082")
@@ -258,8 +268,8 @@ public class FilingServiceImplTest {
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(),
             filing.getDescriptionIdentifier());
 
-        // TODO: filing.getDescription() is not possible compare since I cannot mock it to get the description
-        // assertEquals(DESCRIPTION, filing.getDescription());
+        //TODO - uncomment when api-enumerations  has been added to the project
+        // assertEquals(FILINGS_DESCRIPTION, filing.getDescription());
 
         assertNotNull(filing.getDescriptionValues());
         assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
@@ -277,47 +287,6 @@ public class FilingServiceImplTest {
         assertNotNull(link);
         assertEquals(LINK_RELATIONSHIP, link.getRelationship());
         assertEquals(IXBRL_LOCATION, link.getHref());
-    }
-
-    /**
-     * Gets json for small full.
-     *
-     * @return
-     */
-    private String getSmallFullJson() {
-        String json =
-            "{\n"
-                + "  \"small_full_accounts\": {\n"
-                + "    \"period\": {\n"
-                + "      \"previous_period_end_on\": \"" + PREVIOUS_PERIOD_END_ON + "\",\n"
-                + "      \"previous_period_start_on\": \"" + PREVIOUS_START_ON + "\",\n"
-                + "      \"current_period_end_on\": \"" + CURRENT_PERIOD_END_ON + "\",\n"
-                + "      \"current_period_start_on\": \"" + CURRENT_PERIOD_START_ON + "\",\n"
-                + "    },\n"
-                + "    \"notes\": {\n"
-                + "      \"post_balance_sheet_events\": {\n"
-                + "        \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED
-                + "\",\n"
-                + "        \"post_balance_sheet_events_info\": \"test post balance note\"\n"
-                + "      }\n"
-                + "    },\n"
-                + "    \"balance_sheet\": {\n"
-                + "      \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED + "\",\n"
-                + "      \"called_up_shared_capital_not_paid\": {\n"
-                + "        \"current_amount\": 9,\n"
-                + "        \"previous_amount\": 99\n"
-                + "      },\n"
-                + "      \"previous_period_date_formatted\": \"" + PREVIOUS_PERIOD_FORMATTED
-                + "\",\n"
-                + "    },\n"
-                + "    \"company\": {\n"
-                + "      \"company_number\": \"MYRETON RENEWABLE ENERGY LIMITED\",\n"
-                + "      \"company_name\": \"SC344891\"\n"
-                + "    }\n"
-                + "  }\n"
-                + "}";
-
-        return json;
     }
 
     /**
@@ -457,5 +426,46 @@ public class FilingServiceImplTest {
         balanceSheet.setPreviousPeriodDateFormatted(PREVIOUS_PERIOD_FORMATTED);
 
         return balanceSheet;
+    }
+
+    /**
+     * Gets json for small full.
+     *
+     * @return
+     */
+    private String getSmallFullJson() {
+        String json =
+            "{\n"
+                + "  \"small_full_accounts\": {\n"
+                + "    \"period\": {\n"
+                + "      \"previous_period_end_on\": \"" + PREVIOUS_PERIOD_END_ON + "\",\n"
+                + "      \"previous_period_start_on\": \"" + PREVIOUS_START_ON + "\",\n"
+                + "      \"current_period_end_on\": \"" + CURRENT_PERIOD_END_ON + "\",\n"
+                + "      \"current_period_start_on\": \"" + CURRENT_PERIOD_START_ON + "\",\n"
+                + "    },\n"
+                + "    \"notes\": {\n"
+                + "      \"post_balance_sheet_events\": {\n"
+                + "        \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED
+                + "\",\n"
+                + "        \"post_balance_sheet_events_info\": \"test post balance note\"\n"
+                + "      }\n"
+                + "    },\n"
+                + "    \"balance_sheet\": {\n"
+                + "      \"current_period_date_formatted\": \"" + CURRENT_PERIOD_FORMATTED + "\",\n"
+                + "      \"called_up_shared_capital_not_paid\": {\n"
+                + "        \"current_amount\": 9,\n"
+                + "        \"previous_amount\": 99\n"
+                + "      },\n"
+                + "      \"previous_period_date_formatted\": \"" + PREVIOUS_PERIOD_FORMATTED
+                + "\",\n"
+                + "    },\n"
+                + "    \"company\": {\n"
+                + "      \"company_number\": \"MYRETON RENEWABLE ENERGY LIMITED\",\n"
+                + "      \"company_name\": \"SC344891\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "}";
+
+        return json;
     }
 }
