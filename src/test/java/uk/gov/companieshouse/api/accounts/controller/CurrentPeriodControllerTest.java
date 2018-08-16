@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,9 +53,6 @@ public class CurrentPeriodControllerTest {
 
     @Mock
     private CurrentPeriod currentPeriod;
-
-    @Mock
-    private CurrentPeriod createdCurrentPeriod;
 
     @Mock
     private CurrentPeriodEntity currentPeriodEntity;
