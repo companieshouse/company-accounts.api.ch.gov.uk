@@ -4,4 +4,4 @@ group: api
 weight: 900
 routes:
    1: ^/transactions/(.*)/company-accounts.*
-   2: ^/private/company-accounts/.*
+   2: ^/private/transactions/(.*)/company-accounts.*
