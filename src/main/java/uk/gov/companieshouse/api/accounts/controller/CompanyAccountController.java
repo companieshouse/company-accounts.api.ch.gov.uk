@@ -17,12 +17,16 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @RestController
 public class CompanyAccountController {
 
     @Autowired
     private CompanyAccountService companyAccountService;
+
+    @Autowired
+    private ApiResponseMapper apiResponseMapper;
 
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
@@ -32,21 +36,12 @@ public class CompanyAccountController {
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
         HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request.getSession()
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject response = companyAccountService
-            .createCompanyAccount(companyAccount, transaction, requestId);
-
-        switch (response.getStatus()) {
-            case SUCCESS:
-                return ResponseEntity.status(HttpStatus.CREATED).body(response.getData());
-            case DUPLICATE_KEY_ERROR:
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        ResponseObject result = companyAccountService.createCompanyAccount(companyAccount, transaction, requestId);
+return apiResponseMapper
+        .map(result.getStatus(), result.getData(), result.getErrorData());
     }
 
     @GetMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}",

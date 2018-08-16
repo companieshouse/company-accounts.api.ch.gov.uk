@@ -22,6 +22,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -41,25 +42,37 @@ public class CompanyAccountControllerTest {
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
-  
+
+    @Mock
+    private ApiResponseMapper apiResponseMapper;
+
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
     @BeforeEach
     public void setUp() {
-        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute("transaction")).thenReturn(transactionMock);
+        when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
 
     }
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource and patching transaction resource")
-    void canCreateAccountSuccesfully()  {
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS, companyAccountMock);
-        when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
+    void canCreateAccountSuccesfully() {
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
+                companyAccountMock);
+        when(companyAccountServiceMock
+                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .thenReturn(responseObject);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseObject.getData());
+        when(apiResponseMapper.map(
+                responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrorData()))
+                .thenReturn(responseEntity);
 
-        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
+        ResponseEntity response = companyAccountController
+                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -69,11 +82,20 @@ public class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key error")
-    void canCreateAccountWithDuplicateKeyError()  {
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR, companyAccountMock);
-        when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
+    void canCreateAccountWithDuplicateKeyError() {
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR,
+                companyAccountMock);
+        when(companyAccountServiceMock
+                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .thenReturn(responseObject);
 
-        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        when(apiResponseMapper.map(responseObject.getStatus(),
+                responseObject.getData(), responseObject.getErrorData()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response = companyAccountController
+                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -81,11 +103,20 @@ public class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to an internal error (MongoException")
-    void canCreateAccountWithInternalError()  {
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.MONGO_ERROR, companyAccountMock);
-        when(companyAccountServiceMock.createCompanyAccount(companyAccountMock, transactionMock, "test")).thenReturn(responseObject);
+    void canCreateAccountWithInternalError() {
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.MONGO_ERROR,
+                companyAccountMock);
+        when(companyAccountServiceMock
+                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .thenReturn(responseObject);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(null);
+        when(apiResponseMapper.map(responseObject.getStatus(),
+                responseObject.getData(), responseObject.getErrorData()))
+                .thenReturn(responseEntity);
 
-        ResponseEntity response = companyAccountController.createCompanyAccount(companyAccountMock, httpServletRequestMock);
+        ResponseEntity response = companyAccountController
+                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
