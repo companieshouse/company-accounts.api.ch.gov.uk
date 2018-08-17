@@ -53,6 +53,7 @@ import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheetStatements;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.CalledUpSharedCapitalNotPaid;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
@@ -396,6 +397,9 @@ public class FilingServiceImplTest {
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
         account.setCompany(getCompany());
+        account.setApprovalDate("2016-01-19T00:00:00.000Z");
+        account.setApprovalName("director");
+
 
         return account;
     }
@@ -404,6 +408,7 @@ public class FilingServiceImplTest {
         Company company = new Company();
         company.setCompanyName(COMPANY_NAME);
         company.setCompanyNumber(COMPANY_NAME);
+        company.setJurisdiction(COMPANY_NUMBER);
 
         return company;
     }
@@ -426,6 +431,13 @@ public class FilingServiceImplTest {
         period.setCurrentPeriodEndsOn(CURRENT_PERIOD_END_ON);
         period.setPreviousPeriodStartOn(PREVIOUS_START_ON);
         period.setPreviousPeriodEndsOn(PREVIOUS_PERIOD_END_ON);
+        
+        period.setCurrentPeriodStartOnFormatted(period.getCurrentPeriodStartOn());
+        period.setCurrentPeriodEndsOnFormatted(period.getCurrentPeriodEndsOn());
+        period.setCurrentPeriodBSDate(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn(),
+                period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
+        period.setPreviousPeriodBSDate(period.getPreviousPeriodStartOn(), period.getPreviousPeriodEndsOn(),
+                period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
 
         return period;
     }
@@ -435,6 +447,18 @@ public class FilingServiceImplTest {
      */
     private BalanceSheet getBalanceSheet() {
         BalanceSheet balanceSheet = new BalanceSheet();
+        
+
+        BalanceSheetStatements statements = new BalanceSheetStatements();
+        statements.setSection477(
+                "For the year ending 31 December 2016 the company was entitled to exemption under section 477 of the Companies Act 2006 relating to small companies.");
+        statements.setAuditNotRequiredByMembers(
+                "The members have not required the company to obtain an audit in accordance with section 476 of the Companies Act 2006.");
+        statements.setDirectorsResponsibility(
+                "The directors acknowledge their responsibilities for complying with the requirements of the Act with respect to accounting records and the preparation of accounts.");
+        statements.setSmallCompaniesRegime(
+                "These accounts have been prepared and delivered in accordance with the provisions applicable to companies subject to the small companies regime.");
+        balanceSheet.setBalanceSheetStatements(statements);
 
         CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid = new CalledUpSharedCapitalNotPaid();
         calledUpSharedCapitalNotPaid.setCurrentAmount(9);
@@ -446,6 +470,7 @@ public class FilingServiceImplTest {
 
         return balanceSheet;
     }
+
 
     /**
      * Get file content.
