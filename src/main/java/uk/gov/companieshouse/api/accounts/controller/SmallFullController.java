@@ -21,6 +21,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -38,6 +39,9 @@ public class SmallFullController {
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
+
+    @Autowired
+    private SmallFullTransformer smallFullTransformer;
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
@@ -60,11 +64,11 @@ public class SmallFullController {
                 .getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFullEntity == null) {
             debugMap.put("message",
-                    "CompanyAccountController error: No small-full account in request");
+                    "SmallFullTransformer error: No small-full account in request");
             LOGGER.errorRequest(request, null, debugMap);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(smallFullEntity.getData());
+        return ResponseEntity.status(HttpStatus.OK).body(smallFullTransformer.transform(smallFullEntity));
     }
 }
