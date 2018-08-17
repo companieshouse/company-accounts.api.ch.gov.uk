@@ -95,7 +95,6 @@ public class Period {
     public void setPreviousPeriodStartOn(String previousPeriodStartOn) {
         this.previousPeriodStartOn = accountsDates
                 .convertDateToString(accountsDates.getLocalDatefromDateTimeString(previousPeriodStartOn));
-        ;
     }
 
     public String getPreviousPeriodEndsOn() {
