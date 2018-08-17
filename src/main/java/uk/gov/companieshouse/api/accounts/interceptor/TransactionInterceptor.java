@@ -38,7 +38,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
                     .getTransaction(transactionId, request.getHeader("X-Request-Id"));
             HttpSession session = request.getSession();
             session.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
-            return isTransactionIsOpen(transaction);
+            return true;
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
             return false;
