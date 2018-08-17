@@ -33,13 +33,12 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
         // TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts
         // information when built in the API.
         Account account = new Account(accountsDates);
-
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
         account.setCompany(getCompany());
         account.setApprovalDate("2016-01-19T00:00:00.000Z");
-        account.setApprovalName("Leah");
+        account.setApprovalName("Director");
 
         return account;
     }
