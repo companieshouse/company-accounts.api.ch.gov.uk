@@ -1134,11 +1134,9 @@ ul.accounts-comps-ct {
               <ix:nonNumeric contextRef="AccountsStatus_CY" name="uk-bus:AccountsStatusAuditedOrUnaudited" format="ixt2:nocontent"></ix:nonNumeric>
               <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsTypeFullOrAbbreviated" format="ixt2:nocontent"></ix:nonNumeric>
               <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
-              <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$balanceSheet.current_period_date_formatted}}</ix:nonNumeric>
-              <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$balanceSheet.current_period_date_formatted}}</ix:nonNumeric>
-
-              <ix:nonNumeric contextRef="CY_END" name="uk-bus:StartDateForPeriodCoveredByReport">{{$balanceSheet.current_period_date_formatted}}</ix:nonNumeric>
-
+              <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
+              <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
+              <ix:nonNumeric contextRef="CY_END" name="uk-bus:StartDateForPeriodCoveredByReport">{{$current_period_start_on}}</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:DescriptionPrincipalActivities">No description of principal activity</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:EntityDormantTruefalse" format="ixt2:booleanfalse">false</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:EntityTradingStatus" format="ixt2:nocontent"></ix:nonNumeric>
@@ -1566,7 +1564,7 @@ ul.accounts-comps-ct {
             ({{$company.jurisdiction }})
           </h2>
           <h2 class="text--center margin-large" >
-            <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$current_period_end_on_formatted}}</ix:nonNumeric>
+            <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
           </h2>
           {{$period := .small_full_account.period}}
           <h2 class="text--center margin-large">Period of accounts</h2>
@@ -1592,12 +1590,6 @@ ul.accounts-comps-ct {
               </tr>
             </thead>
             <tbody>
-               <!-- <tr>
-                <td class="strong">
-                  <a href="#CompanyInformationSection">Company Information</a>
-                </td>
-                <td></td>
-              </tr> -->
               <tr>
                 <td class="strong">
                   <a href="#BalanceSheetSection">Balance sheet</a>
@@ -1619,72 +1611,6 @@ ul.accounts-comps-ct {
             </tbody>
           </table>
         </div>
-
-         <!-- <div class="page" >
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-          <h2 class="text--center">Company Information</h2>
-          <p class="text--center">
-            <strong>for the Period Ended {{$period.current_period_end_on}}</strong>
-          </p>
-
-          <table>
-            <tbody>
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td> </td>
-              </tr>
-
-              {{$roa := $company.ROA}}
-                {{if $roa}}
-              <tr>
-                <td>
-                  <b>Registered office:</b>
-                </td>
-                <td> </td>
-                <td>
-                <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:AddressLine1">{{$roa.address_line_1}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:AddressLine2">{{$roa.address_line_2}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:CountyRegion">{{$roa.county}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:PostalCodeZip">{{$roa.postcode}}</ix:nonNumeric>
-                  </p>
-                </td>
-              </tr>
-              {{end}}
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td>
-                    <b>Company Registration Number:</b>
-                </td>
-                <td> </td>
-                <td>
-                  <ix:nonNumeric contextRef="CY" name="uk-bus:UKCompaniesHouseRegisteredNumber">{{$companyNumber}}</ix:nonNumeric>
-                        ({{$company.ROA.jurisdiction }})
-                </td>
-              </tr>
-              <tr>
-                <td> </td>
-             </tr>
-           </tbody>
-          </table>
-        </div> -->
 
         <!-- BALANCE SHEET -->
 
@@ -1769,7 +1695,7 @@ ul.accounts-comps-ct {
           <h2 class="text--left">Balance sheet statements</h2>
           {{if $statements := $balanceSheet.balance_sheet_statements}}
             <p>
-              <ix:nonNumeric name="direp:StatementThatCompanyEntitledToExemptionFromAuditUnderSection477CompaniesAct2006RelatingToSmallCompanies" contextRef="CY">{{$statements.section_477}}</ix:nonNumeric>
+              <ix:nonNumeric name="direp:StatementThatCompanyEntitledToExemptionFromAuditUnderSection477CompaniesAct2006RelatingToSmallCompanies" contextRef="CY">{{$statements.section477}}</ix:nonNumeric>
             </p>
             <p>
               <ix:nonNumeric contextRef="CY" name="direp:StatementThatMembersHaveNotRequiredCompanyToObtainAnAudit">{{$statements.audit_not_required_by_members}}</ix:nonNumeric>
