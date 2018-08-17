@@ -77,7 +77,7 @@ public class Period {
 
     public void setCurrentPeriodStartOn(String currentPeriodStartOn) {
         LocalDate localDate = accountsDates.getLocalDatefromDateTimeString(currentPeriodStartOn);
-        currentPeriodStartOn = accountsDates.convertDateToString(localDate);
+        this.currentPeriodStartOn = accountsDates.convertDateToString(localDate);
     }
 
     public String getCurrentPeriodEndsOn() {

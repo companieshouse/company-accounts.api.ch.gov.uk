@@ -67,8 +67,8 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
         period.setCurrentPeriodEndsOn("2016-11-01T00:00:00.000Z");
         period.setPreviousPeriodStartOn("2017-01-31T00:00:00.000Z");
         period.setPreviousPeriodEndsOn("2017-12-31T00:00:00.000Z");
-        period.setCurrentPeriodStartOnFormatted("2017-01-01");
-        period.setCurrentPeriodEndsOnFormatted("2017-01-01");
+        period.setCurrentPeriodStartOnFormatted(period.getCurrentPeriodStartOn());
+        period.setCurrentPeriodEndsOnFormatted(period.getCurrentPeriodEndsOn());
         period.setCurrentPeriodBSDate(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn(), period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
         period.setPreviousPeriodBSDate(period.getPreviousPeriodStartOn(), period.getPreviousPeriodEndsOn(), period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
 
