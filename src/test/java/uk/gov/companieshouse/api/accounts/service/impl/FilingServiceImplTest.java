@@ -42,8 +42,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.gov.companieshouse.accountsDates.AccountsDates;
+import uk.gov.companieshouse.accountsDates.impl.AccountsDatesImpl;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
@@ -85,12 +87,12 @@ public class FilingServiceImplTest {
     private static final String TRANSACTION_DATE_FORMAT = "EEEE, MMM dd, yyyy HH:mm:ss a";
     private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
     private static final String SMALL_FULL_ACCOUNT_JSON_FILE_PATH = "filing/json/small-full-account.json";
-    private static String PREVIOUS_START_ON = "2016-01-01";
-    private static String PREVIOUS_PERIOD_END_ON = "2016-12-01";
+    private static String PREVIOUS_START_ON = "2017-07-13T14:02:45.000Z";
+    private static String PREVIOUS_PERIOD_END_ON = "2018-07-13T14:02:45.000Z";
     private final static String FILINGS_DESCRIPTION =
         "Small full accounts made up to " + PREVIOUS_PERIOD_END_ON;
-    private static String CURRENT_PERIOD_START_ON = "2017-05-01";
-    private static String CURRENT_PERIOD_END_ON = "2018-05-01";
+    private static String CURRENT_PERIOD_START_ON = "2016-07-13T14:02:45.000Z";
+    private static String CURRENT_PERIOD_END_ON = "2017-07-13T14:02:45.000Z";
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
 
     @Captor
@@ -99,8 +101,9 @@ public class FilingServiceImplTest {
     private Transaction transaction;
     private String smallFullJson;
     
-    @Mock
-    private AccountsDates accountsDates;
+   
+    private AccountsDates accountsDates = new AccountsDatesImpl();
+
 
     private CompanyAccountEntity companyAccountEntity;
     private FilingServiceImpl filingService;
@@ -392,6 +395,8 @@ public class FilingServiceImplTest {
      * Builds the small full accounts model. Functionality needs to be change.
      */
     private Account getSmallFullAccount() {
+        
+        
         Account account = new Account(accountsDates);
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
