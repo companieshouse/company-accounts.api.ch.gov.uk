@@ -8,25 +8,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
+import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
-import uk.gov.companieshouse.api.accounts.transaction.Filings;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
-import uk.gov.companieshouse.document.data.DocumentDescriptionHelper;
 import uk.gov.companieshouse.environment.EnvironmentReader;
-import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 @Service
 public class FilingServiceImpl implements FilingService {
@@ -40,55 +39,40 @@ public class FilingServiceImpl implements FilingService {
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private IxbrlGenerator ixbrlGenerator;
-    @Autowired
-    private AccountsBuilder accountsBuilder;
+    private final EnvironmentReader environmentReader;
+    private final ObjectMapper objectMapper;
+    private final IxbrlGenerator ixbrlGenerator;
+    private final AccountsBuilder accountsBuilder;
+    private final DocumentDescriptionHelper documentDescriptionHelper;
 
-    private EnvironmentReader environmentReader;
+    @Autowired
+    public FilingServiceImpl(
+        EnvironmentReader environmentReader,
+        ObjectMapper objectMapper,
+        IxbrlGenerator ixbrlGenerator,
+        AccountsBuilder accountsBuilder,
+        DocumentDescriptionHelper documentDescriptionHelper) {
+
+        this.objectMapper = objectMapper;
+        this.environmentReader = environmentReader;
+        this.ixbrlGenerator = ixbrlGenerator;
+        this.accountsBuilder = accountsBuilder;
+        this.documentDescriptionHelper = documentDescriptionHelper;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Filing generateAccountFiling(Transaction transaction, String accountsId)
+    public Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
         throws IOException {
         Filing filing = null;
 
-        if (isSmallFullKind(getTransactionFilingType(transaction))) {
-            filing = generateAccountFiling(transaction,
-                getAccountType(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType()));
+        if (isSmallFullAccount(accountEntity)) {
+            filing = generateAccountFiling(transaction, AccountsType.SMALL_FULL_ACCOUNTS);
         }
 
         return filing;
-    }
-
-    /**
-     * Gets the account type information.
-     *
-     * @param accountTypeName - accounts type name. e.g. small-full, abridged, etc.
-     * @return accounts type information.
-     */
-    private AccountsType getAccountType(String accountTypeName) {
-        return AccountsType.getAccountsType(accountTypeName);
-    }
-
-    /**
-     * Get the account kind from the transaction information.
-     *
-     * @param transaction - transaction information
-     * @return accounts kind e.g. accounts#smallfull
-     */
-    private String getTransactionFilingType(Transaction transaction) {
-        return
-            Optional.ofNullable(transaction.getFilings())
-                .flatMap(map -> map.values()
-                    .stream()
-                    .findFirst())
-                .map(Filings::getType)
-                .orElse(null);
     }
 
     /**
@@ -109,7 +93,7 @@ public class FilingServiceImpl implements FilingService {
             String ixbrlLocation = callIxbrlGenerator(accountsType,
                 generateJson(accountsType.getAccountType(), accountObj));
 
-            if (ixbrlLocation != null && isValidIXBL()) {
+            if (ixbrlLocation != null && isValidIxbrl()) {
                 filing = createAccountFiling(transaction, accountsType, ixbrlLocation);
             }
         }
@@ -129,7 +113,7 @@ public class FilingServiceImpl implements FilingService {
     private String generateJson(String accountType, Object accountObj)
         throws JsonProcessingException {
         if (isSmallFullType(accountType)) {
-            return generateCompanyAccountJSON((Account) accountObj);
+            return generateSmallFullAccountJSON((Account) accountObj);
         }
         return null;
     }
@@ -147,7 +131,7 @@ public class FilingServiceImpl implements FilingService {
         String ixbrlLocation) throws IOException {
         Filing filing = new Filing();
 
-        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes.
+        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes. (STORY SFA-595)
         LocalDate periodEndDate = LocalDate.now();
 
         filing.setCompanyNumber(transaction.getCompanyNumber());
@@ -218,7 +202,7 @@ public class FilingServiceImpl implements FilingService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PERIOD_END_ON, periodEndDate);
 
-        return DocumentDescriptionHelper
+        return documentDescriptionHelper
             .getDescription(accountsType.getFilingDescriptionKey(), parameters);
     }
 
@@ -226,11 +210,11 @@ public class FilingServiceImpl implements FilingService {
      * Validates the ixbrl against TNEP. This validation is driven by the env. variable and it can
      * be disable.
      */
-    private boolean isValidIXBL() {
+    private boolean isValidIxbrl() {
 
         boolean isIxbrlValid = true;
         if ("true".equals(getMandatoryEnvVariable(DISABLE_IXBRL_VALIDATION_ENV_VAR))) {
-            //TODO TNEP validation needs to be added. Copy logic from abridged. Next PR
+            //TODO TNEP validation needs to be added. Copy logic from abridged. (STORY SFA-574)
         }
 
         return isIxbrlValid;
@@ -282,23 +266,18 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * get the location the document render service needs to stored the ixbrl document. e.g.
+     * Get the location the document render service needs to stored the ixbrl document. e.g.
      * "s3://dev-pdf-bucket/chs-dev/accounts/small_full_accounts"
      *
-     * @param accountsType - Account type information: account type, ixbrl's template name, account
      * @return
      */
     private String getIXBRLLocation(AccountsType accountsType) {
-        if (isSmallFullType(accountsType.getAccountType())) {
-            return
-                String.format(
-                    IXBRL_LOCATION,
-                    getMandatoryEnvVariable(DOCUMENT_BUCKET_NAME_ENV_VAR),
-                    accountsType.getAssetId(),
-                    accountsType.getResourceKey());
-        }
-
-        return null;
+        return
+            String.format(
+                IXBRL_LOCATION,
+                getMandatoryEnvVariable(DOCUMENT_BUCKET_NAME_ENV_VAR),
+                accountsType.getAssetId(),
+                accountsType.getResourceKey());
     }
 
     /**
@@ -324,10 +303,6 @@ public class FilingServiceImpl implements FilingService {
      * @return environment variable value.
      */
     private String getMandatoryEnvVariable(String envVariable) {
-        if (environmentReader == null) {
-            environmentReader = new EnvironmentReaderImpl();
-        }
-
         return environmentReader.getMandatoryString(envVariable);
     }
 
@@ -338,7 +313,7 @@ public class FilingServiceImpl implements FilingService {
      * @return The account marshaled to JSON and converted to String.
      * @throws JsonProcessingException
      */
-    private String generateCompanyAccountJSON(Account account)
+    private String generateSmallFullAccountJSON(Account account)
         throws JsonProcessingException {
         JSONObject accountsRequestBody = new JSONObject();
         accountsRequestBody.put("small_full_account", convertObjectToJson(account));
@@ -371,13 +346,13 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Checks if filing kind is small#full.
+     * Checks if accountEntity is a small full by checking the links within the data.
      *
-     * @param filingType - name of the filing type.
+     * @param accountEntity - Accounts information.
      * @return true if small full account.
      */
-    private boolean isSmallFullKind(String filingType) {
-        return AccountsType.SMALL_FULL_ACCOUNTS.getKind().equals(filingType);
+    private boolean isSmallFullAccount(CompanyAccountEntity accountEntity) {
+        return accountEntity.getData().getLinks().get(LinkType.SMALL_FULL.getLink()) != null;
     }
 
     /**
@@ -389,7 +364,6 @@ public class FilingServiceImpl implements FilingService {
     private boolean isSmallFullType(String filingType) {
         return AccountsType.SMALL_FULL_ACCOUNTS.getAccountType().equals(filingType);
     }
-
 
     /**
      * Get the small full account information.

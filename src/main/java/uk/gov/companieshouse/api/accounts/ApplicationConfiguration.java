@@ -8,6 +8,8 @@ import uk.gov.companieshouse.accountsDates.impl.AccountsDatesImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 /**
  * General application configuration .
@@ -15,26 +17,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 
-    @Autowired
-    private MongoDbConnectionPoolProperties configuration;
-
-    /**
-     * Create a {@link MongoClientOptions} .
-     *
-     * @return A {@link MongoClientOptions} .
-     */
     @Bean
-    public MongoClientOptions mongoClientOptions() {
-        return MongoClientOptions.builder()
-                .minConnectionsPerHost(configuration.getMinSize())
-                .maxConnectionIdleTime(configuration.getMaxConnectionIdleTimeMS())
-                .maxConnectionLifeTime(configuration.getMaxConnectionLifeTimeMS())
-                .build();
+    public EnvironmentReader environmentReader() {
+        return new EnvironmentReaderImpl();
     }
     
     @Bean
     public AccountsDates accountsDates() {
         return new AccountsDatesImpl();
     }
-  
 }

@@ -32,6 +32,8 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
     private Account getSmallFullAccount() {
         //TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts information when built in the API.
         Account account = new Account(accountsDates);
+
+
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
@@ -44,8 +46,8 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
 
     private Company getCompany() {
         Company company = new Company();
-        company.setCompanyName("MYRETON RENEWABLE ENERGY LIMITED");
-        company.setCompanyNumber("SC344891");
+        company.setCompanyName("TEST COMPANY LIMITED");
+        company.setCompanyNumber("12345678");
         company.setJurisdiction(company.getCompanyNumber());
 
         return company;

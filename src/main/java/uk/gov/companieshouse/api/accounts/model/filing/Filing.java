@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.filing;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.Links;
-
-import java.util.List;
 import java.util.Map;
 
 public class Filing {
@@ -19,9 +16,6 @@ public class Filing {
 
     @JsonProperty("description_values")
     private Map<String, String> descriptionValues;
-
-    @JsonProperty("links")
-    private List<Links> links;
 
     @JsonProperty("kind")
     private String kind;
@@ -59,14 +53,6 @@ public class Filing {
 
     public void setDescriptionValues(Map<String, String> descriptionValues) {
         this.descriptionValues = descriptionValues;
-    }
-
-    public List<Links> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Links> links) {
-        this.links = links;
     }
 
     public String getKind() {
