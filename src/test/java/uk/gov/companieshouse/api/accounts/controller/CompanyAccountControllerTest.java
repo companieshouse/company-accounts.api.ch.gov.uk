@@ -63,7 +63,6 @@ public class CompanyAccountControllerTest {
     @BeforeEach
     public void setUp() {
 
-
     }
 
     @Test
@@ -149,5 +148,17 @@ public class CompanyAccountControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(companyAccountMock, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the unsuccessful get of a company account resource")
+    public void getCompanyAccountFail() throws NoSuchAlgorithmException {
+        doReturn(null).when(httpServletRequestMock)
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        ResponseEntity response = companyAccountController.getCompanyAccount(httpServletRequestMock);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(null, response.getBody());
     }
 }

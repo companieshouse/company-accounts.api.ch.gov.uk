@@ -95,4 +95,16 @@ public class SmallFullControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(smallFull, response.getBody());
     }
+
+    @Test
+    @DisplayName("Tests the unsuccessful get of a smallFull resource")
+    public void getSmallFullFail() throws NoSuchAlgorithmException {
+        doReturn(null).when(request)
+                .getAttribute(AttributeName.SMALLFULL.getValue());
+        ResponseEntity response = smallFullController.get(request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
 }
