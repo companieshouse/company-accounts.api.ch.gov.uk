@@ -31,7 +31,7 @@ public class Period {
     public Period(AccountsDates accountsDates) {
 
         this.accountsDates = accountsDates;
-        
+
     }
 
     public String getCurrentPeriodBSDate() {
@@ -39,7 +39,6 @@ public class Period {
     }
 
     public void setCurrentPeriodBSDate(String currentPeriodStartOn, String currentPeriodEndsOn, boolean isSameYear) {
-
         currentPeriodBSDate = accountsDates.generateBalanceSheetHeading(currentPeriodStartOn, currentPeriodEndsOn,
                 isSameYear(currentPeriodStartOn, currentPeriodEndsOn));
     }
@@ -109,9 +108,7 @@ public class Period {
     }
 
     public boolean isSameYear(String date1, String date2) {
-
         return accountsDates.isSameYear(accountsDates.convertStringToDate(date1),
                 accountsDates.convertStringToDate(date2));
-
     }
 }

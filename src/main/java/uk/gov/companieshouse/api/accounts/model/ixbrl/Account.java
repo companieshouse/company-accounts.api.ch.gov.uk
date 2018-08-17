@@ -18,18 +18,16 @@ public class Account {
     private Notes notes;
     @JsonProperty("company")
     private Company company;
-    
+
     @JsonProperty("approval_date")
     private String approvalDate;
     @JsonProperty("approval_name")
     private String approvalName;
-    
-    private AccountsDates accountsDates;
-    
-    public Account(AccountsDates accountsDates) {
-        
-        this.accountsDates = accountsDates;
 
+    private AccountsDates accountsDates;
+
+    public Account(AccountsDates accountsDates) {
+        this.accountsDates = accountsDates;
     }
 
     public String getApprovalDate() {
