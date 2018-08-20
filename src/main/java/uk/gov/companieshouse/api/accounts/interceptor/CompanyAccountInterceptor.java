@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
@@ -59,11 +58,11 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
 
-        HttpSession session = request.getSession();
-        Transaction transaction = (Transaction) session
+        Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
-            debugMap.put("message", "CompanyAccountInterceptor error: no transaction in request session");
+            debugMap.put("message",
+                    "CompanyAccountInterceptor error: no transaction in request session");
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
@@ -112,7 +111,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
-        session.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
+        request.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
                 companyAccountEntity);
         return true;
     }

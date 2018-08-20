@@ -2,9 +2,10 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +35,9 @@ public class SmallFullServiceImplTest {
         private SmallFullRepository smallFullRepository;
 
         @Mock
+        private MessageDigest messageDigest;
+
+        @Mock
         private SmallFullTransformer smallFullTransformer;
 
         @InjectMocks
@@ -40,15 +45,18 @@ public class SmallFullServiceImplTest {
 
         @BeforeEach
         public void setUp() {
+            smallFullService.setMessageDigest(messageDigest);
             when(smallFullTransformer.transform(smallFull)).thenReturn(createdSmallFullEntity);
+            byte[] b = {12, 10, 56, 120, 13, 15};
+            when(messageDigest.digest(any())).thenReturn(b);
         }
 
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
-        public void canCreateAccount() throws NoSuchAlgorithmException {
-            SmallFull result = smallFullService.save(smallFull, "");
+        public void canCreateAccount() {
+            ResponseObject<SmallFull> result = smallFullService.save(smallFull, "");
             assertNotNull(result);
-            assertEquals(smallFull, result);
+            assertEquals(smallFull, result.getData());
 
         }
     }
