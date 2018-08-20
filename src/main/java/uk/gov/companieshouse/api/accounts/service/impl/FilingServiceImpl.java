@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
@@ -26,10 +27,14 @@ import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBui
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class FilingServiceImpl implements FilingService {
 
+    private static final Logger LOGGER = LoggerFactory
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     private static final String API_KEY_ENV_VAR = "CHS_API_KEY";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String DOCUMENT_BUCKET_NAME_ENV_VAR = "DOCUMENT_BUCKET_NAME";
@@ -37,7 +42,11 @@ public class FilingServiceImpl implements FilingService {
     private static final String DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR = "DOCUMENT_RENDER_SERVICE_HOST";
     private static final String IXBRL_LOCATION = "s3://%s/%s/%s";
     private static final String LINK_RELATIONSHIP = "accounts";
+    private static final String LOG_ACCOUNT_ID_KEY = "account-id";
+    private static final String LOG_ERROR_KEY = "error";
+    private static final String LOG_MESSAGE_KEY = "message";
     private static final String PERIOD_END_ON = "period_end_on";
+    private static final String SMALL_FULL_ACCOUNT = "small-full";
 
     private final EnvironmentReader environmentReader;
     private final ObjectMapper objectMapper;
@@ -66,13 +75,35 @@ public class FilingServiceImpl implements FilingService {
     @Override
     public Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
         throws IOException {
-        Filing filing = null;
 
-        if (isSmallFullAccount(accountEntity)) {
-            filing = generateAccountFiling(transaction, AccountsType.SMALL_FULL_ACCOUNTS);
+        AccountsType accountType = getAccountType(accountEntity);
+        if (accountType != null) {
+            return generateAccountFiling(transaction, accountType);
         }
 
-        return filing;
+        return null;
+    }
+
+    /**
+     * Get account type by checking the account type link within the account's data.
+     *
+     * @param accountEntity
+     * @return
+     */
+    private AccountsType getAccountType(CompanyAccountEntity accountEntity) {
+        Map<String, String> links = accountEntity.getData().getLinks();
+
+        if (links.containsKey(LinkType.SMALL_FULL.getLink())) {
+            return AccountsType.SMALL_FULL_ACCOUNTS;
+        }
+
+        Map<String, Object> logMap = new HashMap<>();
+        logMap.put(LOG_ERROR_KEY, "Account Type not found");
+        logMap.put(LOG_MESSAGE_KEY, "Link for account type is missing from account data");
+        logMap.put(LOG_ACCOUNT_ID_KEY, accountEntity.getId());
+        LOGGER.error("Account Type not found", logMap);
+
+        return null;
     }
 
     /**
@@ -86,19 +117,18 @@ public class FilingServiceImpl implements FilingService {
      */
     private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
         throws IOException {
-        Filing filing = null;
-        Object accountObj = getAccountInformation(accountsType.getAccountType());
 
+        Object accountObj = getAccountInformation(accountsType);
         if (accountObj != null) {
-            String ixbrlLocation = callIxbrlGenerator(accountsType,
-                generateJson(accountsType.getAccountType(), accountObj));
+            String ixbrlLocation =
+                generateIxbrl(accountsType, generateJson(accountsType, accountObj));
 
             if (ixbrlLocation != null && isValidIxbrl()) {
-                filing = createAccountFiling(transaction, accountsType, ixbrlLocation);
+                return createAccountFiling(transaction, accountsType, ixbrlLocation);
             }
         }
 
-        return filing;
+        return null;
     }
 
     /**
@@ -110,12 +140,16 @@ public class FilingServiceImpl implements FilingService {
      * @return null or ixbrl location
      * @throws JsonProcessingException
      */
-    private String generateJson(String accountType, Object accountObj)
+    private String generateJson(AccountsType accountType, Object accountObj)
         throws JsonProcessingException {
-        if (isSmallFullType(accountType)) {
-            return generateSmallFullAccountJSON((Account) accountObj);
+
+        switch (accountType.getAccountType()) {
+            case SMALL_FULL_ACCOUNT:
+                return generateSmallFullAccountJSON((Account) accountObj);
+            default:
+                logUnsupportedAccountType(accountType);
+                return null;
         }
-        return null;
     }
 
     /**
@@ -213,7 +247,8 @@ public class FilingServiceImpl implements FilingService {
     private boolean isValidIxbrl() {
 
         boolean isIxbrlValid = true;
-        if ("true".equals(getMandatoryEnvVariable(DISABLE_IXBRL_VALIDATION_ENV_VAR))) {
+        boolean test = environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+        if (environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
             //TODO TNEP validation needs to be added. Copy logic from abridged. (STORY SFA-574)
         }
 
@@ -227,13 +262,21 @@ public class FilingServiceImpl implements FilingService {
      * @param requestBody - the http request request (json format)
      * @return The location where the service has stored the generated ixbrl.
      */
-    private String callIxbrlGenerator(AccountsType accountsType, String requestBody)
+    private String generateIxbrl(AccountsType accountsType, String requestBody)
         throws IOException {
+
         if (requestBody != null) {
-            DocumentGeneratorConnection connection = getDocumentGeneratorConnection(accountsType,
-                requestBody);
+            DocumentGeneratorConnection connection =
+                getDocumentGeneratorConnection(accountsType, requestBody);
+
             return ixbrlGenerator.generateIXBRL(connection);
         }
+
+        Map<String, Object> logMap = new HashMap<>();
+        logMap.put(LOG_ERROR_KEY, "Document render service request body empty");
+        logMap.put(LOG_MESSAGE_KEY,
+            "Request Body is empty. The Document Render Service cannot be called with a empty request body");
+        LOGGER.error("Document render service request body empty", logMap);
 
         return null;
     }
@@ -337,22 +380,14 @@ public class FilingServiceImpl implements FilingService {
      *
      * @param accountType the account type, e.g. small-full. Used to build correct object.
      */
-    private Object getAccountInformation(String accountType) throws IOException {
-        if (isSmallFullType(accountType)) {
-            return getSmallFullAccount();
+    private Object getAccountInformation(AccountsType accountType) throws IOException {
+        switch (accountType.getAccountType()) {
+            case SMALL_FULL_ACCOUNT:
+                return getSmallFullAccount();
+            default:
+                logUnsupportedAccountType(accountType);
+                return null;
         }
-
-        return null;
-    }
-
-    /**
-     * Checks if accountEntity is a small full by checking the links within the data.
-     *
-     * @param accountEntity - Accounts information.
-     * @return true if small full account.
-     */
-    private boolean isSmallFullAccount(CompanyAccountEntity accountEntity) {
-        return accountEntity.getData().getLinks().get(LinkType.SMALL_FULL.getLink()) != null;
     }
 
     /**
@@ -370,5 +405,18 @@ public class FilingServiceImpl implements FilingService {
      */
     private Account getSmallFullAccount() throws IOException {
         return (Account) accountsBuilder.buildAccount();
+    }
+
+    /**
+     * Log an error if the account type is unsupported for generating filings
+     *
+     * @param accountsType
+     */
+    private void logUnsupportedAccountType(AccountsType accountsType) {
+        Map<String, Object> logMap = new HashMap<>();
+        logMap.put(LOG_ERROR_KEY, "Unsupported account type");
+        logMap.put(LOG_MESSAGE_KEY, "Account type is unsupported");
+        logMap.put("account-type", accountsType);
+        LOGGER.error("Unsupported account type", logMap);
     }
 }
