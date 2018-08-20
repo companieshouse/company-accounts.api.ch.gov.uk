@@ -90,16 +90,16 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
         String companyAccountId = companyAccountEntity.getId();
         String smallFullId = smallFullService.generateID(companyAccountId);
-        SmallFullEntity smallFull;
+        SmallFullEntity smallFullEntity;
         try {
-            smallFull = smallFullService.findById(smallFullId);
+            smallFullEntity = smallFullService.findById(smallFullId);
         } catch (DataAccessException dae) {
             LOGGER.errorRequest(request, dae, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
-        if (smallFull == null) {
+        if (smallFullEntity == null) {
             LOGGER.debugRequest(request,
                     "SmallFullInterceptor error: Failed to retrieve a SmallFull account.",
                     debugMap);
@@ -109,7 +109,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
         String companyAccountLink = companyAccountEntity.getData().getLinks()
                 .get(LinkType.SMALL_FULL.getLink());
-        String smallFullSelf = smallFull.getData().getLinks().get(LinkType.SELF.getLink());
+        String smallFullSelf = smallFullEntity.getData().getLinks().get(LinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,
                     "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",
@@ -118,7 +118,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
-        request.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
+        request.setAttribute(AttributeName.SMALLFULL.getValue(), smallFullEntity);
         return true;
 
     }
