@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,20 +31,17 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 @TestInstance(Lifecycle.PER_CLASS)
 public class TransactionInterceptorTest {
 
-    @Mock
-    HttpSession session;
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
+
     @Mock
     private TransactionManager transactionManagerMock;
+
     @Mock
     private HttpServletRequest httpServletRequestMock;
 
     @Mock
     private HttpServletResponse httpServletResponseMock;
-
-    @Mock
-    private HttpSession httpSessionMock;
 
     @BeforeEach
     void setUp() {
@@ -65,9 +61,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
-        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
-
-        assertTrue(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertTrue(transactionInterceptor
+                .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
@@ -76,9 +71,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
-        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
-
-        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
@@ -86,7 +80,8 @@ public class TransactionInterceptorTest {
     void testPreHandleWithNonExistingTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertFalse(transactionInterceptor
+                .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
         verify(httpServletResponseMock).setStatus(HttpStatus.NOT_FOUND.value());
     }
 

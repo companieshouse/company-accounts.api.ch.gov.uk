@@ -33,34 +33,42 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public class SmallFullInterceptorTest {
 
     @Mock
-    private HttpSession session;
-    @Mock
     private SmallFullEntity smallFullEntity;
+
     @Mock
     private SmallFullDataEntity smallFullDataEntity;
+
     @Mock
     private Transaction transaction;
+
     @Mock
     private CompanyAccountEntity companyAccountEntity;
+
     @Mock
     private CompanyAccountDataEntity companyAccountDataEntity;
+
     @Mock
     private SmallFullService smallFullService;
+
     @Mock
     private HttpServletRequest httpServletRequest;
+
     @Mock
     private HttpServletResponse httpServletResponse;
+
     @Mock
     private Map<String, String> companyAccountLinks;
+
     @Mock
     private Map<String, String> smallFullLinks;
+
     @InjectMocks
     private SmallFullInterceptor smallFullInterceptor;
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
-        when(httpServletRequest.getSession()).thenReturn(session);
-        when(session.getAttribute(anyString())).thenReturn(transaction).thenReturn(companyAccountEntity);
+        when(httpServletRequest.getAttribute(anyString())).thenReturn(transaction)
+                .thenReturn(smallFullLinks).thenReturn(companyAccountEntity);
         when(smallFullService.findById(anyString())).thenReturn(smallFullEntity);
         when(companyAccountEntity.getId()).thenReturn("12345");
         when(smallFullService.generateID(anyString())).thenReturn("123456");
@@ -79,7 +87,7 @@ public class SmallFullInterceptorTest {
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
         verify(smallFullService, times(1)).findById(anyString());
-        verify(session, times(1)).setAttribute(anyString(), any(SmallFullEntity.class));
+        verify(httpServletRequest, times(1)).setAttribute(anyString(), any(SmallFullEntity.class));
     }
 
     @Test
