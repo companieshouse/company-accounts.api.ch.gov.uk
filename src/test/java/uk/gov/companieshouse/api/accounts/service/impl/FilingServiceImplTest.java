@@ -147,7 +147,8 @@ public class FilingServiceImplTest {
             .thenReturn("apiKeyForTesting")
             .thenReturn("dev-pdf-bucket/chs-dev");
 
-        when(environmentReaderMock.getMandatoryBoolean(anyString())).thenReturn(false);
+        when(environmentReaderMock.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR))
+            .thenReturn(false);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
