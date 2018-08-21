@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -30,6 +32,11 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class TransactionInterceptorTest {
+
+    private static final String ACCOUNTS_ID = "1234561";
+    private static final String ACCOUNTS_API_END_POINT = "http://public/transactions/%s/company-accounts/%s";
+    private static final String FILING_GENERATOR_END_POINT = "http://private/transactions/%s/company-accounts/%s/filings";
+    private static final String TRANSACTION_ID = "1234561-1234561-1234561";
 
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
@@ -61,6 +68,8 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoin());
+
         assertTrue(transactionInterceptor
                 .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
@@ -70,6 +79,8 @@ public class TransactionInterceptorTest {
     void testPreHandleWithClosedTransaction() {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
+
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoin());
 
         assertFalse(transactionInterceptor
                 .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -83,6 +94,30 @@ public class TransactionInterceptorTest {
         assertFalse(transactionInterceptor
                 .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
         verify(httpServletResponseMock).setStatus(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor for GET request and closed transaction for Filing Generator")
+    void testPreHandleGetRequestForFilingGeneratorWithClosedTransaction() {
+        when(transactionManagerMock.getTransaction(anyString(), anyString()))
+            .thenReturn(createDummyTransaction(false));
+
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getFilingGeneratorEndPoint());
+
+        assertTrue(transactionInterceptor
+            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor for GET request and closed transaction for Filing Generator")
+    void testPreHandleGetRequestForFilingGeneratorWithOpenTransaction() {
+        when(transactionManagerMock.getTransaction(anyString(), anyString()))
+            .thenReturn(createDummyTransaction(true));
+
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getFilingGeneratorEndPoint());
+
+        assertFalse(transactionInterceptor
+            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     /**
@@ -99,4 +134,13 @@ public class TransactionInterceptorTest {
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
+
+    private String getAccountsApiEndPoin() {
+        return String.format(ACCOUNTS_API_END_POINT, TRANSACTION_ID, ACCOUNTS_ID);
+    }
+
+    private String getFilingGeneratorEndPoint() {
+        return String.format(FILING_GENERATOR_END_POINT, TRANSACTION_ID, ACCOUNTS_ID);
+    }
+
 }
