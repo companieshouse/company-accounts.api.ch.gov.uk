@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -68,7 +66,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(true));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoin());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoint());
 
         assertTrue(transactionInterceptor
                 .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -80,7 +78,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
                 .thenReturn(createDummyTransaction(false));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoin());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoint());
 
         assertFalse(transactionInterceptor
                 .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -135,7 +133,7 @@ public class TransactionInterceptorTest {
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 
-    private String getAccountsApiEndPoin() {
+    private String getAccountsApiEndPoint() {
         return String.format(ACCOUNTS_API_END_POINT, TRANSACTION_ID, ACCOUNTS_ID);
     }
 
