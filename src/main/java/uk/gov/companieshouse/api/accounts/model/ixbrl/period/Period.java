@@ -38,18 +38,18 @@ public class Period {
         return currentPeriodBSDate;
     }
 
-    public void setCurrentPeriodBSDate(String currentPeriodStartOn, String currentPeriodEndsOn, boolean isSameYear) {
+    public void setCurrentPeriodBSDate(String currentPeriodStartOn, String currentPeriodEndsOn, String previousPeriodEndsOn) {
         currentPeriodBSDate = accountsDates.generateBalanceSheetHeading(currentPeriodStartOn, currentPeriodEndsOn,
-                isSameYear(currentPeriodStartOn, currentPeriodEndsOn));
+                isSameYear(currentPeriodEndsOn, previousPeriodEndsOn));
     }
 
     public String getPreviousPeriodBSDate() {
         return previousPeriodBSDate;
     }
 
-    public void setPreviousPeriodBSDate(String previousPeriodStartOn, String previousPeriodEndsOn, boolean isSameYear) {
+    public void setPreviousPeriodBSDate(String previousPeriodStartOn, String previousPeriodEndsOn, String currentPeriodEndsOn) {
         previousPeriodBSDate = accountsDates.generateBalanceSheetHeading(previousPeriodStartOn, previousPeriodEndsOn,
-                isSameYear(currentPeriodStartOn, currentPeriodEndsOn));
+                isSameYear(currentPeriodEndsOn, previousPeriodEndsOn));
     }
 
     public String getCurrentPeriodStartOnFormatted() {
