@@ -17,7 +17,6 @@ public class BalanceSheet {
     private CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid;
     @JsonProperty("balance_sheet_statements")
     private BalanceSheetStatements balanceSheetStatements;
-    
 
     public BalanceSheetStatements getBalanceSheetStatements() {
         return balanceSheetStatements;
