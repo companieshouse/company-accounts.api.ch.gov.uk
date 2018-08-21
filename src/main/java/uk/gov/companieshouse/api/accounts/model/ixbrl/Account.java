@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.ixbrl;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.companieshouse.accountsDates.AccountsDates;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
@@ -24,6 +25,7 @@ public class Account {
     @JsonProperty("approval_name")
     private String approvalName;
 
+    @Autowired
     private AccountsDates accountsDates;
 
     public Account(AccountsDates accountsDates) {
