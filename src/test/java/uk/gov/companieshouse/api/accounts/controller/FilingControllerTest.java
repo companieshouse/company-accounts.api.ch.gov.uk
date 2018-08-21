@@ -48,8 +48,7 @@ public class FilingControllerTest {
 
     @BeforeEach
     public void setUp() {
-        when(httpServletRequestMock.getSession()).thenReturn(httpSessionMock);
-        when(httpSessionMock.getAttribute(anyString()))
+        when(httpServletRequestMock.getAttribute(anyString()))
             .thenReturn(transactionMock)
             .thenReturn(companyAccountEntityMock);
     }
@@ -57,9 +56,8 @@ public class FilingControllerTest {
     @Test
     @DisplayName("Tests the successful creation of the ixbrl - filing is not null")
     public void shouldGenerateFiling() throws IOException {
-
         when(filingServiceMock
-            .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
+            .generateAccountFiling(transactionMock, companyAccountEntityMock))
             .thenReturn(new Filing());
 
         response = filingController
