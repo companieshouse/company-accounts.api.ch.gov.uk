@@ -1,23 +1,18 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Component
 public class TransactionInterceptor extends HandlerInterceptorAdapter {
@@ -33,13 +28,13 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) {
+        Object handler) {
         try {
             Map<String, String> pathVariables = (Map) request
-                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
             String transactionId = pathVariables.get("transactionId");
             ResponseEntity<Transaction> transaction = transactionManager
-                    .getTransaction(transactionId, request.getHeader("X-Request-Id"));
+                .getTransaction(transactionId, request.getHeader("X-Request-Id"));
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
 
             return isValidTransaction(request, transaction);
@@ -69,8 +64,8 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * Check if request is a Filing Generator request, ending in /filings.
-     * @param request - http request.
      *
+     * @param request - http request.
      * @return
      */
     private boolean isFilingGeneratorRequest(HttpServletRequest request) {
@@ -82,7 +77,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
      */
     private boolean isTransactionIsOpen(ResponseEntity<Transaction> transaction) {
         return (transaction.getBody() != null && transaction.getBody().getStatus()
-                .equals(TransactionStatus.OPEN.getStatus()));
+            .equals(TransactionStatus.OPEN.getStatus()));
     }
 
     /**
