@@ -84,7 +84,8 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
      * Returns whether transaction is open or not.
      */
     private boolean isTransactionClosed(ResponseEntity<Transaction> transaction) {
-        return (transaction.getBody().getStatus().equals(TransactionStatus.CLOSED.getStatus()));
+        return (transaction.getBody() != null
+            && transaction.getBody().getStatus().equals(TransactionStatus.CLOSED.getStatus()));
     }
 
 }

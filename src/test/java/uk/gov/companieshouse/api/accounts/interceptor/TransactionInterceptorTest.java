@@ -32,9 +32,11 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 public class TransactionInterceptorTest {
 
     private static final String ACCOUNTS_ID = "1234561";
-    private static final String ACCOUNTS_API_END_POINT = "http://public/transactions/%s/company-accounts/%s";
-    private static final String FILING_GENERATOR_END_POINT = "http://private/transactions/%s/company-accounts/%s/filings";
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
+    private static final String ACCOUNTS_API_END_POINT =
+        "http://host/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
+    private static final String FILING_GENERATOR_END_POINT = ACCOUNTS_API_END_POINT + "/filings";
+
 
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
@@ -66,7 +68,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
             .thenReturn(createDummyTransaction(true));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoint());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(ACCOUNTS_API_END_POINT);
 
         assertTrue(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -78,7 +80,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
             .thenReturn(createDummyTransaction(false));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getAccountsApiEndPoint());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(ACCOUNTS_API_END_POINT);
 
         assertFalse(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -100,7 +102,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
             .thenReturn(createDummyTransaction(false));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getFilingGeneratorEndPoint());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(FILING_GENERATOR_END_POINT);
 
         assertTrue(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -112,7 +114,7 @@ public class TransactionInterceptorTest {
         when(transactionManagerMock.getTransaction(anyString(), anyString()))
             .thenReturn(createDummyTransaction(true));
 
-        when(httpServletRequestMock.getRequestURI()).thenReturn(getFilingGeneratorEndPoint());
+        when(httpServletRequestMock.getRequestURI()).thenReturn(FILING_GENERATOR_END_POINT);
 
         assertFalse(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -132,13 +134,4 @@ public class TransactionInterceptorTest {
 
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
-
-    private String getAccountsApiEndPoint() {
-        return String.format(ACCOUNTS_API_END_POINT, TRANSACTION_ID, ACCOUNTS_ID);
-    }
-
-    private String getFilingGeneratorEndPoint() {
-        return String.format(FILING_GENERATOR_END_POINT, TRANSACTION_ID, ACCOUNTS_ID);
-    }
-
 }
