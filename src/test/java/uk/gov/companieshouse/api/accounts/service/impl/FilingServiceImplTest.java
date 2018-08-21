@@ -416,10 +416,8 @@ public class FilingServiceImplTest {
 
         period.setCurrentPeriodStartOnFormatted(period.getCurrentPeriodStartOn());
         period.setCurrentPeriodEndsOnFormatted(period.getCurrentPeriodEndsOn());
-        period.setCurrentPeriodBSDate(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn(),
-                period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
-        period.setPreviousPeriodBSDate(period.getPreviousPeriodStartOn(), period.getPreviousPeriodEndsOn(),
-                period.isSameYear(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn()));
+        period.setCurrentPeriodBSDate(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn(), period.getPreviousPeriodEndsOn());
+        period.setPreviousPeriodBSDate(period.getPreviousPeriodStartOn(), period.getPreviousPeriodEndsOn(), period.getCurrentPeriodEndsOn());
 
         return period;
     }
