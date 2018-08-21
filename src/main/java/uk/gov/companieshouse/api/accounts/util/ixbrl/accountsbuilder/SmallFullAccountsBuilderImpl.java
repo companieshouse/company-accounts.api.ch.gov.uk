@@ -27,11 +27,11 @@ public class SmallFullAccountsBuilderImpl implements AccountsBuilder {
     }
 
     /**
-     * Builds the small full accounts model. Functionality needs to be change.
+     * Get Account information and build Account by calling the API.
      */
+    //TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts information when built in the API. (STORY SFA-574)
     private Account getSmallFullAccount() {
-        // TODO: REMOVE HARDCODED VALUES. Use functionality to retrieve the accounts
-        // information when built in the API.
+
         Account account = new Account(accountsDates);
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());

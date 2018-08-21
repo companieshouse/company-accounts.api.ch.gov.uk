@@ -143,15 +143,24 @@ public class FilingServiceImplTest {
          * PREVIOUS_PERIOD_END_ON);
          */
 
-        when(environmentReaderMock.getMandatoryString(anyString())).thenReturn("http://localhost:4082")
-                .thenReturn("apiKeyForTesting").thenReturn("dev-pdf-bucket/chs-dev").thenReturn("false");
+        when(environmentReaderMock.getMandatoryString(anyString()))
+            .thenReturn("http://localhost:4082")
+            .thenReturn("apiKeyForTesting")
+            .thenReturn("dev-pdf-bucket/chs-dev");
+
+        when(environmentReaderMock.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR))
+            .thenReturn(false);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvironmentReaderNumOfCalls(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR, API_KEY_ENV_VAR,
-                DOCUMENT_BUCKET_NAME_ENV_VAR, DISABLE_IXBRL_VALIDATION_ENV_VAR);
+        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
+            API_KEY_ENV_VAR,
+            DOCUMENT_BUCKET_NAME_ENV_VAR);
+
+        verify(environmentReaderMock, times(1))
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         verifyFilingData(filing);
     }
@@ -207,8 +216,9 @@ public class FilingServiceImplTest {
 
         verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvironmentReaderNumOfCalls(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR, API_KEY_ENV_VAR,
-                DOCUMENT_BUCKET_NAME_ENV_VAR);
+        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
+            API_KEY_ENV_VAR,
+            DOCUMENT_BUCKET_NAME_ENV_VAR);
 
         assertNull(filing);
     }
@@ -233,7 +243,7 @@ public class FilingServiceImplTest {
      *
      * @param args the values the environment reader is called with.
      */
-    private void verifyEnvironmentReaderNumOfCalls(String... args) {
+    private void verifyEnvReaderGetMandatoryString(String... args) {
 
         verify(environmentReaderMock, times(args.length)).getMandatoryString(argCaptor.capture());
 

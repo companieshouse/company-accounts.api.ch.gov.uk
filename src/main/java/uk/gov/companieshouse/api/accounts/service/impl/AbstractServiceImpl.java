@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -31,6 +32,8 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
     private GenericTransformer<T, U> genericTransformer;
 
+    private MessageDigest messageDigest;
+
     public AbstractServiceImpl(MongoRepository<U, String> mongoRepository,
             GenericTransformer<T, U> genericTransformer) {
         this.mongoRepository = mongoRepository;
@@ -52,9 +55,6 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
         } catch (MongoException mongoExp) {
             LOGGER.error(mongoExp);
             return new ResponseObject(ResponseStatus.MONGO_ERROR);
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.error(e);
-            return new ResponseObject(ID_GENERATION_ERROR);
         }
 
         return new ResponseObject(ResponseStatus.SUCCESS_CREATED, rest);
@@ -71,11 +71,15 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public String generateID(String value) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance(MessageDigestAlgorithms.SHA_256);
+    public String generateID(String value) {
         String unencryptedId = value + getResourceName();
-        byte[] id = digest.digest(
+        byte[] id = messageDigest.digest(
                 unencryptedId.getBytes(StandardCharsets.UTF_8));
         return Base64.getUrlEncoder().encodeToString(id);
+    }
+
+    @Autowired
+    public void setMessageDigest(MessageDigest messageDigest) {
+        this.messageDigest = messageDigest;
     }
 }
