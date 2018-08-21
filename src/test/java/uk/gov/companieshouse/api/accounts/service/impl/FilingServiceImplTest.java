@@ -447,22 +447,14 @@ public class FilingServiceImplTest {
     /**
      * Get file content.
      *
-     * @param filePathName - contains file location and name.
+     * @param fileNamePath - contains file location and name.
      * @return
      * @throws URISyntaxException
      * @throws IOException
      */
-    private String getFileContentFromResource(String filePathName)
+    private String getFileContentFromResource(String fileNamePath)
         throws URISyntaxException, IOException {
-
-        Path path = Paths.get(getClass().getClassLoader()
-            .getResource(filePathName).toURI());
-
-        StringBuilder data = new StringBuilder();
-        Stream<String> lines = Files.lines(path);
-        lines.forEach(line -> data.append(line).append("\n"));
-        lines.close();
-
-        return data.toString();
+        Path path = Paths.get(getClass().getClassLoader().getResource(fileNamePath).toURI());
+        return new String(Files.readAllBytes(path));
     }
 }
