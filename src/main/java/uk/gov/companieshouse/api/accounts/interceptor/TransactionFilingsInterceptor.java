@@ -15,28 +15,31 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 
 @Component
-public class TransactionInterceptor extends HandlerInterceptorAdapter {
+public class TransactionFilingsInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private TransactionManager transactionManager;
 
     /**
-     * Pre handle method to validate the request before it reaches the controller. Check if the url
-     * has an existing transaction and to further check if transaction is open. If transaction is
-     * not found then return 404
+     * Pre handle method to validate the request before it reaches the Filing Generator Controller.
+     * Check if the url has an existing transaction and to further check if transaction is closed.
+     * If transaction is not found then return 404
      */
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) {
+        Object handler) {
+
         try {
             Map<String, String> pathVariables = (Map) request
-                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
             String transactionId = pathVariables.get("transactionId");
             ResponseEntity<Transaction> transaction = transactionManager
-                    .getTransaction(transactionId, request.getHeader("X-Request-Id"));
+                .getTransaction(transactionId, request.getHeader("X-Request-Id"));
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
-            return isTransactionIsOpen(transaction);
+
+            return isTransactionClosed(transaction);
+
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
             return false;
@@ -46,8 +49,9 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
     /**
      * Returns whether transaction is open or not.
      */
-    private boolean isTransactionIsOpen(ResponseEntity<Transaction> transaction) {
-        return (transaction.getBody() != null && transaction.getBody().getStatus()
-                .equals(TransactionStatus.OPEN.getStatus()));
+    private boolean isTransactionClosed(ResponseEntity<Transaction> transaction) {
+        return (transaction.getBody() != null
+            && transaction.getBody().getStatus().equals(TransactionStatus.CLOSED.getStatus()));
     }
+
 }

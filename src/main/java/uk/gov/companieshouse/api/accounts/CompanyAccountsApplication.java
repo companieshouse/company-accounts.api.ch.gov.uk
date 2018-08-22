@@ -8,10 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.TransactionFilingsInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -24,6 +26,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private TransactionInterceptor transactionInterceptor;
+
+    @Autowired
+    private TransactionFilingsInterceptor transactionFilingsInterceptor;
 
     @Autowired
     private CompanyAccountInterceptor companyAccountInterceptor;
@@ -59,14 +64,18 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
+            .order(Ordered.HIGHEST_PRECEDENCE)
+            .addPathPatterns("/transactions/{transactionId}/**");
+
+        registry.addInterceptor(transactionFilingsInterceptor)
+            .order(Ordered.HIGHEST_PRECEDENCE)
             .addPathPatterns(
-                "/transactions/{transactionId}/**",
-                "/private/transactions/{transactionId}/**");
+                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings");
 
         registry.addInterceptor(companyAccountInterceptor)
             .addPathPatterns(
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}**",
-                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings");
+                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
 
         registry.addInterceptor(smallFullInterceptor)
             .addPathPatterns(
