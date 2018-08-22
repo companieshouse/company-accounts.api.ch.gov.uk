@@ -38,7 +38,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject createCompanyAccount(CompanyAccount companyAccount,
+    public ResponseObject create(CompanyAccount companyAccount,
             Transaction transaction, String requestId) {
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);

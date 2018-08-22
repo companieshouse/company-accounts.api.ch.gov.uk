@@ -62,7 +62,7 @@ public class CompanyAccountServiceImplTest {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
   
         assertNotNull(response);
         assertNotNull(response.getData());
@@ -77,7 +77,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(DuplicateKeyException.class));
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
 
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
@@ -92,7 +92,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(MongoException.class));
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
 
         assertNotNull(response);
         assertEquals(ResponseStatus.MONGO_ERROR, response.getStatus());
@@ -107,7 +107,7 @@ public class CompanyAccountServiceImplTest {
 
         doThrow(mock(PatchException.class)).when(transactionManagerMock).updateTransaction(anyString(), anyString(), anyString());
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
 
         assertNotNull(response);
         assertEquals(ResponseStatus.TRANSACTION_PATCH_ERROR, response.getStatus());

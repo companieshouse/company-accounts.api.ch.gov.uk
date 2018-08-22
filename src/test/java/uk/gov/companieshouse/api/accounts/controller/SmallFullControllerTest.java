@@ -72,7 +72,7 @@ public class SmallFullControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
+        doReturn(responseObject).when(smallFullService).create(any(SmallFull.class), anyString());
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getErrorData());
         doReturn("123456").when(transaction).getCompanyNumber();

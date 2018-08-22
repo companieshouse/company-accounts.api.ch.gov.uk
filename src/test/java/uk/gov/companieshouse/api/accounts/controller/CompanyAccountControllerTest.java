@@ -73,7 +73,7 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.SUCCESS_CREATED,
                 companyAccountMock);
         when(companyAccountServiceMock
-                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .create(companyAccountMock, transactionMock, "test"))
                 .thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
@@ -99,7 +99,7 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
                 companyAccountMock);
         when(companyAccountServiceMock
-                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .create(companyAccountMock, transactionMock, "test"))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
@@ -122,7 +122,7 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.MONGO_ERROR,
                 companyAccountMock);
         when(companyAccountServiceMock
-                .createCompanyAccount(companyAccountMock, transactionMock, "test"))
+                .create(companyAccountMock, transactionMock, "test"))
                 .thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);

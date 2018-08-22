@@ -50,7 +50,7 @@ public class SmallFullController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseObject<SmallFull> result = smallFullService
-                .save(smallFull, transaction.getCompanyNumber());
+                .create(smallFull, transaction.getCompanyNumber());
         return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 
