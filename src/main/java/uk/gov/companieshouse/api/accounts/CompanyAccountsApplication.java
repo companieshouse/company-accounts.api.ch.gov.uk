@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
-import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.OpenedTransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
-    private TransactionInterceptor transactionInterceptor;
+    private OpenedTransactionInterceptor openedTransactionInterceptor;
 
     @Autowired
     private ClosedTransactionInterceptor closedTransactionInterceptor;
@@ -63,7 +63,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(transactionInterceptor)
+        registry.addInterceptor(openedTransactionInterceptor)
             .order(Ordered.HIGHEST_PRECEDENCE)
             .addPathPatterns("/transactions/{transactionId}/**");
 

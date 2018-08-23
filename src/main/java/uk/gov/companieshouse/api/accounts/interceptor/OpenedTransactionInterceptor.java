@@ -15,7 +15,7 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 
 @Component
-public class TransactionInterceptor extends HandlerInterceptorAdapter {
+public class OpenedTransactionInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private TransactionManager transactionManager;
