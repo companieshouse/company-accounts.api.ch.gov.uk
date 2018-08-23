@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +24,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
@@ -42,16 +43,19 @@ public class CurrentPeriodControllerTest {
     private HttpServletRequest request;
 
     @Mock
-    private HttpSession httpSessionMock;
-
-    @Mock
     private Transaction transaction;
 
     @Mock
     private SmallFull smallFull;
 
     @Mock
+    private CompanyAccountEntity companyAccountEntity;
+
+    @Mock
     private CurrentPeriod currentPeriod;
+
+    @Mock
+    private CurrentPeriodEntity currentPeriodEntity;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -68,17 +72,20 @@ public class CurrentPeriodControllerTest {
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
-            currentPeriod);
+                currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-            .save(any(CurrentPeriod.class), anyString());
+                .save(any(CurrentPeriod.class), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(responseObject.getData());
+                .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getErrorData())).thenReturn(responseEntity);
-        doReturn(httpSessionMock).when(request).getSession();
-        doReturn(transaction).when(httpSessionMock)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(smallFull).when(httpSessionMock).getAttribute(AttributeName.SMALLFULL.getValue());
+                responseObject.getData(), responseObject.getErrorData()))
+                .thenReturn(responseEntity);
+        doReturn(transaction).when(request)
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
+        doReturn(companyAccountEntity).when(request).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        doReturn("12345").when(companyAccountEntity).getId();
+        doReturn(currentPeriodEntity).when(currentPeriodService).findById("123");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -86,10 +93,21 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCreateAccount() throws NoSuchAlgorithmException {
+    public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
         ResponseEntity response = currentPeriodController.create(currentPeriod, request);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(currentPeriod, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Test the retreval of a current period resource")
+    public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
+        doReturn("123").when(currentPeriodService).generateID(anyString());
+        ResponseEntity response = currentPeriodController.get(request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(currentPeriodEntity, response.getBody());
     }
 }
