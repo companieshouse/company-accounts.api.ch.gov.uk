@@ -20,7 +20,7 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) {
         LogContext requestContext = new LogContext(requestPath(request),
-                request.getMethod(), requestId(request), userId(request));
+                requestMethod(request), requestId(request), userId(request));
         Long startTime = System.currentTimeMillis();
         request.getSession().setAttribute(LogUtil.START_TIME_KEY.value(), startTime);
         accountsLogger.logStartOfRequestProcessing(requestContext);
@@ -30,8 +30,7 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
             ModelAndView modelAndView) {
-        Long startTime = Long
-                .valueOf((Long) request.getSession().getAttribute(LogUtil.START_TIME_KEY.value()));
+        Long startTime = (Long) request.getSession().getAttribute(LogUtil.START_TIME_KEY.value());
         long responseTime = System.currentTimeMillis() - startTime;
         LogContext requestContext = new LogContext(requestPath(request),
                 requestMethod(request), requestId(request), userId(request));

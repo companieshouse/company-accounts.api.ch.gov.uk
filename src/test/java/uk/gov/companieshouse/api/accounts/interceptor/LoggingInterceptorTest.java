@@ -31,6 +31,7 @@ public class LoggingInterceptorTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
+
     @Mock
     private HttpServletResponse httpServletResponse;
 
@@ -55,11 +56,13 @@ public class LoggingInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor logs the end of the request")
-    public void postHandle(){
-        when(session.getAttribute(LogUtil.START_TIME_KEY.value())).thenReturn(System.currentTimeMillis());
-        loggingInterceptor.postHandle(httpServletRequest, httpServletResponse, new Object(), new ModelAndView());
-        verify(session, times(1)).getAttribute(eq(LogUtil.START_TIME_KEY.value()));
-        verify(accountsLogger, times(1)).logEndOfRequestProcessing(any(LogContext.class)
-            ,anyInt(), anyLong());
+    public void postHandle() {
+        when(session.getAttribute(LogUtil.START_TIME_KEY.value()))
+                .thenReturn(System.currentTimeMillis());
+        loggingInterceptor.postHandle(httpServletRequest, httpServletResponse, new Object(),
+                new ModelAndView());
+        verify(session, times(1)).getAttribute(LogUtil.START_TIME_KEY.value());
+        verify(accountsLogger, times(1))
+                .logEndOfRequestProcessing(any(LogContext.class), anyInt(), anyLong());
     }
 }
