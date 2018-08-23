@@ -15,21 +15,20 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 
 @Component
-public class TransactionFilingsInterceptor extends HandlerInterceptorAdapter {
+public class ClosedTransactionInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private TransactionManager transactionManager;
 
     /**
-     * Pre handle method to validate the request before it reaches the Filing Generator Controller.
-     * Check if the url has an existing transaction and to further check if transaction is closed.
-     * If transaction is not found then return 404
+     * Pre handle method to validate the request before it reaches the controllers that needs the
+     * transaction to be closed. Check if the url has an existing transaction and to further check
+     * if transaction is closed. If transaction is not found then return 404
      */
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) {
-
         try {
             Map<String, String> pathVariables = (Map) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -42,6 +41,7 @@ public class TransactionFilingsInterceptor extends HandlerInterceptorAdapter {
 
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
+
             return false;
         }
     }
@@ -50,8 +50,7 @@ public class TransactionFilingsInterceptor extends HandlerInterceptorAdapter {
      * Returns whether transaction is open or not.
      */
     private boolean isTransactionClosed(ResponseEntity<Transaction> transaction) {
-        return (transaction.getBody() != null
-            && transaction.getBody().getStatus().equals(TransactionStatus.CLOSED.getStatus()));
+        return (transaction.getBody() != null && transaction.getBody().getStatus()
+            .equals(TransactionStatus.CLOSED.getStatus()));
     }
-
 }

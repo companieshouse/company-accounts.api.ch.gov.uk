@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
-import uk.gov.companieshouse.api.accounts.interceptor.TransactionFilingsInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -28,7 +28,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private TransactionInterceptor transactionInterceptor;
 
     @Autowired
-    private TransactionFilingsInterceptor transactionFilingsInterceptor;
+    private ClosedTransactionInterceptor closedTransactionInterceptor;
 
     @Autowired
     private CompanyAccountInterceptor companyAccountInterceptor;
@@ -67,7 +67,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
             .order(Ordered.HIGHEST_PRECEDENCE)
             .addPathPatterns("/transactions/{transactionId}/**");
 
-        registry.addInterceptor(transactionFilingsInterceptor)
+        registry.addInterceptor(closedTransactionInterceptor)
             .order(Ordered.HIGHEST_PRECEDENCE)
             .addPathPatterns(
                 "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings");

@@ -29,10 +29,10 @@ import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class TransactionFilingsInterceptorTest {
+public class ClosedTransactionInterceptorTest {
 
     @InjectMocks
-    private TransactionFilingsInterceptor transactionInterceptor;
+    private ClosedTransactionInterceptor transactionInterceptor;
 
     @Mock
     private TransactionManager transactionManagerMock;
