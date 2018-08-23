@@ -1,51 +1,55 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
-import static uk.gov.companieshouse.api.accounts.util.AccountsLogUtil.START_TIME_KEY;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import uk.gov.companieshouse.api.accounts.util.AccountsLogUtil;
-import uk.gov.companieshouse.api.accounts.util.AccountsLogger;
-import uk.gov.companieshouse.api.accounts.util.RequestContext;
+import uk.gov.companieshouse.logging.api.LogContext;
+import uk.gov.companieshouse.logging.api.LogUtil;
+import uk.gov.companieshouse.logging.api.LoggerApi;
 
 @Component
 public class LoggingInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    private AccountsLogger accountsLogger;
+    private LoggerApi accountsLogger;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
-        RequestContext requestContext = new RequestContext(requestPath(request),
-            request.getMethod(), requestId(request), userId(request));
+            Object handler) {
+        LogContext requestContext = new LogContext(requestPath(request),
+                request.getMethod(), requestId(request), userId(request));
         Long startTime = System.currentTimeMillis();
-        request.getSession().setAttribute(START_TIME_KEY.value(), startTime);
+        request.getSession().setAttribute(LogUtil.START_TIME_KEY.value(), startTime);
         accountsLogger.logStartOfRequestProcessing(requestContext);
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-        ModelAndView modelAndView) {
-        Long startTime = Long.valueOf((Long) request.getSession().getAttribute(START_TIME_KEY.value()));
+            ModelAndView modelAndView) {
+        Long startTime = Long
+                .valueOf((Long) request.getSession().getAttribute(LogUtil.START_TIME_KEY.value()));
         long responseTime = System.currentTimeMillis() - startTime;
-        RequestContext requestContext = new RequestContext(requestPath(request),
-            request.getMethod(), requestId(request), userId(request));
-        accountsLogger.logEndOfRequestProcessing(requestContext,response.getStatus(), responseTime);
+        LogContext requestContext = new LogContext(requestPath(request),
+                requestMethod(request), requestId(request), userId(request));
+        accountsLogger
+                .logEndOfRequestProcessing(requestContext, response.getStatus(), responseTime);
     }
 
 
+    private String requestMethod(HttpServletRequest request) {
+        return request.getMethod();
+    }
+
     private String requestId(HttpServletRequest request) {
-        return request.getHeader(AccountsLogUtil.REQUEST_ID.value());
+        return request.getHeader(LogUtil.REQUEST_ID.value());
     }
 
     private String userId(HttpServletRequest request) {
-        return request.getHeader(AccountsLogUtil.ERIC_IDENTITY.value());
+        return request.getHeader(LogUtil.ERIC_IDENTITY.value());
     }
 
     private String requestPath(HttpServletRequest request) {
