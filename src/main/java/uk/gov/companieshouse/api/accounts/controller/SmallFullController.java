@@ -25,14 +25,18 @@ import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.api.LogContext;
+import uk.gov.companieshouse.logging.api.LogHelper;
+import uk.gov.companieshouse.logging.api.LogType;
+import uk.gov.companieshouse.logging.api.LoggerApi;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class SmallFullController {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    @Autowired
+    private LoggerApi accountsLogger;
 
     @Autowired
     private SmallFullService smallFullService;
@@ -57,15 +61,14 @@ public class SmallFullController {
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) {
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("request_method", request.getMethod());
+        LogContext logContext = LogHelper.createNewLogContext(request, LogType.ERROR);
 
         SmallFullEntity smallFullEntity = (SmallFullEntity) request
                 .getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFullEntity == null) {
-            debugMap.put("message",
-                    "SmallFullTransformer error: No small-full account in request");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            accountsLogger.logError("SmallFullTransformer error: No small-full account in request",
+                    logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 

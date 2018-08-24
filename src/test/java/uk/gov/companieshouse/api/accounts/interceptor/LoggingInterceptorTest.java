@@ -51,7 +51,7 @@ public class LoggingInterceptorTest {
     public void preHandle() {
         loggingInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object());
         verify(session, times(1)).setAttribute(eq(LogUtil.START_TIME_KEY.value()), anyLong());
-        verify(accountsLogger, times(1)).logStartOfRequestProcessing(any(LogContext.class));
+        verify(accountsLogger, times(1)).logStart(any(LogContext.class));
     }
 
     @Test
@@ -63,6 +63,6 @@ public class LoggingInterceptorTest {
                 new ModelAndView());
         verify(session, times(1)).getAttribute(LogUtil.START_TIME_KEY.value());
         verify(accountsLogger, times(1))
-                .logEndOfRequestProcessing(any(LogContext.class), anyInt(), anyLong());
+                .logEnd(any(LogContext.class), anyInt(), anyLong());
     }
 }

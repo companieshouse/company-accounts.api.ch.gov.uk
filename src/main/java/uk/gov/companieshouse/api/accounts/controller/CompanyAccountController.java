@@ -25,13 +25,17 @@ import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.api.LogContext;
+import uk.gov.companieshouse.logging.api.LogHelper;
+import uk.gov.companieshouse.logging.api.LogType;
+import uk.gov.companieshouse.logging.api.LoggerApi;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CompanyAccountController {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    @Autowired
+    private LoggerApi accountsLogger;
 
     @Autowired
     private CompanyAccountService companyAccountService;
@@ -58,20 +62,19 @@ public class CompanyAccountController {
 
     @GetMapping
     public ResponseEntity getCompanyAccount(HttpServletRequest request) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("request_method", request.getMethod());
+        LogContext logContext = LogHelper.createNewLogContext(request, LogType.ERROR);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
-            debugMap.put("message",
-                    "CompanyAccountController error: No company account in request");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            accountsLogger.logError("CompanyAccountController error: No company account in request",
+                    logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(companyAccountTransformer.transform(companyAccountEntity));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(companyAccountTransformer.transform(companyAccountEntity));
 
     }
 }

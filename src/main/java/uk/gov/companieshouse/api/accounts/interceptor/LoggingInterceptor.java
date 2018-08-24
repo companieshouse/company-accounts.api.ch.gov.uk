@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.logging.api.LogContext;
+import uk.gov.companieshouse.logging.api.LogHelper;
+import uk.gov.companieshouse.logging.api.LogType;
 import uk.gov.companieshouse.logging.api.LogUtil;
 import uk.gov.companieshouse.logging.api.LoggerApi;
 
@@ -19,11 +21,10 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
             Object handler) {
-        LogContext requestContext = new LogContext(requestPath(request),
-                requestMethod(request), requestId(request), userId(request));
+        LogContext logContext = LogHelper.createNewLogContext(request, LogType.START);
         Long startTime = System.currentTimeMillis();
         request.getSession().setAttribute(LogUtil.START_TIME_KEY.value(), startTime);
-        accountsLogger.logStartOfRequestProcessing(requestContext);
+        accountsLogger.logStart(logContext);
         return true;
     }
 
@@ -32,26 +33,8 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
             ModelAndView modelAndView) {
         Long startTime = (Long) request.getSession().getAttribute(LogUtil.START_TIME_KEY.value());
         long responseTime = System.currentTimeMillis() - startTime;
-        LogContext requestContext = new LogContext(requestPath(request),
-                requestMethod(request), requestId(request), userId(request));
+        LogContext logContext = LogHelper.createNewLogContext(request, LogType.END);
         accountsLogger
-                .logEndOfRequestProcessing(requestContext, response.getStatus(), responseTime);
-    }
-
-
-    private String requestMethod(HttpServletRequest request) {
-        return request.getMethod();
-    }
-
-    private String requestId(HttpServletRequest request) {
-        return request.getHeader(LogUtil.REQUEST_ID.value());
-    }
-
-    private String userId(HttpServletRequest request) {
-        return request.getHeader(LogUtil.ERIC_IDENTITY.value());
-    }
-
-    private String requestPath(HttpServletRequest request) {
-        return request.getRequestURI();
+                .logEnd(logContext, response.getStatus(), responseTime);
     }
 }

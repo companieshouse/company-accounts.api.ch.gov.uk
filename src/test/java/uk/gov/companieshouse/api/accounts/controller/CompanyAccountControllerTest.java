@@ -28,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.logging.api.LoggerApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -56,6 +57,9 @@ public class CompanyAccountControllerTest {
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
+
+    @Mock
+    private LoggerApi accountsLogger;
 
     @InjectMocks
     private CompanyAccountController companyAccountController;
