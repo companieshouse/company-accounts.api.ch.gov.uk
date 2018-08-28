@@ -1116,15 +1116,17 @@ ul.accounts-comps-ct {
       <div id="abridgedAccounts" class="wholedoc">
         {{$current_period_start_on := $period.current_period_start_on}}
         {{$current_period_end_on := $period.current_period_end_on}}
+        {{$current_period_start_on_formatted := $period.current_period_start_on_formatted}}
+        {{$current_period_end_on_formatted := $period.current_period_end_on_formatted}}
         {{$previous_period_start_on := $period.previous_period_start_on}}
         {{$previous_period_end_on := $period.previous_period_end_on}}
         <div style="display:none" id="accountsHeaderIxbrl">
-        
+
         {{$balanceSheet := .small_full_account.balance_sheet}}
-        
+
           <ix:header>
             <ix:hidden>
-            
+
               <ix:nonNumeric contextRef="CY" name="uk-bus:NameProductionSoftware">Companies House</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:UKCompaniesHouseRegisteredNumber">{{$companyNumber}}</ix:nonNumeric>
               <ix:nonNumeric contextRef="LegalFormEntity_CY" name="uk-bus:LegalFormEntity" format="ixt2:nocontent"></ix:nonNumeric>
@@ -1134,13 +1136,11 @@ ul.accounts-comps-ct {
               <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
               <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
               <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
-              
               <ix:nonNumeric contextRef="CY_END" name="uk-bus:StartDateForPeriodCoveredByReport">{{$current_period_start_on}}</ix:nonNumeric>
-
               <ix:nonNumeric contextRef="CY" name="uk-bus:DescriptionPrincipalActivities">No description of principal activity</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:EntityDormantTruefalse" format="ixt2:booleanfalse">false</ix:nonNumeric>
               <ix:nonNumeric contextRef="CY" name="uk-bus:EntityTradingStatus" format="ixt2:nocontent"></ix:nonNumeric>
-            
+
             </ix:hidden>
             <ix:references>
               <link:schemaRef xlink:type="simple" xlink:href="https://xbrl.frc.org.uk/FRS-102/2014-09-01/FRS-102-2014-09-01.xsd" />
@@ -1162,7 +1162,7 @@ ul.accounts-comps-ct {
                       <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
                   </xbrli:period>
                 </xbrli:context>
-              {{end}} 
+              {{end}}
               <xbrli:context id="CY_END">
                 <xbrli:entity>
                   <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
@@ -1503,7 +1503,7 @@ ul.accounts-comps-ct {
                   </xbrli:period>
                 </xbrli:context>
               {{end}}
-            
+
               <xbrli:context id="POST_CY">
                 <xbrli:entity>
                   <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
@@ -1561,15 +1561,15 @@ ul.accounts-comps-ct {
           <h2 class="center margin-large">Company Registration Number:
             <br />
             <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
-            ({{$company.ROA.jurisdiction }})
+            ({{$company.jurisdiction }})
           </h2>
           <h2 class="text--center margin-large" >
-            <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$current_period_end_on}}</ix:nonNumeric>
+            <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
           </h2>
           {{$period := .small_full_account.period}}
           <h2 class="text--center margin-large">Period of accounts</h2>
-          <h2 class="text--center margin-large">Start date: {{$period.current_period_start_on}}</h2>
-          <h2 class="text--center">End date: {{$period.current_period_end_on}}</h2>
+          <h2 class="text--center margin-large">Start date: {{$period.current_period_start_on_formatted}}</h2>
+          <h2 class="text--center">End date: {{$period.current_period_end_on_formatted}}</h2>
         </div>
 
         <div class="page" id="Contents">
@@ -1580,7 +1580,7 @@ ul.accounts-comps-ct {
           </div>
           <h2 class="text--center">Contents of the Financial Statements</h2>
           <p class="text--center">
-            <strong>for the Period Ended {{$period.current_period_end_on}}</strong>
+            <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
           </p>
           <table cellspacing="10">
             <thead>
@@ -1590,12 +1590,6 @@ ul.accounts-comps-ct {
               </tr>
             </thead>
             <tbody>
-               <tr>
-                <td class="strong">
-                  <a href="#CompanyInformationSection">Company Information</a>
-                </td>
-                <td></td>
-              </tr>
               <tr>
                 <td class="strong">
                   <a href="#BalanceSheetSection">Balance sheet</a>
@@ -1618,72 +1612,8 @@ ul.accounts-comps-ct {
           </table>
         </div>
 
-         <div class="page" >
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-          <h2 class="text--center">Company Information</h2>
-          <p class="text--center">
-            <strong>for the Period Ended {{$period.current_period_end_on}}</strong>
-          </p>
-          
-          <table>
-            <tbody>
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td> </td>
-              </tr>
-              
-              {{$roa := $company.ROA}}
-              <tr>
-                <td>
-                  <b>Registered office:</b>
-                </td>
-                <td> </td>
-                <td>
-                <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:AddressLine1">{{$roa.address_line_1}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:AddressLine2">{{$roa.address_line_2}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:CountyRegion">{{$roa.county}}</ix:nonNumeric>
-                  </p>
-                  <p>
-                  <ix:nonNumeric contextRef="EntityContactInfo_CY" name="uk-bus:PostalCodeZip">{{$roa.postcode}}</ix:nonNumeric>
-                  </p>  
-                </td>
-              </tr>
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td> </td>
-              </tr>
-              <tr>
-                <td>
-                    <b>Company Registration Number:</b>
-                </td>
-                <td> </td>
-                <td>
-                  <ix:nonNumeric contextRef="CY" name="uk-bus:UKCompaniesHouseRegisteredNumber">{{$companyNumber}}</ix:nonNumeric>
-                        ({{$company.ROA.jurisdiction }}) 
-                </td>
-              </tr>
-              <tr>
-                <td> </td>
-             </tr>
-           </tbody>
-          </table>
-        </div>
-        
         <!-- BALANCE SHEET -->
-        
+
         {{$currentPeriod := .small_full_account.period.current_period_start_on}}
         {{$previousPeriod := .small_full_account.period.previous_period_start_on}}
         <div class="page">
@@ -1695,7 +1625,7 @@ ul.accounts-comps-ct {
           <h2 class="text--center">Balance sheet</h2>
           <p class="text--center">
             <strong>As at
-              <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{convertDateToDisplayFormat $current_period_end_on}}</ix:nonNumeric>
+              <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$current_period_end_on_formatted}}</ix:nonNumeric>
             </strong>
           </p>
           <table cellspacing="10">
@@ -1703,15 +1633,15 @@ ul.accounts-comps-ct {
               <tr>
                 <th class="table-heading"></th>
                 <th class="table-heading"> <br />Notes </th>
-            
+
                 {{if $currentPeriod}}
                   <th class="table-heading">
-                     {{$balanceSheet.current_period_date_formatted}}
+                     {{$period.current_period_bs_date}}
                   </th>
                 {{end}}
                 {{if $previousPeriod}}
                   <th class="table-heading">
-                   {{$balanceSheet.previous_period_date_formatted}}
+                   {{$period.previous_period_bs_date}}
                   </th>
                 {{end}}
               </tr>
@@ -1732,16 +1662,15 @@ ul.accounts-comps-ct {
                 </th>
                 {{end}}
               </tr>
-              </thead> 
+              </thead>
               <tbody>
-              
-              {{$calledUpSharedCapitalNotPaid := $balanceSheet.called_up_share_capital_not_paid}}
-              {{if $calledUpSharedCapitalNotPaid}}
+
+              {{if $calledUpSharedCapitalNotPaid := $balanceSheet.called_up_shared_capital_not_paid}}
                 <tr class="figures">
                   <td id="ac999-label">Called up share capital not paid:</td>
-                  <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>       
+                  <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
                   <td class="strong text--right">
-                
+
                   <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpSharedCapitalNotPaid.current_amount}}</ix:nonFraction>
                 </td>
                 <td id="ac999-prev-val" class="text--right">
@@ -1749,10 +1678,10 @@ ul.accounts-comps-ct {
                 </td>
               </tr>
               {{end}}
-              
+
             </tbody>
           </table>
-          
+
           <p class="text--center">The notes form part of these financial statements</p>
           <div id="BalanceSheetSection" class="section-marker"></div>
         </div>
@@ -1764,9 +1693,9 @@ ul.accounts-comps-ct {
             </h1>
           </div>
           <h2 class="text--left">Balance sheet statements</h2>
-          {{if $statements := $balanceSheet.statements}}
+          {{if $statements := $balanceSheet.balance_sheet_statements}}
             <p>
-              <ix:nonNumeric name="direp:StatementThatCompanyEntitledToExemptionFromAuditUnderSection477CompaniesAct2006RelatingToSmallCompanies" contextRef="CY">{{$statements.section_477}}</ix:nonNumeric>
+              <ix:nonNumeric name="direp:StatementThatCompanyEntitledToExemptionFromAuditUnderSection477CompaniesAct2006RelatingToSmallCompanies" contextRef="CY">{{$statements.section477}}</ix:nonNumeric>
             </p>
             <p>
               <ix:nonNumeric contextRef="CY" name="direp:StatementThatMembersHaveNotRequiredCompanyToObtainAnAudit">{{$statements.audit_not_required_by_members}}</ix:nonNumeric>
@@ -1777,26 +1706,23 @@ ul.accounts-comps-ct {
             <p>
               <ix:nonNumeric contextRef="CY" name="direp:StatementThatAccountsHaveBeenPreparedInAccordanceWithProvisionsSmallCompaniesRegime">{{$statements.small_companies_regime}}</ix:nonNumeric>
             </p>
-            <p>
-              {{$statements.no_profit_and_loss}}
-            </p>
           {{end}}
-          
-          {{- if isNotEmpty .small_full_account.approval.date -}}
+
+          {{- if isNotEmpty .small_full_account.approval_date -}}
           <div>
             <p class="strong">
             This report was approved by the board of directors on
-            
-              <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_account.approval.date}}</ix:nonNumeric>
-            
-            <br />  
+
+              <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_account.approval_date}}</ix:nonNumeric>
+
+            <br />
             and signed on behalf of the board by:
             </p>
             <p>
                Name:
-             
-               <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_account.approval.name}}</ix:nonNumeric>
-            
+
+               <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_account.approval_name}}</ix:nonNumeric>
+
              <br />
                 Status: Director
             </p>
@@ -1805,7 +1731,7 @@ ul.accounts-comps-ct {
           <p class="text--center">The notes form part of these financial statements</p>
         </div>
 
-       
+
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
         {{if $postBalanceSheetEvents := .small_full_account.notes.post_balance_sheet_events}}
           {{incValue "notes-page-count" }}

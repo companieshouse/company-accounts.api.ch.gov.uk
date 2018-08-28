@@ -28,15 +28,17 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) {
+        Object handler) {
         try {
             Map<String, String> pathVariables = (Map) request
-                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
             String transactionId = pathVariables.get("transactionId");
             ResponseEntity<Transaction> transaction = transactionManager
-                    .getTransaction(transactionId, request.getHeader("X-Request-Id"));
+                .getTransaction(transactionId, request.getHeader("X-Request-Id"));
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
-            return isTransactionIsOpen(transaction);
+
+            return isValidTransaction(request, transaction);
+
         } catch (HttpClientErrorException httpClientErrorException) {
             response.setStatus(httpClientErrorException.getStatusCode().value());
             return false;
@@ -44,10 +46,45 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
     }
 
     /**
+     * Check transaction is valid. e.g. Accounts api call needs the Transaction to be open. Filing
+     * Generator call needs the transaction to be closed.
+     *
+     * @param request
+     * @param transaction
+     * @return
+     */
+    private boolean isValidTransaction(HttpServletRequest request,
+        ResponseEntity<Transaction> transaction) {
+        if (isFilingGeneratorRequest(request)) {
+            return isTransactionClosed(transaction);
+        } else {
+            return isTransactionIsOpen(transaction);
+        }
+    }
+
+    /**
+     * Check if request is a Filing Generator request, ending in /filings.
+     *
+     * @param request - http request.
+     * @return
+     */
+    private boolean isFilingGeneratorRequest(HttpServletRequest request) {
+        return request.getRequestURI().endsWith("/filings");
+    }
+
+    /**
      * Returns whether transaction is open or not.
      */
     private boolean isTransactionIsOpen(ResponseEntity<Transaction> transaction) {
         return (transaction.getBody() != null && transaction.getBody().getStatus()
-                .equals(TransactionStatus.OPEN.getStatus()));
+            .equals(TransactionStatus.OPEN.getStatus()));
     }
+
+    /**
+     * Returns whether transaction is open or not.
+     */
+    private boolean isTransactionClosed(ResponseEntity<Transaction> transaction) {
+        return (transaction.getBody().getStatus().equals(TransactionStatus.CLOSED.getStatus()));
+    }
+
 }

@@ -42,6 +42,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.accountsDates.AccountsDates;
+import uk.gov.companieshouse.accountsDates.impl.AccountsDatesImpl;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
@@ -51,6 +53,7 @@ import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.BalanceSheetStatements;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.CalledUpSharedCapitalNotPaid;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.company.Company;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.Notes;
@@ -82,18 +85,19 @@ public class FilingServiceImplTest {
     private static final String TRANSACTION_DATE_FORMAT = "EEEE, MMM dd, yyyy HH:mm:ss a";
     private static final String PREVIOUS_PERIOD_FORMATTED = "01 January 2017";
     private static final String SMALL_FULL_ACCOUNT_JSON_FILE_PATH = "filing/json/small-full-account.json";
-    private static String PREVIOUS_START_ON = "2016-01-01";
-    private static String PREVIOUS_PERIOD_END_ON = "2016-12-01";
-    private final static String FILINGS_DESCRIPTION =
-        "Small full accounts made up to " + PREVIOUS_PERIOD_END_ON;
-    private static String CURRENT_PERIOD_START_ON = "2017-05-01";
-    private static String CURRENT_PERIOD_END_ON = "2018-05-01";
+    private static String PREVIOUS_START_ON = "2017-07-13T14:02:45.000Z";
+    private static String PREVIOUS_PERIOD_END_ON = "2018-07-13T14:02:45.000Z";
+    private final static String FILINGS_DESCRIPTION = "Small full accounts made up to " + PREVIOUS_PERIOD_END_ON;
+    private static String CURRENT_PERIOD_START_ON = "2016-07-13T14:02:45.000Z";
+    private static String CURRENT_PERIOD_END_ON = "2017-07-13T14:02:45.000Z";
     private static String CURRENT_PERIOD_FORMATTED = "01 December 2017";
 
     @Captor
     private ArgumentCaptor<String> argCaptor;
 
     private Transaction transaction;
+    private String smallFullJson;
+    private AccountsDates accountsDates = new AccountsDatesImpl();
     private CompanyAccountEntity companyAccountEntity;
     private FilingServiceImpl filingService;
     private String smallFullAcountJson;
@@ -119,12 +123,8 @@ public class FilingServiceImplTest {
         transaction = createTransaction();
         companyAccountEntity = createAccountEntity();
 
-        filingService = new FilingServiceImpl(
-            environmentReaderMock,
-            objectMapperMock,
-            ixbrlGeneratorMock,
-            accountsBuilderMock,
-            documentDescriptionHelperMock);
+        filingService = new FilingServiceImpl(environmentReaderMock, objectMapperMock, ixbrlGeneratorMock,
+                accountsBuilderMock, documentDescriptionHelperMock);
     }
 
     @DisplayName("Tests the filing generation. Happy path")
@@ -132,15 +132,16 @@ public class FilingServiceImplTest {
     void shouldGenerateFiling() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
-            .thenReturn(smallFullAcountJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullAcountJson);
 
-        when(ixbrlGeneratorMock
-            .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
+        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
 
-        //TODO - uncomment when api-enumerations  has been added to the project
-        /*when(documentDescriptionHelperMock.getDescription(anyString(), any(Map.class)))
-            .thenReturn("Small full accounts made up to " + PREVIOUS_PERIOD_END_ON);*/
+        // TODO - uncomment when api-enumerations has been added to the project
+        /*
+         * when(documentDescriptionHelperMock.getDescription(anyString(),
+         * any(Map.class))) .thenReturn("Small full accounts made up to " +
+         * PREVIOUS_PERIOD_END_ON);
+         */
 
         when(environmentReaderMock.getMandatoryString(anyString()))
             .thenReturn("http://localhost:4082")
@@ -187,8 +188,7 @@ public class FilingServiceImplTest {
     void shouldThrowExceptionWhenAccountThrowException() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenThrow(IOException.class);
 
-        assertThrows(IOException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
+        assertThrows(IOException.class, () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     @DisplayName("Tests exception being thrown when incorrect json format")
@@ -196,11 +196,10 @@ public class FilingServiceImplTest {
     void shouldThrownJsonProcessingException() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
-            .thenThrow(JsonProcessingException.class);
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenThrow(JsonProcessingException.class);
 
         assertThrows(JsonProcessingException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
+                () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     @DisplayName("Tests the filing not generated when ixbrl location has not been set, ixbrl not generated")
@@ -208,13 +207,10 @@ public class FilingServiceImplTest {
     void shouldNotGenerateFilingAsIxbrlLocationNotSet() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
-            .thenReturn(smallFullAcountJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullAcountJson);
 
-        when(environmentReaderMock.getMandatoryString(anyString()))
-            .thenReturn("http://localhost:4082")
-            .thenReturn("apiKeyForTesting")
-            .thenReturn("dev-pdf-bucket/chs-dev");
+        when(environmentReaderMock.getMandatoryString(anyString())).thenReturn("http://localhost:4082")
+                .thenReturn("apiKeyForTesting").thenReturn("dev-pdf-bucket/chs-dev");
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
@@ -232,35 +228,30 @@ public class FilingServiceImplTest {
     void shouldThrowExceptionDocumentGeneratorIsUnavailable() throws IOException {
         when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
-            .thenReturn(smallFullAcountJson);
+        when(objectMapperMock.writeValueAsString(any(Object.class))).thenReturn(smallFullAcountJson);
 
         when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
-            .thenThrow(new ConnectException());
+                .thenThrow(new ConnectException());
 
         assertThrows(ConnectException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
+                () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     /**
-     * Check environmentReaderMock is called the passed-in number of times and the argument's values
-     * of these calls matches the passed-in args.
+     * Check environmentReaderMock is called the passed-in number of times and the
+     * argument's values of these calls matches the passed-in args.
      *
      * @param args the values the environment reader is called with.
      */
     private void verifyEnvReaderGetMandatoryString(String... args) {
 
-        verify(environmentReaderMock, times(args.length))
-            .getMandatoryString(argCaptor.capture());
+        verify(environmentReaderMock, times(args.length)).getMandatoryString(argCaptor.capture());
 
         List<String> capturedEnvVariables = argCaptor.getAllValues();
         Set<String> expectedValues = new HashSet<>(Arrays.asList(args));
 
         assertTrue(
-            capturedEnvVariables
-                .stream().map(String::toString)
-                .collect(Collectors.toSet())
-                .equals(expectedValues));
+                capturedEnvVariables.stream().map(String::toString).collect(Collectors.toSet()).equals(expectedValues));
     }
 
     private void verifyObjectMapperNumOfCalls() throws JsonProcessingException {
@@ -268,8 +259,7 @@ public class FilingServiceImplTest {
     }
 
     private void verifyIxbrlGeneratorNumOfCalls() throws IOException {
-        verify(ixbrlGeneratorMock, times(1)).
-            generateIXBRL(any(DocumentGeneratorConnection.class));
+        verify(ixbrlGeneratorMock, times(1)).generateIXBRL(any(DocumentGeneratorConnection.class));
     }
 
     /**
@@ -281,10 +271,9 @@ public class FilingServiceImplTest {
         assertNotNull(filing);
 
         assertEquals(COMPANY_NUMBER, filing.getCompanyNumber());
-        assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(),
-            filing.getDescriptionIdentifier());
+        assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(), filing.getDescriptionIdentifier());
 
-        //TODO - uncomment when api-enumerations  has been added to the project
+        // TODO - uncomment when api-enumerations has been added to the project
         // assertEquals(FILINGS_DESCRIPTION, filing.getDescription());
 
         assertNotNull(filing.getDescriptionValues());
@@ -366,13 +355,10 @@ public class FilingServiceImplTest {
         Map<String, String> dataLinks = new HashMap<>();
 
         dataLinks.put(LinkType.SELF.getLink(),
-            String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
+                String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
 
-        dataLinks.put(LinkType.SMALL_FULL.getLink(),
-            String.format("/transactions/%s/company-accounts/%s/small-full/%s",
-                TRANSACTION_ID,
-                ACCOUNTS_ID,
-                SMALL_FULL_ID));
+        dataLinks.put(LinkType.SMALL_FULL.getLink(), String.format("/transactions/%s/company-accounts/%s/small-full/%s",
+                TRANSACTION_ID, ACCOUNTS_ID, SMALL_FULL_ID));
 
         return dataLinks;
     }
@@ -388,11 +374,14 @@ public class FilingServiceImplTest {
      * Builds the small full accounts model. Functionality needs to be change.
      */
     private Account getSmallFullAccount() {
-        Account account = new Account();
+
+        Account account = new Account(accountsDates);
         account.setPeriod(getAccountPeriod());
         account.setBalanceSheet(getBalanceSheet());
         account.setNotes(getNotes());
         account.setCompany(getCompany());
+        account.setApprovalDate("2016-01-19T00:00:00.000Z");
+        account.setApprovalName("director");
 
         return account;
     }
@@ -401,6 +390,7 @@ public class FilingServiceImplTest {
         Company company = new Company();
         company.setCompanyName(COMPANY_NAME);
         company.setCompanyNumber(COMPANY_NAME);
+        company.setJurisdiction(COMPANY_NUMBER);
 
         return company;
     }
@@ -418,11 +408,16 @@ public class FilingServiceImplTest {
     }
 
     private Period getAccountPeriod() {
-        Period period = new Period();
+        Period period = new Period(accountsDates);
         period.setCurrentPeriodStartOn(CURRENT_PERIOD_START_ON);
         period.setCurrentPeriodEndsOn(CURRENT_PERIOD_END_ON);
         period.setPreviousPeriodStartOn(PREVIOUS_START_ON);
         period.setPreviousPeriodEndsOn(PREVIOUS_PERIOD_END_ON);
+
+        period.setCurrentPeriodStartOnFormatted(period.getCurrentPeriodStartOn());
+        period.setCurrentPeriodEndsOnFormatted(period.getCurrentPeriodEndsOn());
+        period.setCurrentPeriodBSDate(period.getCurrentPeriodStartOn(), period.getCurrentPeriodEndsOn(), period.getPreviousPeriodEndsOn());
+        period.setPreviousPeriodBSDate(period.getPreviousPeriodStartOn(), period.getPreviousPeriodEndsOn(), period.getCurrentPeriodEndsOn());
 
         return period;
     }
@@ -432,6 +427,17 @@ public class FilingServiceImplTest {
      */
     private BalanceSheet getBalanceSheet() {
         BalanceSheet balanceSheet = new BalanceSheet();
+
+        BalanceSheetStatements statements = new BalanceSheetStatements();
+        statements.setSection477(
+                "For the year ending 31 December 2016 the company was entitled to exemption under section 477 of the Companies Act 2006 relating to small companies.");
+        statements.setAuditNotRequiredByMembers(
+                "The members have not required the company to obtain an audit in accordance with section 476 of the Companies Act 2006.");
+        statements.setDirectorsResponsibility(
+                "The directors acknowledge their responsibilities for complying with the requirements of the Act with respect to accounting records and the preparation of accounts.");
+        statements.setSmallCompaniesRegime(
+                "These accounts have been prepared and delivered in accordance with the provisions applicable to companies subject to the small companies regime.");
+        balanceSheet.setBalanceSheetStatements(statements);
 
         CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid = new CalledUpSharedCapitalNotPaid();
         calledUpSharedCapitalNotPaid.setCurrentAmount(9);
@@ -452,6 +458,7 @@ public class FilingServiceImplTest {
      * @throws URISyntaxException
      * @throws IOException
      */
+
     private String getFileContentFromResource(String fileNamePath)
         throws URISyntaxException, IOException {
         Path path = Paths.get(getClass().getClassLoader().getResource(fileNamePath).toURI());

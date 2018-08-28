@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
-
-
+import uk.gov.companieshouse.accountsDates.AccountsDates;
+import uk.gov.companieshouse.accountsDates.impl.AccountsDatesImpl;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
@@ -19,6 +19,11 @@ public class ApplicationConfiguration {
     public EnvironmentReader environmentReader() {
         return new EnvironmentReaderImpl();
     }
+    
+    @Bean
+    public AccountsDates accountsDates() {
+        return new AccountsDatesImpl();
+    }
 
     @Bean
     public MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
@@ -26,3 +31,4 @@ public class ApplicationConfiguration {
     }
 
 }
+

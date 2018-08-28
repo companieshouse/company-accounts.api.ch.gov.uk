@@ -34,10 +34,10 @@ public class FilingController {
         @PathParam("companyAccountId") String accountId, HttpServletRequest request) {
 
         Transaction transaction =
-            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         CompanyAccountEntity companyAccountEntity =
-            (CompanyAccountEntity) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+                (CompanyAccountEntity) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         try {
             Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
