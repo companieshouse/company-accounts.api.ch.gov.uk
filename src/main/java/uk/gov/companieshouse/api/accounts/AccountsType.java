@@ -9,8 +9,8 @@ import java.util.Set;
  */
 public enum AccountsType {
 
-    SMALL_FULL_ACCOUNTS("small-full", "small-full-accounts.html", "accounts#smallfull",
-        "small_full_accounts", "small-full-accounts");
+    SMALL_FULL_ACCOUNTS("small-full", "small-full-accounts.html", "accounts#smallfull", "small_full_accounts", "small-full-accounts"),
+    ABRIDGED_ACCOUNTS("abridged", "abridged-accounts.html", "accounts#abridged", "abridged_accounts", "abridged-accounts");
 
     private static final String ASSET_ID = "accounts";
 

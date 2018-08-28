@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service;
 
+import java.security.NoSuchAlgorithmException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 
@@ -16,5 +17,6 @@ public interface FilingService {
      * @return {@link Filing}
      * @throws IOException
      */
-    Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity) throws IOException;
+    Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
+        throws IOException, NoSuchAlgorithmException;
 }

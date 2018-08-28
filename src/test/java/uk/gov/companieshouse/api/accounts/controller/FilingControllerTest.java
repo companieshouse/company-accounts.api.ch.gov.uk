@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ public class FilingControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of the ixbrl - filing is not null")
-    public void shouldGenerateFiling() throws IOException {
+    public void shouldGenerateFiling() throws IOException, NoSuchAlgorithmException {
         when(filingServiceMock
             .generateAccountFiling(transactionMock, companyAccountEntityMock))
             .thenReturn(new Filing());
@@ -68,7 +69,7 @@ public class FilingControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful creation of the ixbrl - filing is null")
-    void shouldNotGenerateFiling() throws IOException {
+    void shouldNotGenerateFiling() throws IOException, NoSuchAlgorithmException {
         when(filingServiceMock
             .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
             .thenReturn(null);
@@ -81,7 +82,7 @@ public class FilingControllerTest {
 
     @Test
     @DisplayName("Tests the filing generator exception")
-    void shouldNotGenerateFilingInternalErrorResponse() throws IOException {
+    void shouldNotGenerateFilingInternalErrorResponse() throws IOException, NoSuchAlgorithmException {
         when(filingServiceMock
             .generateAccountFiling(any(Transaction.class), any(CompanyAccountEntity.class)))
             .thenThrow(IOException.class);

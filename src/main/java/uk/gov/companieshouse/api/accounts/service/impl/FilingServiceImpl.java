@@ -1,29 +1,26 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.Account;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsBuilderFactory;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -46,27 +43,23 @@ public class FilingServiceImpl implements FilingService {
     private static final String LOG_ERROR_KEY = "error";
     private static final String LOG_MESSAGE_KEY = "message";
     private static final String PERIOD_END_ON = "period_end_on";
-    private static final String SMALL_FULL_ACCOUNT = "small-full";
 
     private final EnvironmentReader environmentReader;
-    private final ObjectMapper objectMapper;
     private final IxbrlGenerator ixbrlGenerator;
-    private final AccountsBuilder accountsBuilder;
     private final DocumentDescriptionHelper documentDescriptionHelper;
+    private final AccountsBuilderFactory accountsBuilderFactory;
 
     @Autowired
     public FilingServiceImpl(
         EnvironmentReader environmentReader,
-        ObjectMapper objectMapper,
         IxbrlGenerator ixbrlGenerator,
-        AccountsBuilder accountsBuilder,
-        DocumentDescriptionHelper documentDescriptionHelper) {
+        DocumentDescriptionHelper documentDescriptionHelper,
+        AccountsBuilderFactory accountsBuilderFactory) {
 
-        this.objectMapper = objectMapper;
         this.environmentReader = environmentReader;
         this.ixbrlGenerator = ixbrlGenerator;
-        this.accountsBuilder = accountsBuilder;
         this.documentDescriptionHelper = documentDescriptionHelper;
+        this.accountsBuilderFactory = accountsBuilderFactory;
     }
 
     /**
@@ -74,11 +67,11 @@ public class FilingServiceImpl implements FilingService {
      */
     @Override
     public Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
-        throws IOException {
+        throws IOException, NoSuchAlgorithmException {
 
         AccountsType accountType = getAccountType(accountEntity);
         if (accountType != null) {
-            return generateAccountFiling(transaction, accountType);
+            return generateAccountFiling(transaction, accountEntity, accountType);
         }
 
         return null;
@@ -93,8 +86,12 @@ public class FilingServiceImpl implements FilingService {
     private AccountsType getAccountType(CompanyAccountEntity accountEntity) {
         Map<String, String> links = accountEntity.getData().getLinks();
 
-        if (links.containsKey(LinkType.SMALL_FULL.getLink())) {
+        if (links.containsKey(AccountsType.SMALL_FULL_ACCOUNTS.getResourceKey())) {
             return AccountsType.SMALL_FULL_ACCOUNTS;
+        }
+
+        if (links.containsKey(AccountsType.ABRIDGED_ACCOUNTS.getResourceKey())) {
+            return AccountsType.ABRIDGED_ACCOUNTS;
         }
 
         Map<String, Object> logMap = new HashMap<>();
@@ -115,13 +112,20 @@ public class FilingServiceImpl implements FilingService {
      * accounts name, etc)
      * @throws IOException -
      */
-    private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
-        throws IOException {
+    private Filing generateAccountFiling(Transaction transaction,
+        CompanyAccountEntity accountEntity,
+        AccountsType accountsType) throws IOException, NoSuchAlgorithmException {
 
-        Object accountObj = getAccountInformation(accountsType);
-        if (accountObj != null) {
-            String ixbrlLocation =
-                generateIxbrl(accountsType, generateJson(accountsType, accountObj));
+        //TODO: remove this below code since it will be moved to document render service.
+        AccountsHelper accountsHelper = accountsBuilderFactory.getAccountType(accountsType);
+
+        //TODO: remove this below code since it will be moved to document render service.
+        String accountJson =
+            accountsHelper.getAccountsJsonFormat(accountEntity.getId());
+
+        //TODO: filing generator will be calling the document render service with the url we want to sent the request. And this will build the model and call the doument
+        if (accountJson != null) {
+            String ixbrlLocation = generateIxbrl(accountsType, accountJson);
 
             if (ixbrlLocation != null && isValidIxbrl()) {
                 return createAccountFiling(transaction, accountsType, ixbrlLocation);
@@ -129,27 +133,6 @@ public class FilingServiceImpl implements FilingService {
         }
 
         return null;
-    }
-
-    /**
-     * Generate the json for the passed-in account. This is used in the request body when calling
-     * the service.
-     *
-     * @param accountType - Account type information (e.g. small-full, abridged, etc)
-     * @param accountObj - The account's type object that's being processed (e.g. Account)
-     * @return null or ixbrl location
-     * @throws JsonProcessingException
-     */
-    private String generateJson(AccountsType accountType, Object accountObj)
-        throws JsonProcessingException {
-
-        switch (accountType.getAccountType()) {
-            case SMALL_FULL_ACCOUNT:
-                return generateSmallFullAccountJSON((Account) accountObj);
-            default:
-                logUnsupportedAccountType(accountType);
-                return null;
-        }
     }
 
     /**
@@ -346,76 +329,5 @@ public class FilingServiceImpl implements FilingService {
      */
     private String getMandatoryEnvVariable(String envVariable) {
         return environmentReader.getMandatoryString(envVariable);
-    }
-
-    /**
-     * Generates the json for small full account.
-     *
-     * @param account - small full's account information.
-     * @return The account marshaled to JSON and converted to String.
-     * @throws JsonProcessingException
-     */
-    private String generateSmallFullAccountJSON(Account account)
-        throws JsonProcessingException {
-        JSONObject accountsRequestBody = new JSONObject();
-        accountsRequestBody.put("small_full_account", convertObjectToJson(account));
-
-        return accountsRequestBody.toString();
-    }
-
-    /**
-     * Marshall object to json.
-     *
-     * @param obj - object is being processed. e.g. Account object
-     * @return {@link JSONObject}
-     * @throws JsonProcessingException
-     */
-    private <T> JSONObject convertObjectToJson(T obj) throws JsonProcessingException {
-        return new JSONObject(objectMapper.writeValueAsString(obj));
-    }
-
-    /**
-     * Builds the account object based on the passed in account type.
-     *
-     * @param accountType the account type, e.g. small-full. Used to build correct object.
-     */
-    private Object getAccountInformation(AccountsType accountType) throws IOException {
-        switch (accountType.getAccountType()) {
-            case SMALL_FULL_ACCOUNT:
-                return getSmallFullAccount();
-            default:
-                logUnsupportedAccountType(accountType);
-                return null;
-        }
-    }
-
-    /**
-     * Checks if filing type is small full.
-     *
-     * @param filingType - name of the filing type.
-     * @return true if small full account.
-     */
-    private boolean isSmallFullType(String filingType) {
-        return AccountsType.SMALL_FULL_ACCOUNTS.getAccountType().equals(filingType);
-    }
-
-    /**
-     * Get the small full account information.
-     */
-    private Account getSmallFullAccount() throws IOException {
-        return (Account) accountsBuilder.buildAccount();
-    }
-
-    /**
-     * Log an error if the account type is unsupported for generating filings
-     *
-     * @param accountsType
-     */
-    private void logUnsupportedAccountType(AccountsType accountsType) {
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put(LOG_ERROR_KEY, "Unsupported account type");
-        logMap.put(LOG_MESSAGE_KEY, "Account type is unsupported");
-        logMap.put("account-type", accountsType);
-        LOGGER.error("Unsupported account type", logMap);
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,13 +49,14 @@ public class FilingController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-        } catch (IOException e) {
+        }
+        catch (IOException | NoSuchAlgorithmException e) {
             logRequestError(request, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void logRequestError(HttpServletRequest request, IOException exception) {
+    private void logRequestError(HttpServletRequest request, Exception exception) {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
         debugMap.put("message", "FilingController error: Failed to generate filing");

@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +59,8 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsBuilderFactory;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsHelper;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
 import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -108,6 +110,11 @@ public class FilingServiceImplTest {
     private AccountsBuilder accountsBuilderMock;
     @Mock
     private DocumentDescriptionHelper documentDescriptionHelperMock;
+    @Mock
+    private AccountsBuilderFactory accountsBuilderFactoryMock;
+    @Mock
+    private AccountsHelper accountsHelperMock;
+
 
     @BeforeAll
     void setUpBeforeAll() throws IOException, URISyntaxException {
@@ -121,22 +128,22 @@ public class FilingServiceImplTest {
 
         filingService = new FilingServiceImpl(
             environmentReaderMock,
-            objectMapperMock,
             ixbrlGeneratorMock,
-            accountsBuilderMock,
-            documentDescriptionHelperMock);
+            documentDescriptionHelperMock,
+            accountsBuilderFactoryMock);
     }
 
     @DisplayName("Tests the filing generation. Happy path")
     @Test
-    void shouldGenerateFiling() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+    void shouldGenerateFiling() throws IOException, NoSuchAlgorithmException {
+        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
+            .thenReturn(accountsHelperMock);
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
+        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
             .thenReturn(smallFullAcountJson);
 
-        when(ixbrlGeneratorMock
-            .generateIXBRL(any(DocumentGeneratorConnection.class))).thenReturn(IXBRL_LOCATION);
+        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
+            .thenReturn(IXBRL_LOCATION);
 
         //TODO - uncomment when api-enumerations  has been added to the project
         /*when(documentDescriptionHelperMock.getDescription(anyString(), any(Map.class)))
@@ -152,7 +159,6 @@ public class FilingServiceImplTest {
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
-        verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
         verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
             API_KEY_ENV_VAR,
@@ -166,17 +172,23 @@ public class FilingServiceImplTest {
 
     @DisplayName("Tests the filing not generated when small full accounts link is not present")
     @Test
-    void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData() throws IOException {
+    void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData()
+        throws IOException, NoSuchAlgorithmException {
         companyAccountEntity.getData().setLinks(new HashMap<>());
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         assertNull(filing);
     }
 
-    @DisplayName("Tests the filing not generated when Small Full Account not retrieved")
+    @DisplayName("Tests the filing not generated when account's json not generated")
     @Test
-    void shouldNotGenerateFilingAsAccountIsNull() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenReturn(null);
+    void shouldNotGenerateFilingAsAccountIsNull() throws IOException, NoSuchAlgorithmException {
+
+        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
+            .thenReturn(accountsHelperMock);
+
+        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
+            .thenReturn(null);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
         assertNull(filing);
@@ -184,19 +196,12 @@ public class FilingServiceImplTest {
 
     @DisplayName("Tests exception being thrown when getting Accounts information")
     @Test
-    void shouldThrowExceptionWhenAccountThrowException() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenThrow(IOException.class);
+    void shouldThrowExceptionWhenAccountThrowException()
+        throws IOException, NoSuchAlgorithmException {
+        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
+            .thenReturn(accountsHelperMock);
 
-        assertThrows(IOException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
-    }
-
-    @DisplayName("Tests exception being thrown when incorrect json format")
-    @Test
-    void shouldThrownJsonProcessingException() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
-
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
+        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
             .thenThrow(JsonProcessingException.class);
 
         assertThrows(JsonProcessingException.class,
@@ -205,10 +210,13 @@ public class FilingServiceImplTest {
 
     @DisplayName("Tests the filing not generated when ixbrl location has not been set, ixbrl not generated")
     @Test
-    void shouldNotGenerateFilingAsIxbrlLocationNotSet() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+    void shouldNotGenerateFilingAsIxbrlLocationNotSet()
+        throws IOException, NoSuchAlgorithmException {
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
+        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
+            .thenReturn(accountsHelperMock);
+
+        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
             .thenReturn(smallFullAcountJson);
 
         when(environmentReaderMock.getMandatoryString(anyString()))
@@ -216,9 +224,11 @@ public class FilingServiceImplTest {
             .thenReturn("apiKeyForTesting")
             .thenReturn("dev-pdf-bucket/chs-dev");
 
+        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
+            .thenReturn(null);
+
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
-        verifyObjectMapperNumOfCalls();
         verifyIxbrlGeneratorNumOfCalls();
         verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
             API_KEY_ENV_VAR,
@@ -229,11 +239,18 @@ public class FilingServiceImplTest {
 
     @DisplayName("Tests exception being thrown when the document render service unavailable")
     @Test
-    void shouldThrowExceptionDocumentGeneratorIsUnavailable() throws IOException {
-        when(accountsBuilderMock.buildAccount()).thenReturn(getSmallFullAccount());
+    void shouldThrowExceptionDocumentGeneratorIsUnavailable()
+        throws IOException, NoSuchAlgorithmException {
+        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
+            .thenReturn(accountsHelperMock);
 
-        when(objectMapperMock.writeValueAsString(any(Object.class)))
+        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
             .thenReturn(smallFullAcountJson);
+
+        when(environmentReaderMock.getMandatoryString(anyString()))
+            .thenReturn("http://localhost:4082")
+            .thenReturn("apiKeyForTesting")
+            .thenReturn("dev-pdf-bucket/chs-dev");
 
         when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
             .thenThrow(new ConnectException());
