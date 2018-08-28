@@ -30,7 +30,7 @@
 		<structured-logging.version>1.2.0-rc1</structured-logging.version>
 		<aws-java-sdk.version>1.11.52</aws-java-sdk.version>
 		<environment-reader-library.version>1043eed</environment-reader-library.version>
-		<company-accounts-library.version>5a6005b</company-accounts-library.version>
+		<company-accounts-library.version>9e3b682</company-accounts-library.version>
 		<jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<snakeyaml.version>1.17</snakeyaml.version>
