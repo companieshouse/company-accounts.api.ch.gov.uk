@@ -56,7 +56,7 @@ public class CompanyAccountController {
                 .map(result.getStatus(), result.getData(), result.getErrorData());
     }
 
-    @GetMapping
+    @GetMapping("/{companyAccountId}")
     public ResponseEntity getCompanyAccount(HttpServletRequest request) {
 
         final Map<String, Object> debugMap = new HashMap<>();
