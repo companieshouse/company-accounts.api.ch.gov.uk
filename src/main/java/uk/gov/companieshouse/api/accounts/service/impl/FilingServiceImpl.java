@@ -1,14 +1,12 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -19,10 +17,7 @@ import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsBuilderFactory;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsHelper;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -32,12 +27,10 @@ public class FilingServiceImpl implements FilingService {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
-    private static final String API_KEY_ENV_VAR = "CHS_API_KEY";
+
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
-    private static final String DOCUMENT_BUCKET_NAME_ENV_VAR = "DOCUMENT_BUCKET_NAME";
     private static final String DOCUMENT_RENDER_SERVICE_END_POINT = "/document-render/store";
     private static final String DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR = "DOCUMENT_RENDER_SERVICE_HOST";
-    private static final String IXBRL_LOCATION = "s3://%s/%s/%s";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String LOG_ACCOUNT_ID_KEY = "account-id";
     private static final String LOG_ERROR_KEY = "error";
@@ -45,21 +38,18 @@ public class FilingServiceImpl implements FilingService {
     private static final String PERIOD_END_ON = "period_end_on";
 
     private final EnvironmentReader environmentReader;
-    private final IxbrlGenerator ixbrlGenerator;
     private final DocumentDescriptionHelper documentDescriptionHelper;
-    private final AccountsBuilderFactory accountsBuilderFactory;
+    private final DocumentGeneratorCaller documentGeneratorCaller;
 
     @Autowired
     public FilingServiceImpl(
         EnvironmentReader environmentReader,
-        IxbrlGenerator ixbrlGenerator,
         DocumentDescriptionHelper documentDescriptionHelper,
-        AccountsBuilderFactory accountsBuilderFactory) {
+        DocumentGeneratorCaller documentGeneratorCaller) {
 
         this.environmentReader = environmentReader;
-        this.ixbrlGenerator = ixbrlGenerator;
         this.documentDescriptionHelper = documentDescriptionHelper;
-        this.accountsBuilderFactory = accountsBuilderFactory;
+        this.documentGeneratorCaller = documentGeneratorCaller;
     }
 
     /**
@@ -67,11 +57,11 @@ public class FilingServiceImpl implements FilingService {
      */
     @Override
     public Filing generateAccountFiling(Transaction transaction, CompanyAccountEntity accountEntity)
-        throws IOException, NoSuchAlgorithmException {
+        throws IOException {
 
         AccountsType accountType = getAccountType(accountEntity);
         if (accountType != null) {
-            return generateAccountFiling(transaction, accountEntity, accountType);
+            return generateAccountFiling(transaction, accountType);
         }
 
         return null;
@@ -112,24 +102,12 @@ public class FilingServiceImpl implements FilingService {
      * accounts name, etc)
      * @throws IOException -
      */
-    private Filing generateAccountFiling(Transaction transaction,
-        CompanyAccountEntity accountEntity,
-        AccountsType accountsType) throws IOException, NoSuchAlgorithmException {
+    private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType)
+        throws IOException {
+        String ixbrlLocation = generateIxbrl();
 
-        //TODO: remove this below code since it will be moved to document render service.
-        AccountsHelper accountsHelper = accountsBuilderFactory.getAccountType(accountsType);
-
-        //TODO: remove this below code since it will be moved to document render service.
-        String accountJson =
-            accountsHelper.getAccountsJsonFormat(accountEntity.getId());
-
-        //TODO: filing generator will be calling the document render service with the url we want to sent the request. And this will build the model and call the doument
-        if (accountJson != null) {
-            String ixbrlLocation = generateIxbrl(accountsType, accountJson);
-
-            if (ixbrlLocation != null && isValidIxbrl()) {
-                return createAccountFiling(transaction, accountsType, ixbrlLocation);
-            }
+        if (ixbrlLocation != null && isValidIxbrl()) {
+            return createAccountFiling(transaction, accountsType, ixbrlLocation);
         }
 
         return null;
@@ -148,7 +126,7 @@ public class FilingServiceImpl implements FilingService {
         String ixbrlLocation) throws IOException {
         Filing filing = new Filing();
 
-        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for the API changes. (STORY SFA-595)
+        //TODO get correct periodEndOn. periodEndOn = Current Period's end date", mongo DB. Waiting for Doc.Gen changes. (STORY SFA-574)
         LocalDate periodEndDate = LocalDate.now();
 
         filing.setCompanyNumber(transaction.getCompanyNumber());
@@ -238,78 +216,14 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Generates the ixbrl by calling the document render service.
+     * Generates the ixbrl by calling the document generator passing the the end point and
+     * company/account id.
      *
-     * @param accountsType - Account type information: account type, ixbrl's template name, account
-     * @param requestBody - the http request request (json format)
      * @return The location where the service has stored the generated ixbrl.
      */
-    private String generateIxbrl(AccountsType accountsType, String requestBody)
-        throws IOException {
-
-        if (requestBody != null) {
-            DocumentGeneratorConnection connection =
-                getDocumentGeneratorConnection(accountsType, requestBody);
-
-            return ixbrlGenerator.generateIXBRL(connection);
-        }
-
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put(LOG_ERROR_KEY, "Document render service request body empty");
-        logMap.put(LOG_MESSAGE_KEY,
-            "Request Body is empty. The Document Render Service cannot be called with a empty request body");
-        LOGGER.error("Document render service request body empty", logMap);
-
-        return null;
-    }
-
-    /**
-     * Create DocumentGeneratorConnectionImpl instance containing the document render's request
-     * settings. e.g. Method, Service URL, Body, etc.
-     *
-     * @param accountsType - Account type information: account type, ixbrl's template name, account
-     * @param requestBody - the http request request (json format).
-     * @return {@link DocumentGeneratorConnection} with the document render service settings.
-     */
-    private DocumentGeneratorConnection getDocumentGeneratorConnection(
-        AccountsType accountsType,
-        String requestBody) {
-        DocumentGeneratorConnection connection = new DocumentGeneratorConnection();
-
-        connection.setRequestMethod("POST");
-        connection.setServiceURL(getServiceURL());
-        connection.setRequestBody(requestBody);
-        connection.setAuthorizationProperty(getAPIAuthorization());
-        connection.setAssetId(accountsType.getAssetId());
-        connection.setContentType(MediaType.TEXT_HTML_VALUE);
-        connection.setAcceptType(MediaType.TEXT_HTML_VALUE);
-        connection.setLocation(getIXBRLLocation(accountsType));
-        connection.setTemplateName(accountsType.getTemplateName());
-        connection.setSetDoOutPut(true);
-
-        return connection;
-    }
-
-    /**
-     * Get the location the document render service needs to stored the ixbrl document. e.g.
-     * "s3://dev-pdf-bucket/chs-dev/accounts/small_full_accounts"
-     *
-     * @return
-     */
-    private String getIXBRLLocation(AccountsType accountsType) {
-        return
-            String.format(
-                IXBRL_LOCATION,
-                getMandatoryEnvVariable(DOCUMENT_BUCKET_NAME_ENV_VAR),
-                accountsType.getAssetId(),
-                accountsType.getResourceKey());
-    }
-
-    /**
-     * Get the API key needed to call the service.
-     */
-    private String getAPIAuthorization() {
-        return getMandatoryEnvVariable(API_KEY_ENV_VAR);
+    private String generateIxbrl() {
+        //TODO: call the document generator's new end point to get generate ixbrl. Implementation does NOT exist yet. (STORY SFA-574)
+        return  documentGeneratorCaller.generateIxbrl(getServiceURL());
     }
 
     /**

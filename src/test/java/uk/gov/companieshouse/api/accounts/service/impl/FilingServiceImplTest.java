@@ -3,10 +3,10 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -14,7 +14,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,11 +57,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.notes.PostBalanceSheetEven
 import uk.gov.companieshouse.api.accounts.model.ixbrl.period.Period;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.util.DocumentDescriptionHelper;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.AccountsBuilder;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsBuilderFactory;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.accountsbuilder.factory.AccountsHelper;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.DocumentGeneratorConnection;
-import uk.gov.companieshouse.api.accounts.util.ixbrl.ixbrlgenerator.IxbrlGenerator;
+import uk.gov.companieshouse.api.accounts.util.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,16 +100,9 @@ public class FilingServiceImplTest {
     @Mock
     private ObjectMapper objectMapperMock;
     @Mock
-    private IxbrlGenerator ixbrlGeneratorMock;
-    @Mock
-    private AccountsBuilder accountsBuilderMock;
+    private DocumentGeneratorCaller documentGeneratorCallerMock;
     @Mock
     private DocumentDescriptionHelper documentDescriptionHelperMock;
-    @Mock
-    private AccountsBuilderFactory accountsBuilderFactoryMock;
-    @Mock
-    private AccountsHelper accountsHelperMock;
-
 
     @BeforeAll
     void setUpBeforeAll() throws IOException, URISyntaxException {
@@ -128,41 +116,32 @@ public class FilingServiceImplTest {
 
         filingService = new FilingServiceImpl(
             environmentReaderMock,
-            ixbrlGeneratorMock,
             documentDescriptionHelperMock,
-            accountsBuilderFactoryMock);
+            documentGeneratorCallerMock);
     }
 
     @DisplayName("Tests the filing generation. Happy path")
     @Test
     void shouldGenerateFiling() throws IOException, NoSuchAlgorithmException {
-        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
-            .thenReturn(accountsHelperMock);
 
-        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
-            .thenReturn(smallFullAcountJson);
-
-        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
-            .thenReturn(IXBRL_LOCATION);
-
-        //TODO - uncomment when api-enumerations  has been added to the project
-        /*when(documentDescriptionHelperMock.getDescription(anyString(), any(Map.class)))
-            .thenReturn("Small full accounts made up to " + PREVIOUS_PERIOD_END_ON);*/
+        doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl(anyString());
 
         when(environmentReaderMock.getMandatoryString(anyString()))
             .thenReturn("http://localhost:4082")
             .thenReturn("apiKeyForTesting")
             .thenReturn("dev-pdf-bucket/chs-dev");
 
-        when(environmentReaderMock.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR))
-            .thenReturn(false);
+        doReturn(false).when(environmentReaderMock)
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
+        //TODO - uncomment when api-enumerations  has been added to the project
+        /*when(documentDescriptionHelperMock.getDescription(anyString(), any(Map.class)))
+            .thenReturn("Small full accounts made up to " + PREVIOUS_PERIOD_END_ON);*/
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
-        verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
-            API_KEY_ENV_VAR,
-            DOCUMENT_BUCKET_NAME_ENV_VAR);
+        verifyDocumentGeneratorCallerMock();
+        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR);
 
         verify(environmentReaderMock, times(1))
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
@@ -173,90 +152,34 @@ public class FilingServiceImplTest {
     @DisplayName("Tests the filing not generated when small full accounts link is not present")
     @Test
     void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData()
-        throws IOException, NoSuchAlgorithmException {
+        throws IOException {
+
         companyAccountEntity.getData().setLinks(new HashMap<>());
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
         assertNull(filing);
     }
 
-    @DisplayName("Tests the filing not generated when account's json not generated")
-    @Test
-    void shouldNotGenerateFilingAsAccountIsNull() throws IOException, NoSuchAlgorithmException {
 
-        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
-            .thenReturn(accountsHelperMock);
-
-        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
-            .thenReturn(null);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
-        assertNull(filing);
-    }
-
-    @DisplayName("Tests exception being thrown when getting Accounts information")
-    @Test
-    void shouldThrowExceptionWhenAccountThrowException()
-        throws IOException, NoSuchAlgorithmException {
-        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
-            .thenReturn(accountsHelperMock);
-
-        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
-            .thenThrow(JsonProcessingException.class);
-
-        assertThrows(JsonProcessingException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
-    }
-
-    @DisplayName("Tests the filing not generated when ixbrl location has not been set, ixbrl not generated")
+    @DisplayName("Tests the filing not generated when ixbrl has not been generated, ixbrl location not set")
     @Test
     void shouldNotGenerateFilingAsIxbrlLocationNotSet()
-        throws IOException, NoSuchAlgorithmException {
+        throws IOException {
 
-        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
-            .thenReturn(accountsHelperMock);
-
-        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
-            .thenReturn(smallFullAcountJson);
+        when(documentGeneratorCallerMock.generateIxbrl(anyString()))
+            .thenReturn(null);
 
         when(environmentReaderMock.getMandatoryString(anyString()))
             .thenReturn("http://localhost:4082")
             .thenReturn("apiKeyForTesting")
             .thenReturn("dev-pdf-bucket/chs-dev");
-
-        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
-            .thenReturn(null);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
-        verifyIxbrlGeneratorNumOfCalls();
-        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR,
-            API_KEY_ENV_VAR,
-            DOCUMENT_BUCKET_NAME_ENV_VAR);
+        verifyDocumentGeneratorCallerMock();
+        verifyEnvReaderGetMandatoryString(DOCUMENT_RENDER_SERVICE_HOST_ENV_VAR);
 
         assertNull(filing);
-    }
-
-    @DisplayName("Tests exception being thrown when the document render service unavailable")
-    @Test
-    void shouldThrowExceptionDocumentGeneratorIsUnavailable()
-        throws IOException, NoSuchAlgorithmException {
-        when(accountsBuilderFactoryMock.getAccountType(any(AccountsType.class)))
-            .thenReturn(accountsHelperMock);
-
-        when(accountsHelperMock.getAccountsJsonFormat(anyString()))
-            .thenReturn(smallFullAcountJson);
-
-        when(environmentReaderMock.getMandatoryString(anyString()))
-            .thenReturn("http://localhost:4082")
-            .thenReturn("apiKeyForTesting")
-            .thenReturn("dev-pdf-bucket/chs-dev");
-
-        when(ixbrlGeneratorMock.generateIXBRL(any(DocumentGeneratorConnection.class)))
-            .thenThrow(new ConnectException());
-
-        assertThrows(ConnectException.class,
-            () -> filingService.generateAccountFiling(transaction, companyAccountEntity));
     }
 
     /**
@@ -284,9 +207,9 @@ public class FilingServiceImplTest {
         verify(objectMapperMock, times(1)).writeValueAsString(any(Object.class));
     }
 
-    private void verifyIxbrlGeneratorNumOfCalls() throws IOException {
-        verify(ixbrlGeneratorMock, times(1)).
-            generateIXBRL(any(DocumentGeneratorConnection.class));
+    private void verifyDocumentGeneratorCallerMock() throws IOException {
+        verify(documentGeneratorCallerMock, times(1))
+            .generateIxbrl(anyString());
     }
 
     /**
