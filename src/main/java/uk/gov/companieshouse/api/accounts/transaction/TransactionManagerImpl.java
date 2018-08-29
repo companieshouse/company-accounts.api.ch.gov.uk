@@ -58,7 +58,7 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestId - id of the request
      * @param link - link of the resource to add to the transaction resources
      */
-    public void updateTransaction(String transactionId, String requestId, String link) throws PatchException {
+    public void updateTransaction(String transactionId, String requestId, String link) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("resources", createResourceMap(link));
 
