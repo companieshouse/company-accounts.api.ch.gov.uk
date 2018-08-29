@@ -80,10 +80,6 @@ public class FilingServiceImpl implements FilingService {
             return AccountsType.SMALL_FULL_ACCOUNTS;
         }
 
-        if (links.containsKey(AccountsType.ABRIDGED_ACCOUNTS.getResourceKey())) {
-            return AccountsType.ABRIDGED_ACCOUNTS;
-        }
-
         Map<String, Object> logMap = new HashMap<>();
         logMap.put(LOG_ERROR_KEY, "Account Type not found");
         logMap.put(LOG_MESSAGE_KEY, "Link for account type is missing from account data");
