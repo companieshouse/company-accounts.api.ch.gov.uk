@@ -6,5 +6,6 @@ public enum ResponseStatus {
     MONGO_ERROR,
     TRANSACTION_PATCH_ERROR,
     ID_GENERATION_ERROR,
+    VALIDATION_ERROR,
     SUCCESS_CREATED
 }

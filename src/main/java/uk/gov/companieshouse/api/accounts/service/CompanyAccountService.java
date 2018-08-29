@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
  */
 public interface CompanyAccountService {
 
-    ResponseObject createCompanyAccount(CompanyAccount companyAccount, Transaction transaction,
+    ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount, Transaction transaction,
             String requestId);
 
     CompanyAccountEntity findById(String id);

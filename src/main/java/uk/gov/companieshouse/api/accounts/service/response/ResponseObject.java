@@ -27,7 +27,7 @@ public class ResponseObject<T extends RestObject> {
         this.status = status;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 

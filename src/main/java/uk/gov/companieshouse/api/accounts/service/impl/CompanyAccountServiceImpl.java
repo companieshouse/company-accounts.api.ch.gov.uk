@@ -38,7 +38,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject createCompanyAccount(CompanyAccount companyAccount,
+    public ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
             Transaction transaction, String requestId) {
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
@@ -51,25 +51,11 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         companyAccountEntity.setId(id);
 
-        try {
-            companyAccountRepository.insert(companyAccountEntity);
-        } catch (DuplicateKeyException dke) {
-            LOGGER.error(dke);
-            return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
-        } catch (MongoException me) {
-            LOGGER.error(me);
-            return new ResponseObject(ResponseStatus.MONGO_ERROR);
-        }
+        companyAccountRepository.insert(companyAccountEntity);
 
-        try {
-            transactionManager
-                    .updateTransaction(transaction.getId(), requestId, companyAccountLink);
-        } catch (PatchException pe) {
-            LOGGER.error(pe);
-            return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
-        }
+        transactionManager.updateTransaction(transaction.getId(), requestId, companyAccountLink);
 
-        return new ResponseObject(ResponseStatus.SUCCESS_CREATED, companyAccount);
+        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
