@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -20,17 +22,15 @@ import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.logging.api.LogContext;
-import uk.gov.companieshouse.logging.api.LogHelper;
-import uk.gov.companieshouse.logging.api.LogType;
-import uk.gov.companieshouse.logging.api.LoggerApi;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.util.LogContext;
+import uk.gov.companieshouse.logging.util.LogHelper;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CurrentPeriodController {
-
-    @Autowired
-    private LoggerApi accountsLogger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
@@ -52,13 +52,13 @@ public class CurrentPeriodController {
 
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
-        LogContext logContext = LogHelper.createNewLogContext(request, LogType.ERROR);
+        LogContext logContext = LogHelper.createNewLogContext(request);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
 
-            accountsLogger.logError("Current Period error: No company account in request session",
+            LOGGER.logError("Current Period error: No company account in request session",
                     logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -68,7 +68,7 @@ public class CurrentPeriodController {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodService.findById(currentPeriodId);
         if (currentPeriodEntity == null) {
 
-            accountsLogger.logError("Current Period error: No current period found",
+            LOGGER.logError("Current Period error: No current period found",
                     logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

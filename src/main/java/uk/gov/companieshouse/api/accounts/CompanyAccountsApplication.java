@@ -16,8 +16,6 @@ import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.api.LoggerApi;
-import uk.gov.companieshouse.logging.api.LoggerApiImpl;
 
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
@@ -77,10 +75,5 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         registry.addInterceptor(smallFullInterceptor)
                 .addPathPatterns(
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full**");
-    }
-
-    @Bean
-    public LoggerApi getLogger()  {
-        return new LoggerApiImpl(LOGGER);
     }
 }

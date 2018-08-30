@@ -28,7 +28,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.logging.api.LoggerApi;
+import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -59,7 +59,7 @@ public class SmallFullControllerTest {
     private ApiResponseMapper apiResponseMapper;
 
     @Mock
-    private LoggerApi accountsLogger;
+    private Logger accountsLogger;
 
     @InjectMocks
     private SmallFullController smallFullController;
