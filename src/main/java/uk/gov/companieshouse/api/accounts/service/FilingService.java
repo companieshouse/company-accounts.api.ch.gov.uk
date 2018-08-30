@@ -7,9 +7,7 @@ public interface FilingService {
     /**
      * Generate a filing with the ixbrl location that is generated for transaction and accounts id.
      *
-     * @param transaction
-     * @param accountEntity
      * @return
      */
-    Filing generateAccountFiling(String transaction, String accountEntity);
+    Filing generateAccountFiling();
 }

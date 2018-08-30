@@ -39,7 +39,7 @@ public class FilingControllerTest {
     @DisplayName("Tests the successful creation of the ixbrl - filing is not null")
     public void shouldGenerateFiling() {
 
-        when(filingServiceMock.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID))
+        when(filingServiceMock.generateAccountFiling())
             .thenReturn(new Filing());
 
         response =
@@ -52,7 +52,7 @@ public class FilingControllerTest {
     @DisplayName("Tests the unsuccessful creation of the ixbrl - filing is null")
     void shouldNotGenerateFiling() throws IOException, NoSuchAlgorithmException {
 
-        when(filingServiceMock.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID))
+        when(filingServiceMock.generateAccountFiling())
             .thenReturn(null);
 
         response =

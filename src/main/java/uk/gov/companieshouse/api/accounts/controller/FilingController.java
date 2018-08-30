@@ -29,7 +29,7 @@ public class FilingController {
     public ResponseEntity generateFiling(@PathParam("transactionId") String transactionId,
         @PathParam("companyAccountId") String accountId, HttpServletRequest request) {
 
-        Filing filing = filingService.generateAccountFiling(transactionId, accountId);
+        Filing filing = filingService.generateAccountFiling();
         if (filing != null) {
             return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
         }

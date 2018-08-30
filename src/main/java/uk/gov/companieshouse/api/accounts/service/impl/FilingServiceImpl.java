@@ -18,8 +18,8 @@ public class FilingServiceImpl implements FilingService {
      * {@inheritDoc}
      */
     @Override
-    public Filing generateAccountFiling(String transaction, String accountEntity) {
+    public Filing generateAccountFiling() {
 
-        return null;
+        return new Filing();
     }
 }

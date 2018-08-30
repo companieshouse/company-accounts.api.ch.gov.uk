@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,15 +14,13 @@ import uk.gov.companieshouse.api.accounts.service.FilingService;
 @TestInstance(Lifecycle.PER_CLASS)
 public class FilingServiceImplTest {
 
-    private static final String TRANSACTION_ID = "1234561-1234561-1234561";
-    private static final String ACCOUNTS_ID = "1234561";
     private FilingService filingService = new FilingServiceImpl();
 
     @Test
     @DisplayName("Tests the filing generation. Happy path")
     void shouldGenerateFiling() {
+        Filing filing = filingService.generateAccountFiling();
 
-        Filing filing = filingService.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID);
-        assertNull(filing);
+        assertNotNull(filing);
     }
 }
