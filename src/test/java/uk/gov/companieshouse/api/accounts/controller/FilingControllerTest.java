@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +36,7 @@ public class FilingControllerTest {
     private FilingController filingController;
 
     @Test
-    @DisplayName("Tests the filing controller successful response")
+    @DisplayName("Tests the successful creation of the ixbrl - filing is not null")
     public void shouldGenerateFiling() {
 
         when(filingServiceMock.generateAccountFiling(TRANSACTION_ID, ACCOUNTS_ID))
