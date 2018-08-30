@@ -58,7 +58,7 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestId - id of the request
      * @param link - link of the resource to add to the transaction resources
      */
-    public void updateTransaction(String transactionId, String requestId, String link) {
+    public void updateTransaction(String transactionId, String requestId, String link) throws ApiErrorResponseException {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("resources", createResourceMap(link));
 
@@ -69,8 +69,10 @@ public class TransactionManagerImpl implements TransactionManager {
 
         HttpEntity requestEntity = new HttpEntity(requestBody, requestHeaders);
 
-        if (!patchTransaction(getPatchUrl(transactionId), requestEntity)) {
-            throw new PatchException("Failed to patch transaction");
+        String patchUrl = getPatchUrl(transactionId);
+
+        if(!patchTransaction(patchUrl, requestEntity)){
+            throw new ApiErrorResponseException("API error");
         }
     }
 

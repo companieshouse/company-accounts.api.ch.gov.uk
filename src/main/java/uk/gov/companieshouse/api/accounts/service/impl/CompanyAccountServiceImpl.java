@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -11,13 +10,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.PatchException;
+import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
@@ -27,7 +25,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
@@ -38,8 +37,9 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
-            Transaction transaction, String requestId) {
+    public CompanyAccount createCompanyAccount(CompanyAccount companyAccount,
+            Transaction transaction, String requestId)
+            throws ApiErrorResponseException, DataException {
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
@@ -51,11 +51,24 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         companyAccountEntity.setId(id);
 
-        companyAccountRepository.insert(companyAccountEntity);
+        try {
+            companyAccountRepository.insert(companyAccountEntity);
+        } catch (MongoException e) {
+            DataException dataException = new DataException(
+                    "Failed to insert company account entity", e);
+            LOGGER.error(dataException);
+            throw dataException;
+        }
 
-        transactionManager.updateTransaction(transaction.getId(), requestId, companyAccountLink);
+        try {
+            transactionManager
+                    .updateTransaction(transaction.getId(), requestId, companyAccountLink);
+        } catch (ApiErrorResponseException aere) {
+            LOGGER.error(aere);
+            throw aere;
+        }
 
-        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, companyAccount);
+        return companyAccount;
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
