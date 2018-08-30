@@ -9,11 +9,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.util.DefaultLoggingInterceptor;
+import uk.gov.companieshouse.logging.util.RequestLogger;
 
 @Component
 public class LoggingInterceptor extends HandlerInterceptorAdapter implements
-        DefaultLoggingInterceptor {
+        RequestLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
