@@ -64,7 +64,7 @@ public class CompanyAccountController {
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
 
-            LOGGER.logError("CompanyAccountController error: No company account in request",
+            LOGGER.error("CompanyAccountController error: No company account in request",
                     logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }

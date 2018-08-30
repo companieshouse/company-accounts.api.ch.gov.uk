@@ -63,7 +63,7 @@ public class SmallFullController {
                 .getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFullEntity == null) {
 
-            LOGGER.logError("SmallFullTransformer error: No small-full account in request",
+            LOGGER.error("SmallFullTransformer error: No small-full account in request",
                     logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }

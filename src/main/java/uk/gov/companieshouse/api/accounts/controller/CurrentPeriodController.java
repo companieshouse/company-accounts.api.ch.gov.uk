@@ -58,7 +58,7 @@ public class CurrentPeriodController {
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
 
-            LOGGER.logError("Current Period error: No company account in request session",
+            LOGGER.error("Current Period error: No company account in request session",
                     logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -68,7 +68,7 @@ public class CurrentPeriodController {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodService.findById(currentPeriodId);
         if (currentPeriodEntity == null) {
 
-            LOGGER.logError("Current Period error: No current period found",
+            LOGGER.error("Current Period error: No current period found",
                     logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
