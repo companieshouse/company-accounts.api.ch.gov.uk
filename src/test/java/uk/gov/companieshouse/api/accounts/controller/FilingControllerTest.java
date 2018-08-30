@@ -20,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 public class FilingControllerTest {
 
     private ResponseEntity response;
-
-
     private FilingController filingController = new FilingController();
 
     @Test
