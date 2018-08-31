@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doReturn;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -57,6 +57,9 @@ public class SmallFullControllerTest {
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
+
+    @Mock
+    private Logger accountsLogger;
 
     @InjectMocks
     private SmallFullController smallFullController;
