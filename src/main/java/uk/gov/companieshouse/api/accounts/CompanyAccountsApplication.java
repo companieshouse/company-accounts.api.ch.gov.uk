@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
@@ -39,6 +40,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private LoggingInterceptor loggingInterceptor;
 
     public static void main(String[] args) {
 
@@ -67,6 +71,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
+
+        registry.addInterceptor(loggingInterceptor)
+            .excludePathPatterns("/healthcheck");
 
         registry.addInterceptor(transactionInterceptor).order(Ordered.HIGHEST_PRECEDENCE)
             .addPathPatterns(
