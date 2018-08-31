@@ -1,276 +1,304 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.gov.companieshouse</groupId>
-	<artifactId>company-accounts.api.ch.gov.uk</artifactId>
-	<version>bdde569</version>
-	<packaging>jar</packaging>
-	<name>company-accounts-api</name>
-	<description>Company accounts API to handle company accounts data</description>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.gov.companieshouse</groupId>
+  <artifactId>company-accounts.api.ch.gov.uk</artifactId>
+  <version>unversioned</version>
+  <packaging>jar</packaging>
+  <name>company-accounts-api</name>
+  <description>Company accounts API to handle company accounts data</description>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.4.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.4.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
 
-	<properties>
-		<!-- Encoding -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <properties>
+    <!-- Encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- JDK Version -->
-		<jdk.version>1.8</jdk.version>
+    <!-- JDK Version -->
+    <jdk.version>1.8</jdk.version>
 
-		<!-- Dependency Versions -->
-		<api-helper-java.version>1.0.0-rc1</api-helper-java.version>
-		<structured-logging.version>1.2.0-rc1</structured-logging.version>
-		<aws-java-sdk.version>1.11.52</aws-java-sdk.version>
-		<environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
-		<company-accounts-library.version>5a6005b</company-accounts-library.version>
-		<jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
-		<httpclient.version>4.5.6</httpclient.version>
+    <!-- Dependency Versions -->
+    <api-helper-java.version>1.0.0-rc1</api-helper-java.version>
+    <structured-logging.version>1.2.0-rc1</structured-logging.version>
+    <aws-java-sdk.version>1.11.52</aws-java-sdk.version>
+    <environment-reader-library.version>1.0.0-rc1</environment-reader-library.version>
+    <company-accounts-library.version>5a6005b</company-accounts-library.version>
+    <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
+    <httpclient.version>4.5.6</httpclient.version>
 
-		<!-- Maven and Surefire plugins -->
-		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
-		<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
-		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
-		<junit-platform-surefire-provider.version>1.2.0</junit-platform-surefire-provider.version>
+    <!-- Maven and Surefire plugins -->
+    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+    <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+    <junit-platform-surefire-provider.version>1.2.0</junit-platform-surefire-provider.version>
 
-		<!-- JUnit testing -->
-		<junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
-		<mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
+    <!-- JUnit testing -->
+    <junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
+    <mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
 
-		<!-- Jacoco -->
-		<jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
+    <!-- Jacoco -->
+    <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
 
-		<!-- Sonar -->
-		<sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
-		<sonar.host.url>${CODE_ANALYSIS_HOST_URL}</sonar.host.url>
-		<sonar.login>${CODE_ANALYSIS_LOGIN}</sonar.login>
-		<sonar.password>${CODE_ANALYSIS_PASSWORD}</sonar.password>
+    <!-- Sonar -->
+    <sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
+    <sonar.host.url>${CODE_ANALYSIS_HOST_URL}</sonar.host.url>
+    <sonar.login>${CODE_ANALYSIS_LOGIN}</sonar.login>
+    <sonar.password>${CODE_ANALYSIS_PASSWORD}</sonar.password>
 
-		<jackson.version>2.9.0.pr4</jackson.version>
+    <jackson.version>2.9.0.pr4</jackson.version>
 
 
-		<!-- Repositories -->
-		<artifactoryResolveSnapshotRepo>libs-snapshot-local</artifactoryResolveSnapshotRepo>
-		<artifactoryResolveReleaseRepo>libs-release-local</artifactoryResolveReleaseRepo>
-	</properties>
+    <!-- Repositories -->
+    <artifactoryResolveSnapshotRepo>libs-snapshot-local</artifactoryResolveSnapshotRepo>
+    <artifactoryResolveReleaseRepo>libs-release-local</artifactoryResolveReleaseRepo>
+  </properties>
 
-	<dependencies>
-		<!-- Compile -->
-		<dependency>
-			<groupId>uk.gov.companieshouse</groupId>
-			<artifactId>environment-reader-library</artifactId>
-			<version>${environment-reader-library.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>uk.gov.companieshouse</groupId>
-			<artifactId>api-helper-java</artifactId>
-			<version>${api-helper-java.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.sonarsource.scanner.maven</groupId>
-			<artifactId>sonar-maven-plugin</artifactId>
-			<version>${sonar-maven-plugin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>uk.gov.companieshouse</groupId>
-			<artifactId>structured-logging</artifactId>
-			<version>${structured-logging.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-hateoas</artifactId>
-		</dependency>
+  <dependencies>
+    <!-- Compile -->
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>environment-reader-library</artifactId>
+      <version>${environment-reader-library.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>api-helper-java</artifactId>
+      <version>${api-helper-java.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk</artifactId>
+      <version>${aws-java-sdk.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.scanner.maven</groupId>
+      <artifactId>sonar-maven-plugin</artifactId>
+      <version>${sonar-maven-plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>structured-logging</artifactId>
+      <version>${structured-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-hateoas</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>uk.gov.companieshouse</groupId>
-			<artifactId>company-accounts-library</artifactId>
-			<version>${company-accounts-library.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>company-accounts-library</artifactId>
+      <version>${company-accounts-library.version}</version>
+    </dependency>
 
-		<!-- Test -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${junit-jupiter-engine.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>${mockito-junit-jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson-datatype-jsr310.version}</version>
-		</dependency>
-	</dependencies>
+    <!-- Test -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit-jupiter-engine.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito-junit-jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson-datatype-jsr310.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-	<profiles>
-		<!-- release-publish is the profile that is activated when the build server 
-			builds and publishes a release project to the cloud artifactory -->
-		<profile>
-			<id>release-publish</id>
-			<activation>
-				<property>
-					<name>publishRepo</name>
-					<value>release</value>
-				</property>
-			</activation>
-			<properties>
-				<artifactoryReleasePublishRepo>libs-release-local</artifactoryReleasePublishRepo>
-			</properties>
-			<distributionManagement>
-				<repository>
-					<id>ch-artifactory</id>
-					<url>${MAVEN_REPOSITORY_URL}/${artifactoryReleasePublishRepo}</url>
-				</repository>
-			</distributionManagement>
-		</profile>
-		<!-- dev-publish is the profile that is activated when the build server 
-			builds and publishes a dev snapshot project to the cloud artifactory -->
-		<profile>
-			<id>dev-publish</id>
-			<activation>
-				<property>
-					<name>publishRepo</name>
-					<value>dev</value>
-				</property>
-			</activation>
-			<properties>
-				<artifactoryDevPublishRepo>libs-snapshot-local</artifactoryDevPublishRepo>
-			</properties>
-			<distributionManagement>
-				<repository>
-					<id>ch-artifactory</id>
-					<url>${MAVEN_REPOSITORY_URL}/${artifactoryDevPublishRepo}</url>
-				</repository>
-			</distributionManagement>
-		</profile>
-		<!-- dev is the profile that is activated by default. This is only for 
-			developers as it does not publish to any repository. It just downloads dependencies, 
-			compiles code and builds jar for running the application and then runs the 
-			tests. -->
-		<profile>
-			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<finalName>${project.artifactId}-${project.version}</finalName>
-				<plugins>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<mainClass>uk.gov.companieshouse.api.accounts.CompanyAccountsApplication
-							</mainClass>
-							<layout>ZIP</layout>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>repackage</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>${maven-compiler-plugin.version}</version>
-						<configuration>
-							<source>${jdk.version}</source>
-							<target>${jdk.version}</target>
-							<fork>true</fork>
-							<meminitial>128m</meminitial>
-							<encoding>${project.build.sourceEncoding}</encoding>
-							<maxmem>512m</maxmem>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-jar-plugin</artifactId>
-						<version>${maven-jar-plugin.version}</version>
-						<configuration>
-							<archive>
-								<manifest>
-									<addClasspath>true</addClasspath>
-								</manifest>
-							</archive>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>${maven-surefire-plugin.version}</version>
-						<dependencies>
-							<dependency>
-								<groupId>org.junit.platform</groupId>
-								<artifactId>junit-platform-surefire-provider</artifactId>
-								<version>${junit-platform-surefire-provider.version}</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco-maven-plugin.version}</version>
-						<executions>
-							<execution>
-								<id>default-prepare-agent</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>default-report</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <profiles>
+    <!-- release-publish is the profile that is activated when the build server
+      builds and publishes a release project to the cloud artifactory -->
+    <profile>
+      <id>release-publish</id>
+      <activation>
+        <property>
+          <name>publishRepo</name>
+          <value>release</value>
+        </property>
+      </activation>
+      <properties>
+        <artifactoryReleasePublishRepo>libs-release-local</artifactoryReleasePublishRepo>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>ch-artifactory</id>
+          <url>${MAVEN_REPOSITORY_URL}/${artifactoryReleasePublishRepo}</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <!-- dev-publish is the profile that is activated when the build server
+      builds and publishes a dev snapshot project to the cloud artifactory -->
+    <profile>
+      <id>dev-publish</id>
+      <activation>
+        <property>
+          <name>publishRepo</name>
+          <value>dev</value>
+        </property>
+      </activation>
+      <properties>
+        <artifactoryDevPublishRepo>libs-snapshot-local</artifactoryDevPublishRepo>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>ch-artifactory</id>
+          <url>${MAVEN_REPOSITORY_URL}/${artifactoryDevPublishRepo}</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <!-- dev is the profile that is activated by default. This is only for
+      developers as it does not publish to any repository. It just downloads dependencies,
+      compiles code and builds jar for running the application and then runs the
+      tests. -->
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>uk.gov.companieshouse.api.accounts.CompanyAccountsApplication
+              </mainClass>
+              <layout>ZIP</layout>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>repackage</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
+            <configuration>
+              <source>${jdk.version}</source>
+              <target>${jdk.version}</target>
+              <fork>true</fork>
+              <meminitial>128m</meminitial>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <maxmem>512m</maxmem>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>${maven-jar-plugin.version}</version>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                </manifest>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${maven-surefire-plugin.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-surefire-provider</artifactId>
+                <version>${junit-platform-surefire-provider.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco-maven-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
-	<repositories>
-		<repository>
-			<id>ch-artifactory-release</id>
-			<url>${MAVEN_REPOSITORY_URL}/${artifactoryResolveReleaseRepo}</url>
-		</repository>
-		<repository>
-			<id>ch-artifactory-snapshot</id>
-			<url>${MAVEN_REPOSITORY_URL}/${artifactoryResolveSnapshotRepo}</url>
-		</repository>
-	</repositories>
+  <repositories>
+    <repository>
+      <id>ch-artifactory-release</id>
+      <url>${MAVEN_REPOSITORY_URL}/${artifactoryResolveReleaseRepo}</url>
+    </repository>
+    <repository>
+      <id>ch-artifactory-snapshot</id>
+      <url>${MAVEN_REPOSITORY_URL}/${artifactoryResolveSnapshotRepo}</url>
+    </repository>
+  </repositories>
 
 </project>
