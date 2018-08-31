@@ -15,12 +15,11 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class TnepValidationServiceImplTest {
 
-    public static final String S3_TESTLOCATION = "s3://testlocation/testdoc";
     private TnepValidationServiceImpl tnepValidationService;
-
-    private static final String TNEP_URL = "http://testtnep.companieshouse.gov.uk/validate";
-
     private MockRestServiceServer mockServer;
+
+    private static final String S3_TESTLOCATION = "s3://testlocation/testdoc";
+    private static final String TNEP_URL = "http://testtnep.companieshouse.gov.uk/validate";
 
     private static final String VALIDATION_FAILURE_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -44,10 +43,10 @@ public class TnepValidationServiceImplTest {
             + "<CompaniesHouseRegisteredNumber>00006400</CompaniesHouseRegisteredNumber>"
             + "</data>"
             + "</results>";
-
-
+    
     @Before
     public void setUp() {
+
         tnepValidationService = new TnepValidationServiceImpl() {
             @Override
             protected String getIxbrlValidatorUri() {
@@ -93,6 +92,7 @@ public class TnepValidationServiceImplTest {
 
     @Test
     public void invalidResponse() {
+
         mockServer.expect(requestTo(TNEP_URL))
             .andExpect(method(HttpMethod.POST))
             .andRespond(withSuccess("", MediaType.APPLICATION_XML));
