@@ -43,7 +43,7 @@ public class TnepValidationServiceImplTest {
             + "<CompaniesHouseRegisteredNumber>00006400</CompaniesHouseRegisteredNumber>"
             + "</data>"
             + "</results>";
-    
+
     @Before
     public void setUp() {
 
@@ -74,7 +74,6 @@ public class TnepValidationServiceImplTest {
         mockServer.verify();
     }
 
-
     @Test
     public void validationFailure() {
 
@@ -88,7 +87,6 @@ public class TnepValidationServiceImplTest {
 
         mockServer.verify();
     }
-
 
     @Test
     public void invalidResponse() {
@@ -117,6 +115,5 @@ public class TnepValidationServiceImplTest {
         boolean result = tnepValidationService.validate("test", S3_TESTLOCATION);
 
         assertFalse(result);
-
     }
 }
