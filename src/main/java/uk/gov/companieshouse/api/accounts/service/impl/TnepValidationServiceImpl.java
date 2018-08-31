@@ -123,4 +123,12 @@ public class TnepValidationServiceImpl implements TnepValidationService {
             return filename;
         }
     }
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 }
