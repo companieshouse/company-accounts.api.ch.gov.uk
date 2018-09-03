@@ -41,7 +41,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
+    public ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
             Transaction transaction, String requestId)
             throws PatchException, DataException {
 

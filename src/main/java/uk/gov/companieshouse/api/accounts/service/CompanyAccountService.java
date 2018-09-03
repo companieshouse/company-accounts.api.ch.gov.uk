@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
  */
 public interface CompanyAccountService {
 
-    ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
+    ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
             Transaction transaction,
             String requestId) throws PatchException, DataException;
 

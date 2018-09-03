@@ -50,9 +50,8 @@ public class SmallFullController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseObject<SmallFull> result = smallFullService
-                .save(smallFull, transaction.getCompanyNumber());
-        return apiResponseMapper
-                .map(result.getStatus(), result.getData(), result.getValidationErrorData());
+                .create(smallFull, transaction.getCompanyNumber());
+        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
     }
 
     @GetMapping
@@ -69,7 +68,6 @@ public class SmallFullController {
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(smallFullTransformer.transform(smallFullEntity));
+        return ResponseEntity.status(HttpStatus.OK).body(smallFullTransformer.transform(smallFullEntity));
     }
 }

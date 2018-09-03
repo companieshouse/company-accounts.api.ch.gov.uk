@@ -57,7 +57,7 @@ public class CompanyAccountController {
         String requestId = request.getHeader("X-Request-Id");
 ResponseEntity responseEntity;
         try {        ResponseObject <CompanyAccount> responseObject = companyAccountService
-                .createCompanyAccount(companyAccount, transaction, requestId);
+                .create(companyAccount, transaction, requestId);
         responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
         } catch (PatchException | DataException ex) {

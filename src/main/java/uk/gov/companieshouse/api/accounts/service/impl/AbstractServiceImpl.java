@@ -37,7 +37,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public ResponseObject<T> save(T rest, String companyAccountId) {
+    public ResponseObject<T> create(T rest, String companyAccountId) {
         addEtag(rest);
         addKind(rest);
         U baseEntity = genericTransformer.transform(rest);

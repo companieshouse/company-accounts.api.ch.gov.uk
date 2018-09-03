@@ -74,7 +74,7 @@ public class CurrentPeriodControllerTest {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
                 currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-                .save(any(CurrentPeriod.class), anyString());
+                .create(any(CurrentPeriod.class), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),

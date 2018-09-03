@@ -67,8 +67,7 @@ public class CompanyAccountServiceImplTest {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
-
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
         assertNotNull(response);
         assertNotNull(response.getData());
         verify(companyAccountRepository).insert(companyAccountEntityMock);
@@ -82,7 +81,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(DuplicateKeyException.class));
 
-        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
 
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -98,7 +97,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(MongoException.class));
 
-        Executable executable = ()->{companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
+        Executable executable = ()->{companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
 
         assertThrows(DataException.class, executable);
 
@@ -114,7 +113,7 @@ public class CompanyAccountServiceImplTest {
 
         doThrow(mock(ApiErrorResponseException.class)).when(transactionManagerMock).updateTransaction(anyString(), anyString(), anyString());
 
-        Executable executable = ()->{companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
+        Executable executable = ()->{companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
 
         assertThrows(PatchException.class, executable);
 
