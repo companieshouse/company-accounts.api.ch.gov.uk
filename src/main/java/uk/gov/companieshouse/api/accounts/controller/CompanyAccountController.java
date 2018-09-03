@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -27,13 +27,14 @@ import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.util.LogContext;
+import uk.gov.companieshouse.logging.util.LogHelper;
+
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CompanyAccountController {
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private CompanyAccountService companyAccountService;
@@ -72,16 +73,14 @@ public class CompanyAccountController {
 
     @GetMapping("/{companyAccountId}")
     public ResponseEntity getCompanyAccount(HttpServletRequest request) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("request_method", request.getMethod());
+        LogContext logContext = LogHelper.createNewLogContext(request);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
-            debugMap.put("message",
-                    "CompanyAccountController error: No company account in request");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            LOGGER.error("CompanyAccountController error: No company account in request",
+                    logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 

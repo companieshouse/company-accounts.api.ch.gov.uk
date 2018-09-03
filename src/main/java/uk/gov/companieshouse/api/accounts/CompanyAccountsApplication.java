@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
@@ -30,6 +31,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private LoggingInterceptor loggingInterceptor;
 
     public static void main(String[] args) {
 
@@ -58,11 +62,16 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(loggingInterceptor)
+                .excludePathPatterns("/healthcheck");
+
         registry.addInterceptor(transactionInterceptor)
                 .addPathPatterns("/transactions/{transactionId}/**");
+
         registry.addInterceptor(companyAccountInterceptor)
                 .addPathPatterns(
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
+
         registry.addInterceptor(smallFullInterceptor)
                 .addPathPatterns(
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full**");
