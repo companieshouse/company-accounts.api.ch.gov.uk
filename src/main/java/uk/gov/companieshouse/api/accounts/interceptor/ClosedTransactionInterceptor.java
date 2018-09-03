@@ -31,23 +31,15 @@ public class ClosedTransactionInterceptor extends HandlerInterceptorAdapter {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         if (transaction == null) {
-            logRequestError(request);
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("request_method", request.getMethod());
+            debugMap.put("message",
+                "ClosedTransactionInterceptor error: no transaction in request session");
+            LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
             return false;
         }
         return TransactionStatus.CLOSED.getStatus().equals(transaction.getStatus());
-    }
-
-    /**
-     * Log error.
-     *
-     * @param request
-     */
-    private void logRequestError(HttpServletRequest request) {
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("request_method", request.getMethod());
-        debugMap.put("message",
-            "ClosedTransactionInterceptor error: no transaction in request session");
-        LOGGER.errorRequest(request, null, debugMap);
     }
 }

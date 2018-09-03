@@ -8,13 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
-import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
@@ -75,7 +74,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         registry.addInterceptor(loggingInterceptor)
             .excludePathPatterns("/healthcheck");
 
-        registry.addInterceptor(transactionInterceptor).order(Ordered.HIGHEST_PRECEDENCE)
+        registry.addInterceptor(transactionInterceptor)
             .addPathPatterns(
                 "/transactions/{transactionId}/**",
                 "/private/transactions/{transactionId}/**");
