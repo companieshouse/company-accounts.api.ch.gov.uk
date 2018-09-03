@@ -51,7 +51,7 @@ public class SmallFullController {
 
         ResponseObject<SmallFull> result = smallFullService
                 .create(smallFull, transaction.getCompanyNumber());
-        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
+        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getValidationErrorData());
     }
 
     @GetMapping
