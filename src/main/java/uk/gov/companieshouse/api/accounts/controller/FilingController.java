@@ -38,7 +38,7 @@ public class FilingController {
             (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         if (transaction == null) {
-            logRequestError(request, null, "no transaction in request session");
+            logRequestError(request, "no transaction in request session");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -46,25 +46,24 @@ public class FilingController {
             (CompanyAccountEntity) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         if (companyAccountEntity == null) {
-            logRequestError(request, null, "no company account in request session");
+            logRequestError(request,  "no company account in request session");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        Filing filing = filingService.generateAccountFiling();
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
         if (filing != null) {
             return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
         }
 
-        logRequestError(request, null, "Failed to generate filing");
+        logRequestError(request,  "Failed to generate filing");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private void logRequestError(HttpServletRequest request, Exception exception,
-        String errorMessage) {
+    private void logRequestError(HttpServletRequest request, String errorMessage) {
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
         debugMap.put("message", FILING_CONTROLLER_ERROR + errorMessage);
-        LOGGER.errorRequest(request, exception, debugMap);
+        LOGGER.errorRequest(request, null, debugMap);
     }
 }
