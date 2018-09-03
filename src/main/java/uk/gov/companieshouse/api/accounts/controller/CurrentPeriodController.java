@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -25,14 +24,13 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.logging.util.LogContext;
+import uk.gov.companieshouse.logging.util.LogHelper;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CurrentPeriodController {
-
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
@@ -54,15 +52,14 @@ public class CurrentPeriodController {
 
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("request_method", request.getMethod());
+        LogContext logContext = LogHelper.createNewLogContext(request);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
-            debugMap.put("message", "Current Period error: No company account in request session");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            LOGGER.error("Current Period error: No company account in request session",
+                    logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
@@ -70,8 +67,9 @@ public class CurrentPeriodController {
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodService.findById(currentPeriodId);
         if (currentPeriodEntity == null) {
-            debugMap.put("message", "Current Period error: No current period found");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            LOGGER.error("Current Period error: No current period found",
+                    logContext);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
