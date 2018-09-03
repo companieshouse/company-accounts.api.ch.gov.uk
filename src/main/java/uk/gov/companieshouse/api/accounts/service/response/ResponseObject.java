@@ -8,7 +8,7 @@ public class ResponseObject<T extends RestObject> {
 
     private T data;
 
-    private ErrorData errorData;
+    private ValidationErrorData validationErrorData;
 
     public ResponseObject(ResponseStatus status) {
         this.status = status;
@@ -27,7 +27,7 @@ public class ResponseObject<T extends RestObject> {
         this.status = status;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
@@ -35,11 +35,11 @@ public class ResponseObject<T extends RestObject> {
         this.data = data;
     }
 
-    public ErrorData getErrorData() {
-        return errorData;
+    public ValidationErrorData getValidationErrorData() {
+        return validationErrorData;
     }
 
-    public void setErrorData(ErrorData errorData) {
-        this.errorData = errorData;
+    public void setValidationErrorData(ValidationErrorData validationErrorData) {
+        this.validationErrorData = validationErrorData;
     }
 }

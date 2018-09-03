@@ -2,6 +2,8 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
@@ -31,6 +35,7 @@ import uk.gov.companieshouse.logging.util.LogHelper;
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CompanyAccountController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
@@ -44,16 +49,25 @@ public class CompanyAccountController {
 
     @PostMapping
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-            HttpServletRequest request) {
+        HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject result = companyAccountService
+ResponseEntity responseEntity;
+        try {        ResponseObject <CompanyAccount> responseObject = companyAccountService
                 .create(companyAccount, transaction, requestId);
-        return apiResponseMapper
-                .map(result.getStatus(), result.getData(), result.getErrorData());
+        responseEntity = apiResponseMapper
+                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
+        } catch (PatchException | DataException ex) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            LOGGER.errorRequest(request, ex, debugMap);
+            responseEntity = apiResponseMapper.map(ex);
+        }
+
+        return responseEntity;
     }
 
     @GetMapping("/{companyAccountId}")
@@ -61,16 +75,16 @@ public class CompanyAccountController {
         LogContext logContext = LogHelper.createNewLogContext(request);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
 
             LOGGER.error("CompanyAccountController error: No company account in request",
-                    logContext);
+                logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(companyAccountTransformer.transform(companyAccountEntity));
+            .body(companyAccountTransformer.transform(companyAccountEntity));
 
     }
 }
