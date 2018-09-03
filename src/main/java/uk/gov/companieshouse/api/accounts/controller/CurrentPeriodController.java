@@ -47,7 +47,8 @@ public class CurrentPeriodController {
         ResponseObject<CurrentPeriod> result = currentPeriodService
                 .save(currentPeriod, transaction.getCompanyNumber());
 
-        return apiResponseMapper.map(result.getStatus(), result.getData(), result.getErrorData());
+        return apiResponseMapper
+                .map(result.getStatus(), result.getData(), result.getValidationErrorData());
     }
 
     @GetMapping

@@ -6,5 +6,5 @@ public interface TransactionManager {
 
     ResponseEntity<Transaction> getTransaction(String id, String requestId);
 
-    void updateTransaction(String transactionId, String requestId, String link) throws PatchException ;
+    void updateTransaction(String transactionId, String requestId, String link) throws ApiErrorResponseException;
 }

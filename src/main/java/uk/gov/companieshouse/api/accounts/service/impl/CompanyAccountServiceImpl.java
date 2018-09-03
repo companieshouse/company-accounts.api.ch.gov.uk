@@ -11,13 +11,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.PatchException;
+import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
@@ -27,7 +29,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
@@ -38,8 +41,10 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public ResponseObject createCompanyAccount(CompanyAccount companyAccount,
-            Transaction transaction, String requestId) {
+    public ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
+            Transaction transaction, String requestId)
+            throws PatchException, DataException {
+
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
@@ -51,25 +56,33 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         companyAccountEntity.setId(id);
 
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", id);
+
         try {
             companyAccountRepository.insert(companyAccountEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.error(dke);
-            return new ResponseObject(ResponseStatus.DUPLICATE_KEY_ERROR);
+            LOGGER.errorContext(requestId, dke, debugMap);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
-            LOGGER.error(me);
-            return new ResponseObject(ResponseStatus.MONGO_ERROR);
+            DataException dataException = new DataException(
+                    "Failed to insert company account entity", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
         }
 
         try {
             transactionManager
                     .updateTransaction(transaction.getId(), requestId, companyAccountLink);
-        } catch (PatchException pe) {
-            LOGGER.error(pe);
-            return new ResponseObject(ResponseStatus.TRANSACTION_PATCH_ERROR);
+        } catch (ApiErrorResponseException aere) {
+            PatchException patchException = new PatchException(
+                    "Failed to patch transaction", aere);
+            LOGGER.errorContext(requestId, patchException, debugMap);
+            throw patchException;
         }
 
-        return new ResponseObject(ResponseStatus.SUCCESS_CREATED, companyAccount);
+        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {

@@ -78,7 +78,7 @@ public class CurrentPeriodControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getErrorData()))
+                responseObject.getData(), responseObject.getValidationErrorData()))
                 .thenReturn(responseEntity);
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
