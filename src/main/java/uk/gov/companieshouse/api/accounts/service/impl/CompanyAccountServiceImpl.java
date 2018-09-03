@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -11,10 +12,13 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
@@ -37,9 +41,10 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     /**
      * {@inheritDoc}
      */
-    public CompanyAccount createCompanyAccount(CompanyAccount companyAccount,
+    public ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
             Transaction transaction, String requestId)
-            throws ApiErrorResponseException, DataException {
+            throws PatchException, DataException {
+
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
         addKind(companyAccount);
@@ -51,12 +56,19 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         companyAccountEntity.setId(id);
 
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", id);
+
         try {
             companyAccountRepository.insert(companyAccountEntity);
-        } catch (MongoException e) {
+        } catch (DuplicateKeyException dke) {
+            LOGGER.errorContext(requestId, dke, debugMap);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+        } catch (MongoException me) {
             DataException dataException = new DataException(
-                    "Failed to insert company account entity", e);
-            LOGGER.error(dataException);
+                    "Failed to insert company account entity", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
 
@@ -64,11 +76,13 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             transactionManager
                     .updateTransaction(transaction.getId(), requestId, companyAccountLink);
         } catch (ApiErrorResponseException aere) {
-            LOGGER.error(aere);
-            throw aere;
+            PatchException patchException = new PatchException(
+                    "Failed to patch transaction", aere);
+            LOGGER.errorContext(requestId, patchException, debugMap);
+            throw patchException;
         }
 
-        return companyAccount;
+        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {

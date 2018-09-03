@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -26,9 +27,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
@@ -59,27 +63,30 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
-    void createAccountWithSuccess() throws DataException, ApiErrorResponseException {
+    void createAccountWithSuccess() throws DataException, PatchException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
-        CompanyAccount companyAccount = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
-  
-        assertNotNull(companyAccount);
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
+
+        assertNotNull(response);
+        assertNotNull(response.getData());
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key scenario")
-    void createAccountWithDuplicateKeyFailure() throws DataException, ApiErrorResponseException {
+    void createAccountWithDuplicateKeyFailure() throws DataException, PatchException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(ArgumentMatchers
                 .any(CompanyAccount.class));
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(DuplicateKeyException.class));
 
-        Executable executable = ()->{companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
+        ResponseObject response = companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());
 
-        assertThrows(DataException.class, executable);
+        assertNotNull(response);
+        assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertNull(response.getData());
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
@@ -109,7 +116,7 @@ public class CompanyAccountServiceImplTest {
 
         Executable executable = ()->{companyAccountService.createCompanyAccount(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), anyString());};
 
-        assertThrows(ApiErrorResponseException.class, executable);
+        assertThrows(PatchException.class, executable);
 
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }

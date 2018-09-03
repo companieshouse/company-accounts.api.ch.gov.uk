@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doReturn;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -74,7 +73,7 @@ public class SmallFullControllerTest {
 
         doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getErrorData());
+                responseObject.getData(), responseObject.getValidationErrorData());
         doReturn("123456").when(transaction).getCompanyNumber();
         ResponseEntity response = smallFullController.create(smallFull, request);
 

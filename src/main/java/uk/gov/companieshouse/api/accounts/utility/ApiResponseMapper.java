@@ -3,9 +3,11 @@ package uk.gov.companieshouse.api.accounts.utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import uk.gov.companieshouse.api.accounts.service.response.ErrorData;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 
 @Component
 public class ApiResponseMapper {
@@ -16,7 +18,8 @@ public class ApiResponseMapper {
      * @param restObject
      * @return
      */
-    public ResponseEntity map(ResponseStatus status, RestObject restObject, ErrorData errorData) {
+    public ResponseEntity map(ResponseStatus status, RestObject restObject,
+            ValidationErrorData validationErrorData) {
         switch (status) {
             case SUCCESS_CREATED:
                 return ResponseEntity.status(HttpStatus.CREATED).body(restObject);
@@ -27,15 +30,13 @@ public class ApiResponseMapper {
         }
     }
 
-    public ResponseEntity map(ResponseStatus status, RestObject restObject) {
-       return map(status, restObject, null);
-    }
-
-    public ResponseEntity map(ResponseStatus status, ErrorData errorData) {
-        return map(status, null, errorData);
-    }
-
-    public ResponseEntity map(ResponseStatus status) {
-        return map(status, null , null);
+    public ResponseEntity map(Exception exception) {
+        if (exception instanceof DataException) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } else if (exception instanceof PatchException) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

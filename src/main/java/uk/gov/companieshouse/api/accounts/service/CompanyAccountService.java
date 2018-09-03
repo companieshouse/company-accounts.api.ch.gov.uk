@@ -1,10 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service;
 
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 /**
@@ -12,8 +13,9 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
  */
 public interface CompanyAccountService {
 
-    CompanyAccount createCompanyAccount(CompanyAccount companyAccount, Transaction transaction,
-            String requestId) throws ApiErrorResponseException, DataException;
+    ResponseObject<CompanyAccount> createCompanyAccount(CompanyAccount companyAccount,
+            Transaction transaction,
+            String requestId) throws PatchException, DataException;
 
     CompanyAccountEntity findById(String id);
 

@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import com.mongodb.DuplicateKeyException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -56,20 +55,16 @@ public class CompanyAccountController {
 
         ResponseEntity responseEntity;
         try {
-            CompanyAccount companyAccountInserted = companyAccountService
+            ResponseObject<CompanyAccount> responseObject = companyAccountService
                     .createCompanyAccount(companyAccount, transaction, requestId);
             responseEntity = apiResponseMapper
-                    .map(ResponseStatus.SUCCESS_CREATED, companyAccountInserted);
-        } catch (ApiErrorResponseException aere) {
-            LOGGER.error(aere);
-            responseEntity = apiResponseMapper.map(ResponseStatus.TRANSACTION_PATCH_ERROR);
-        } catch (DataException se) {
-            LOGGER.error(se);
-            if (se.getCause() instanceof DuplicateKeyException) {
-                responseEntity = apiResponseMapper.map(ResponseStatus.DUPLICATE_KEY_ERROR);
-            } else {
-                responseEntity = apiResponseMapper.map(ResponseStatus.MONGO_ERROR);
-            }
+                    .map(responseObject.getStatus(), responseObject.getData(),
+                            responseObject.getValidationErrorData());
+        } catch (PatchException | DataException ex) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            LOGGER.errorRequest(request, ex, debugMap);
+            responseEntity = apiResponseMapper.map(ex);
         }
 
         return responseEntity;
