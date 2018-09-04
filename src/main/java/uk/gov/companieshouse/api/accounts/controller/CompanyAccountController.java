@@ -2,6 +2,8 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
@@ -51,10 +55,19 @@ public class CompanyAccountController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-        ResponseObject result = companyAccountService
-            .createCompanyAccount(companyAccount, transaction, requestId);
-        return apiResponseMapper
-            .map(result.getStatus(), result.getData(), result.getErrorData());
+ResponseEntity responseEntity;
+        try {        ResponseObject <CompanyAccount> responseObject = companyAccountService
+                .create(companyAccount, transaction, requestId);
+        responseEntity = apiResponseMapper
+                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
+        } catch (PatchException | DataException ex) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            LOGGER.errorRequest(request, ex, debugMap);
+            responseEntity = apiResponseMapper.map(ex);
+        }
+
+        return responseEntity;
     }
 
     @GetMapping("/{companyAccountId}")

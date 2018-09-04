@@ -60,7 +60,7 @@ public class CurrentPeriodServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() {
-        ResponseObject<CurrentPeriod> result = currentPeriodService.save(currentPeriod, "");
+        ResponseObject<CurrentPeriod> result = currentPeriodService.create(currentPeriod, "");
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
 
