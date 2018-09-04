@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.gov.companieshouse</groupId>
-	<artifactId>company-accounts.api.ch.gov.uk</artifactId>
-	<version>unversioned</version>
-	<packaging>jar</packaging>
-	<name>company-accounts-api</name>
-	<description>Company accounts API to handle company accounts data</description>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.gov.companieshouse</groupId>
+  <artifactId>company-accounts.api.ch.gov.uk</artifactId>
+  <version>unversioned</version>
+  <packaging>jar</packaging>
+  <name>company-accounts-api</name>
+  <description>Company accounts API to handle company accounts data</description>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -41,9 +41,9 @@
     <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
     <junit-platform-surefire-provider.version>1.2.0</junit-platform-surefire-provider.version>
 
-		<!-- JUnit testing -->
-		<junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
-		<mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
+    <!-- JUnit testing -->
+    <junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
+    <mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
     <hamcrest-library-version>1.3</hamcrest-library-version>
 
     <!-- Jacoco -->
@@ -160,13 +160,13 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<version>${hamcrest-library-version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <version>${hamcrest-library-version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <profiles>
     <!-- release-publish is the profile that is activated when the build server
