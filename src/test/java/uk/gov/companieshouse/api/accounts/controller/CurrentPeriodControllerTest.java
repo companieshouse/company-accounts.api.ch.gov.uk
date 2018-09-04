@@ -88,7 +88,7 @@ public class CurrentPeriodControllerTest {
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(companyAccountEntity).when(request).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(currentPeriodEntity).when(currentPeriodService).findById("123");
+        doReturn(responseObject).when(currentPeriodService).findById("123");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -107,10 +107,12 @@ public class CurrentPeriodControllerTest {
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
         doReturn("123").when(currentPeriodService).generateID(anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
+        when(apiResponseMapper.mapGetResponse(currentPeriod, request)).thenReturn(responseEntity);
         ResponseEntity response = currentPeriodController.get(request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(currentPeriodEntity, response.getBody());
+        assertEquals(currentPeriod, response.getBody());
     }
 }

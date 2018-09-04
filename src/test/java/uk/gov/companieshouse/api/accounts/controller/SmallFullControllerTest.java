@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -86,9 +89,10 @@ public class SmallFullControllerTest {
     @Test
     @DisplayName("Tests the successful get of a smallFull resource")
     public void canGetSmallFull() throws NoSuchAlgorithmException {
-        doReturn(smallFullEntity).when(request)
+        doReturn(smallFull).when(request)
                 .getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(smallFull).when(smallFullTransformer).transform(smallFullEntity);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(smallFull);
+        when(apiResponseMapper.mapGetResponse(smallFull, request)).thenReturn(responseEntity);
         ResponseEntity response = smallFullController.get(request);
 
         assertNotNull(response);
@@ -101,7 +105,10 @@ public class SmallFullControllerTest {
     public void getSmallFullFail() throws NoSuchAlgorithmException {
         doReturn(null).when(request)
                 .getAttribute(AttributeName.SMALLFULL.getValue());
+        when(apiResponseMapper.mapGetResponse(null, request)).thenReturn(ResponseEntity.status(
+                HttpServletResponse.SC_NOT_FOUND).build());
         ResponseEntity response = smallFullController.get(request);
+
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

@@ -76,56 +76,37 @@ public class CurrentPeriodController {
         return responseEntity;
     }
 
-//    @GetMapping
-//    public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
-//        LogContext logContext = LogHelper.createNewLogContext(request);
-//
-//        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
-//                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-//        if (companyAccountEntity == null) {
-//
-//            LOGGER.error("Current Period error: No company account in request session",
-//                    logContext);
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        }
-//
-//        String companyAccountId = companyAccountEntity.getId();
-//        String currentPeriodId = currentPeriodService.generateID(companyAccountId);
-//        ResponseObject<CurrentPeriod> responseObject;
-//
-//        try {
-//            responseObject = currentPeriodService.findById(currentPeriodId);
-//            return apiResponseMapper.mapGetResponse(smallFull, request);
-//        } catch (DataAccessException dae) {
-//            final Map<String, Object> debugMap = new HashMap<>();
-//            debugMap.put("request_method", request.getMethod());
-//            LOGGER.errorRequest(request, dae, debugMap);
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            return false;
-//        }
-//
-//        if (!responseObject.getStatus().equals(ResponseStatus.FOUND)){
-//            LOGGER.debugRequest(request,
-//                    "SmallFullInterceptor error: Failed to retrieve a SmallFull account.",
-//                    debugMap);
-//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//            return false;
-//        }
-//
-//        SmallFull smallFull = responseObject.getData();
-//
-//        return apiResponseMapper.mapGetResponse(smallFull, request);
-//
-//
-//
-//        CurrentPeriod
-//        if (currentPeriodEntity == null) {
-//
-//            LOGGER.error("Current Period error: No current period found",
-//                    logContext);
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(currentPeriodEntity);
-//    }
+    @GetMapping
+    public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
+        LogContext logContext = LogHelper.createNewLogContext(request);
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
+        if (companyAccountEntity == null) {
+            LOGGER.error("Current Period error: No company account in request session",
+                    logContext);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        String companyAccountId = companyAccountEntity.getId();
+        String currentPeriodId = currentPeriodService.generateID(companyAccountId);
+        ResponseObject<CurrentPeriod> responseObject;
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+
+        try {
+            responseObject = currentPeriodService.findById(currentPeriodId);
+        } catch (DataAccessException dae) {
+            LOGGER.errorRequest(request, dae, debugMap);
+            return apiResponseMapper.map(dae);
+        }
+
+        CurrentPeriod currentPeriod = responseObject.getData();
+        return apiResponseMapper.mapGetResponse(currentPeriod, request);
+
+    }
 }
