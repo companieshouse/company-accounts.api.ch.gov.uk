@@ -10,7 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.logging.Logger;
@@ -26,10 +29,19 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private TransactionInterceptor transactionInterceptor;
 
     @Autowired
+    private OpenTransactionInterceptor openTransactionInterceptor;
+
+    @Autowired
+    private ClosedTransactionInterceptor closedTransactionInterceptor;
+
+    @Autowired
     private CompanyAccountInterceptor companyAccountInterceptor;
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private LoggingInterceptor loggingInterceptor;
 
     public static void main(String[] args) {
 
@@ -58,13 +70,38 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
+
+        registry.addInterceptor(loggingInterceptor)
+            .excludePathPatterns("/healthcheck");
+
         registry.addInterceptor(transactionInterceptor)
-                .addPathPatterns("/transactions/{transactionId}/**");
+            .addPathPatterns(
+                "/transactions/{transactionId}/**",
+                "/private/transactions/{transactionId}/**");
+
+        registry.addInterceptor(openTransactionInterceptor)
+            .addPathPatterns(
+                "/transactions/{transactionId}/**",
+                "/private/transactions/{transactionId}/**")
+            .excludePathPatterns(
+                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings");
+
+        registry.addInterceptor(closedTransactionInterceptor)
+            .addPathPatterns(
+                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings");
+
+        // This {companyAccountId}/** has been added to re-direct to the CompanyAccountInterceptor the following urls:
+        // "/company-accounts/{companyAccountId}"
+        // "/company-accounts/{companyAccountId}/small-full"
+        // "/company-accounts/{companyAccountId}/small-full/..."
+        // Excluding url: "/company-accounts"
         registry.addInterceptor(companyAccountInterceptor)
-                .addPathPatterns(
-                        "/transactions/{transactionId}/company-accounts/{companyAccountId}**");
+            .addPathPatterns(
+                "/transactions/{transactionId}/company-accounts/{companyAccountId}/**",
+                "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
+
         registry.addInterceptor(smallFullInterceptor)
-                .addPathPatterns(
-                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full**");
+            .addPathPatterns(
+                "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full**");
     }
 }
