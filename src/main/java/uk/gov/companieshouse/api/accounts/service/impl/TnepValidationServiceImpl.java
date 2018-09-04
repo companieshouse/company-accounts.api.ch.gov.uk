@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.exception.handler.MissingEnvironmentVariableException;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -22,6 +24,8 @@ import java.util.Map;
 
 @Component
 public class TnepValidationServiceImpl implements TnepValidationService {
+
+    EnvironmentReader environmentReader = new EnvironmentReaderImpl();
 
     private static final String IXBRL_VALIDATOR_URI = "IXBRL_VALIDATOR_URI";
 
@@ -62,8 +66,11 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     private boolean logValidationResponse(String location, Results results) {
         if (results != null && "OK".equalsIgnoreCase(results.getValidationStatus())) {
+
             return logSuccessfulValidation(location, results);
+
         } else {
+
             return logFailedValidation(location, results);
         }
     }
@@ -103,6 +110,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     private Results postForValidation(HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity)
         throws URISyntaxException {
+
         return restTemplate
             .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
     }
@@ -125,6 +133,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
         String location) {
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.add("file", new FileMessageResource(ixbrl.getBytes(), location));
+
         return map;
     }
 
@@ -135,20 +144,14 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     protected String getIxbrlValidatorUri() {
 
-        String ixbrlValidatorUri = System.getenv(IXBRL_VALIDATOR_URI);
-        if (StringUtils.isBlank(ixbrlValidatorUri)) {
-            throw new MissingEnvironmentVariableException(
-                "Missing IXBRL_VALIDATOR_URI environment variable");
-
-        }
-
-        return ixbrlValidatorUri;
+        return environmentReader.getMandatoryString("IXBRL_VALIDATOR_URI");
     }
 
     private Map<String, Object> generateLogMap(String location, Results results) {
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("location", location);
         logMap.put("results", results);
+
         return logMap;
     }
 
