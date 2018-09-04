@@ -16,6 +16,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,41 +40,69 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
         try {
             //Connect to the TNEP validator via http POST using multipart file upload
-            LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-            map.add("file", new FileMessageResource(ixbrl.getBytes(), location));
+            LinkedMultiValueMap<String, Object> map = createFileMessageResource(ixbrl, location);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = setHttpHeaders(map);
 
-            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map,
-                headers);
-
-            Results results = restTemplate
-                .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
+            Results results = postForValidation(requestEntity);
 
             if (results != null && "OK".equalsIgnoreCase(results.getValidationStatus())) {
-                Map<String, Object> logMap = generateLogMap(location, results);
-                LOG.debug("Ixbrl validation succeeded", logMap);
-
-                return true;
+                return logSuccessfulValidation(location, results);
             } else {
-                Map<String, Object> logMap = generateLogMap(location, results);
-                LOG.error("Ixbrl validation failed", logMap);
-
-                return false;
+                return logFailedValidation(location, results);
             }
 
         } catch (
             Exception e)
 
         {
-            Map<String, Object> logMap = new HashMap<>();
-            logMap.put("error", "Unable to validate ixbrl");
-            logMap.put("location", location);
-            LOG.error(e, logMap);
-
-            return false;
+            return logErroredValidation(location, e);
         }
+    }
+
+    private boolean logErroredValidation(String location, Exception e) {
+        Map<String, Object> logMap = new HashMap<>();
+        logMap.put("error", "Unable to validate ixbrl");
+        logMap.put("location", location);
+        LOG.error(e, logMap);
+
+        return false;
+    }
+
+    private boolean logFailedValidation(String location, Results results) {
+        Map<String, Object> logMap = generateLogMap(location, results);
+        LOG.error("Ixbrl validation failed", logMap);
+
+        return false;
+    }
+
+    private boolean logSuccessfulValidation(String location, Results results) {
+        Map<String, Object> logMap = generateLogMap(location, results);
+        LOG.debug("Ixbrl validation succeeded", logMap);
+
+        return true;
+    }
+
+    private Results postForValidation(HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity)
+        throws URISyntaxException {
+        return restTemplate
+            .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
+    }
+
+    private HttpEntity<LinkedMultiValueMap<String, Object>> setHttpHeaders(
+        LinkedMultiValueMap<String, Object> map) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        return new HttpEntity<>(map,
+            headers);
+    }
+
+    private LinkedMultiValueMap<String, Object> createFileMessageResource(String ixbrl,
+        String location) {
+        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", new FileMessageResource(ixbrl.getBytes(), location));
+        return map;
     }
 
     /**
@@ -84,8 +113,9 @@ public class TnepValidationServiceImpl implements TnepValidationService {
     protected String getIxbrlValidatorUri() {
 
         String ixbrlValidatorUri = System.getenv(IXBRL_VALIDATOR_URI);
-        if(StringUtils.isBlank(ixbrlValidatorUri)) {
-            throw new MissingEnvironmentVariableException("Missing IXBRL_VALIDATOR_URI environment variable");
+        if (StringUtils.isBlank(ixbrlValidatorUri)) {
+            throw new MissingEnvironmentVariableException(
+                "Missing IXBRL_VALIDATOR_URI environment variable");
 
         }
 
