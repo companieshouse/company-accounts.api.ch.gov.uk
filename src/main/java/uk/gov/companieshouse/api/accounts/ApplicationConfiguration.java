@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 /**
  * General application configuration .
@@ -15,5 +17,10 @@ public class ApplicationConfiguration {
     @Bean
     public MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
         return MessageDigest.getInstance(MessageDigestAlgorithms.SHA_256);
+    }
+
+    @Bean
+    public EnvironmentReader environmentReader() {
+        return  new EnvironmentReaderImpl();
     }
 }

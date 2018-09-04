@@ -26,6 +26,7 @@ import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
+import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -35,6 +36,7 @@ class FilingServiceImplTest {
     private static final String ACCOUNTS_ID = "1234561";
     private static final String SMALL_FULL_ID = "smallFullId";
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
+    private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
 
     private FilingService filingService;
     private CompanyAccountEntity companyAccountEntity;
@@ -42,13 +44,15 @@ class FilingServiceImplTest {
 
     @Mock
     private DocumentGeneratorCaller documentGeneratorCallerMock;
+    @Mock
+    private EnvironmentReader environmentReaderMock;
 
     @BeforeEach
     void setUpBeforeEach() {
         transaction = new Transaction();
         companyAccountEntity = createAccountEntity();
 
-        filingService = new FilingServiceImpl(documentGeneratorCallerMock);
+        filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock);
     }
 
     @Test
@@ -56,16 +60,21 @@ class FilingServiceImplTest {
     void shouldGenerateFiling() {
 
         doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl();
+        doReturn(true).when(environmentReaderMock)
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         Filing filing = filingService
             .generateAccountFiling(transaction, companyAccountEntity);
 
         verifyDocumentGeneratorCallerMock();
+        verify(environmentReaderMock, times(1))
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
         assertNotNull(filing);
     }
 
-    @DisplayName("Tests the filing not generated when small full accounts link is not present")
     @Test
+    @DisplayName("Tests the filing not generated when small full accounts link is not present")
     void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData() {
 
         companyAccountEntity.getData().setLinks(new HashMap<>());
@@ -74,9 +83,8 @@ class FilingServiceImplTest {
         assertNull(filing);
     }
 
-
-    @DisplayName("Tests the filing not generated when ixbrl has not been generated, ixbrl location not set")
     @Test
+    @DisplayName("Tests the filing not generated when ixbrl has not been generated, ixbrl location not set")
     void shouldNotGenerateFilingAsIxbrlLocationNotSet() {
         doReturn(null).when(documentGeneratorCallerMock).generateIxbrl();
 
@@ -86,11 +94,27 @@ class FilingServiceImplTest {
         assertNull(filing);
     }
 
-    private void verifyDocumentGeneratorCallerMock() {
-        verify(documentGeneratorCallerMock, times(1))
-            .generateIxbrl();
+    @Test
+    @DisplayName("Tests the filing not generated when fails tnep validation")
+    void shouldNotGenerateFilingAsFailTnepValidation() {
+
+        doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl();
+        doReturn(false).when(environmentReaderMock)
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
+        Filing filing = filingService
+            .generateAccountFiling(transaction, companyAccountEntity);
+
+        verifyDocumentGeneratorCallerMock();
+        verify(environmentReaderMock, times(1))
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
+        assertNull(filing);
     }
 
+    private void verifyDocumentGeneratorCallerMock() {
+        verify(documentGeneratorCallerMock, times(1)).generateIxbrl();
+    }
 
     /**
      * Builds Account Entity object.
