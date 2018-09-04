@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -9,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.api.accounts.exception.handler.MissingEnvironmentVariableException;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
 import uk.gov.companieshouse.environment.EnvironmentReader;
