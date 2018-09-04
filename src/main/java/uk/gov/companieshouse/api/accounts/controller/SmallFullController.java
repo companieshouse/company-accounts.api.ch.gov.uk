@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -51,12 +52,16 @@ public class SmallFullController {
             HttpServletRequest request) {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
+        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
+        String companyAccountId = companyAccountEntity.getId();
         String requestId = request.getHeader("X-Request-Id");
 
         ResponseEntity responseEntity;
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
-                    .create(smallFull, transaction, requestId);
+                    .create(smallFull, transaction, companyAccountId, requestId);
             responseEntity = apiResponseMapper
                     .map(responseObject.getStatus(), responseObject.getData(),
                             responseObject.getValidationErrorData());
@@ -74,18 +79,9 @@ public class SmallFullController {
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) {
 
-        LogContext logContext = LogHelper.createNewLogContext(request);
-
-        SmallFullEntity smallFullEntity = (SmallFullEntity) request
+        SmallFull smallFull = (SmallFull) request
                 .getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFullEntity == null) {
 
-            LOGGER.error("SmallFullTransformer error: No small-full account in request",
-                    logContext);
-            return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(smallFullTransformer.transform(smallFullEntity));
+        return apiResponseMapper.mapGetResponse(smallFull, request);
     }
 }

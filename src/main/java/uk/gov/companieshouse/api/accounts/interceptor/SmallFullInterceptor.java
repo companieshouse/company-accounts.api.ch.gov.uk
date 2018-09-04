@@ -15,7 +15,10 @@ import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -90,16 +93,16 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
         String companyAccountId = companyAccountEntity.getId();
         String smallFullId = smallFullService.generateID(companyAccountId);
-        SmallFullEntity smallFullEntity;
+        ResponseObject<SmallFull> responseObject;
         try {
-            smallFullEntity = smallFullService.findById(smallFullId);
+            responseObject = smallFullService.findById(smallFullId);
         } catch (DataAccessException dae) {
             LOGGER.errorRequest(request, dae, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
-        if (smallFullEntity == null) {
+        if (!responseObject.getStatus().equals(ResponseStatus.FOUND)){
             LOGGER.debugRequest(request,
                     "SmallFullInterceptor error: Failed to retrieve a SmallFull account.",
                     debugMap);
@@ -107,9 +110,11 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
+        SmallFull smallFull = responseObject.getData();
+
         String companyAccountLink = companyAccountEntity.getData().getLinks()
                 .get(LinkType.SMALL_FULL.getLink());
-        String smallFullSelf = smallFullEntity.getData().getLinks().get(LinkType.SELF.getLink());
+        String smallFullSelf = smallFull.getLinks().get(LinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,
                     "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",
@@ -118,7 +123,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
-        request.setAttribute(AttributeName.SMALLFULL.getValue(), smallFullEntity);
+        request.setAttribute(AttributeName.SMALLFULL.getValue(), smallFull);
         return true;
 
     }

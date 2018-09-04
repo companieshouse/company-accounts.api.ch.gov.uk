@@ -66,7 +66,7 @@ public class CurrentPeriodServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws DataException {
-        ResponseObject<CurrentPeriod> result = currentPeriodService.create(currentPeriod, transaction, "");
+        ResponseObject<CurrentPeriod> result = currentPeriodService.create(currentPeriod, transaction, "", "");
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
 

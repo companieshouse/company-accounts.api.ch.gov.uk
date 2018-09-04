@@ -82,7 +82,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             throw patchException;
         }
 
-        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, companyAccount);
+        return new ResponseObject<>(ResponseStatus.CREATED, companyAccount);
     }
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {

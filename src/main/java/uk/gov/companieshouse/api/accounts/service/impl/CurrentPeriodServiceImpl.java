@@ -8,6 +8,8 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
@@ -29,5 +31,15 @@ public class CurrentPeriodServiceImpl extends
     @Override
     public String getResourceName() {
         return "current-period";
+    }
+
+    @Override
+    public ResponseObject<CurrentPeriod> findById(String id) {
+        CurrentPeriodEntity currentPeriodEntity = getMongoRepository().findById(id).orElse(null);
+        if (currentPeriodEntity == null){
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        CurrentPeriod currentPeriod = getGenericTransformer().transform(currentPeriodEntity);
+        return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
     }
 }

@@ -3,12 +3,10 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -29,7 +28,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -40,6 +38,9 @@ public class SmallFullControllerTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private CompanyAccountEntity companyAccountEntity;
 
     @Mock
     private SmallFullTransformer smallFullTransformer;
@@ -54,13 +55,7 @@ public class SmallFullControllerTest {
     private SmallFullService smallFullService;
 
     @Mock
-    private HttpSession httpSessionMock;
-
-    @Mock
     private ApiResponseMapper apiResponseMapper;
-
-    @Mock
-    private Logger accountsLogger;
 
     @InjectMocks
     private SmallFullController smallFullController;
@@ -69,14 +64,16 @@ public class SmallFullControllerTest {
     @DisplayName("Tests the successful creation of a smallFull resource")
     public void canCreateSmallFull() throws NoSuchAlgorithmException, DataException {
         ResponseObject<SmallFull> responseObject = new ResponseObject(
-                ResponseStatus.SUCCESS_CREATED,
+                ResponseStatus.CREATED,
                 smallFull);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(companyAccountEntity).when(request)
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
-        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, null);
+        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, null,null);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getValidationErrorData());
         ResponseEntity response = smallFullController.create(smallFull, request);

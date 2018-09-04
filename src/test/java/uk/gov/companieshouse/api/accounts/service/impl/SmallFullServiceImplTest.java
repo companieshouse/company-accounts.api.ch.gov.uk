@@ -59,7 +59,7 @@ public class SmallFullServiceImplTest {
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
         public void canCreateAccount() throws DataException{
-            ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "");
+            ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", "");
             assertNotNull(result);
             assertEquals(smallFull, result.getData());
 

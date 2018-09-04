@@ -74,10 +74,10 @@ public class CurrentPeriodControllerTest {
     public void setUp() throws NoSuchAlgorithmException, DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         when(request.getHeader("X-Request-Id")).thenReturn("test");
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
                 currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-                .create(any(CurrentPeriod.class), any(Transaction.class), anyString());
+                .create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),

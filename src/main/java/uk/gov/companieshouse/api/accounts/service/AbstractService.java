@@ -9,10 +9,10 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 public interface AbstractService<T extends RestObject, U extends BaseEntity> {
 
-    ResponseObject<T> create(T rest, Transaction transaction, String requestId)
+    ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId, String requestId)
             throws DataException;
 
-    U findById(String id);
+    ResponseObject<T> findById(String id);
 
     void addEtag(T rest);
 

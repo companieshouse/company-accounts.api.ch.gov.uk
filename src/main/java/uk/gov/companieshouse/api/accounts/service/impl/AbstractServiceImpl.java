@@ -43,9 +43,8 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public ResponseObject<T> create(T rest, Transaction transaction, String requestId)
+    public ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId, String requestId)
             throws DataException {
-        String companyNumber = transaction.getCompanyNumber();
 
         addEtag(rest);
         addKind(rest);
@@ -53,10 +52,10 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyNumber);
+        debugMap.put("company_accounts_id", companyAccountId);
 
         try {
-            baseEntity.setId(generateID(companyNumber));
+            baseEntity.setId(generateID(companyAccountId));
             mongoRepository.insert(baseEntity);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorContext(requestId, dke, debugMap);
@@ -68,12 +67,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
             throw dataException;
         }
 
-        return new ResponseObject<>(ResponseStatus.SUCCESS_CREATED, rest);
-    }
-
-    @Override
-    public U findById(String id) {
-        return mongoRepository.findById(id).orElse(null);
+        return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
@@ -83,7 +77,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
     @Override
     public String generateID(String value) {
-        String unencryptedId = value + getResourceName();
+        String unencryptedId = value + "-" + getResourceName();
         byte[] id = messageDigest.digest(
                 unencryptedId.getBytes(StandardCharsets.UTF_8));
         return Base64.getUrlEncoder().encodeToString(id);
@@ -92,5 +86,13 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     @Autowired
     public void setMessageDigest(MessageDigest messageDigest) {
         this.messageDigest = messageDigest;
+    }
+
+    public MongoRepository<U, String> getMongoRepository() {
+        return mongoRepository;
+    }
+
+    public GenericTransformer<T, U> getGenericTransformer() {
+        return genericTransformer;
     }
 }
