@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -44,7 +45,7 @@ public class TnepValidationServiceImplTest {
             + "</data>"
             + "</results>";
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         tnepValidationService = new TnepValidationServiceImpl() {
