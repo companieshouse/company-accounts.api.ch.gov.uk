@@ -1,14 +1,10 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.service.response.ResponseStatus.ID_GENERATION_ERROR;
-
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -41,7 +37,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public ResponseObject<T> save(T rest, String companyAccountId) {
+    public ResponseObject<T> create(T rest, String companyAccountId) {
         addEtag(rest);
         addKind(rest);
         U baseEntity = genericTransformer.transform(rest);

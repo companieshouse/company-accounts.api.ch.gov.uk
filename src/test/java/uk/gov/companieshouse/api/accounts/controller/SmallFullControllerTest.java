@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doReturn;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -58,6 +58,9 @@ public class SmallFullControllerTest {
     @Mock
     private ApiResponseMapper apiResponseMapper;
 
+    @Mock
+    private Logger accountsLogger;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
@@ -72,9 +75,9 @@ public class SmallFullControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        doReturn(responseObject).when(smallFullService).save(any(SmallFull.class), anyString());
+        doReturn(responseObject).when(smallFullService).create(any(SmallFull.class), anyString());
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getErrorData());
+                responseObject.getData(), responseObject.getValidationErrorData());
         doReturn("123456").when(transaction).getCompanyNumber();
         ResponseEntity response = smallFullController.create(smallFull, request);
 
