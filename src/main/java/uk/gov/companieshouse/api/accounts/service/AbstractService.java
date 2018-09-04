@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 
 public interface AbstractService<T extends RestObject, U extends BaseEntity> {
 
-    ResponseObject<T> save(T rest, String companyAccountId);
+    ResponseObject<T> create(T rest, String companyAccountId);
 
     U findById(String id);
 
