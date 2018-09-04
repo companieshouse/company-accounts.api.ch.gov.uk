@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -66,7 +67,7 @@ public class SmallFullControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a smallFull resource")
-    public void canCreateSmallFull() throws NoSuchAlgorithmException {
+    public void canCreateSmallFull() throws NoSuchAlgorithmException, DataException {
         ResponseObject<SmallFull> responseObject = new ResponseObject(
                 ResponseStatus.SUCCESS_CREATED,
                 smallFull);
@@ -75,10 +76,9 @@ public class SmallFullControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        doReturn(responseObject).when(smallFullService).create(any(SmallFull.class), anyString());
+        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, null);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getValidationErrorData());
-        doReturn("123456").when(transaction).getCompanyNumber();
         ResponseEntity response = smallFullController.create(smallFull, request);
 
         assertNotNull(response);

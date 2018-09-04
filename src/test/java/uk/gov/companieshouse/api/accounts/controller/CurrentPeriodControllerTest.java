@@ -24,6 +24,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -70,11 +71,13 @@ public class CurrentPeriodControllerTest {
     private CurrentPeriodController currentPeriodController;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException {
+    public void setUp() throws NoSuchAlgorithmException, DataException {
+        when(request.getAttribute("transaction")).thenReturn(transaction);
+        when(request.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
                 currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-                .create(any(CurrentPeriod.class), anyString());
+                .create(any(CurrentPeriod.class), any(Transaction.class), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),
