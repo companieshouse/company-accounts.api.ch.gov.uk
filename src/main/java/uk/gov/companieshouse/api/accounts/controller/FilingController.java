@@ -10,9 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -22,6 +25,8 @@ public class FilingController {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
+    private static final String FILING_CONTROLLER_ERROR = "FilingController error:";
+
     @Autowired
     private FilingService filingService;
 
@@ -29,16 +34,36 @@ public class FilingController {
     public ResponseEntity generateFiling(@PathParam("transactionId") String transactionId,
         @PathParam("companyAccountId") String accountId, HttpServletRequest request) {
 
-        Filing filing = filingService.generateAccountFiling();
+        Transaction transaction =
+            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        if (transaction == null) {
+            logRequestError(request, "no transaction in request session");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        CompanyAccountEntity companyAccountEntity =
+            (CompanyAccountEntity) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
+        if (companyAccountEntity == null) {
+            logRequestError(request,  "no company account in request session");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
         if (filing != null) {
             return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
         }
 
+        logRequestError(request,  "Failed to generate filing");
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void logRequestError(HttpServletRequest request, String errorMessage) {
+
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
-        debugMap.put("message", "FilingController error: Failed to generate filing");
+        debugMap.put("message", FILING_CONTROLLER_ERROR + errorMessage);
         LOGGER.errorRequest(request, null, debugMap);
-
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
