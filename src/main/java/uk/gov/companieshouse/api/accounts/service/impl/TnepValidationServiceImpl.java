@@ -46,20 +46,33 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
             Results results = postForValidation(requestEntity);
 
-            if (results != null && "OK".equalsIgnoreCase(results.getValidationStatus())) {
-                return logSuccessfulValidation(location, results);
-            } else {
-                return logFailedValidation(location, results);
-            }
+            return logValidationResponse(location, results);
 
         } catch (
             Exception e)
-
         {
             return logErroredValidation(location, e);
         }
     }
 
+    /**
+     * Log the response of the validation - Successful or failed
+     *
+     * @return boolean
+     */
+    private boolean logValidationResponse(String location, Results results) {
+        if (results != null && "OK".equalsIgnoreCase(results.getValidationStatus())) {
+            return logSuccessfulValidation(location, results);
+        } else {
+            return logFailedValidation(location, results);
+        }
+    }
+
+    /**
+     * Log any error caught whilst validating
+     *
+     * @return boolean
+     */
     private boolean logErroredValidation(String location, Exception e) {
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("error", "Unable to validate ixbrl");
@@ -83,12 +96,22 @@ public class TnepValidationServiceImpl implements TnepValidationService {
         return true;
     }
 
+    /**
+     * Connect to the TNEP validator via http POST using multipart file upload
+     *
+     * @return RestTemplate
+     */
     private Results postForValidation(HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity)
         throws URISyntaxException {
         return restTemplate
             .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
     }
 
+    /**
+     * Add http Header attributes for validation POST
+     *
+     * @Return HttpEntity<>(LinkedMultiValueMap<String, Object> , HttpHeaders);
+     */
     private HttpEntity<LinkedMultiValueMap<String, Object>> setHttpHeaders(
         LinkedMultiValueMap<String, Object> map) {
         HttpHeaders headers = new HttpHeaders();
