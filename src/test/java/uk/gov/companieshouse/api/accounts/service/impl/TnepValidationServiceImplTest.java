@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -42,7 +43,7 @@ public class TnepValidationServiceImplTest {
 
     @BeforeEach
     public void setup(){
-
+    	MockitoAnnotations.initMocks(this);
         tnepValidationService = new TnepValidationServiceImpl();
     }
 
