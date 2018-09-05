@@ -86,9 +86,12 @@ public class CurrentPeriodControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(companyAccountEntity).when(request).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        doReturn(companyAccountEntity).when(request)
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(responseObject).when(currentPeriodService).findById("123");
+        doReturn(responseObject).when(currentPeriodService).findById("create");
+        doReturn(new ResponseObject(ResponseStatus.FOUND,
+                currentPeriod)).when(currentPeriodService).findById("find");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -106,9 +109,10 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
-        doReturn("123").when(currentPeriodService).generateID(anyString(), anyString());
+        doReturn("find").when(currentPeriodService).generateID(anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
-        when(apiResponseMapper.mapGetResponse(currentPeriod, request)).thenReturn(responseEntity);
+        when(apiResponseMapper.map(ResponseStatus.FOUND, currentPeriod,
+                null)).thenReturn(responseEntity);
         ResponseEntity response = currentPeriodController.get(request);
 
         assertNotNull(response);
