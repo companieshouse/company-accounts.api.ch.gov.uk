@@ -71,6 +71,16 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
+    public ResponseObject<T> findById(String id) {
+        U entity = mongoRepository.findById(id).orElse(null);
+        if (entity == null){
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        T rest = genericTransformer.transform(entity);
+        return new ResponseObject<>(ResponseStatus.FOUND, rest);
+    }
+
+    @Override
     public void addEtag(T rest) {
         rest.setEtag(GenerateEtagUtil.generateEtag());
     }

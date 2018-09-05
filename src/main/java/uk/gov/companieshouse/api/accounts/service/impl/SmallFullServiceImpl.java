@@ -24,16 +24,6 @@ public class SmallFullServiceImpl extends
     }
 
     @Override
-    public ResponseObject<SmallFull> findById(String id) {
-        SmallFullEntity smallFullEntity = getMongoRepository().findById(id).orElse(null);
-        if (smallFullEntity == null){
-            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
-        }
-        SmallFull smallFull = getGenericTransformer().transform(smallFullEntity);
-        return new ResponseObject<>(ResponseStatus.FOUND, smallFull);
-    }
-
-    @Override
     public void addKind(SmallFull rest) {
         rest.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
     }

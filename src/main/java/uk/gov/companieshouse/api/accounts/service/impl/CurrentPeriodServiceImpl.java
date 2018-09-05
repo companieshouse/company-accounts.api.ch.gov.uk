@@ -33,13 +33,4 @@ public class CurrentPeriodServiceImpl extends
         return "current-period";
     }
 
-    @Override
-    public ResponseObject<CurrentPeriod> findById(String id) {
-        CurrentPeriodEntity currentPeriodEntity = getMongoRepository().findById(id).orElse(null);
-        if (currentPeriodEntity == null){
-            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
-        }
-        CurrentPeriod currentPeriod = getGenericTransformer().transform(currentPeriodEntity);
-        return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
-    }
 }
