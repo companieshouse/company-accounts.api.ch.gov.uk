@@ -58,7 +58,6 @@ class FilingServiceImplTest {
     @Test
     @DisplayName("Tests the filing generation. Happy path")
     void shouldGenerateFiling() {
-
         doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl();
         doReturn(true).when(environmentReaderMock)
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
@@ -76,7 +75,6 @@ class FilingServiceImplTest {
     @Test
     @DisplayName("Tests the filing not generated when small full accounts link is not present")
     void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData() {
-
         companyAccountEntity.getData().setLinks(new HashMap<>());
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
 
