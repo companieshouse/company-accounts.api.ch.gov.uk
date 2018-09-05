@@ -25,14 +25,19 @@ import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPL
 @Component
 public class TnepValidationServiceImpl implements TnepValidationService {
 
-    EnvironmentReader environmentReader = new EnvironmentReaderImpl();
-
     private static final String IXBRL_VALIDATOR_URI = "IXBRL_VALIDATOR_URI";
 
     private static final Logger LOG = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
-    @Autowired
     private RestTemplate restTemplate;
+
+    private EnvironmentReader environmentReader;
+    
+    @Autowired
+    public TnepValidationServiceImpl(RestTemplate restTemplate, EnvironmentReader environmentReader) {
+    	this.restTemplate = restTemplate;
+    	this.environmentReader = environmentReader;
+    }
 
     /**
      * Validate the ixbrl
