@@ -47,7 +47,7 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
         // Returns the configured ${PORT} value passed in under `server.port`.
         // If no port is configured, return null
-        Integer port = Integer.getInteger("server.port");
+        Integer port = 8080;
 
         if (port == null) {
             LOGGER.error("Failed to start service, no port has been configured");

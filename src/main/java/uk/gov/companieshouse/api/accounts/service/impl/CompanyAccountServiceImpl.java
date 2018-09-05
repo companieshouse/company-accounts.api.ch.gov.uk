@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -92,7 +93,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private String createSelfLink(Transaction transaction, String id) {
-        return getTransactionSelfLink(transaction) + "/company-accounts/" + id;
+        return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName() + "/" + id;
     }
 
     private String getTransactionSelfLink(Transaction transaction) {

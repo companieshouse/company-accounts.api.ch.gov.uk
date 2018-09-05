@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
+import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
@@ -24,8 +25,8 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEntity> implements
-        AbstractService<T, U> {
+public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEntity, V extends BaseEntity> implements
+        AbstractService<T, U, V> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
@@ -34,19 +35,24 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
 
     private GenericTransformer<T, U> genericTransformer;
 
+    private MongoRepository<V, String> parentMongoRepository;
+
     private MessageDigest messageDigest;
 
     public AbstractServiceImpl(MongoRepository<U, String> mongoRepository,
-            GenericTransformer<T, U> genericTransformer) {
+            GenericTransformer<T, U> genericTransformer, MongoRepository<V, String> parentMongoRepository) {
         this.mongoRepository = mongoRepository;
         this.genericTransformer = genericTransformer;
+        this.parentMongoRepository = parentMongoRepository;
     }
 
     @Override
     public ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId, String requestId)
             throws DataException {
 
-        addEtag(rest);
+        String selfLink = createSelfLink(transaction);
+        initLinks(rest, selfLink);
+        rest.setEtag(GenerateEtagUtil.generateEtag());
         addKind(rest);
         U baseEntity = genericTransformer.transform(rest);
 
@@ -57,6 +63,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
         try {
             baseEntity.setId(generateID(companyAccountId));
             mongoRepository.insert(baseEntity);
+            addParentLink(companyAccountId, selfLink);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorContext(requestId, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
@@ -81,16 +88,22 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public void addEtag(T rest) {
-        rest.setEtag(GenerateEtagUtil.generateEtag());
-    }
-
-    @Override
     public String generateID(String value) {
         String unencryptedId = value + "-" + getResourceName();
         byte[] id = messageDigest.digest(
                 unencryptedId.getBytes(StandardCharsets.UTF_8));
         return Base64.getUrlEncoder().encodeToString(id);
+    }
+
+    @Override
+    public void initLinks(T rest, String link) {
+        Map<String, String> map = new HashMap<>();
+        map.put(LinkType.SELF.getLink(), link);
+        rest.setLinks(map);
+    }
+
+    private String createSelfLink(Transaction transaction) {
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/" + getResourceName();
     }
 
     @Autowired
@@ -102,7 +115,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
         return mongoRepository;
     }
 
-    public GenericTransformer<T, U> getGenericTransformer() {
-        return genericTransformer;
+    public MongoRepository<V, String> getParentMongoRepository() {
+        return parentMongoRepository;
     }
 }
