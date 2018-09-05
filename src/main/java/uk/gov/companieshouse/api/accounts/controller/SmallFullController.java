@@ -50,10 +50,7 @@ public class SmallFullController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-            HttpServletRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().body(bindingResult);
-        }
+            HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
