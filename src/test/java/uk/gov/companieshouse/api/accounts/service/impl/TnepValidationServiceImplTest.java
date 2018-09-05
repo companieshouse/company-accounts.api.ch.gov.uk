@@ -1,12 +1,14 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,29 +23,6 @@ public class TnepValidationServiceImplTest {
 
     private static final String S3_TESTLOCATION = "s3://testlocation/testdoc";
     private static final String TNEP_URL = "http://testtnep.companieshouse.gov.uk/validate";
-
-    private static final String VALIDATION_FAILURE_RESPONSE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<results validationStatus=\"FAILED\">"
-            + "<errors>"
-            + "<ErrorMessage>AccountsTypeFullOrAbbreviated must be provided for the current accounting period.</ErrorMessage>"
-            + "</errors>"
-            + "<data>"
-            + "<BalanceSheetDate>2016-12-31</BalanceSheetDate>"
-            + "<AccountsType>08</AccountsType>"
-            + "<CompaniesHouseRegisteredNumber>00006400</CompaniesHouseRegisteredNumber>"
-            + "</data>"
-            + "</results>";
-
-    private static final String VALIDATION_SUCCESS_RESPONSE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<results validationStatus=\"OK\">"
-            + "<data>"
-            + "<BalanceSheetDate>2016-12-31</BalanceSheetDate>"
-            + "<AccountsType>08</AccountsType>"
-            + "<CompaniesHouseRegisteredNumber>00006400</CompaniesHouseRegisteredNumber>"
-            + "</data>"
-            + "</results>";
 
     @BeforeEach
     public void setUp() {
@@ -62,29 +41,31 @@ public class TnepValidationServiceImplTest {
     }
 
     @Test
-    public void validationSuccess() {
+    public void validationSuccess() throws IOException {
+
+        String xmlSuccessResponse = IOUtils
+            .toString(this.getClass().getResourceAsStream("/validation-success.xml"), "UTF-8");
 
         mockServer.expect(requestTo(TNEP_URL))
             .andExpect(method(HttpMethod.POST))
-            .andRespond(withSuccess(VALIDATION_SUCCESS_RESPONSE, MediaType.APPLICATION_XML));
+            .andRespond(withSuccess(xmlSuccessResponse, MediaType.APPLICATION_XML));
 
-        boolean result = tnepValidationService.validate("test", S3_TESTLOCATION);
-
-        assertTrue(result);
+        assertTrue(validateIxbrl());
 
         mockServer.verify();
     }
 
     @Test
-    public void validationFailure() {
+    public void validationFailure() throws IOException {
+
+        String xmlFailureResponse = IOUtils
+            .toString(this.getClass().getResourceAsStream("/validation-failure.xml"), "UTF-8");
 
         mockServer.expect(requestTo(TNEP_URL))
             .andExpect(method(HttpMethod.POST))
-            .andRespond(withSuccess(VALIDATION_FAILURE_RESPONSE, MediaType.APPLICATION_XML));
+            .andRespond(withSuccess(xmlFailureResponse, MediaType.APPLICATION_XML));
 
-        boolean result = tnepValidationService.validate("test", S3_TESTLOCATION);
-
-        assertFalse(result);
+        assertFalse(validateIxbrl());
 
         mockServer.verify();
     }
@@ -96,9 +77,7 @@ public class TnepValidationServiceImplTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withSuccess("", MediaType.APPLICATION_XML));
 
-        boolean result = tnepValidationService.validate("test", S3_TESTLOCATION);
-
-        assertFalse(result);
+        assertFalse(validateIxbrl());
 
         mockServer.verify();
     }
@@ -113,8 +92,10 @@ public class TnepValidationServiceImplTest {
             }
         };
 
-        boolean result = tnepValidationService.validate("test", S3_TESTLOCATION);
+        assertFalse(validateIxbrl());
+    }
 
-        assertFalse(result);
+    private boolean validateIxbrl() {
+        return tnepValidationService.validate("test", S3_TESTLOCATION);
     }
 }
