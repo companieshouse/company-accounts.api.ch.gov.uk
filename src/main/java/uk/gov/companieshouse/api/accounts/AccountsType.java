@@ -29,26 +29,6 @@ public enum AccountsType {
         this.filingDescriptionKey = filingDescriptionKey;
     }
 
-    public static AccountsType getAccountsType(String accountType) {
-        for (AccountsType accountsType : AccountsType.values()) {
-            if (accountsType.getAccountType().equals(accountType)) {
-                return accountsType;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Method checks if the accountType is present in AccountType Enum
-     *
-     * @param accountType
-     */
-    public static boolean isValidAccountType(String accountType) {
-        return Arrays.stream(AccountsType.values())
-            .anyMatch(e -> e.getAccountType().equals(accountType));
-    }
-
     /**
      * Get the {@link Set} of resource keys
      *

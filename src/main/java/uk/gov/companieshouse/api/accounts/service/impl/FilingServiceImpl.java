@@ -23,7 +23,6 @@ public class FilingServiceImpl implements FilingService {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String LOG_ACCOUNT_ID_KEY = "account-id";
-    private static final String LOG_ERROR_KEY = "error";
     private static final String LOG_MESSAGE_KEY = "message";
 
     private final DocumentGeneratorCaller documentGeneratorCaller;
@@ -63,7 +62,6 @@ public class FilingServiceImpl implements FilingService {
         }
 
         Map<String, Object> logMap = new HashMap<>();
-        logMap.put(LOG_ERROR_KEY, "Account Type not found");
         logMap.put(LOG_MESSAGE_KEY, "Link for account type is missing from account data");
         logMap.put(LOG_ACCOUNT_ID_KEY, accountEntity.getId());
         LOGGER.error("Account Type not found", logMap);
