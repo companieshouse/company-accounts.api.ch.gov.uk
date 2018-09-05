@@ -20,6 +20,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 @Component
 public class TnepValidationServiceImpl implements TnepValidationService {
 
@@ -27,7 +29,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
     private static final String IXBRL_VALIDATOR_URI = "IXBRL_VALIDATOR_URI";
 
-    private static final Logger LOG = LoggerFactory.getLogger("company-accounts.api.ch.gov.uk");
+    private static final Logger LOG = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -50,9 +52,8 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
             return logValidationResponse(location, results);
 
-        } catch (
-            Exception e)
-        {
+        } catch (Exception e) {
+
             return logErroredValidation(location, e);
         }
     }
@@ -142,7 +143,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     protected String getIxbrlValidatorUri() {
 
-        return environmentReader.getMandatoryString("IXBRL_VALIDATOR_URI");
+        return environmentReader.getMandatoryString(IXBRL_VALIDATOR_URI);
     }
 
     private Map<String, Object> generateLogMap(String location, Results results) {
