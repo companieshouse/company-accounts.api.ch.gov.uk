@@ -42,7 +42,8 @@ public class SmallFullServiceImpl extends
 
     @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/" + companyAccountId + "/" + getResourceName();
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
+                + companyAccountId + "/" + getResourceName();
     }
 
     @Override

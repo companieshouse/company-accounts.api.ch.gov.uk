@@ -40,14 +40,16 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     private MessageDigest messageDigest;
 
     public AbstractServiceImpl(MongoRepository<U, String> mongoRepository,
-            GenericTransformer<T, U> genericTransformer, MongoRepository<V, String> parentMongoRepository) {
+            GenericTransformer<T, U> genericTransformer,
+            MongoRepository<V, String> parentMongoRepository) {
         this.mongoRepository = mongoRepository;
         this.genericTransformer = genericTransformer;
         this.parentMongoRepository = parentMongoRepository;
     }
 
     @Override
-    public ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId, String requestId)
+    public ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId,
+            String requestId)
             throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
@@ -80,7 +82,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     @Override
     public ResponseObject<T> findById(String id) {
         U entity = mongoRepository.findById(id).orElse(null);
-        if (entity == null){
+        if (entity == null) {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
         T rest = genericTransformer.transform(entity);

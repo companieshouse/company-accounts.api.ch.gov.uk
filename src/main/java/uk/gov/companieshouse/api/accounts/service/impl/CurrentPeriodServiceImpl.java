@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
@@ -19,7 +18,8 @@ import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
 public class CurrentPeriodServiceImpl extends
-        AbstractServiceImpl<CurrentPeriod, CurrentPeriodEntity, SmallFullEntity> implements CurrentPeriodService {
+        AbstractServiceImpl<CurrentPeriod, CurrentPeriodEntity, SmallFullEntity> implements
+        CurrentPeriodService {
 
     @Autowired
     public CurrentPeriodServiceImpl(
@@ -30,22 +30,6 @@ public class CurrentPeriodServiceImpl extends
     }
 
     @Override
-    public void addParentLink(String parentId, String link) {
-        SmallFullEntity smallFullEntity = getParentMongoRepository().findById(generateID(parentId, ResourceName.SMALL_FULL.getName())).orElse(null);
-        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
-        Map<String, String> map = smallFullDataEntity.getLinks();
-        map.put(LinkType.CURRENT_PERIOD.getLink(), link);
-        smallFullDataEntity.setLinks(map);
-        smallFullEntity.setData(smallFullDataEntity);
-        getParentMongoRepository().save(smallFullEntity);
-    }
-
-    @Override
-    public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/" + companyAccountId + "/small-full/" + getResourceName();
-    }
-
-    @Override
     public void addKind(CurrentPeriod rest) {
         rest.setKind(Kind.CURRENT_PERIOD.getValue());
     }
@@ -53,5 +37,23 @@ public class CurrentPeriodServiceImpl extends
     @Override
     public String getResourceName() {
         return ResourceName.CURRENT_PERIOD.getName();
+    }
+
+    @Override
+    public String createSelfLink(Transaction transaction, String companyAccountId) {
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
+                + companyAccountId + "/small-full/" + getResourceName();
+    }
+
+    @Override
+    public void addParentLink(String parentId, String link) {
+        SmallFullEntity smallFullEntity = getParentMongoRepository()
+                .findById(generateID(parentId, ResourceName.SMALL_FULL.getName())).orElse(null);
+        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
+        Map<String, String> map = smallFullDataEntity.getLinks();
+        map.put(LinkType.CURRENT_PERIOD.getLink(), link);
+        smallFullDataEntity.setLinks(map);
+        smallFullEntity.setData(smallFullDataEntity);
+        getParentMongoRepository().save(smallFullEntity);
     }
 }
