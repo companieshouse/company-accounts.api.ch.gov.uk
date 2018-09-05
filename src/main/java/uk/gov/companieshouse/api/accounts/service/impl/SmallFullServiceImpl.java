@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
@@ -40,6 +41,11 @@ public class SmallFullServiceImpl extends
     }
 
     @Override
+    public String createSelfLink(Transaction transaction, String companyAccountId) {
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/" + companyAccountId + "/" + getResourceName();
+    }
+
+    @Override
     public void addParentLink(String parentId, String link) {
         CompanyAccountEntity companyAccountEntity = getParentMongoRepository().findById(parentId)
                 .orElse(null);
@@ -48,7 +54,7 @@ public class SmallFullServiceImpl extends
         map.put(LinkType.SMALL_FULL.getLink(), link);
         companyAccountDataEntity.setLinks(map);
         companyAccountEntity.setData(companyAccountDataEntity);
-        getParentMongoRepository().insert(companyAccountEntity);
+        getParentMongoRepository().save(companyAccountEntity);
     }
 
 }

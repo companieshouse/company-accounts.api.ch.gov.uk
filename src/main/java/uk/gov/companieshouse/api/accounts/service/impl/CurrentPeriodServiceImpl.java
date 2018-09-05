@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
 
 @Service
@@ -30,13 +31,18 @@ public class CurrentPeriodServiceImpl extends
 
     @Override
     public void addParentLink(String parentId, String link) {
-        SmallFullEntity smallFullEntity = getParentMongoRepository().findById(parentId).orElse(null);
+        SmallFullEntity smallFullEntity = getParentMongoRepository().findById(generateID(parentId, ResourceName.SMALL_FULL.getName())).orElse(null);
         SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
         Map<String, String> map = smallFullDataEntity.getLinks();
-        map.put(LinkType.SMALL_FULL.getLink(), link);
+        map.put(LinkType.CURRENT_PERIOD.getLink(), link);
         smallFullDataEntity.setLinks(map);
         smallFullEntity.setData(smallFullDataEntity);
-        getParentMongoRepository().insert(smallFullEntity);
+        getParentMongoRepository().save(smallFullEntity);
+    }
+
+    @Override
+    public String createSelfLink(Transaction transaction, String companyAccountId) {
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/" + companyAccountId + "/small-full/" + getResourceName();
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
@@ -92,7 +93,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         }
 
         String companyAccountId = companyAccountEntity.getId();
-        String smallFullId = smallFullService.generateID(companyAccountId);
+        String smallFullId = smallFullService.generateID(companyAccountId, ResourceName.SMALL_FULL.getName());
         ResponseObject<SmallFull> responseObject;
         try {
             responseObject = smallFullService.findById(smallFullId);

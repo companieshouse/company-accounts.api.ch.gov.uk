@@ -17,7 +17,9 @@ public interface AbstractService<T extends RestObject, U extends BaseEntity, V e
 
     String getResourceName();
 
-    String generateID(String value);
+    String createSelfLink(Transaction transaction, String companyAccountId);
+
+    String generateID(String value, String resourceName);
 
     void initLinks(T rest, String link);
 

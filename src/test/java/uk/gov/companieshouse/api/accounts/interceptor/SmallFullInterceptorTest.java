@@ -88,7 +88,7 @@ public class SmallFullInterceptorTest {
 
         when(companyAccountEntity.getId()).thenReturn("test");
 
-        when(smallFullService.generateID(anyString())).thenReturn("test");
+        when(smallFullService.generateID(anyString(), anyString())).thenReturn("test");
 
 
 

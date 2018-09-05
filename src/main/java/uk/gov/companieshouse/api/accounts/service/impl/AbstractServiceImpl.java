@@ -50,7 +50,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     public ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId, String requestId)
             throws DataException {
 
-        String selfLink = createSelfLink(transaction);
+        String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
         addKind(rest);
@@ -61,7 +61,7 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
         debugMap.put("company_accounts_id", companyAccountId);
 
         try {
-            baseEntity.setId(generateID(companyAccountId));
+            baseEntity.setId(generateID(companyAccountId, getResourceName()));
             mongoRepository.insert(baseEntity);
             addParentLink(companyAccountId, selfLink);
         } catch (DuplicateKeyException dke) {
@@ -88,8 +88,8 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
     }
 
     @Override
-    public String generateID(String value) {
-        String unencryptedId = value + "-" + getResourceName();
+    public String generateID(String value, String resourceName) {
+        String unencryptedId = value + "-" + resourceName;
         byte[] id = messageDigest.digest(
                 unencryptedId.getBytes(StandardCharsets.UTF_8));
         return Base64.getUrlEncoder().encodeToString(id);
@@ -102,17 +102,9 @@ public abstract class AbstractServiceImpl<T extends RestObject, U extends BaseEn
         rest.setLinks(map);
     }
 
-    private String createSelfLink(Transaction transaction) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/" + getResourceName();
-    }
-
     @Autowired
     public void setMessageDigest(MessageDigest messageDigest) {
         this.messageDigest = messageDigest;
-    }
-
-    public MongoRepository<U, String> getMongoRepository() {
-        return mongoRepository;
     }
 
     public MongoRepository<V, String> getParentMongoRepository() {

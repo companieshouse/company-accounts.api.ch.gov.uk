@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +50,11 @@ public class SmallFullController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-            HttpServletRequest request) {
+            HttpServletRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            return ResponseEntity.badRequest().body(bindingResult);
+        }
+
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request

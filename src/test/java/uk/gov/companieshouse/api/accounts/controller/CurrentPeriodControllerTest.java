@@ -106,7 +106,7 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
-        doReturn("123").when(currentPeriodService).generateID(anyString());
+        doReturn("123").when(currentPeriodService).generateID(anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         when(apiResponseMapper.mapGetResponse(currentPeriod, request)).thenReturn(responseEntity);
         ResponseEntity response = currentPeriodController.get(request);
