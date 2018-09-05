@@ -1,14 +1,26 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
+import uk.gov.companieshouse.api.accounts.validation.Results;
+import uk.gov.companieshouse.environment.EnvironmentReader;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,84 +30,83 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class TnepValidationServiceImplTest {
 
-    private TnepValidationServiceImpl tnepValidationService;
-    private MockRestServiceServer mockServer;
 
-    private static final String S3_TESTLOCATION = "s3://testlocation/testdoc";
-    private static final String TNEP_URL = "http://testtnep.companieshouse.gov.uk/validate";
+    @Mock
+    RestTemplate restTemplate;
+
+    @Mock
+    EnvironmentReader environmentReader;
+
+
+    private TnepValidationServiceImpl tnepValidationService;
 
     @BeforeEach
-    public void setUp() {
+    public void setup(){
 
-        tnepValidationService = new TnepValidationServiceImpl() {
-            @Override
-            protected String getIxbrlValidatorUri() {
-                return TNEP_URL;
-            }
-        };
-
-        RestTemplate restTemplate = new RestTemplate();
-        tnepValidationService.setRestTemplate(restTemplate);
-
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        tnepValidationService = new TnepValidationServiceImpl();
     }
 
     @Test
     public void validationSuccess() throws IOException {
 
-        String xmlSuccessResponse = IOUtils
-            .toString(this.getClass().getResourceAsStream("/validation-success.xml"), "UTF-8");
+        Results results = new Results();
+        results.setValidationStatus("OK");
 
-        mockServer.expect(requestTo(TNEP_URL))
-            .andExpect(method(HttpMethod.POST))
-            .andRespond(withSuccess(xmlSuccessResponse, MediaType.APPLICATION_XML));
+        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(results);
+
+
 
         assertTrue(validateIxbrl());
 
-        mockServer.verify();
     }
 
     @Test
     public void validationFailure() throws IOException {
 
-        String xmlFailureResponse = IOUtils
-            .toString(this.getClass().getResourceAsStream("/validation-failure.xml"), "UTF-8");
+        Results results = new Results();
+        results.setValidationStatus("unit test failure");
 
-        mockServer.expect(requestTo(TNEP_URL))
-            .andExpect(method(HttpMethod.POST))
-            .andRespond(withSuccess(xmlFailureResponse, MediaType.APPLICATION_XML));
+        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(results);
+
 
         assertFalse(validateIxbrl());
 
-        mockServer.verify();
+    }
+
+    @Test
+    public void validationMissingResponse() throws IOException {
+
+        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(null);
+
+
+        assertFalse(validateIxbrl());
+
     }
 
     @Test
     public void invalidResponse() {
 
-        mockServer.expect(requestTo(TNEP_URL))
-            .andExpect(method(HttpMethod.POST))
-            .andRespond(withSuccess("", MediaType.APPLICATION_XML));
+        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
+        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenThrow(
+            new Exception());
 
         assertFalse(validateIxbrl());
 
-        mockServer.verify();
+
     }
 
     @Test
     public void missingEnvVariable() {
 
-        tnepValidationService = new TnepValidationServiceImpl() {
-
-            protected String getIxbrlValidatorUriEnvVal() {
-                return null;
-            }
-        };
+        when(environmentReader.getMandatoryString(anyString())).thenReturn(null);
 
         assertFalse(validateIxbrl());
     }
 
     private boolean validateIxbrl() {
-        return tnepValidationService.validate("test", S3_TESTLOCATION);
+        return tnepValidationService.validate("test", "S3-LOCATION");
     }
 }
