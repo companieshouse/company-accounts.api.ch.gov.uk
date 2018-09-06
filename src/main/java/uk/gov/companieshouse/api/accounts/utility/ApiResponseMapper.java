@@ -52,7 +52,7 @@ public class ApiResponseMapper {
         if (restObject == null) {
             LogContext logContext = LogHelper.createNewLogContext(request);
             LOGGER.debugLogContext("Resource not found", logContext);
-            return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.status(HttpStatus.OK).body(restObject);
     }

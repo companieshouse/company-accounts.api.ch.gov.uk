@@ -102,8 +102,7 @@ public class CurrentPeriodController {
             return apiResponseMapper.map(dae);
         }
 
-        return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData());
+        return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
     }
 }
