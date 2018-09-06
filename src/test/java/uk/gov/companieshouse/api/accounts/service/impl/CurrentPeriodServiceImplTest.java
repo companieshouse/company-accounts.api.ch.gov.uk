@@ -18,18 +18,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodServiceImplTest {
 
+
     @Mock
     private CurrentPeriod currentPeriod;
+
+    @Mock
+    private Transaction transaction;
 
     @Mock
     private CurrentPeriodEntity createCurrentPeriodEntity;
@@ -59,8 +65,8 @@ public class CurrentPeriodServiceImplTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCreateCurrentPeriod() {
-        ResponseObject<CurrentPeriod> result = currentPeriodService.create(currentPeriod, "");
+    public void canCreateCurrentPeriod() throws DataException {
+        ResponseObject<CurrentPeriod> result = currentPeriodService.create(currentPeriod, transaction, "", "");
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
 

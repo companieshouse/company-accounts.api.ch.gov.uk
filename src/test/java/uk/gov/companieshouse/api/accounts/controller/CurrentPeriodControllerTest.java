@@ -24,6 +24,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -70,11 +71,13 @@ public class CurrentPeriodControllerTest {
     private CurrentPeriodController currentPeriodController;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException {
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.SUCCESS_CREATED,
+    public void setUp() throws NoSuchAlgorithmException, DataException {
+        when(request.getAttribute("transaction")).thenReturn(transaction);
+        when(request.getHeader("X-Request-Id")).thenReturn("test");
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
                 currentPeriod);
         doReturn(responseObject).when(currentPeriodService)
-                .create(any(CurrentPeriod.class), anyString());
+                .create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),
@@ -83,9 +86,12 @@ public class CurrentPeriodControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(companyAccountEntity).when(request).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        doReturn(companyAccountEntity).when(request)
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(currentPeriodEntity).when(currentPeriodService).findById("123");
+        doReturn(responseObject).when(currentPeriodService).findById("create");
+        doReturn(new ResponseObject(ResponseStatus.FOUND,
+                currentPeriod)).when(currentPeriodService).findById("find");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -103,11 +109,14 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
-        doReturn("123").when(currentPeriodService).generateID(anyString());
+        doReturn("find").when(currentPeriodService).generateID(anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
+        when(apiResponseMapper.map(ResponseStatus.FOUND, currentPeriod,
+                null)).thenReturn(responseEntity);
         ResponseEntity response = currentPeriodController.get(request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(currentPeriodEntity, response.getBody());
+        assertEquals(currentPeriod, response.getBody());
     }
 }

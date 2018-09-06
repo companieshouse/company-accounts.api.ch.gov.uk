@@ -49,17 +49,19 @@ public class CompanyAccountController {
 
     @PostMapping
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-        HttpServletRequest request) {
+            HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader("X-Request-Id");
-ResponseEntity responseEntity;
-        try {        ResponseObject <CompanyAccount> responseObject = companyAccountService
-                .create(companyAccount, transaction, requestId);
-        responseEntity = apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
+        ResponseEntity responseEntity;
+        try {
+            ResponseObject<CompanyAccount> responseObject = companyAccountService
+                    .create(companyAccount, transaction, requestId);
+            responseEntity = apiResponseMapper
+                    .map(responseObject.getStatus(), responseObject.getData(),
+                            responseObject.getValidationErrorData());
         } catch (PatchException | DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
@@ -75,16 +77,16 @@ ResponseEntity responseEntity;
         LogContext logContext = LogHelper.createNewLogContext(request);
 
         CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
-            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccountEntity == null) {
 
             LOGGER.error("CompanyAccountController error: No company account in request",
-                logContext);
+                    logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);
         }
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(companyAccountTransformer.transform(companyAccountEntity));
+                .body(companyAccountTransformer.transform(companyAccountEntity));
 
     }
 }

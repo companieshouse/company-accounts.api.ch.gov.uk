@@ -15,10 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +29,9 @@ public class SmallFullServiceImplTest {
 
         @Mock
         private SmallFull smallFull;
+
+        @Mock
+        private Transaction transaction;
 
         @Mock
         private SmallFullEntity createdSmallFullEntity;
@@ -53,8 +58,8 @@ public class SmallFullServiceImplTest {
 
         @Test
         @DisplayName("Tests the successful creation of a smallFull resource")
-        public void canCreateAccount() {
-            ResponseObject<SmallFull> result = smallFullService.create(smallFull, "");
+        public void canCreateAccount() throws DataException{
+            ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", "");
             assertNotNull(result);
             assertEquals(smallFull, result.getData());
 
