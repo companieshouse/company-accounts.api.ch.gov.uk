@@ -3,11 +3,9 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.security.MessageDigest;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,12 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
+import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
@@ -39,19 +36,16 @@ public class CurrentPeriodServiceImplTest {
     private Transaction transaction;
 
     @Mock
-    private CurrentPeriodEntity createCurrentPeriodEntity;
+    private CurrentPeriodRepository currentPeriodRepository;
 
     @Mock
-    private MongoRepository parentMongoRepository;
+    private SmallFullService smallFullService;
 
     @Mock
     private MessageDigest messageDigest;
 
     @Mock
-    private SmallFullEntity smallFullEntity;
-
-    @Mock
-    private SmallFullDataEntity smallFullDataEntity;
+    private CurrentPeriodEntity currentPeriodEntity;
 
     @Mock
     private CurrentPeriodTransformer currentPeriodTransformer;
@@ -59,12 +53,9 @@ public class CurrentPeriodServiceImplTest {
     @InjectMocks
     private CurrentPeriodServiceImpl currentPeriodService;
 
-
     @BeforeEach
     public void setUp() {
         currentPeriodService.setMessageDigest(messageDigest);
-        when(currentPeriodTransformer.transform(currentPeriod))
-                .thenReturn(createCurrentPeriodEntity);
         byte[] b = {12, 10, 56, 120, 13, 15};
         when(messageDigest.digest(any())).thenReturn(b);
     }
@@ -72,8 +63,7 @@ public class CurrentPeriodServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws DataException {
-        when(parentMongoRepository.findById(anyString())).thenReturn(Optional.of(smallFullEntity));
-        when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
+        when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
         ResponseObject<CurrentPeriod> result = currentPeriodService
                 .create(currentPeriod, transaction, "", "");
         assertNotNull(result);
