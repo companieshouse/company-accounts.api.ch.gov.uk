@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.utility;
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class ApiResponseMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
-
     /**
      * Builds a Response Entity based on the supplied status, entity and error data.
      */
@@ -39,9 +37,7 @@ public class ApiResponseMapper {
     }
 
     public ResponseEntity map(Exception exception) {
-        if (exception instanceof DataException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } else if (exception instanceof PatchException) {
+        if (exception instanceof DataException || exception instanceof PatchException) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -48,6 +48,12 @@ public class CurrentPeriodServiceImplTest {
     private MessageDigest messageDigest;
 
     @Mock
+    private SmallFullEntity smallFullEntity;
+
+    @Mock
+    private SmallFullDataEntity smallFullDataEntity;
+
+    @Mock
     private CurrentPeriodTransformer currentPeriodTransformer;
 
     @InjectMocks
