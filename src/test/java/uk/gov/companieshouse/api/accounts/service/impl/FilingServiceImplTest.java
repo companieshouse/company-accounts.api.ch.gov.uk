@@ -92,24 +92,6 @@ class FilingServiceImplTest {
         assertNull(filing);
     }
 
-    @Test
-    @DisplayName("Tests the filing not generated when fails tnep validation")
-    void shouldNotGenerateFilingAsFailTnepValidation() {
-
-        doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl();
-        doReturn(false).when(environmentReaderMock)
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
-
-        Filing filing = filingService
-            .generateAccountFiling(transaction, companyAccountEntity);
-
-        verifyDocumentGeneratorCallerMock();
-        verify(environmentReaderMock, times(1))
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
-
-        assertNull(filing);
-    }
-
     private void verifyDocumentGeneratorCallerMock() {
         verify(documentGeneratorCallerMock, times(1)).generateIxbrl();
     }
