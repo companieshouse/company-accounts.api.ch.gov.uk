@@ -91,7 +91,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     @Override
     public void addLink(String id, LinkType linkType, String link) {
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new MongoException(
+                        "Failed to add link to Company account entity"));
         CompanyAccountDataEntity companyAccountDataEntity = companyAccountEntity.getData();
         Map<String, String> map = companyAccountDataEntity.getLinks();
         map.put(linkType.getLink(), link);

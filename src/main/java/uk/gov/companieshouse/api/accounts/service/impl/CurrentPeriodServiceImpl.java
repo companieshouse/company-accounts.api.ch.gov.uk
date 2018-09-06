@@ -111,7 +111,9 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
 
     @Override
     public void addLink(String id, LinkType linkType, String link) {
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id)
+                .orElseThrow(() -> new MongoException(
+                        "Failed to add link of type to Current period entity"));
         CurrentPeriodDataEntity currentPeriodDataEntity = currentPeriodEntity.getData();
         Map<String, String> map = currentPeriodDataEntity.getLinks();
         map.put(linkType.getLink(), link);

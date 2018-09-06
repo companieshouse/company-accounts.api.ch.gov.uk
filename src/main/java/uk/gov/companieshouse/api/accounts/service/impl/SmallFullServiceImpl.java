@@ -117,7 +117,9 @@ public class SmallFullServiceImpl implements
 
     @Override
     public void addLink(String id, LinkType linkType, String link) {
-        SmallFullEntity smallFullEntity = smallFullRepository.findById(id).orElse(null);
+        SmallFullEntity smallFullEntity = smallFullRepository.findById(id)
+                .orElseThrow(() -> new MongoException(
+                        "Failed to add link of type to Small full entity"));
         SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
         Map<String, String> map = smallFullDataEntity.getLinks();
         map.put(linkType.getLink(), link);
