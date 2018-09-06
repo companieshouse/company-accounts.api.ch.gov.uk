@@ -112,8 +112,8 @@ public class FilingServiceImpl implements FilingService {
      */
     private boolean isValidIxbrl() {
         boolean isIxbrlValid = true;
-        if (environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR) == false) {
-            //TODO TNEP validation to be added when functionality is implemented . (STORY SFA-574)
+        if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
+            //TODO Add TNEP validation to be added when functionality is implemented . (STORY SFA-574)
             //isIxbrlValid will be set to false if fails the tnep validation.
         }
 
