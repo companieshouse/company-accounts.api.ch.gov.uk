@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -89,7 +88,7 @@ public class CurrentPeriodController {
         }
 
         String companyAccountId = companyAccountEntity.getId();
-        String currentPeriodId = currentPeriodService.generateID(companyAccountId, ResourceName.CURRENT_PERIOD.getName());
+        String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
         final Map<String, Object> debugMap = new HashMap<>();

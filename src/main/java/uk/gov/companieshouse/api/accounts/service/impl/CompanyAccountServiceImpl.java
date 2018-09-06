@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
+import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
@@ -48,7 +50,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
-        addKind(companyAccount);
+        companyAccount.setKind(Kind.COMPANY_ACCOUNTS.getValue());
         addEtag(companyAccount);
         addLinks(companyAccount, companyAccountLink);
 
@@ -86,6 +88,17 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         return new ResponseObject<>(ResponseStatus.CREATED, companyAccount);
     }
 
+    @Override
+    public void addLink(String id, LinkType linkType, String link) {
+        CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
+                .orElse(null);
+        CompanyAccountDataEntity companyAccountDataEntity = companyAccountEntity.getData();
+        Map<String, String> map = companyAccountDataEntity.getLinks();
+        map.put(linkType.getLink(), link);
+        companyAccountDataEntity.setLinks(map);
+        companyAccountRepository.save(companyAccountEntity);
+    }
+
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
         Map<String, String> map = new HashMap<>();
         map.put(LinkType.SELF.getLink(), companyAccountLink);
@@ -93,15 +106,12 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private String createSelfLink(Transaction transaction, String id) {
-        return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName() + "/" + id;
+        return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName()
+                + "/" + id;
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
         return transaction.getLinks().get(LinkType.SELF.getLink());
-    }
-
-    private void addKind(CompanyAccount rest) {
-        rest.setKind("company-accounts#company-accounts");
     }
 
     private void addEtag(CompanyAccount rest) {

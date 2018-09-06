@@ -1,59 +1,133 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transformer.GenericTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public class CurrentPeriodServiceImpl extends
-        AbstractServiceImpl<CurrentPeriod, CurrentPeriodEntity, SmallFullEntity> implements
-        CurrentPeriodService {
+public class CurrentPeriodServiceImpl implements CurrentPeriodService {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+
+    private CurrentPeriodRepository currentPeriodRepository;
+
+    private CurrentPeriodTransformer currentPeriodTransformer;
+
+    private SmallFullService smallFullService;
+
+    private MessageDigest messageDigest;
 
     @Autowired
     public CurrentPeriodServiceImpl(
-            @Qualifier("currentPeriodRepository") MongoRepository<CurrentPeriodEntity, String> mongoRepository,
-            @Qualifier("currentPeriodTransformer") GenericTransformer<CurrentPeriod, CurrentPeriodEntity> transformer,
-            @Qualifier("smallFullRepository") MongoRepository<SmallFullEntity, String> parentMongoRepository) {
-        super(mongoRepository, transformer, parentMongoRepository);
+            CurrentPeriodRepository currentPeriodRepository,
+            CurrentPeriodTransformer currentPeriodTransformer,
+            SmallFullService smallFullService) {
+        this.currentPeriodRepository = currentPeriodRepository;
+        this.currentPeriodTransformer = currentPeriodTransformer;
+        this.smallFullService = smallFullService;
     }
 
     @Override
-    public void addKind(CurrentPeriod rest) {
-        rest.setKind(Kind.CURRENT_PERIOD.getValue());
+    public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
+            Transaction transaction,
+            String companyAccountId, String requestId)
+            throws DataException {
+
+        String selfLink = createSelfLink(transaction, companyAccountId);
+        initLinks(currentPeriod, selfLink);
+        currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
+        currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
+
+        try {
+            currentPeriodEntity.setId(generateID(companyAccountId));
+            currentPeriodRepository.insert(currentPeriodEntity);
+            smallFullService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink);
+        } catch (DuplicateKeyException dke) {
+            LOGGER.errorContext(requestId, dke, debugMap);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+        } catch (MongoException me) {
+            DataException dataException = new DataException(
+                    "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
-    public String getResourceName() {
-        return ResourceName.CURRENT_PERIOD.getName();
+    public ResponseObject<CurrentPeriod> findById(String id) {
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+        if (currentPeriodEntity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
+        return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
+    }
+
+    @Override
+    public String generateID(String value) {
+        String unencryptedId = value + "-" + ResourceName.CURRENT_PERIOD.getName();
+        byte[] id = messageDigest.digest(
+                unencryptedId.getBytes(StandardCharsets.UTF_8));
+        return Base64.getUrlEncoder().encodeToString(id);
+    }
+
+    public void initLinks(CurrentPeriod currentPeriod, String link) {
+        Map<String, String> map = new HashMap<>();
+        map.put(LinkType.SELF.getLink(), link);
+        currentPeriod.setLinks(map);
+    }
+
+    @Override
+    public void addLink(String id, LinkType linkType, String link) {
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+        CurrentPeriodDataEntity currentPeriodDataEntity = currentPeriodEntity.getData();
+        Map<String, String> map = currentPeriodDataEntity.getLinks();
+        map.put(linkType.getLink(), link);
+        currentPeriodDataEntity.setLinks(map);
+        currentPeriodEntity.setData(currentPeriodDataEntity);
+        currentPeriodRepository.save(currentPeriodEntity);
     }
 
     @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
-                + companyAccountId + "/small-full/" + getResourceName();
+                + companyAccountId + "/small-full/" + ResourceName.CURRENT_PERIOD.getName();
     }
 
-    @Override
-    public void addParentLink(String parentId, String link) {
-        SmallFullEntity smallFullEntity = getParentMongoRepository()
-                .findById(generateID(parentId, ResourceName.SMALL_FULL.getName())).orElse(null);
-        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
-        Map<String, String> map = smallFullDataEntity.getLinks();
-        map.put(LinkType.CURRENT_PERIOD.getLink(), link);
-        smallFullDataEntity.setLinks(map);
-        smallFullEntity.setData(smallFullDataEntity);
-        getParentMongoRepository().save(smallFullEntity);
+    @Autowired
+    public void setMessageDigest(MessageDigest messageDigest) {
+        this.messageDigest = messageDigest;
     }
 }

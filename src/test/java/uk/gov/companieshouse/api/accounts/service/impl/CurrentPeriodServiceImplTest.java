@@ -45,12 +45,6 @@ public class CurrentPeriodServiceImplTest {
     private MongoRepository parentMongoRepository;
 
     @Mock
-    private SmallFullEntity smallFullEntity;
-
-    @Mock
-    private SmallFullDataEntity smallFullDataEntity;
-
-    @Mock
     private MessageDigest messageDigest;
 
     @Mock
