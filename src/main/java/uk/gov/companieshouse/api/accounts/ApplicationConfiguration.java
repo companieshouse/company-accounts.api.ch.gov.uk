@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
@@ -20,7 +21,12 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public EnvironmentReader environmentReader() {
-        return  new EnvironmentReaderImpl();
+    public EnvironmentReader getEnvironmentReader() {
+        return new EnvironmentReaderImpl();
+    }
+
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
     }
 }
