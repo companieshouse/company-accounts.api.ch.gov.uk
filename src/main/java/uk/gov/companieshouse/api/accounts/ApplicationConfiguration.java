@@ -22,12 +22,12 @@ public class ApplicationConfiguration {
     }
     
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
     
     @Bean
-    EnvironmentReader environmentReader() {
+    public EnvironmentReader getEnvironmentReader() {
         return new EnvironmentReaderImpl();
     }
 }
