@@ -1563,10 +1563,11 @@ ul.accounts-comps-ct {
             <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
             ({{$company.jurisdiction }})
           </h2>
+            {{$period := .small_full_account.period}}
           <h2 class="text--center margin-large" >
             <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
           </h2>
-          {{$period := .small_full_account.period}}
+
           <h2 class="text--center margin-large">Period of accounts</h2>
           <h2 class="text--center margin-large">Start date: {{$period.current_period_start_on_formatted}}</h2>
           <h2 class="text--center">End date: {{$period.current_period_end_on_formatted}}</h2>
@@ -1596,6 +1597,7 @@ ul.accounts-comps-ct {
                 </td>
                 <td></td>
               </tr>
+              {{if .small_full_account.notes}}
               <tr>
                 <td class="strong">
                   <a href="#AdditionalNotesSection">Additional notes</a>
@@ -1608,6 +1610,7 @@ ul.accounts-comps-ct {
                 </td>
                 <td></td>
               </tr>
+              {{end}}
             </tbody>
           </table>
         </div>
