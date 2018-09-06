@@ -59,7 +59,7 @@ class FilingServiceImplTest {
     @DisplayName("Tests the filing generation. Happy path")
     void shouldGenerateFiling() {
         doReturn(IXBRL_LOCATION).when(documentGeneratorCallerMock).generateIxbrl();
-        doReturn(true).when(environmentReaderMock)
+        doReturn(false).when(environmentReaderMock)
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         Filing filing = filingService

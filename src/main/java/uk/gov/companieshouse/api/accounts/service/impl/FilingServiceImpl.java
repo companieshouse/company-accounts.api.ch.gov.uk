@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -85,7 +84,6 @@ public class FilingServiceImpl implements FilingService {
      *
      * @return {@link Filing} - null or filing with the filing information (e.g. ixbrl location,
      * accounts name, etc)
-     * @throws IOException -
      */
     private Filing generateAccountFiling(Transaction transaction, AccountsType accountsType) {
         String ixbrlLocation = generateIxbrl();
@@ -107,14 +105,16 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Validates the ixbrl against TNEP. This validation is driven by the env. variable and it can
-     * be disable.
+     * Validates the ixbrl against TNEP. This validation is driven by the environment and it can be
+     * disable.
      */
     private boolean isValidIxbrl() {
-        boolean isIxbrlValid = true;
+        //TODO: this will be set to true when TNEP Validation plugged in.(STORY SFA-574)
+        boolean isIxbrlValid = false;
         if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
             //TODO Add TNEP validation to be added when functionality is implemented . (STORY SFA-574)
             //isIxbrlValid will be set to false if fails the tnep validation.
+            isIxbrlValid =  true;
         }
 
         return isIxbrlValid;
@@ -127,7 +127,6 @@ public class FilingServiceImpl implements FilingService {
      * @param accountsType - Account type information: account type, ixbrl's template name, account
      * @param ixbrlLocation - the location where the ixbrl is stored.
      * @return
-     * @throws IOException
      */
     private Filing createAccountFiling(Transaction transaction, AccountsType accountsType,
         String ixbrlLocation) {
