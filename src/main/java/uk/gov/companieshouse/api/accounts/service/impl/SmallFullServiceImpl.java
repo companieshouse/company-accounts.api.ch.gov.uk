@@ -56,7 +56,6 @@ public class SmallFullServiceImpl implements
     public ResponseObject<SmallFull> create(SmallFull smallFull, Transaction transaction,
             String companyAccountId, String requestId)
             throws DataException {
-
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(smallFull, selfLink);
         smallFull.setEtag(GenerateEtagUtil.generateEtag());
@@ -67,10 +66,12 @@ public class SmallFullServiceImpl implements
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("company_accounts_id", companyAccountId);
 
+        String id = generateID(companyAccountId);
+        baseEntity.setId(id);
+        debugMap.put("id", id);
+
         try {
-            baseEntity.setId(generateID(companyAccountId));
             smallFullRepository.insert(baseEntity);
-            companyAccountService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorContext(requestId, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
@@ -81,17 +82,56 @@ public class SmallFullServiceImpl implements
             throw dataException;
         }
 
+        companyAccountService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink);
+
         return new ResponseObject<>(ResponseStatus.CREATED, smallFull);
     }
 
     @Override
-    public ResponseObject<SmallFull> findById(String id) {
-        SmallFullEntity smallFullEntity = smallFullRepository.findById(id).orElse(null);
+    public ResponseObject<SmallFull> findById(String id, String requestId) throws DataException {
+        SmallFullEntity smallFullEntity;
+        try {
+            smallFullEntity = smallFullRepository.findById(id).orElse(null);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Small full entity", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
+
         if (smallFullEntity == null) {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
+
         SmallFull smallFull = smallFullTransformer.transform(smallFullEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, smallFull);
+    }
+
+    @Override
+    public void addLink(String id, LinkType linkType, String link, String requestId)
+            throws DataException {
+        SmallFullEntity smallFullEntity = smallFullRepository.findById(id)
+                .orElseThrow(() -> new DataException(
+                        "Failed to add get Small full entity to add link"));
+        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
+        Map<String, String> map = smallFullDataEntity.getLinks();
+        map.put(linkType.getLink(), link);
+        smallFullDataEntity.setLinks(map);
+        smallFullEntity.setData(smallFullDataEntity);
+
+        try {
+            smallFullRepository.save(smallFullEntity);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            debugMap.put("link", link);
+            debugMap.put("link_type", linkType.getLink());
+
+            DataException dataException = new DataException("Failed to add link to Small full", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
     }
 
     @Override
@@ -103,29 +143,16 @@ public class SmallFullServiceImpl implements
     }
 
     @Override
-    public void initLinks(SmallFull smallFull, String link) {
-        Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), link);
-        smallFull.setLinks(map);
-    }
-
-    @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName();
     }
 
-    @Override
-    public void addLink(String id, LinkType linkType, String link) {
-        SmallFullEntity smallFullEntity = smallFullRepository.findById(id)
-                .orElseThrow(() -> new MongoException(
-                        "Failed to add link of type to Small full entity"));
-        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
-        Map<String, String> map = smallFullDataEntity.getLinks();
-        map.put(linkType.getLink(), link);
-        smallFullDataEntity.setLinks(map);
-        smallFullEntity.setData(smallFullDataEntity);
-        smallFullRepository.save(smallFullEntity);
+    private void initLinks(SmallFull smallFull, String link) {
+        Map<String, String> map = new HashMap<>();
+        map.put(LinkType.SELF.getLink(), link);
+        smallFull.setLinks(map);
     }
 
     @Autowired

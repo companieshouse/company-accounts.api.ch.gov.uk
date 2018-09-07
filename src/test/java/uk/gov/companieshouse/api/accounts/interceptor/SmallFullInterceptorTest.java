@@ -33,6 +33,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
+import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -82,23 +83,20 @@ public class SmallFullInterceptorTest {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
 
+        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(companyAccountEntity).when(httpServletRequest).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
         when(companyAccountEntity.getId()).thenReturn("test");
-
         when(smallFullService.generateID(anyString())).thenReturn("test");
-
-
-
         when(httpServletRequest.getMethod()).thenReturn("GET");
     }
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException {
-        when(smallFullService.findById(anyString())).thenReturn(responseObject);
+    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
+        when(smallFullService.findById(anyString(), anyString())).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
@@ -109,15 +107,14 @@ public class SmallFullInterceptorTest {
 
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
-        verify(smallFullService, times(1)).findById(anyString());
+        verify(smallFullService, times(1)).findById(anyString(), anyString());
         verify(httpServletRequest, times(1)).setAttribute(anyString(), any(SmallFull.class));
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
-    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException {
-
-        doThrow(mock(DataAccessException.class)).when(smallFullService).findById(anyString());
+    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
+        doThrow(mock(DataException.class)).when(smallFullService).findById(anyString(), anyString());
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
     }

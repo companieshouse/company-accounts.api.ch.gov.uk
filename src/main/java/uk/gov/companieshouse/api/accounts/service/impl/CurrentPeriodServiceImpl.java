@@ -68,10 +68,12 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("company_accounts_id", companyAccountId);
 
+        String id = generateID(companyAccountId);
+        currentPeriodEntity.setId(id);
+        debugMap.put("id", id);
+
         try {
-            currentPeriodEntity.setId(generateID(companyAccountId));
             currentPeriodRepository.insert(currentPeriodEntity);
-            smallFullService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorContext(requestId, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
@@ -82,17 +84,56 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
             throw dataException;
         }
 
+        smallFullService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink, requestId);
+
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> findById(String id) {
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+    public ResponseObject<CurrentPeriod> findById(String id, String requestId)
+            throws DataException {
+        CurrentPeriodEntity currentPeriodEntity;
+        try {
+            currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Current period", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
+
         if (currentPeriodEntity == null) {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
         CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
+    }
+
+    @Override
+    public void addLink(String id, LinkType linkType, String link, String requestId)
+            throws DataException {
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id)
+                .orElseThrow(() -> new DataException(
+                        "Failed to add get Current period entity to add link"));
+        CurrentPeriodDataEntity currentPeriodDataEntity = currentPeriodEntity.getData();
+        Map<String, String> map = currentPeriodDataEntity.getLinks();
+        map.put(linkType.getLink(), link);
+        currentPeriodDataEntity.setLinks(map);
+        currentPeriodEntity.setData(currentPeriodDataEntity);
+        try {
+            currentPeriodRepository.save(currentPeriodEntity);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            debugMap.put("link", link);
+            debugMap.put("link_type", linkType.getLink());
+
+            DataException dataException = new DataException(
+                    "Failed to add link to Small full", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
     }
 
     @Override
@@ -103,29 +144,16 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
         return Base64.getUrlEncoder().encodeToString(id);
     }
 
-    public void initLinks(CurrentPeriod currentPeriod, String link) {
-        Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), link);
-        currentPeriod.setLinks(map);
-    }
-
-    @Override
-    public void addLink(String id, LinkType linkType, String link) {
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id)
-                .orElseThrow(() -> new MongoException(
-                        "Failed to add link of type to Current period entity"));
-        CurrentPeriodDataEntity currentPeriodDataEntity = currentPeriodEntity.getData();
-        Map<String, String> map = currentPeriodDataEntity.getLinks();
-        map.put(linkType.getLink(), link);
-        currentPeriodDataEntity.setLinks(map);
-        currentPeriodEntity.setData(currentPeriodDataEntity);
-        currentPeriodRepository.save(currentPeriodEntity);
-    }
-
     @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
                 + companyAccountId + "/small-full/" + ResourceName.CURRENT_PERIOD.getName();
+    }
+
+    private void initLinks(CurrentPeriod currentPeriod, String link) {
+        Map<String, String> map = new HashMap<>();
+        map.put(LinkType.SELF.getLink(), link);
+        currentPeriod.setLinks(map);
     }
 
     @Autowired

@@ -86,9 +86,9 @@ public class CurrentPeriodControllerTest {
         doReturn(companyAccountEntity).when(request)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(responseObject).when(currentPeriodService).findById("create");
+        doReturn(responseObject).when(currentPeriodService).findById("create", "test");
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-                currentPeriod)).when(currentPeriodService).findById("find");
+                currentPeriod)).when(currentPeriodService).findById("find", "test");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");

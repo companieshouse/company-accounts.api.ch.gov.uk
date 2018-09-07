@@ -6,13 +6,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
@@ -61,8 +61,11 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
+        String requestId = request.getHeader("X-Request-Id");
+
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
+        debugMap.put("request_id", requestId);
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
@@ -94,9 +97,9 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         String smallFullId = smallFullService.generateID(companyAccountId);
         ResponseObject<SmallFull> responseObject;
         try {
-            responseObject = smallFullService.findById(smallFullId);
-        } catch (DataAccessException dae) {
-            LOGGER.errorRequest(request, dae, debugMap);
+            responseObject = smallFullService.findById(smallFullId, requestId);
+        } catch (DataException de) {
+            LOGGER.errorRequest(request, de, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
