@@ -146,8 +146,10 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
 
     @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/company-account/"
-                + companyAccountId + "/small-full/" + ResourceName.CURRENT_PERIOD.getName();
+        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+                + ResourceName.CURRENT_PERIOD.getName();
     }
 
     private void initLinks(CurrentPeriod currentPeriod, String link) {
