@@ -56,9 +56,6 @@ public class CurrentPeriodControllerTest {
     private CurrentPeriod currentPeriod;
 
     @Mock
-    private CurrentPeriodEntity currentPeriodEntity;
-
-    @Mock
     private CurrentPeriodService currentPeriodService;
 
     @Mock

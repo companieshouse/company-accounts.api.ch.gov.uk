@@ -47,13 +47,7 @@ public class SmallFullControllerTest {
     private CompanyAccountEntity companyAccountEntity;
 
     @Mock
-    private SmallFullTransformer smallFullTransformer;
-
-    @Mock
     private SmallFull smallFull;
-
-    @Mock
-    private SmallFullEntity smallFullEntity;
 
     @Mock
     private SmallFullService smallFullService;
