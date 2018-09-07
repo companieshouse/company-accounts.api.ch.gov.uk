@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
-public interface AbstractService<T extends RestObject, U extends BaseEntity> {
+public interface AbstractService<T extends RestObject> {
 
     ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId,
             String requestId)

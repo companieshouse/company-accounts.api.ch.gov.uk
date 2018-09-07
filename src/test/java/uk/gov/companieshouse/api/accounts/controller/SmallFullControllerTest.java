@@ -44,9 +44,6 @@ public class SmallFullControllerTest {
     private Transaction transaction;
 
     @Mock
-    private BindingResult bindingResult;
-
-    @Mock
     private CompanyAccountEntity companyAccountEntity;
 
     @Mock
