@@ -65,7 +65,7 @@ class FilingControllerTest {
         response =
             filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
 
     @Test
@@ -77,7 +77,7 @@ class FilingControllerTest {
         response =
             filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
 
     @Test
@@ -91,7 +91,7 @@ class FilingControllerTest {
         response =
             filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
 
     private void mockHttpServletRequestAllAttributesSet() {

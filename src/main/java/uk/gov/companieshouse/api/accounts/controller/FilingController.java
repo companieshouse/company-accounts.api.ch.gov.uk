@@ -39,7 +39,7 @@ public class FilingController {
 
         if (transaction == null) {
             logRequestError(request, "no transaction in request session");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         CompanyAccountEntity companyAccountEntity =
@@ -47,7 +47,7 @@ public class FilingController {
 
         if (companyAccountEntity == null) {
             logRequestError(request,  "no company account in request session");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
@@ -56,7 +56,7 @@ public class FilingController {
         }
 
         logRequestError(request,  "Failed to generate filing");
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void logRequestError(HttpServletRequest request, String errorMessage) {
