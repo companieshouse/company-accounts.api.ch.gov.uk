@@ -132,12 +132,12 @@ public class FilingServiceImpl implements FilingService {
         String ixbrlLocation) {
         Filing filing = new Filing();
 
-        //TODO Set correct periodEndOn (it is the Current Period's end date" in mongodb). Waiting for Doc.Gen changes. (STORY SFA-595)
-        LocalDate periodEndDate = LocalDate.now();
-
         filing.setCompanyNumber(transaction.getCompanyNumber());
         filing.setDescriptionIdentifier(accountsType.getAccountType());
         filing.setKind(accountsType.getKind());
+
+        //TODO Get Information from document-generator: periodEndDate, descriptionValues. When Implementation is completed (STORY SFA-595)
+        LocalDate periodEndDate = LocalDate.now();
         filing.setDescriptionValues(getDescriptionValues(periodEndDate));
         filing.setData(getFilingData(periodEndDate, ixbrlLocation));
 
