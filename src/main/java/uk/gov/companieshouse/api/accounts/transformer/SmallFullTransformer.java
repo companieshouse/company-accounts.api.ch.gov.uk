@@ -2,10 +2,8 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 
 @Component

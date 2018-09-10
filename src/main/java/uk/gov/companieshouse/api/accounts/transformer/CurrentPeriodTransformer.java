@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 
 @Component
@@ -30,6 +31,16 @@ public class CurrentPeriodTransformer implements
 
     @Override
     public CurrentPeriod transform(CurrentPeriodEntity entity) {
-        return null;
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        CurrentPeriodDataEntity currentPeriodDataEntity = entity.getData();
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        BeanUtils.copyProperties(currentPeriodDataEntity, currentPeriod);
+        if (currentPeriodDataEntity.getBalanceSheetEntity() != null) {
+            BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity(),  balanceSheet);
+        }
+
+        currentPeriod.setBalanceSheet(balanceSheet);
+        return currentPeriod;
     }
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -33,7 +35,7 @@ public class CurrentPeriodTransformerTest {
 
     @Test
     @DisplayName("Tests current period transformer with populated object and validates values returned")
-    public void testTransformerWithPopulatedObject() {
+    public void testRestToEntityTransformerWithPopulatedObject() {
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(5);
 
@@ -53,6 +55,32 @@ public class CurrentPeriodTransformerTest {
                         .getCalledUpShareCapitalNotPaid());
         Assertions.assertEquals("kind", currentPeriodEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), currentPeriodEntity.getData().getLinks());
+    }
+
+    @Test
+    @DisplayName("Tests current period transformer with populated object and validates values returned")
+    public void testEntityToRestTransformerWithPopulatedObject() {
+        BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
+        balanceSheetEntity.setCalledUpShareCapitalNotPaid(5);
+
+        CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
+        CurrentPeriodDataEntity currentPeriodDataEntity = new CurrentPeriodDataEntity();
+        currentPeriodDataEntity.setEtag("etag");
+        currentPeriodDataEntity.setKind("kind");
+        currentPeriodDataEntity.setLinks(new HashMap<>());
+        currentPeriodDataEntity.setBalanceSheetEntity(balanceSheetEntity);
+        currentPeriodEntity.setData(currentPeriodDataEntity);
+
+        CurrentPeriod currentPeriod = currentPeriodTransformer
+                .transform(currentPeriodEntity);
+
+        Assertions.assertNotNull(currentPeriodEntity);
+        Assertions.assertEquals("etag", currentPeriod.getEtag());
+        Assertions.assertEquals(Integer.valueOf(5),
+                currentPeriod.getBalanceSheet()
+                        .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals("kind", currentPeriod.getKind());
+        Assertions.assertEquals(new HashMap<>(), currentPeriod.getLinks());
     }
 }
 

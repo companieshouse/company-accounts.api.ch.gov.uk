@@ -8,6 +8,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 
@@ -31,7 +32,7 @@ public class SmallFullTransformerTest {
 
     @Test
     @DisplayName("Tests smallfull transformer with populated object and validates values returned")
-    public void testTransformerWithPopulatedObject() {
+    public void testRestToEntityTransformerWithPopulatedObject() {
         SmallFull smallFull = new SmallFull();
         smallFull.setEtag("etag");
         smallFull.setKind("kind");
@@ -43,6 +44,24 @@ public class SmallFullTransformerTest {
         Assertions.assertEquals("etag", smallFullEntity.getData().getEtag());
         Assertions.assertEquals("kind", smallFullEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), smallFullEntity.getData().getLinks());
+    }
+
+    @Test
+    @DisplayName("Tests smallfull transformer with populated object and validates values returned")
+    public void testEntityToRestTransformerWithPopulatedObject() {
+        SmallFullEntity smallFullEntity = new SmallFullEntity();
+        SmallFullDataEntity smallFullDataEntity = new SmallFullDataEntity();
+        smallFullDataEntity.setEtag("etag");
+        smallFullDataEntity.setKind("kind");
+        smallFullDataEntity.setLinks(new HashMap<>());
+        smallFullEntity.setData(smallFullDataEntity);
+
+        SmallFull smallFull = smallFullTransformer.transform(smallFullEntity);
+
+        Assertions.assertNotNull(smallFull);
+        Assertions.assertEquals("etag", smallFull.getEtag());
+        Assertions.assertEquals("kind", smallFull.getKind());
+        Assertions.assertEquals(new HashMap<>(), smallFull.getLinks());
     }
 }
 

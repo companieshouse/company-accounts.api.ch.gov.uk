@@ -56,9 +56,6 @@ public class CurrentPeriodControllerTest {
     private CurrentPeriod currentPeriod;
 
     @Mock
-    private CurrentPeriodEntity currentPeriodEntity;
-
-    @Mock
     private CurrentPeriodService currentPeriodService;
 
     @Mock
@@ -89,9 +86,9 @@ public class CurrentPeriodControllerTest {
         doReturn(companyAccountEntity).when(request)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(responseObject).when(currentPeriodService).findById("create");
+        doReturn(responseObject).when(currentPeriodService).findById("create", "test");
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-                currentPeriod)).when(currentPeriodService).findById("find");
+                currentPeriod)).when(currentPeriodService).findById("find", "test");
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get("self");
@@ -111,8 +108,8 @@ public class CurrentPeriodControllerTest {
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
         doReturn("find").when(currentPeriodService).generateID(anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
-        when(apiResponseMapper.map(ResponseStatus.FOUND, currentPeriod,
-                null)).thenReturn(responseEntity);
+        when(apiResponseMapper.mapGetResponse(currentPeriod,
+                request)).thenReturn(responseEntity);
         ResponseEntity response = currentPeriodController.get(request);
 
         assertNotNull(response);

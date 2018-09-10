@@ -2,13 +2,11 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +71,7 @@ public class CurrentPeriodController {
     }
 
     @GetMapping
-    public ResponseEntity get(HttpServletRequest request) throws NoSuchAlgorithmException {
+    public ResponseEntity get(HttpServletRequest request) {
         LogContext logContext = LogHelper.createNewLogContext(request);
 
         Transaction transaction = (Transaction) request
@@ -88,6 +86,7 @@ public class CurrentPeriodController {
         }
 
         String companyAccountId = companyAccountEntity.getId();
+        String requestId = request.getHeader("X-Request-Id");
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -95,14 +94,13 @@ public class CurrentPeriodController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = currentPeriodService.findById(currentPeriodId);
-        } catch (DataAccessException dae) {
-            LOGGER.errorRequest(request, dae, debugMap);
-            return apiResponseMapper.map(dae);
+            responseObject = currentPeriodService.findById(currentPeriodId, requestId);
+        } catch (DataException de) {
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
         }
 
-        return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData());
+        return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
     }
 }
