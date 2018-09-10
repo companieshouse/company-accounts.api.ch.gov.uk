@@ -18,8 +18,6 @@ public interface AbstractService<T extends RestObject> {
     void addLink(String id, LinkType linkType, String link, String requestId)
             throws DataException;
 
-    String createSelfLink(Transaction transaction, String companyAccountId);
-
     String generateID(String value);
 
 }

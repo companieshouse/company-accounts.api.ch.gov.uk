@@ -2,9 +2,6 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
@@ -25,6 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -40,16 +37,18 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
 
     private SmallFullService smallFullService;
 
-    private MessageDigest messageDigest;
+    private KeyIdGenerator keyIdGenerator;
 
     @Autowired
     public CurrentPeriodServiceImpl(
             CurrentPeriodRepository currentPeriodRepository,
             CurrentPeriodTransformer currentPeriodTransformer,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService,
+            KeyIdGenerator keyIdGenerator) {
         this.currentPeriodRepository = currentPeriodRepository;
         this.currentPeriodTransformer = currentPeriodTransformer;
         this.smallFullService = smallFullService;
+        this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
@@ -116,11 +115,8 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id)
                 .orElseThrow(() -> new DataException(
                         "Failed to add get Current period entity to add link"));
-        CurrentPeriodDataEntity currentPeriodDataEntity = currentPeriodEntity.getData();
-        Map<String, String> map = currentPeriodDataEntity.getLinks();
-        map.put(linkType.getLink(), link);
-        currentPeriodDataEntity.setLinks(map);
-        currentPeriodEntity.setData(currentPeriodDataEntity);
+        currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
+
         try {
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException me) {
@@ -138,13 +134,9 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
 
     @Override
     public String generateID(String value) {
-        String unencryptedId = value + "-" + ResourceName.CURRENT_PERIOD.getName();
-        byte[] id = messageDigest.digest(
-                unencryptedId.getBytes(StandardCharsets.UTF_8));
-        return Base64.getUrlEncoder().encodeToString(id);
+        return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
-    @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
@@ -156,10 +148,5 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
         Map<String, String> map = new HashMap<>();
         map.put(LinkType.SELF.getLink(), link);
         currentPeriod.setLinks(map);
-    }
-
-    @Autowired
-    public void setMessageDigest(MessageDigest messageDigest) {
-        this.messageDigest = messageDigest;
     }
 }

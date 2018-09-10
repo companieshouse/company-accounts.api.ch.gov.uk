@@ -2,9 +2,6 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
@@ -25,6 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -41,15 +38,17 @@ public class SmallFullServiceImpl implements
 
     private CompanyAccountService companyAccountService;
 
-    private MessageDigest messageDigest;
+    private KeyIdGenerator keyIdGenerator;
 
     @Autowired
     public SmallFullServiceImpl(SmallFullRepository smallFullRepository,
             SmallFullTransformer smallFullTransformer,
-            CompanyAccountService companyAccountService) {
+            CompanyAccountService companyAccountService,
+            KeyIdGenerator keyIdGenerator) {
         this.smallFullRepository = smallFullRepository;
         this.smallFullTransformer = smallFullTransformer;
         this.companyAccountService = companyAccountService;
+        this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
@@ -114,11 +113,7 @@ public class SmallFullServiceImpl implements
         SmallFullEntity smallFullEntity = smallFullRepository.findById(id)
                 .orElseThrow(() -> new DataException(
                         "Failed to add get Small full entity to add link"));
-        SmallFullDataEntity smallFullDataEntity = smallFullEntity.getData();
-        Map<String, String> map = smallFullDataEntity.getLinks();
-        map.put(linkType.getLink(), link);
-        smallFullDataEntity.setLinks(map);
-        smallFullEntity.setData(smallFullDataEntity);
+        smallFullEntity.getData().getLinks().put(linkType.getLink(), link);
 
         try {
             smallFullRepository.save(smallFullEntity);
@@ -136,13 +131,9 @@ public class SmallFullServiceImpl implements
 
     @Override
     public String generateID(String value) {
-        String unencryptedId = value + "-" + ResourceName.SMALL_FULL.getName();
-        byte[] id = messageDigest.digest(
-                unencryptedId.getBytes(StandardCharsets.UTF_8));
-        return Base64.getUrlEncoder().encodeToString(id);
+        return keyIdGenerator.generate(value + "-" + ResourceName.SMALL_FULL.getName());
     }
 
-    @Override
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
@@ -153,10 +144,5 @@ public class SmallFullServiceImpl implements
         Map<String, String> map = new HashMap<>();
         map.put(LinkType.SELF.getLink(), link);
         smallFull.setLinks(map);
-    }
-
-    @Autowired
-    public void setMessageDigest(MessageDigest messageDigest) {
-        this.messageDigest = messageDigest;
     }
 }

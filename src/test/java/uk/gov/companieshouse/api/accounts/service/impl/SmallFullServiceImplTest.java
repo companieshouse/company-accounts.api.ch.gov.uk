@@ -4,21 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,7 +21,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
@@ -37,10 +28,9 @@ import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -73,13 +63,13 @@ public class SmallFullServiceImplTest {
     @Mock
     private MongoException mongoException;
 
+    @Mock
+    private KeyIdGenerator keyIdGenerator;
+
     @InjectMocks
     private SmallFullServiceImpl smallFullService;
 
     public void setUpCreate() {
-        smallFullService.setMessageDigest(messageDigest);
-        byte[] b = {12, 10, 56, 120, 13, 15};
-        when(messageDigest.digest(any())).thenReturn(b);
     }
 
     @Test
@@ -112,7 +102,9 @@ public class SmallFullServiceImplTest {
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
                 .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
-        Executable executable = ()->{smallFullService.create(smallFull, transaction, "", "");};
+        Executable executable = () -> {
+            smallFullService.create(smallFull, transaction, "", "");
+        };
         assertThrows(DataException.class, executable);
     }
 
@@ -131,7 +123,9 @@ public class SmallFullServiceImplTest {
     @DisplayName("Tests mongo exception thrown on find of a small full resource")
     public void findSmallfullMongoException() throws DataException {
         when(smallFullRepository.findById("")).thenThrow(mongoException);
-        Executable executable = ()->{smallFullService.findById("", "");};
+        Executable executable = () -> {
+            smallFullService.findById("", "");
+        };
         assertThrows(DataException.class, executable);
     }
 }

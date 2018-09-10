@@ -4,18 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,13 +24,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -69,13 +64,13 @@ public class CurrentPeriodServiceImplTest {
     @Mock
     private MongoException mongoException;
 
+    @Mock
+    private KeyIdGenerator keyIdGenerator;
+
     @InjectMocks
     private CurrentPeriodServiceImpl currentPeriodService;
 
     public void setUpCreate() {
-        currentPeriodService.setMessageDigest(messageDigest);
-        byte[] b = {12, 10, 56, 120, 13, 15};
-        when(messageDigest.digest(any())).thenReturn(b);
     }
 
     @Test
@@ -109,14 +104,17 @@ public class CurrentPeriodServiceImplTest {
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
                 .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);
-        Executable executable = ()->{currentPeriodService.create(currentPeriod, transaction, "", "");};
+        Executable executable = () -> {
+            currentPeriodService.create(currentPeriod, transaction, "", "");
+        };
         assertThrows(DataException.class, executable);
     }
 
     @Test
     @DisplayName("Tests the successful find of a currentPeriod resource")
     public void findCurrentPeriod() throws DataException {
-        when(currentPeriodRepository.findById("")).thenReturn(Optional.ofNullable(currentPeriodEntity));
+        when(currentPeriodRepository.findById(""))
+                .thenReturn(Optional.ofNullable(currentPeriodEntity));
         when(currentPeriodTransformer.transform(currentPeriodEntity)).thenReturn(currentPeriod);
         ResponseObject<CurrentPeriod> result = currentPeriodService
                 .findById("", "");
@@ -128,7 +126,9 @@ public class CurrentPeriodServiceImplTest {
     @DisplayName("Tests mongo exception thrown on find of a currentPeriod resource")
     public void findCurrentPeriodMongoException() throws DataException {
         when(currentPeriodRepository.findById("")).thenThrow(mongoException);
-        Executable executable = ()->{currentPeriodService.findById("", "");};
+        Executable executable = () -> {
+            currentPeriodService.findById("", "");
+        };
         assertThrows(DataException.class, executable);
     }
 }
