@@ -9,6 +9,9 @@ public class BalanceSheet {
     @JsonProperty("called_up_share_capital_not_paid")
     private Integer calledUpShareCapitalNotPaid;
 
+    @JsonProperty("fixed_assets")
+    private FixedAssets fixedAssets;
+    
     public Integer getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -16,4 +19,10 @@ public class BalanceSheet {
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
         this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
     }
+
+    public void setFixedAssets(FixedAssets fixedAssets) {
+        this.fixedAssets = fixedAssets;
+    }
+
+    public FixedAssets getFixedAssets() { return fixedAssets; }
 }

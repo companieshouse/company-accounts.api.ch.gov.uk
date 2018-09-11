@@ -16,4 +16,15 @@ public class BalanceSheetEntity {
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
         this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
     }
+
+    @Field("fixed_assets")
+    private FixedAssetsEntity fixedAssets;
+
+    public FixedAssetsEntity getFixedAssets() {
+        return fixedAssets;
+    }
+
+    public void setFixedAssets(FixedAssetsEntity fixedAssets) {
+        this.fixedAssets = fixedAssets;
+    }
 }
