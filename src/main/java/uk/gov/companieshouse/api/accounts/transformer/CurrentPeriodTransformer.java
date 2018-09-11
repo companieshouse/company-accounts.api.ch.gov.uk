@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 
@@ -17,12 +18,18 @@ public class CurrentPeriodTransformer implements
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
         CurrentPeriodDataEntity currentPeriodDataEntity = new CurrentPeriodDataEntity();
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
+        FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
 
         BeanUtils.copyProperties(entity, currentPeriodDataEntity);
         if (entity.getBalanceSheet() != null) {
             BeanUtils.copyProperties(entity.getBalanceSheet(), balanceSheetEntity);
         }
 
+        if(entity.getBalanceSheet().getFixedAssets() !=null ) {
+            BeanUtils.copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
+        }
+
+        balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
         currentPeriodDataEntity.setBalanceSheetEntity(balanceSheetEntity);
         currentPeriodEntity.setData(currentPeriodDataEntity);
 
