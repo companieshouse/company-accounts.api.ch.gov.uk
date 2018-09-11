@@ -110,7 +110,8 @@ public class SmallFullServiceImpl implements
     @Override
     public void addLink(String id, LinkType linkType, String link, String requestId)
             throws DataException {
-        SmallFullEntity smallFullEntity = smallFullRepository.findById(id)
+        String smallFullId = generateID(id);
+        SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
                         "Failed to add get Small full entity to add link"));
         smallFullEntity.getData().getLinks().put(linkType.getLink(), link);
@@ -119,7 +120,8 @@ public class SmallFullServiceImpl implements
             smallFullRepository.save(smallFullEntity);
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("company_account_id", id);
+            debugMap.put("id", smallFullId);
             debugMap.put("link", link);
             debugMap.put("link_type", linkType.getLink());
 

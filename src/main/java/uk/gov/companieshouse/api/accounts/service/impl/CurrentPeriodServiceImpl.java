@@ -112,7 +112,8 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
     @Override
     public void addLink(String id, LinkType linkType, String link, String requestId)
             throws DataException {
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(id)
+        String currentPeriodId = generateID(id);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
                 .orElseThrow(() -> new DataException(
                         "Failed to add get Current period entity to add link"));
         currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
@@ -121,7 +122,8 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("company_account_id", id);
+            debugMap.put("id", currentPeriodId);
             debugMap.put("link", link);
             debugMap.put("link_type", linkType.getLink());
 
