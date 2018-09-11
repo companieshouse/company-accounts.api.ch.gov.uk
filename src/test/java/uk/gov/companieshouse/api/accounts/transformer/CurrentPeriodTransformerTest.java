@@ -11,14 +11,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodTransformerTest {
-
 
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
@@ -39,6 +40,12 @@ public class CurrentPeriodTransformerTest {
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(5);
 
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(10);
+        fixedAssets.setTotalFixedAssets(10);
+
+        balanceSheet.setFixedAssets(fixedAssets);
+
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setEtag("etag");
         currentPeriod.setKind("kind");
@@ -53,6 +60,8 @@ public class CurrentPeriodTransformerTest {
         Assertions.assertEquals(Integer.valueOf(5),
                 currentPeriodEntity.getData().getBalanceSheetEntity()
                         .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals(Integer.valueOf(10), currentPeriodEntity.getData().getBalanceSheetEntity().getFixedAssets().getTangible());
+        Assertions.assertEquals(Integer.valueOf(10), currentPeriodEntity.getData().getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
         Assertions.assertEquals("kind", currentPeriodEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), currentPeriodEntity.getData().getLinks());
     }
@@ -62,6 +71,12 @@ public class CurrentPeriodTransformerTest {
     public void testEntityToRestTransformerWithPopulatedObject() {
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
         balanceSheetEntity.setCalledUpShareCapitalNotPaid(5);
+
+        FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
+        fixedAssetsEntity.setTangible(10);
+        fixedAssetsEntity.setTotalFixedAssets(10);
+
+        balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
 
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
         CurrentPeriodDataEntity currentPeriodDataEntity = new CurrentPeriodDataEntity();
@@ -79,6 +94,8 @@ public class CurrentPeriodTransformerTest {
         Assertions.assertEquals(Integer.valueOf(5),
                 currentPeriod.getBalanceSheet()
                         .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals(Integer.valueOf(10), currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
+        Assertions.assertEquals(Integer.valueOf(10), currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
         Assertions.assertEquals("kind", currentPeriod.getKind());
         Assertions.assertEquals(new HashMap<>(), currentPeriod.getLinks());
     }
