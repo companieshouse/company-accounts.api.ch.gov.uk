@@ -11,7 +11,7 @@ public class BalanceSheet {
 
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
-    
+
     public Integer getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
