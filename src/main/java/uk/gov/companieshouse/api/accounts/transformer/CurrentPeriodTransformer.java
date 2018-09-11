@@ -8,6 +8,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 @Component
 public class CurrentPeriodTransformer implements
@@ -41,12 +42,18 @@ public class CurrentPeriodTransformer implements
         CurrentPeriod currentPeriod = new CurrentPeriod();
         CurrentPeriodDataEntity currentPeriodDataEntity = entity.getData();
         BalanceSheet balanceSheet = new BalanceSheet();
+        FixedAssets fixedAssets = new FixedAssets();
 
         BeanUtils.copyProperties(currentPeriodDataEntity, currentPeriod);
         if (currentPeriodDataEntity.getBalanceSheetEntity() != null) {
             BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity(),  balanceSheet);
         }
 
+        if(currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets() !=null ) {
+            BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
+        }
+
+        balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
         return currentPeriod;
     }
