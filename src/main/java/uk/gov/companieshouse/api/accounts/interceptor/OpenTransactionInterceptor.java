@@ -17,7 +17,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     /**
      * Pre handle method to validate the request before it reaches the controller by checking if
@@ -26,23 +26,22 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
+            Object handler) {
         Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        if (transaction == null) {
+        if (transaction == null || !TransactionStatus.OPEN.getStatus()
+                .equals(transaction.getStatus())) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap
-                .put("message",
-                    "OpenTransactionInterceptor error: no transaction in request session");
+                    .put("message",
+                            "OpenTransactionInterceptor error: no open transaction available");
 
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
             return false;
         }
-
-        return TransactionStatus.OPEN.getStatus().equals(transaction.getStatus());
+        return true;
     }
 }
