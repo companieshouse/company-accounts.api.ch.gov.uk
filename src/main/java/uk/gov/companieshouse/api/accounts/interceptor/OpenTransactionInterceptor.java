@@ -30,19 +30,18 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        if (transaction == null) {
+        if (transaction == null || !TransactionStatus.OPEN.getStatus()
+            .equals(transaction.getStatus())) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap
                 .put("message",
-                    "OpenTransactionInterceptor error: no transaction in request session");
+                    "OpenTransactionInterceptor error: no open transaction available");
 
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
             return false;
         }
-
-        return TransactionStatus.OPEN.getStatus().equals(transaction.getStatus());
+        return true;
     }
 }

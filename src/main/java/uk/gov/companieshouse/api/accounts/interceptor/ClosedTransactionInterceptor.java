@@ -30,16 +30,17 @@ public class ClosedTransactionInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        if (transaction == null) {
+        if (transaction == null || !TransactionStatus.CLOSED.getStatus()
+            .equals(transaction.getStatus())) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap.put("message",
-                "ClosedTransactionInterceptor error: no transaction in request session");
+                "ClosedTransactionInterceptor error: no closed transaction available");
+
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
             return false;
         }
-        return TransactionStatus.CLOSED.getStatus().equals(transaction.getStatus());
+        return true;
     }
 }
