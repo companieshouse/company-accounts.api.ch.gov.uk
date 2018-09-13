@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.Errors;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.LogContext;
@@ -33,9 +35,13 @@ import uk.gov.companieshouse.logging.util.LogHelper;
 public class CurrentPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
+
+    @Autowired
+    private CurrentPeriodValidator currentPeriodValidator;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -53,6 +59,13 @@ public class CurrentPeriodController {
         String companyAccountId = companyAccountEntity.getId();
         String requestId = request.getHeader("X-Request-Id");
 
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
+        if (errors.hasErrors()){
+            LOGGER.error("Current period validation failure");
+            logValidationFailureError(getRequestId(request),errors);
+            return new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
+        }
+
         ResponseEntity responseEntity;
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
@@ -60,6 +73,8 @@ public class CurrentPeriodController {
             responseEntity = apiResponseMapper
                     .map(responseObject.getStatus(), responseObject.getData(),
                             responseObject.getValidationErrorData());
+
+
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
@@ -102,5 +117,22 @@ public class CurrentPeriodController {
 
         return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
+    }
+
+    /**
+     * Log {@link AbridgedAccount} validation failure
+     *
+     * @param requestId
+     * @param errors
+     */
+    private void logValidationFailureError(String requestId, Errors errors) {
+        HashMap<String,Object> logMap = new HashMap<>();
+        logMap.put("message", "Validation failure");
+        logMap.put("Errors: ", errors);
+        LOGGER.traceContext(requestId, "", logMap);
+    }
+
+    private String getRequestId(HttpServletRequest request) {
+        return request.getHeader(REQUEST_ID) ;
     }
 }
