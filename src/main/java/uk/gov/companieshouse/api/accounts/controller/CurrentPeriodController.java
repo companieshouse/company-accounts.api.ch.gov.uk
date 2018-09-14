@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
@@ -48,7 +50,24 @@ public class CurrentPeriodController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody CurrentPeriod currentPeriod,
-            HttpServletRequest request) {
+            HttpServletRequest request, BindingResult bindingResult) {
+
+        //Create errors object
+
+        // If binding result has errors
+
+        // Map binding result to error object
+
+        //return errors object
+
+
+
+
+
+
+
+
+
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
