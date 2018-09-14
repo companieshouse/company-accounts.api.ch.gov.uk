@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.Errors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
@@ -21,8 +21,10 @@ public class CurrentPeriodValidator extends BaseValidator {
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod, Errors errors) {
 
-        validateTotalFixedAssets(currentPeriod, errors);
+        if (currentPeriod.getBalanceSheet() != null) {
 
+            validateTotalFixedAssets(currentPeriod, errors);
+        }
         return errors;
     }
 
