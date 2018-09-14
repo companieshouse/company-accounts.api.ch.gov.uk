@@ -6,7 +6,9 @@ package uk.gov.companieshouse.api.accounts.validation;
 public enum ErrorMessageKeys {
 
     INCORRECT_TOTAL("incorrect_total"),
-    VALUE_OUTSIDE_RANGE("value_outside_range");
+    MANDATORY_ELEMENT_MISSING("mandatory_element_missing"),
+    VALUE_OUTSIDE_RANGE("value_outside_range"),
+    INVALID_VALUE("invalid_value");
 
     private String key;
 
