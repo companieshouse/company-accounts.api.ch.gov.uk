@@ -33,6 +33,7 @@
     <company-accounts-library.version>5a6005b</company-accounts-library.version>
     <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
     <spring-test.version>5.0.8.RELEASE</spring-test.version>
+    <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
 
     <!-- Maven and Surefire plugins -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -111,6 +112,13 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-hateoas</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>${hibernate-validator.version}</version>
+    </dependency>
+
 
     <dependency>
       <groupId>uk.gov.companieshouse</groupId>
