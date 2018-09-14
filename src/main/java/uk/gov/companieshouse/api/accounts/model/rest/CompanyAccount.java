@@ -10,7 +10,6 @@ public class CompanyAccount extends RestObject {
     @JsonProperty("period_end_on")
     private LocalDate periodEndOn;
 
-
     public LocalDate getPeriodEndOn() {
         return periodEndOn;
     }

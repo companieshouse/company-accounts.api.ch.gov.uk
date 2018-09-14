@@ -55,15 +55,17 @@ public class CurrentPeriodTransformerTest {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer
                 .transform(currentPeriod);
 
+        CurrentPeriodDataEntity data = currentPeriodEntity.getData();
+
         Assertions.assertNotNull(currentPeriodEntity);
-        Assertions.assertEquals("etag", currentPeriodEntity.getData().getEtag());
+        Assertions.assertEquals("etag", data.getEtag());
         Assertions.assertEquals(Integer.valueOf(5),
-                currentPeriodEntity.getData().getBalanceSheetEntity()
+                data.getBalanceSheetEntity()
                         .getCalledUpShareCapitalNotPaid());
-        Assertions.assertEquals(Integer.valueOf(10), currentPeriodEntity.getData().getBalanceSheetEntity().getFixedAssets().getTangible());
-        Assertions.assertEquals(Integer.valueOf(10), currentPeriodEntity.getData().getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
-        Assertions.assertEquals("kind", currentPeriodEntity.getData().getKind());
-        Assertions.assertEquals(new HashMap<>(), currentPeriodEntity.getData().getLinks());
+        Assertions.assertEquals(Integer.valueOf(10), data.getBalanceSheetEntity().getFixedAssets().getTangible());
+        Assertions.assertEquals(Integer.valueOf(10), data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
+        Assertions.assertEquals("kind", data.getKind());
+        Assertions.assertEquals(new HashMap<>(), data.getLinks());
     }
 
     @Test

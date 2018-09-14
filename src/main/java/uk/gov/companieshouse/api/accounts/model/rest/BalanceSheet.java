@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotNull;
 
 public class BalanceSheet {
@@ -17,8 +18,7 @@ public class BalanceSheet {
     }
 
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
-        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
-    }
+        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid; }
 
     public void setFixedAssets(FixedAssets fixedAssets) {
         this.fixedAssets = fixedAssets;

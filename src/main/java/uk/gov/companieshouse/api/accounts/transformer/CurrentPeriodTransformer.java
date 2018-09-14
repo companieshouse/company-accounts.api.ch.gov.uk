@@ -24,7 +24,7 @@ public class CurrentPeriodTransformer implements
         BeanUtils.copyProperties(entity, currentPeriodDataEntity);
         if (entity.getBalanceSheet() != null) {
             BeanUtils.copyProperties(entity.getBalanceSheet(), balanceSheetEntity);
-        
+
             if(entity.getBalanceSheet().getFixedAssets() !=null ) {
                 BeanUtils.copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
             }
