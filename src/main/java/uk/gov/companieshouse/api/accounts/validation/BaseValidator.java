@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import uk.gov.companieshouse.api.accounts.model.Errors;
+import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 
 public class BaseValidator {

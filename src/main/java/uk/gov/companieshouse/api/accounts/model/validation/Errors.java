@@ -1,9 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model;
+package uk.gov.companieshouse.api.accounts.model.validation;
 
     import com.fasterxml.jackson.annotation.JsonIgnore;
     import com.fasterxml.jackson.annotation.JsonProperty;
     import org.springframework.data.mongodb.core.mapping.Field;
-    import uk.gov.companieshouse.api.accounts.validation.Error;
 
     import java.util.HashSet;
     import java.util.Set;
