@@ -15,7 +15,7 @@ import java.util.ArrayList;
 @Component
 public class BindingResultErrorToErrorMapper {
 
-    String location;
+
 
     /**
      * Maps each binding result error to {@link Error} model, and adds to returned {@link Errors}
@@ -34,9 +34,9 @@ public class BindingResultErrorToErrorMapper {
                 String field = fieldError.getField();
                 String errorMessage = fieldError.getDefaultMessage();
 
-                location = (field.replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
+                String location = (field.replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
 
-                if (errorMessage.equals("VALUE_OUTSIDE_RANGE")) {
+                if ("VALUE_OUTSIDE_RANGE".equals(errorMessage)) {
 
                     ArrayList arguments = new ArrayList();
                     Object[] argument = fieldError.getArguments();
