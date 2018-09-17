@@ -24,10 +24,6 @@ public class CurrentPeriodTransformer implements
         BeanUtils.copyProperties(entity, currentPeriodDataEntity);
         if (entity.getBalanceSheet() != null) {
             BeanUtils.copyProperties(entity.getBalanceSheet(), balanceSheetEntity);
-
-            if(entity.getBalanceSheet().getFixedAssets() !=null ) {
-                BeanUtils.copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
-            }
         }
 
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
@@ -47,11 +43,6 @@ public class CurrentPeriodTransformer implements
         BeanUtils.copyProperties(currentPeriodDataEntity, currentPeriod);
         if (currentPeriodDataEntity.getBalanceSheetEntity() != null) {
             BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity(), balanceSheet);
-
-            if (currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets() != null) {
-                BeanUtils.copyProperties(
-                    currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
-            }
         }
 
         balanceSheet.setFixedAssets(fixedAssets);
