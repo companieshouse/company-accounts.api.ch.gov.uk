@@ -138,14 +138,7 @@ public class CurrentPeriodController {
         return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
     }
-
-    /**
-     * Log {@link AbridgedAccount} validation failure
-     *
-     * @param requestId
-     * @param errors
-     */
-
+    
     private void logValidationFailureError(String requestId, Errors errors) {
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("message", "Validation failure");
