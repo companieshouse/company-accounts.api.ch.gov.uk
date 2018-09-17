@@ -23,7 +23,5 @@ public class BalanceSheetEntity {
         return fixedAssets;
     }
 
-    public void setFixedAssets(FixedAssetsEntity fixedAssets) {
-        this.fixedAssets = fixedAssets;
-    }
+    public void setFixedAssets(FixedAssetsEntity fixedAssets) { this.fixedAssets = fixedAssets; }
 }
