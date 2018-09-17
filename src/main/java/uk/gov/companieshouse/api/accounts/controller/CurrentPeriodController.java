@@ -121,7 +121,7 @@ public class CurrentPeriodController {
         }
 
         String companyAccountId = companyAccountEntity.getId();
-        String requestId = request.getHeader("REQUEST_ID");
+        String requestId = request.getHeader("X-Request-Id");
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -147,6 +147,6 @@ public class CurrentPeriodController {
     }
 
     private String getRequestId(HttpServletRequest request) {
-        return request.getHeader(REQUEST_ID);
+        return request.getHeader("X-Request-Id");
     }
 }
