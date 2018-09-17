@@ -110,31 +110,6 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
     }
 
     @Override
-    public void addLink(String id, LinkType linkType, String link, String requestId)
-            throws DataException {
-        String currentPeriodId = generateID(id);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to add get Current period entity to add link"));
-        currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
-
-        try {
-            currentPeriodRepository.save(currentPeriodEntity);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("company_account_id", id);
-            debugMap.put("id", currentPeriodId);
-            debugMap.put("link", link);
-            debugMap.put("link_type", linkType.getLink());
-
-            DataException dataException = new DataException(
-                    "Failed to add link to Small full", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
-            throw dataException;
-        }
-    }
-
-    @Override
     public String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
