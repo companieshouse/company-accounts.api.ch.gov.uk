@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.api.accounts.utility.BindingResultErrorToErrorMapper;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -49,7 +49,7 @@ public class CurrentPeriodController {
     private CurrentPeriodValidator currentPeriodValidator;
 
     @Autowired
-    private BindingResultErrorToErrorMapper resultsMapper;
+    private ErrorMapper errorMapper;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -62,7 +62,7 @@ public class CurrentPeriodController {
 
         if (bindingResult.hasErrors()) {
 
-            errors = resultsMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
+            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
 
         }
 
@@ -121,7 +121,7 @@ public class CurrentPeriodController {
         }
 
         String companyAccountId = companyAccountEntity.getId();
-        String requestId = request.getHeader("X-Request-Id");
+        String requestId = request.getHeader("REQUEST_ID");
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -138,7 +138,7 @@ public class CurrentPeriodController {
         return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
     }
-    
+
     private void logValidationFailureError(String requestId, Errors errors) {
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("message", "Validation failure");

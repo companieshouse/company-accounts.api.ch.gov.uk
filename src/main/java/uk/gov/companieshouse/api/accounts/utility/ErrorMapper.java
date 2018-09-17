@@ -10,7 +10,7 @@ import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
 @Component
-public class BindingResultErrorToErrorMapper {
+public class ErrorMapper {
 
 
     /**
