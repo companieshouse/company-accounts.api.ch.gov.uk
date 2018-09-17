@@ -9,12 +9,8 @@ import uk.gov.companieshouse.api.accounts.validation.ErrorMessageKeys;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
-import java.util.ArrayList;
-
-
 @Component
 public class BindingResultErrorToErrorMapper {
-
 
 
     /**
@@ -38,11 +34,8 @@ public class BindingResultErrorToErrorMapper {
 
                 if ("VALUE_OUTSIDE_RANGE".equals(errorMessage)) {
 
-                    ArrayList arguments = new ArrayList();
                     Object[] argument = fieldError.getArguments();
-                    for (Object o : argument) {
-                        arguments.add(o);
-                    }
+
                     Error error = new Error(ErrorMessageKeys.VALUE_OUTSIDE_RANGE.getKey(),
                         location,
                         LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
