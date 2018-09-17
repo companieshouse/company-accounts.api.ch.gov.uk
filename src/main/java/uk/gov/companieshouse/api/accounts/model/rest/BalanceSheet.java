@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
-
 import javax.validation.Valid;
 
 public class BalanceSheet {
@@ -23,8 +22,7 @@ public class BalanceSheet {
     }
 
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
-        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
-    }
+        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid; }
 
     public void setFixedAssets(FixedAssets fixedAssets) {
         this.fixedAssets = fixedAssets;
