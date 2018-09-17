@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 import java.util.HashMap;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,28 +22,33 @@ import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodTransformerTest {
 
+    private static final Integer CalledUpShareCapitalNotPaidValid = 5;
+    private static final Integer TangibleValid = 10;
+    private static final Integer FixedAssetsTotalValid = 10;
+
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
     @Test
     @DisplayName("Tests current period transformer with empty object which should result in null values")
     public void testTransformerWithEmptyObject() {
         CurrentPeriodEntity companyAccountEntity = currentPeriodTransformer
-                .transform(new CurrentPeriod());
+            .transform(new CurrentPeriod());
 
         Assertions.assertNotNull(companyAccountEntity);
         Assertions.assertNull(companyAccountEntity.getData().getEtag());
         Assertions.assertEquals(new HashMap<>(), companyAccountEntity.getData().getLinks());
+
     }
 
     @Test
     @DisplayName("Tests current period transformer with populated object and validates values returned")
     public void testRestToEntityTransformerWithPopulatedObject() {
         BalanceSheet balanceSheet = new BalanceSheet();
-        balanceSheet.setCalledUpShareCapitalNotPaid(5);
+        balanceSheet.setCalledUpShareCapitalNotPaid(CalledUpShareCapitalNotPaidValid);
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(10);
-        fixedAssets.setTotalFixedAssets(10);
+        fixedAssets.setTangible(TangibleValid);
+        fixedAssets.setTotalFixedAssets(FixedAssetsTotalValid);
 
         balanceSheet.setFixedAssets(fixedAssets);
 
@@ -53,17 +59,19 @@ public class CurrentPeriodTransformerTest {
         currentPeriod.setBalanceSheet(balanceSheet);
 
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer
-                .transform(currentPeriod);
+            .transform(currentPeriod);
 
         CurrentPeriodDataEntity data = currentPeriodEntity.getData();
 
         Assertions.assertNotNull(currentPeriodEntity);
         Assertions.assertEquals("etag", data.getEtag());
-        Assertions.assertEquals(Integer.valueOf(5),
-                data.getBalanceSheetEntity()
-                        .getCalledUpShareCapitalNotPaid());
-        Assertions.assertEquals(Integer.valueOf(10), data.getBalanceSheetEntity().getFixedAssets().getTangible());
-        Assertions.assertEquals(Integer.valueOf(10), data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
+        Assertions.assertEquals(Integer.valueOf(CalledUpShareCapitalNotPaidValid),
+            data.getBalanceSheetEntity()
+                .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals(Integer.valueOf(TangibleValid),
+            data.getBalanceSheetEntity().getFixedAssets().getTangible());
+        Assertions.assertEquals(Integer.valueOf(FixedAssetsTotalValid),
+            data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
         Assertions.assertEquals("kind", data.getKind());
         Assertions.assertEquals(new HashMap<>(), data.getLinks());
     }
@@ -72,11 +80,11 @@ public class CurrentPeriodTransformerTest {
     @DisplayName("Tests current period transformer with populated object and validates values returned")
     public void testEntityToRestTransformerWithPopulatedObject() {
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
-        balanceSheetEntity.setCalledUpShareCapitalNotPaid(5);
+        balanceSheetEntity.setCalledUpShareCapitalNotPaid(CalledUpShareCapitalNotPaidValid);
 
         FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
-        fixedAssetsEntity.setTangible(10);
-        fixedAssetsEntity.setTotalFixedAssets(10);
+        fixedAssetsEntity.setTangible(TangibleValid);
+        fixedAssetsEntity.setTotalFixedAssets(FixedAssetsTotalValid);
 
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
 
@@ -89,15 +97,17 @@ public class CurrentPeriodTransformerTest {
         currentPeriodEntity.setData(currentPeriodDataEntity);
 
         CurrentPeriod currentPeriod = currentPeriodTransformer
-                .transform(currentPeriodEntity);
+            .transform(currentPeriodEntity);
 
         Assertions.assertNotNull(currentPeriodEntity);
         Assertions.assertEquals("etag", currentPeriod.getEtag());
-        Assertions.assertEquals(Integer.valueOf(5),
-                currentPeriod.getBalanceSheet()
-                        .getCalledUpShareCapitalNotPaid());
-        Assertions.assertEquals(Integer.valueOf(10), currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
-        Assertions.assertEquals(Integer.valueOf(10), currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
+        Assertions.assertEquals(Integer.valueOf(CalledUpShareCapitalNotPaidValid),
+            currentPeriod.getBalanceSheet()
+                .getCalledUpShareCapitalNotPaid());
+        Assertions.assertEquals(Integer.valueOf(TangibleValid),
+            currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
+        Assertions.assertEquals(Integer.valueOf(FixedAssetsTotalValid),
+            currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
         Assertions.assertEquals("kind", currentPeriod.getKind());
         Assertions.assertEquals(new HashMap<>(), currentPeriod.getLinks());
     }
