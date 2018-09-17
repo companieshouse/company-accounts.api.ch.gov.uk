@@ -15,7 +15,6 @@ public class FixedAssets {
     @JsonProperty("total")
     private Integer totalFixedAssets;
 
-
     public Integer getTangible() {
         return tangible;
     }
@@ -29,6 +28,5 @@ public class FixedAssets {
     }
 
     public void setTotalFixedAssets(Integer totalFixedAssets) {
-        this.totalFixedAssets = totalFixedAssets;
-    }
+        this.totalFixedAssets = totalFixedAssets; }
 }

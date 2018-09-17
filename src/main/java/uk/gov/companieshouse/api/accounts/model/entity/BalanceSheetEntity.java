@@ -9,22 +9,19 @@ public class BalanceSheetEntity {
     @Field("called_up_share_capital_not_paid")
     private Integer calledUpShareCapitalNotPaid;
 
+    @Field("fixed_assets")
+    private FixedAssetsEntity fixedAssets;
+
     public Integer getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
 
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
-        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
-    }
-
-    @Field("fixed_assets")
-    private FixedAssetsEntity fixedAssets;
+        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid; }
 
     public FixedAssetsEntity getFixedAssets() {
         return fixedAssets;
     }
 
-    public void setFixedAssets(FixedAssetsEntity fixedAssets) {
-        this.fixedAssets = fixedAssets;
-    }
+    public void setFixedAssets(FixedAssetsEntity fixedAssets) { this.fixedAssets = fixedAssets; }
 }
