@@ -28,8 +28,7 @@ public class CurrentPeriodValidator extends BaseValidator {
 
         return errors;
     }
-
-
+    
     private void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod,
         Errors errors) {
         FixedAssets fixedAssets = currentPeriod.getBalanceSheet().getFixedAssets();
