@@ -22,11 +22,14 @@ public class BalanceSheet {
     }
 
     public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
-        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid; }
+        this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
+    }
 
     public void setFixedAssets(FixedAssets fixedAssets) {
         this.fixedAssets = fixedAssets;
     }
 
-    public FixedAssets getFixedAssets() { return fixedAssets; }
+    public FixedAssets getFixedAssets() {
+        return fixedAssets;
+    }
 }

@@ -12,7 +12,9 @@ public class CurrentPeriod extends RestObject {
     @Valid
     private BalanceSheet balanceSheet;
 
-    public BalanceSheet getBalanceSheet() { return balanceSheet; }
+    public BalanceSheet getBalanceSheet() {
+        return balanceSheet;
+    }
 
     public void setBalanceSheet(BalanceSheet balanceSheet) {
         this.balanceSheet = balanceSheet;
