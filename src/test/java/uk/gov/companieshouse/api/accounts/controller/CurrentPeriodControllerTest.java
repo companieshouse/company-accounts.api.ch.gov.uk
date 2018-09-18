@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -33,6 +34,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,6 +55,12 @@ public class CurrentPeriodControllerTest {
 
     @Mock
     private CurrentPeriod currentPeriod;
+    
+    @Mock
+    private CurrentPeriodValidator currentPeriodValidator;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -96,7 +104,7 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
-        ResponseEntity response = currentPeriodController.create(currentPeriod, request);
+        ResponseEntity response = currentPeriodController.create(currentPeriod, bindingResult, request);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(currentPeriod, response.getBody());
