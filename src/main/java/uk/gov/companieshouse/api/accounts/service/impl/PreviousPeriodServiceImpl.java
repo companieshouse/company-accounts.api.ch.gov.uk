@@ -10,9 +10,7 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
 import uk.gov.companieshouse.api.accounts.service.PreviousPeriodService;
@@ -43,26 +41,28 @@ public class PreviousPeriodServiceImpl implements PreviousPeriodService {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public PreviousPeriodServiceImpl (
+    public PreviousPeriodServiceImpl(
         PreviousPeriodRespository previousPeriodRepository,
         PreviousPeriodTransformer previousPeriodTransformer,
         SmallFullService smallFullService,
-        KeyIdGenerator keyIdGenerator){
-       this.previousPeriodRespository = previousPeriodRepository;
+        KeyIdGenerator keyIdGenerator) {
+        this.previousPeriodRespository = previousPeriodRepository;
         this.previousPeriodTransformer = previousPeriodTransformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod, Transaction transaction,
+    public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod,
+        Transaction transaction,
         String companyAccountId, String requestId) throws DataException {
-        
+
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(previousPeriod, selfLink);
         previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(previousPeriod);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer
+            .transform(previousPeriod);
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("transaction_id", transaction.getId());
@@ -90,7 +90,7 @@ public class PreviousPeriodServiceImpl implements PreviousPeriodService {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, String requestId){
+    public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
 
         return null;
     }
@@ -99,7 +99,8 @@ public class PreviousPeriodServiceImpl implements PreviousPeriodService {
     public void addLink(String id, LinkType linkType, String link, String requestId)
         throws DataException {
         String previousPeriodId = generateID(id);
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodRespository.findById(previousPeriodId)
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodRespository
+            .findById(previousPeriodId)
             .orElseThrow(() -> new DataException(
                 "Failed to add get Previous period entity to add link"));
         previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);

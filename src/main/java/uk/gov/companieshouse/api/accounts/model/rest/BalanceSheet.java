@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotNull;
 
 public class BalanceSheet {
-    
+
     @NotNull
     @JsonProperty("called_up_share_capital_not_paid")
     private Integer calledUpShareCapitalNotPaid;
