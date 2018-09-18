@@ -25,7 +25,6 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
-import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -34,7 +33,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CurrentPeriodServiceImplTest {
+public class CurrentPeriodServiceTest {
 
 
     @Mock
@@ -68,7 +67,7 @@ public class CurrentPeriodServiceImplTest {
     private KeyIdGenerator keyIdGenerator;
 
     @InjectMocks
-    private CurrentPeriodServiceImpl currentPeriodService;
+    private CurrentPeriodService currentPeriodService;
 
     public void setUpCreate() {
     }
