@@ -21,10 +21,8 @@ public class CurrentPeriodValidator extends BaseValidator {
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod, Errors errors) {
 
-        if (currentPeriod.getBalanceSheet() != null) {
-
             validateTotalFixedAssets(currentPeriod, errors);
-        }
+
         return errors;
     }
 
