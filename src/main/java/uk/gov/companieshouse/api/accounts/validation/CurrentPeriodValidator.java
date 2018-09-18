@@ -20,11 +20,15 @@ public class CurrentPeriodValidator extends BaseValidator {
     String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod, Errors errors) {
+        
+        if(currentPeriod.getBalanceSheet()!=null) {
 
             validateTotalFixedAssets(currentPeriod, errors);
+        }
 
         return errors;
     }
+    
 
     private void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod,
         Errors errors) {
