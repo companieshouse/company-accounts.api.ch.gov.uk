@@ -5,7 +5,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
-public interface AbstractService<T extends RestObject> {
+public interface Service<T extends RestObject> {
 
     ResponseObject<T> create(T rest, Transaction transaction, String companyAccountId,
         String requestId)
@@ -14,6 +14,6 @@ public interface AbstractService<T extends RestObject> {
     ResponseObject<T> findById(String id, String requestId)
         throws DataException;
 
-    String generateID(String value);
+    String generateID(String companyAccountId);
 
 }

@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SmallFullServiceImplTest {
+public class SmallFullServiceTest {
 
     @Mock
     private SmallFull smallFull;
@@ -67,7 +67,7 @@ public class SmallFullServiceImplTest {
     private KeyIdGenerator keyIdGenerator;
 
     @InjectMocks
-    private SmallFullServiceImpl smallFullService;
+    private SmallFullService smallFullService;
 
     public void setUpCreate() {
     }
