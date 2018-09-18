@@ -23,5 +23,6 @@ public class FixedAssets {
     }
 
     public void setTotalFixedAssets(Integer totalFixedAssets) {
-        this.totalFixedAssets = totalFixedAssets; }
+        this.totalFixedAssets = totalFixedAssets;
+    }
 }

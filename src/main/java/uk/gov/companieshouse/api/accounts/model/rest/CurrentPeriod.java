@@ -9,7 +9,9 @@ public class CurrentPeriod extends RestObject {
     @JsonProperty("balance_sheet")
     private BalanceSheet balanceSheet;
 
-    public BalanceSheet getBalanceSheet() { return balanceSheet; }
+    public BalanceSheet getBalanceSheet() {
+        return balanceSheet;
+    }
 
     public void setBalanceSheet(BalanceSheet balanceSheet) {
         this.balanceSheet = balanceSheet;

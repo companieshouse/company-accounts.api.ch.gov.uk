@@ -11,8 +11,7 @@ public class CurrentPeriodDataEntity extends BaseDataEntity {
         return balanceSheetEntity;
     }
 
-    public void setBalanceSheetEntity(
-            BalanceSheetEntity balanceSheetEntity) {
+    public void setBalanceSheetEntity(BalanceSheetEntity balanceSheetEntity) {
         this.balanceSheetEntity = balanceSheetEntity;
     }
 }

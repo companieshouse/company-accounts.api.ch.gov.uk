@@ -1,4 +1,5 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
+
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class FixedAssetsEntity {
@@ -9,11 +10,19 @@ public class FixedAssetsEntity {
     @Field("total")
     private Integer totalFixedAssets;
 
-    public Integer getTangible() { return tangible; }
+    public Integer getTangible() {
+        return tangible;
+    }
 
-    public void setTangible(Integer tangible) { this.tangible = tangible; }
+    public void setTangible(Integer tangible) {
+        this.tangible = tangible;
+    }
 
-    public Integer getTotalFixedAssets() { return totalFixedAssets; }
+    public Integer getTotalFixedAssets() {
+        return totalFixedAssets;
+    }
 
-    public void setTotalFixedAssets(Integer totalFixedAssets) { this.totalFixedAssets = totalFixedAssets; }
+    public void setTotalFixedAssets(Integer totalFixedAssets) {
+        this.totalFixedAssets = totalFixedAssets;
+    }
 }
