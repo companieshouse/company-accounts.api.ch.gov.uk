@@ -10,7 +10,6 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
