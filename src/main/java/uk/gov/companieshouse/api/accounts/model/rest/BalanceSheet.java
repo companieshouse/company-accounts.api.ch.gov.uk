@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.hibernate.validator.constraints.Range;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

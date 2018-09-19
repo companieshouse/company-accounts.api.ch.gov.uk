@@ -96,6 +96,7 @@ public class PreviousPeriodService implements Service<PreviousPeriod> {
 
     @Override
     public String generateID(String value) {
+
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 
