@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -11,12 +10,12 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
-import uk.gov.companieshouse.api.accounts.service.PreviousPeriodService;
-import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.service.Service;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
@@ -26,8 +25,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-public class PreviousPeriodServiceImpl implements PreviousPeriodService {
+@org.springframework.stereotype.Service
+public class PreviousPeriodService implements Service<PreviousPeriod> {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
@@ -41,7 +40,7 @@ public class PreviousPeriodServiceImpl implements PreviousPeriodService {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public PreviousPeriodServiceImpl(
+    public PreviousPeriodService(
         PreviousPeriodRespository previousPeriodRepository,
         PreviousPeriodTransformer previousPeriodTransformer,
         SmallFullService smallFullService,
@@ -93,32 +92,6 @@ public class PreviousPeriodServiceImpl implements PreviousPeriodService {
     public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
 
         return null;
-    }
-
-    @Override
-    public void addLink(String id, LinkType linkType, String link, String requestId)
-        throws DataException {
-        String previousPeriodId = generateID(id);
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodRespository
-            .findById(previousPeriodId)
-            .orElseThrow(() -> new DataException(
-                "Failed to add get Previous period entity to add link"));
-        previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
-
-        try {
-            previousPeriodRespository.save(previousPeriodEntity);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("company_account_id", id);
-            debugMap.put("id", previousPeriodId);
-            debugMap.put("link", link);
-            debugMap.put("link_type", linkType.getLink());
-
-            DataException dataException = new DataException(
-                "Failed to add link to Small full", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
-            throw dataException;
-        }
     }
 
     @Override

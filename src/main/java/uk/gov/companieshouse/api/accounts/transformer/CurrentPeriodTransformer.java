@@ -5,12 +5,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 @Component
 public class CurrentPeriodTransformer implements
-        GenericTransformer<CurrentPeriod, CurrentPeriodEntity> {
+    GenericTransformer<CurrentPeriod, CurrentPeriodEntity> {
 
     @Override
     public CurrentPeriodEntity transform(CurrentPeriod entity) {
@@ -21,6 +23,13 @@ public class CurrentPeriodTransformer implements
         BeanUtils.copyProperties(entity, currentPeriodDataEntity);
         if (entity.getBalanceSheet() != null) {
             BeanUtils.copyProperties(entity.getBalanceSheet(), balanceSheetEntity);
+
+            if (entity.getBalanceSheet().getFixedAssets() != null) {
+                FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
+                BeanUtils
+                    .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
+                balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+            }
         }
 
         currentPeriodDataEntity.setBalanceSheetEntity(balanceSheetEntity);
@@ -37,7 +46,14 @@ public class CurrentPeriodTransformer implements
 
         BeanUtils.copyProperties(currentPeriodDataEntity, currentPeriod);
         if (currentPeriodDataEntity.getBalanceSheetEntity() != null) {
-            BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity(),  balanceSheet);
+            BeanUtils.copyProperties(currentPeriodDataEntity.getBalanceSheetEntity(), balanceSheet);
+
+            if (currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets() != null) {
+                FixedAssets fixedAssets = new FixedAssets();
+                BeanUtils.copyProperties(
+                    currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
+                balanceSheet.setFixedAssets(fixedAssets);
+            }
         }
 
         currentPeriod.setBalanceSheet(balanceSheet);

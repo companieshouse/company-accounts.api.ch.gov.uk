@@ -5,7 +5,6 @@ import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -15,8 +14,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
-import uk.gov.companieshouse.api.accounts.service.CurrentPeriodService;
-import uk.gov.companieshouse.api.accounts.service.SmallFullService;
+import uk.gov.companieshouse.api.accounts.service.Service;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -25,8 +23,9 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-@Service
-public class CurrentPeriodServiceImpl implements CurrentPeriodService {
+@org.springframework.stereotype.Service
+public class CurrentPeriodService implements
+    Service<CurrentPeriod> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
@@ -40,7 +39,7 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public CurrentPeriodServiceImpl(
+    public CurrentPeriodService(
             CurrentPeriodRepository currentPeriodRepository,
             CurrentPeriodTransformer currentPeriodTransformer,
             SmallFullService smallFullService,
@@ -83,7 +82,7 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
             throw dataException;
         }
 
-        smallFullService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink, requestId);
+        smallFullService.addLink(companyAccountId, LinkType.CURRENT_PERIOD, selfLink, requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
@@ -107,31 +106,6 @@ public class CurrentPeriodServiceImpl implements CurrentPeriodService {
         }
         CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
-    }
-
-    @Override
-    public void addLink(String id, LinkType linkType, String link, String requestId)
-            throws DataException {
-        String currentPeriodId = generateID(id);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to add get Current period entity to add link"));
-        currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
-
-        try {
-            currentPeriodRepository.save(currentPeriodEntity);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("company_account_id", id);
-            debugMap.put("id", currentPeriodId);
-            debugMap.put("link", link);
-            debugMap.put("link_type", linkType.getLink());
-
-            DataException dataException = new DataException(
-                    "Failed to add link to Small full", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
-            throw dataException;
-        }
     }
 
     @Override

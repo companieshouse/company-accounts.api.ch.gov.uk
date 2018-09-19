@@ -15,8 +15,8 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
+import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.service.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -26,8 +26,8 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
-public class SmallFullServiceImpl implements
-        SmallFullService {
+public class SmallFullService implements
+    ParentService<SmallFull> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
@@ -41,7 +41,7 @@ public class SmallFullServiceImpl implements
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public SmallFullServiceImpl(SmallFullRepository smallFullRepository,
+    public SmallFullService(SmallFullRepository smallFullRepository,
             SmallFullTransformer smallFullTransformer,
             CompanyAccountService companyAccountService,
             KeyIdGenerator keyIdGenerator) {
