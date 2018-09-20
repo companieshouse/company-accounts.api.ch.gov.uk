@@ -30,7 +30,9 @@ public class ErrorMapper {
                 String field = fieldError.getField();
                 String errorMessage = fieldError.getDefaultMessage();
 
-                String location = (field.replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
+                //Convert returned location to a json path
+                String period = fieldError.getObjectName() + ".";
+                String location = ((period + field).replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
 
                 if ("VALUE_OUTSIDE_RANGE".equals(errorMessage)) {
 
