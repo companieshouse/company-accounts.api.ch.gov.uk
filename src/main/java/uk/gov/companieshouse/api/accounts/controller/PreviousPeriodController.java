@@ -58,6 +58,8 @@ public class PreviousPeriodController {
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
+            debugMap.put("company_account_id", companyAccountId);
+            debugMap.put("message", "Failed to create previous period resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         }
