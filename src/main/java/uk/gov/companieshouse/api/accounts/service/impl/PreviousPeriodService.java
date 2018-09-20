@@ -77,7 +77,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
+                "Failed to insert " + ResourceName.PREVIOUS_PERIOD.getName(), me);
             LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
