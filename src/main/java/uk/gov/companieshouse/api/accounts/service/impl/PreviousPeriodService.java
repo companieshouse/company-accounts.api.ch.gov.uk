@@ -53,8 +53,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     @Override
     public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod,
-        Transaction transaction,
-        String companyAccountId, String requestId) throws DataException {
+        Transaction transaction, String companyAccountId, String requestId) throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(previousPeriod, selfLink);
