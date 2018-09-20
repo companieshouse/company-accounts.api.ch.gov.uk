@@ -34,14 +34,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PreviousPeriodControllerTest {
 
+    public static final String X_REQUEST_ID = "X-Request-Id";
+    public static final String TRANSACTION = "transaction";
+    public static final String TEST = "test";
+    public static final String CREATE = "create";
+    public static final String FIND = "find";
+    public static final String SELF = "self";
     @Mock
     private HttpServletRequest request;
 
@@ -71,8 +76,8 @@ public class PreviousPeriodControllerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException, DataException {
-        when(request.getAttribute("transaction")).thenReturn(transaction);
-        when(request.getHeader("X-Request-Id")).thenReturn("test");
+        when(request.getAttribute(TRANSACTION)).thenReturn(transaction);
+        when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             previousPeriod);
         doReturn(responseObject).when(previousPeriodService)
@@ -88,12 +93,12 @@ public class PreviousPeriodControllerTest {
         doReturn(companyAccountEntity).when(request)
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("12345").when(companyAccountEntity).getId();
-        doReturn(responseObject).when(previousPeriodService).findById("create", "test");
+        doReturn(responseObject).when(previousPeriodService).findById(CREATE, TEST);
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-            previousPeriod)).when(previousPeriodService).findById("find", "test");
+            previousPeriod)).when(previousPeriodService).findById(FIND, TEST);
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
-        doReturn("7890").when(links).get("self");
+        doReturn("7890").when(links).get(SELF);
     }
 
     @Test

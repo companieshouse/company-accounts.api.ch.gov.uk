@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class PreviousPeriodTransformerTest {
 
     private static final Integer CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5;
+    public static final String ETAG = "etag";
+    public static final String KIND = "kind";
 
     private PreviousPeriodTransformer previousPeriodTransformer = new PreviousPeriodTransformer();
 
@@ -46,8 +48,8 @@ public class PreviousPeriodTransformerTest {
         balanceSheet.setCalledUpShareCapitalNotPaid(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID);
 
         PreviousPeriod previousPeriod = new PreviousPeriod();
-        previousPeriod.setEtag("etag");
-        previousPeriod.setKind("kind");
+        previousPeriod.setEtag(ETAG);
+        previousPeriod.setKind(KIND);
         previousPeriod.setLinks(new HashMap<>());
         previousPeriod.setBalanceSheet(balanceSheet);
 
@@ -57,10 +59,10 @@ public class PreviousPeriodTransformerTest {
         PreviousPeriodDataEntity data = previousPeriodEntity.getData();
 
         assertNotNull(previousPeriodEntity);
-        assertEquals("etag", data.getEtag());
+        assertEquals(ETAG, data.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID,
             data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
-        assertEquals("kind", data.getKind());
+        assertEquals(KIND, data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
     }
 }
