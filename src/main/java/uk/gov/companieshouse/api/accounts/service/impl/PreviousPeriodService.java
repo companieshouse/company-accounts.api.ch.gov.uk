@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -14,7 +15,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.service.Service;
+import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
@@ -24,8 +25,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-@org.springframework.stereotype.Service
-public class PreviousPeriodService implements Service<PreviousPeriod> {
+@Service
+public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
