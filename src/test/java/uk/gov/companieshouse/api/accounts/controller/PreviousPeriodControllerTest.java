@@ -105,6 +105,9 @@ public class PreviousPeriodControllerTest {
         doReturn("7890").when(links).get(SELF);
         ResponseEntity response = previousPeriodController
             .create(previousPeriod, request);
+
+        verify(apiResponseMapper, times(1)).map(any(), any(), any());
+
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(previousPeriod, response.getBody());
