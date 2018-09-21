@@ -12,14 +12,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -78,6 +75,19 @@ public class PreviousPeriodControllerTest {
     public void setUp() throws NoSuchAlgorithmException, DataException {
         when(request.getAttribute(TRANSACTION)).thenReturn(transaction);
         when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
+        doReturn(transaction).when(request)
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
+        doReturn(companyAccountEntity).when(request)
+            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        doReturn("12345").when(companyAccountEntity).getId();
+
+    }
+
+    @Test
+    @DisplayName("Tests the successful creation of a previous period resource")
+    void canCreatePreviousPeriod() throws NoSuchAlgorithmException, DataException {
+
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             previousPeriod);
         doReturn(responseObject).when(previousPeriodService)
@@ -87,28 +97,38 @@ public class PreviousPeriodControllerTest {
         when(apiResponseMapper.map(responseObject.getStatus(),
             responseObject.getData(), responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
-        doReturn(transaction).when(request)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(companyAccountEntity).when(request)
-            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        doReturn("12345").when(companyAccountEntity).getId();
         doReturn(responseObject).when(previousPeriodService).findById(CREATE, TEST);
         doReturn(new ResponseObject(ResponseStatus.FOUND,
             previousPeriod)).when(previousPeriodService).findById(FIND, TEST);
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get(SELF);
-    }
-
-    @Test
-    @DisplayName("Tests the successful creation of a previous period resource")
-    public void canCreatePreviousPeriod() throws NoSuchAlgorithmException {
         ResponseEntity response = previousPeriodController
             .create(previousPeriod, request);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(previousPeriod, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the unsuccessful request to create previous period")
+    void createPreviousPeriodError() throws DataException {
+
+        DataException exception = new DataException("string");
+
+        when(previousPeriodService.create(any(), any(), any(), any())).thenThrow(exception);
+
+        when(apiResponseMapper.map(exception))
+            .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
+        ResponseEntity response = previousPeriodController
+            .create(previousPeriod, request);
+
+        verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
+        verify(apiResponseMapper, times(1)).map(exception);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
     }
 
 
