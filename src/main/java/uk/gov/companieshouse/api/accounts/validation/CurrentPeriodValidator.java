@@ -14,7 +14,7 @@ import javax.validation.Valid;
 @Component
 public class CurrentPeriodValidator extends BaseValidator {
 
-    String CURRENT_PERIOD_PATH = "$.current_period";
+    String CURRENT_PERIOD_PATH = "current_period";
     String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
     String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
