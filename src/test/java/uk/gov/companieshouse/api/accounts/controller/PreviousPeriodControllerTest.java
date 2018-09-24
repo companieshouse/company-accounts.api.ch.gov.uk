@@ -24,7 +24,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,11 +38,12 @@ import static org.mockito.Mockito.*;
 public class PreviousPeriodControllerTest {
 
     public static final String X_REQUEST_ID = "X-Request-Id";
-    public static final String TRANSACTION = "transaction";
+    public static final String TRANSACTION_STRING = "transaction";
     public static final String TEST = "test";
     public static final String CREATE = "create";
     public static final String FIND = "find";
     public static final String SELF = "self";
+
     @Mock
     private HttpServletRequest request;
 
@@ -72,8 +72,8 @@ public class PreviousPeriodControllerTest {
     private PreviousPeriodController previousPeriodController;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException, DataException {
-        when(request.getAttribute(TRANSACTION)).thenReturn(transaction);
+    public void setUp() {
+        when(request.getAttribute(TRANSACTION_STRING)).thenReturn(transaction);
         when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
         doReturn(transaction).when(request)
             .getAttribute(AttributeName.TRANSACTION.getValue());
@@ -86,7 +86,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a previous period resource")
-    void canCreatePreviousPeriod() throws NoSuchAlgorithmException, DataException {
+    void canCreatePreviousPeriod() throws DataException {
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             previousPeriod);
