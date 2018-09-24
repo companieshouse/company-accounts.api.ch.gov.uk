@@ -2,6 +2,11 @@ package uk.gov.companieshouse.api.accounts.exception.handler;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
+import com.fasterxml.jackson.core.JsonLocation;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.util.HashMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
         HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logError(ex);
+        logClientError(ex);
         return super.handleNoHandlerFoundException(ex, headers, status, request);
     }
 
@@ -40,18 +45,41 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
         HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status,
         WebRequest request) {
-        logError(ex);
+        logClientError(ex);
+
+        StringBuilder message = new StringBuilder("JSON parse exception");
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException) cause;
+            message.append(":Can not deserialize value of ").append(ife.getValue())
+                .append(getLocationMessage(ife.getLocation()));
+        } else if (cause instanceof MismatchedInputException) {
+            MismatchedInputException mie = (MismatchedInputException) cause;
+            message.append(getLocationMessage(mie.getLocation()));
+        } else if (cause instanceof JsonMappingException) {
+            JsonMappingException jme = (JsonMappingException) cause;
+            message.append(getLocationMessage(jme.getLocation()));
+        } else if (cause instanceof JsonParseException) {
+            JsonParseException jpe = (JsonParseException) cause;
+            message.append(getLocationMessage(jpe.getLocation()));
+        }
+
         Errors errors = new Errors();
-        Error error = new Error(ErrorMessageKeys.INVALID_VALUE.getKey(), ex.getMessage(),
+        Error error = new Error(ErrorMessageKeys.INVALID_VALUE.getKey(), message.toString(),
             LocationType.JSON_BODY.getValue(), ErrorType.VALIDATION.getType());
         errors.addError(error);
         return new ResponseEntity<>(errors, headers, status);
     }
 
-    private void logError(Exception ex) {
+    private String getLocationMessage(JsonLocation jsonLocation) {
+        return " at line " + jsonLocation.getLineNr() + " column " + jsonLocation
+            .getColumnNr();
+    }
+
+    private void logClientError(Exception ex) {
         HashMap<String, Object> message = new HashMap<>();
         message.put("message", ex.getMessage());
         message.put("error", ex.getClass());
-        STRUCTURED_LOGGER.error(ex.getMessage(), message);
+        STRUCTURED_LOGGER.info(ex.getMessage(), message);
     }
 }
