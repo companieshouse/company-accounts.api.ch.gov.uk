@@ -31,4 +31,12 @@ public class Approval extends RestObject {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "Approval{" +
+            "date=" + date +
+            ", name='" + name + '\'' +
+            '}';
+    }
 }

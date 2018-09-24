@@ -16,4 +16,11 @@ public class ApprovalEntity extends BaseEntity {
     public void setData(ApprovalDataEntity data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "ApprovalEntity{" +
+            "data=" + data +
+            '}';
+    }
 }

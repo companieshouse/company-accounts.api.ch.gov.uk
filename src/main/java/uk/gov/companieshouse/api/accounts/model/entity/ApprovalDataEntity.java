@@ -28,4 +28,12 @@ public class ApprovalDataEntity extends BaseDataEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "ApprovalDataEntity{" +
+            "date=" + date +
+            ", name='" + name + '\'' +
+            '}';
+    }
 }
