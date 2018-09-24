@@ -3,10 +3,8 @@ package uk.gov.companieshouse.api.accounts.exception.handler;
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.util.HashMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,15 +51,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             InvalidFormatException ife = (InvalidFormatException) cause;
             message.append(":Can not deserialize value of ").append(ife.getValue())
                 .append(getLocationMessage(ife.getLocation()));
-        } else if (cause instanceof MismatchedInputException) {
-            MismatchedInputException mie = (MismatchedInputException) cause;
-            message.append(getLocationMessage(mie.getLocation()));
-        } else if (cause instanceof JsonMappingException) {
-            JsonMappingException jme = (JsonMappingException) cause;
-            message.append(getLocationMessage(jme.getLocation()));
-        } else if (cause instanceof JsonParseException) {
-            JsonParseException jpe = (JsonParseException) cause;
-            message.append(getLocationMessage(jpe.getLocation()));
+        } else if (cause instanceof JsonProcessingException) {
+          JsonProcessingException jpe = (JsonProcessingException) cause;
+          message.append(getLocationMessage(jpe.getLocation()));
         }
 
         Errors errors = new Errors();
