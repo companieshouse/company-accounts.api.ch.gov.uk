@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -57,16 +58,17 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
         SpringApplication.run(CompanyAccountsApplication.class, args);
     }
 
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        return objectMapper;
-    }
+//    @Bean
+//    @Primary
+//    public ObjectMapper objectMapper() {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        //objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+//        objectMapper.disable(MapperFeature.USE_STATIC_TYPING);
+//        objectMapper.registerModule(new JavaTimeModule());
+//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//
+//        return objectMapper;
+//    }
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
