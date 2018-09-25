@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -87,12 +89,13 @@ public class CurrentPeriodControllerTest {
         when(apiResponseMapper.map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getValidationErrorData()))
                 .thenReturn(responseEntity);
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+        doReturn(pathVariables).when(request)
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(companyAccountEntity).when(request)
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        doReturn("12345").when(companyAccountEntity).getId();
         doReturn(responseObject).when(currentPeriodService).findById("create", "test");
         doReturn(new ResponseObject(ResponseStatus.FOUND,
                 currentPeriod)).when(currentPeriodService).findById("find", "test");
@@ -113,7 +116,12 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
-        doReturn("find").when(currentPeriodService).generateID(anyString());
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+
+        doReturn(pathVariables).when(request)
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        doReturn("find").when(currentPeriodService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
                 request)).thenReturn(responseEntity);

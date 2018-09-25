@@ -23,9 +23,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.filing.Data;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Resources;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
@@ -38,6 +43,12 @@ public class CompanyAccountInterceptorTest {
 
     @Mock
     private CompanyAccountDataEntity companyAccountDataEntity;
+
+    @Mock
+    private CompanyAccount companyAccount;
+
+    @Mock
+    private ResponseObject responseObject;
 
     @Mock
     private Transaction transaction;
@@ -57,31 +68,28 @@ public class CompanyAccountInterceptorTest {
     @InjectMocks
     private CompanyAccountInterceptor companyAccountInterceptor;
 
-    @BeforeEach
-    public void setUp() {
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
-        when(httpServletRequest.getAttribute(anyString())).thenReturn(transaction)
-                .thenReturn(pathVariables);
-    }
-
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() {
-
+    public void testReturnsCorrectlyOnValidConditions() throws DataException {
+        setUpPathVariables();
+        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
         setUpReourceList("linkToCompanyAccount");
         setUpCompanyAccount();
-        when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
+        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
+        when(responseObject.getData()).thenReturn(companyAccount);
+
         assertTrue(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById(anyString());
+        verify(companyAccountService, times(1)).findById("123456", "1111");
         verify(httpServletRequest, times(1))
-                .setAttribute(anyString(), any(CompanyAccountEntity.class));
+                .setAttribute(anyString(), any(CompanyAccount.class));
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
     public void testReturnsFalseForATransactionIsNull() {
+        setUpPathVariables();
         when(httpServletRequest.getAttribute(AttributeName.TRANSACTION.getValue()))
                 .thenReturn(null);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
@@ -90,24 +98,29 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
-    public void testReturnsFalseForAFailedLookup() {
-
-        when(companyAccountService.findById(anyString())).thenReturn(null);
+    public void testReturnsFalseForAFailedLookup() throws DataException {
+        setUpPathVariables();
+        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
+        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById(anyString());
+        verify(companyAccountService, times(1)).findById("123456", "1111");
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false when the two links do not match")
-    public void testReturnsFalseForLinksThatDoNotMatch() {
-
+    public void testReturnsFalseForLinksThatDoNotMatch() throws DataException {
+        setUpPathVariables();
+        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
         setUpReourceList("badLink");
         setUpCompanyAccount();
-        when(companyAccountService.findById(anyString())).thenReturn(companyAccountEntity);
+        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
+        when(responseObject.getData()).thenReturn(companyAccount);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById(anyString());
+        verify(companyAccountService, times(1)).findById("123456", "1111");
     }
 
     private void setUpReourceList(String linkToAdd) {
@@ -122,9 +135,15 @@ public class CompanyAccountInterceptorTest {
     }
 
     private void setUpCompanyAccount() {
-        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
-        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountslinks);
+        when(companyAccount.getLinks()).thenReturn(companyAccountslinks);
         when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
+    }
+
+    private void setUpPathVariables() {
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+        when(httpServletRequest.getAttribute(anyString())).thenReturn(transaction)
+            .thenReturn(pathVariables);
     }
 
 }

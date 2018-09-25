@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
@@ -35,7 +36,9 @@ class FilingControllerTest {
     @Mock
     private Transaction transactionMock;
     @Mock
-    private CompanyAccountEntity companyAccountEntityMock;
+    private CompanyAccountEntity companyAccountEntity;
+    @Mock
+    private CompanyAccount companyAccount;
 
     @InjectMocks
     private FilingController filingController;
@@ -45,7 +48,7 @@ class FilingControllerTest {
     void shouldGenerateFiling() {
         mockHttpServletRequestAllAttributesSet();
 
-        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccountEntityMock))
+        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount))
             .thenReturn(new Filing());
 
         response =
@@ -59,7 +62,7 @@ class FilingControllerTest {
     void shouldNotGenerateFiling() {
 
         mockHttpServletRequestAllAttributesSet();
-        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccountEntityMock))
+        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount))
             .thenReturn(null);
 
         response =
@@ -97,6 +100,6 @@ class FilingControllerTest {
     private void mockHttpServletRequestAllAttributesSet() {
         when(httpServletRequestMock.getAttribute(anyString()))
             .thenReturn(transactionMock)
-            .thenReturn(companyAccountEntityMock);
+            .thenReturn(companyAccount);
     }
 }

@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -28,7 +28,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class SmallFullController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
@@ -44,22 +44,21 @@ public class SmallFullController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-            HttpServletRequest request) {
+        HttpServletRequest request) {
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-
-        String companyAccountId = companyAccountEntity.getId();
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Map<String, String> pathVariables = (Map) request
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        String companyAccountId = pathVariables.get("companyAccountId");
         String requestId = request.getHeader("X-Request-Id");
 
         ResponseEntity responseEntity;
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
-                    .create(smallFull, transaction, companyAccountId, requestId);
+                .create(smallFull, transaction, companyAccountId, requestId);
             responseEntity = apiResponseMapper
-                    .map(responseObject.getStatus(), responseObject.getData(),
-                            responseObject.getValidationErrorData());
+                .map(responseObject.getStatus(), responseObject.getData(),
+                    responseObject.getValidationErrorData());
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
@@ -75,7 +74,7 @@ public class SmallFullController {
     public ResponseEntity get(HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request
-                .getAttribute(AttributeName.SMALLFULL.getValue());
+            .getAttribute(AttributeName.SMALLFULL.getValue());
 
         return apiResponseMapper.mapGetResponse(smallFull, request);
     }

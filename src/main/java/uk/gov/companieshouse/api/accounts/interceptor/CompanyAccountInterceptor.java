@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -14,8 +13,11 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.LinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Resources;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
@@ -32,7 +34,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private CompanyAccountService companyAccountService;
 
@@ -53,23 +55,26 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) {
+        Object handler) {
+
+        String requestId = request.getHeader("X-Request-Id");
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
+        debugMap.put("request_id", requestId);
 
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
             debugMap.put("message",
-                    "CompanyAccountInterceptor error: no transaction in request session");
+                "CompanyAccountInterceptor error: no transaction in request session");
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
         Map<String, String> pathVariables = (Map) request
-                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         String companyAccountId = pathVariables.get("companyAccountId");
 
         debugMap.put("transaction_id", transaction.getId());
@@ -78,41 +83,41 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
         if (companyAccountId == null) {
             LOGGER.debugRequest(request,
-                    "CompanyAccountInterceptor error: no company account id provided", debugMap);
+                "CompanyAccountInterceptor error: no company account id provided", debugMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
 
-        CompanyAccountEntity companyAccountEntity;
+        ResponseObject<CompanyAccount> responseObject;
         try {
-            companyAccountEntity = companyAccountService.findById(companyAccountId);
-        } catch (DataAccessException dae) {
-            LOGGER.errorRequest(request, dae, debugMap);
+            responseObject = companyAccountService.findById(companyAccountId, requestId);
+        } catch (DataException de) {
+            LOGGER.errorRequest(request, de, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
-        if (companyAccountEntity == null) {
+        if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
             LOGGER.debugRequest(request,
-                    "CompanyAccountInterceptor error: Failed to retrieve a CompanyAccount.",
-                    debugMap);
+                "CompanyAccountInterceptor error: Failed to retrieve a CompanyAccount.",
+                debugMap);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
 
-        String accountsSelf = companyAccountEntity.getData().getLinks()
-                .get(LinkType.SELF.getLink());
+        CompanyAccount companyAccount = responseObject.getData();
+
+        String accountsSelf = companyAccount.getLinks().get(LinkType.SELF.getLink());
         Map<String, Resources> resourcesList = transaction.getResources();
         if (!isLinkInResourceMap(resourcesList, accountsSelf)) {
             LOGGER.debugRequest(request,
-                    "CompanyAccountInterceptor failed on preHandle: Failed to find the CompanyAccount self link in the Transactions links",
-                    debugMap);
+                "CompanyAccountInterceptor failed on preHandle: Failed to find the CompanyAccount self link in the Transactions links",
+                debugMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
 
-        request.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(),
-                companyAccountEntity);
+        request.setAttribute(AttributeName.COMPANY_ACCOUNT.getValue(), companyAccount);
         return true;
     }
 
@@ -120,7 +125,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         for (Entry<String, Resources> entry : resourcesList.entrySet()) {
             Resources resources = entry.getValue();
             if (resources.getKind().equals(Kind.COMPANY_ACCOUNTS.getValue()) && resources.getLinks()
-                    .get(LinkType.RESOURCE.getLink()).equals(accountsSelf)) {
+                .get(LinkType.RESOURCE.getLink()).equals(accountsSelf)) {
                 return true;
             }
         }

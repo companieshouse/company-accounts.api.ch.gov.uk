@@ -23,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
@@ -39,7 +40,7 @@ class FilingServiceImplTest {
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
 
     private FilingService filingService;
-    private CompanyAccountEntity companyAccountEntity;
+    private CompanyAccount companyAccount;
     private Transaction transaction;
 
     @Mock
@@ -50,7 +51,7 @@ class FilingServiceImplTest {
     @BeforeEach
     void setUpBeforeEach() {
         transaction = new Transaction();
-        companyAccountEntity = createAccountEntity();
+        companyAccount = createAccount();
 
         filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock);
     }
@@ -63,7 +64,7 @@ class FilingServiceImplTest {
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         Filing filing = filingService
-            .generateAccountFiling(transaction, companyAccountEntity);
+            .generateAccountFiling(transaction, companyAccount);
 
         verifyDocumentGeneratorCallerMock();
         verify(environmentReaderMock, times(1))
@@ -75,8 +76,8 @@ class FilingServiceImplTest {
     @Test
     @DisplayName("Tests the filing not generated when small full accounts link is not present")
     void shouldNotGenerateFilingAsSmallFullLinkNotPresentWithinAccountData() {
-        companyAccountEntity.getData().setLinks(new HashMap<>());
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
+        companyAccount.setLinks(new HashMap<>());
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         assertNull(filing);
     }
@@ -86,7 +87,7 @@ class FilingServiceImplTest {
     void shouldNotGenerateFilingAsIxbrlLocationNotSet() {
         doReturn(null).when(documentGeneratorCallerMock).generateIxbrl();
 
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyDocumentGeneratorCallerMock();
         assertNull(filing);
@@ -102,19 +103,15 @@ class FilingServiceImplTest {
      * @return
      * @throws ParseException
      */
-    private CompanyAccountEntity createAccountEntity() {
-        CompanyAccountEntity account = new CompanyAccountEntity();
+    private CompanyAccount createAccount() {
+        CompanyAccount companyAccount = new CompanyAccount();
 
-        account.setId(ACCOUNTS_ID);
+        companyAccount.setEtag("etagForTesting");
+        companyAccount.setKind("accounts");
+        companyAccount.setLinks(createAccountEntityLinks());
+        companyAccount.setPeriodEndOn(LocalDate.of(2018, 1, 1));
 
-        CompanyAccountDataEntity accountData = new CompanyAccountDataEntity();
-        accountData.setEtag("etagForTesting");
-        accountData.setKind("accounts");
-        accountData.setLinks(createAccountEntityLinks());
-        accountData.setPeriodEndOn(LocalDate.of(2018, 1, 1));
-        account.setData(accountData);
-
-        return account;
+        return companyAccount;
     }
 
     /**

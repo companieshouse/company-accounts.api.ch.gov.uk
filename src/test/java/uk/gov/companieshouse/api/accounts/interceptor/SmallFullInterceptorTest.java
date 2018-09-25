@@ -29,6 +29,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -49,7 +50,7 @@ public class SmallFullInterceptorTest {
     private Transaction transaction;
 
     @Mock
-    private CompanyAccountEntity companyAccountEntity;
+    private CompanyAccount companyAccount;
 
     @Mock
     private CompanyAccountDataEntity companyAccountDataEntity;
@@ -77,13 +78,13 @@ public class SmallFullInterceptorTest {
 
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
+        pathVariables.put("companyAccountId", "test");
 
         when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(companyAccountEntity).when(httpServletRequest).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        doReturn(companyAccount).when(httpServletRequest).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-        when(companyAccountEntity.getId()).thenReturn("test");
         when(smallFullService.generateID(anyString())).thenReturn("test");
         when(httpServletRequest.getMethod()).thenReturn("GET");
     }
@@ -94,8 +95,7 @@ public class SmallFullInterceptorTest {
         when(smallFullService.findById(anyString(), anyString())).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);
-        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
-        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountLinks);
+        when(companyAccount.getLinks()).thenReturn(companyAccountLinks);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
         when(companyAccountLinks.get("small_full_accounts")).thenReturn("linkToSmallFull");
         when(smallFullLinks.get("self")).thenReturn("linkToSmallFull");

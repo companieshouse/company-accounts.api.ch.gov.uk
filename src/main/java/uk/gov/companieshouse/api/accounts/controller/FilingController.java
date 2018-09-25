@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
@@ -42,20 +42,20 @@ public class FilingController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        CompanyAccountEntity companyAccountEntity =
-            (CompanyAccountEntity) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount =
+            (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
-        if (companyAccountEntity == null) {
-            logRequestError(request,  "no company account in request session");
+        if (companyAccount == null) {
+            logRequestError(request, "no company account in request session");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccountEntity);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
         if (filing != null) {
             return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
         }
 
-        logRequestError(request,  "Failed to generate filing");
+        logRequestError(request, "Failed to generate filing");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

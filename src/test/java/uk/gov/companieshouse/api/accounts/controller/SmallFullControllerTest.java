@@ -3,12 +3,16 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -19,9 +23,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -43,6 +49,9 @@ public class SmallFullControllerTest {
     private CompanyAccountEntity companyAccountEntity;
 
     @Mock
+    private CompanyAccount companyAccount;
+
+    @Mock
     private SmallFull smallFull;
 
     @Mock
@@ -50,6 +59,9 @@ public class SmallFullControllerTest {
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private SmallFullController smallFullController;
@@ -60,14 +72,19 @@ public class SmallFullControllerTest {
         ResponseObject<SmallFull> responseObject = new ResponseObject(
                 ResponseStatus.CREATED,
                 smallFull);
+
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+
+        doReturn(transaction).when(request)
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(pathVariables).when(request)
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
-        doReturn(transaction).when(request)
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(companyAccountEntity).when(request)
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
-        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, null,null);
+        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, "123456",null);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getValidationErrorData());
         ResponseEntity response = smallFullController.create(smallFull, request);
