@@ -82,7 +82,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
             throw dataException;
         }
 
-        smallFullService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink, requestId);
+        smallFullService.addLink(companyAccountId, LinkType.PREVIOUS_PERIOD, selfLink, requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
     }
