@@ -107,7 +107,7 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws NoSuchAlgorithmException {
-        ResponseEntity response = currentPeriodController.create(currentPeriod, bindingResult, request);
+        ResponseEntity response = currentPeriodController.create(currentPeriod, bindingResult, "123456", request);
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(currentPeriod, response.getBody());
@@ -116,16 +116,12 @@ public class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws NoSuchAlgorithmException {
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
 
-        doReturn(pathVariables).when(request)
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         doReturn("find").when(currentPeriodService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
                 request)).thenReturn(responseEntity);
-        ResponseEntity response = currentPeriodController.get(request);
+        ResponseEntity response = currentPeriodController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +54,8 @@ public class CurrentPeriodController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid CurrentPeriod currentPeriod,
-        BindingResult bindingResult, HttpServletRequest request) {
+        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
 
         Errors errors = new Errors();
 
@@ -62,10 +64,6 @@ public class CurrentPeriodController {
             errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
 
         }
-
-        Map<String, String> pathVariables = (Map) request
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String companyAccountId = pathVariables.get("companyAccountId");
 
         currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
         if (errors.hasErrors()) {
@@ -103,15 +101,12 @@ public class CurrentPeriodController {
     }
 
     @GetMapping
-    public ResponseEntity get(HttpServletRequest request) {
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
         LogContext logContext = LogHelper.createNewLogContext(request);
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        Map<String, String> pathVariables = (Map) request
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String companyAccountId = pathVariables.get("companyAccountId");
 
         String requestId = request.getHeader("X-Request-Id");
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);

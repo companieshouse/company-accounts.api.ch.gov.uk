@@ -73,13 +73,8 @@ public class SmallFullControllerTest {
                 ResponseStatus.CREATED,
                 smallFull);
 
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
-
         doReturn(transaction).when(request)
             .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(pathVariables).when(request)
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
@@ -87,7 +82,7 @@ public class SmallFullControllerTest {
         doReturn(responseObject).when(smallFullService).create(smallFull, transaction, "123456",null);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getValidationErrorData());
-        ResponseEntity response = smallFullController.create(smallFull, request);
+        ResponseEntity response = smallFullController.create(smallFull, "123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

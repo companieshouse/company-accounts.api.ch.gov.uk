@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,12 +45,9 @@ public class SmallFullController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-        HttpServletRequest request) {
+        @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
-        Map<String, String> pathVariables = (Map) request
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        String companyAccountId = pathVariables.get("companyAccountId");
         String requestId = request.getHeader("X-Request-Id");
 
         ResponseEntity responseEntity;
