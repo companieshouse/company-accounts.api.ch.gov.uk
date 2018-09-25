@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -32,7 +32,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     @Autowired
     private SmallFullService smallFullService;
@@ -52,12 +52,12 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws NoSuchAlgorithmException {
+        Object handler) throws NoSuchAlgorithmException {
 
         //The GET and POST mappings are the same URL, on a POST the small-full will not exist as yet
         //so we do not want to run this interceptor.
         if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
-                .endsWith("small-full")) {
+            .endsWith("small-full")) {
             return true;
         }
 
@@ -68,32 +68,34 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         debugMap.put("request_id", requestId);
 
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
             debugMap.put("message",
-                    "SmallFullInterceptor error: No transaction in request session");
+                "SmallFullInterceptor error: No transaction in request session");
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
         Map<String, String> pathVariables = (Map) request
-                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        String companyAccountId = pathVariables.get("companyAccountId");
+
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("transaction_company_number", transaction.getCompanyNumber());
         debugMap.put("path_variables", pathVariables);
 
-        CompanyAccountEntity companyAccountEntity = (CompanyAccountEntity) request
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        if (companyAccountEntity == null) {
+        CompanyAccount companyAccount = (CompanyAccount) request
+            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
+        if (companyAccount == null) {
             debugMap.put("message",
-                    "SmallFullInterceptor error: No company account in request session");
+                "SmallFullInterceptor error: No company account in request session");
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
-        String companyAccountId = companyAccountEntity.getId();
         String smallFullId = smallFullService.generateID(companyAccountId);
         ResponseObject<SmallFull> responseObject;
         try {
@@ -106,21 +108,21 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
         if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
             LOGGER.debugRequest(request,
-                    "SmallFullInterceptor error: Failed to retrieve a SmallFull account.",
-                    debugMap);
+                "SmallFullInterceptor error: Failed to retrieve a SmallFull account.",
+                debugMap);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }
 
         SmallFull smallFull = responseObject.getData();
 
-        String companyAccountLink = companyAccountEntity.getData().getLinks()
-                .get(LinkType.SMALL_FULL.getLink());
+        String companyAccountLink = companyAccount.getLinks()
+            .get(LinkType.SMALL_FULL.getLink());
         String smallFullSelf = smallFull.getLinks().get(LinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,
-                    "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",
-                    debugMap);
+                "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",
+                debugMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }

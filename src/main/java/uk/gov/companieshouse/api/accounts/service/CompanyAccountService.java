@@ -15,10 +15,11 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public interface CompanyAccountService {
 
     ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
-            Transaction transaction,
-            String requestId) throws PatchException, DataException;
+        Transaction transaction,
+        String requestId) throws PatchException, DataException;
 
-    CompanyAccountEntity findById(String id);
+    ResponseObject<CompanyAccount> findById(String id, String requestId)
+        throws DataException;
 
     void addLink(String id, LinkType linkType, String link);
 

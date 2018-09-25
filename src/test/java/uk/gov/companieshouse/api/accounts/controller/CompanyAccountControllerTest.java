@@ -47,7 +47,7 @@ public class CompanyAccountControllerTest {
     private CompanyAccountTransformer companyAccountTransformer;
 
     @Mock
-    private CompanyAccount companyAccountMock;
+    private CompanyAccount companyAccount;
 
     @Mock
     private CompanyAccountService companyAccountServiceMock;
@@ -72,9 +72,9 @@ public class CompanyAccountControllerTest {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED,
-                companyAccountMock);
+            companyAccount);
         when(companyAccountServiceMock
-                .create(companyAccountMock, transactionMock, "test"))
+                .create(companyAccount, transactionMock, "test"))
                 .thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
@@ -84,12 +84,12 @@ public class CompanyAccountControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
-                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
+                .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(companyAccountMock, response.getBody());
+        assertEquals(companyAccount, response.getBody());
     }
 
     @Test
@@ -98,9 +98,9 @@ public class CompanyAccountControllerTest {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
-                companyAccountMock);
+            companyAccount);
         when(companyAccountServiceMock
-                .create(companyAccountMock, transactionMock, "test"))
+                .create(companyAccount, transactionMock, "test"))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
@@ -109,7 +109,7 @@ public class CompanyAccountControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
-                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
+                .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -121,14 +121,14 @@ public class CompanyAccountControllerTest {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         doThrow(mock(DataException.class)).when(companyAccountServiceMock)
-                .create(companyAccountMock, transactionMock, "test");
+                .create(companyAccount, transactionMock, "test");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
         when(apiResponseMapper.map(any(DataException.class)))
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
-                .createCompanyAccount(companyAccountMock, httpServletRequestMock);
+                .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -137,16 +137,14 @@ public class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the successful get of a company account resource")
     public void canGetCompanyAccount() throws NoSuchAlgorithmException {
-        doReturn(companyAccountEntity).when(httpServletRequestMock)
+        doReturn(companyAccount).when(httpServletRequestMock)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        doReturn(companyAccountMock).when(companyAccountTransformer)
-                .transform(companyAccountEntity);
         ResponseEntity response = companyAccountController
                 .getCompanyAccount(httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(companyAccountMock, response.getBody());
+        assertEquals(companyAccount, response.getBody());
     }
 
     @Test

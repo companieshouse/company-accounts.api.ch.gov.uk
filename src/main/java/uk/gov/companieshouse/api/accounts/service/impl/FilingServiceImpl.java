@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
@@ -48,9 +48,9 @@ public class FilingServiceImpl implements FilingService {
      */
     @Override
     public Filing generateAccountFiling(Transaction transaction,
-        CompanyAccountEntity companyAccountEntity) {
+        CompanyAccount companyAccount) {
 
-        AccountsType accountType = getAccountType(companyAccountEntity);
+        AccountsType accountType = getAccountType(companyAccount);
         if (accountType != null) {
             return generateAccountFiling(transaction, accountType);
         }
@@ -60,12 +60,9 @@ public class FilingServiceImpl implements FilingService {
 
     /**
      * Get account type by checking the account type link within the account's data.
-     *
-     * @param accountEntity
-     * @return
      */
-    private AccountsType getAccountType(CompanyAccountEntity accountEntity) {
-        Map<String, String> links = accountEntity.getData().getLinks();
+    private AccountsType getAccountType(CompanyAccount companyAccount) {
+        Map<String, String> links = companyAccount.getLinks();
 
         if (links.containsKey(AccountsType.SMALL_FULL_ACCOUNTS.getResourceKey())) {
             return AccountsType.SMALL_FULL_ACCOUNTS;
@@ -73,7 +70,6 @@ public class FilingServiceImpl implements FilingService {
 
         Map<String, Object> logMap = new HashMap<>();
         logMap.put(LOG_MESSAGE_KEY, "Link for account type is missing from account data");
-        logMap.put(LOG_ACCOUNT_ID_KEY, accountEntity.getId());
         LOGGER.error("Account Type not found", logMap);
 
         return null;
@@ -114,7 +110,7 @@ public class FilingServiceImpl implements FilingService {
         if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
             //TODO Add TNEP validation to be added when functionality is implemented . (STORY SFA-574)
             //isIxbrlValid will be set to false if fails the tnep validation.
-            isIxbrlValid =  true;
+            isIxbrlValid = true;
         }
 
         return isIxbrlValid;
@@ -126,7 +122,6 @@ public class FilingServiceImpl implements FilingService {
      * @param transaction - transaction information
      * @param accountsType - Account type information: account type, ixbrl's template name, account
      * @param ixbrlLocation - the location where the ixbrl is stored.
-     * @return
      */
     private Filing createAccountFiling(Transaction transaction, AccountsType accountsType,
         String ixbrlLocation) {

@@ -33,7 +33,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
@@ -45,8 +45,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
      * {@inheritDoc}
      */
     public ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
-            Transaction transaction, String requestId)
-            throws PatchException, DataException {
+        Transaction transaction, String requestId)
+        throws PatchException, DataException {
 
         String id = generateID();
         String companyAccountLink = createSelfLink(transaction, id);
@@ -55,7 +55,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         addLinks(companyAccount, companyAccountLink);
 
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer
-                .transform(companyAccount);
+            .transform(companyAccount);
 
         companyAccountEntity.setId(id);
 
@@ -70,17 +70,17 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                    "Failed to insert company account entity", me);
+                "Failed to insert company account entity", me);
             LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
 
         try {
             transactionManager
-                    .updateTransaction(transaction.getId(), requestId, companyAccountLink);
+                .updateTransaction(transaction.getId(), requestId, companyAccountLink);
         } catch (ApiErrorResponseException aere) {
             PatchException patchException = new PatchException(
-                    "Failed to patch transaction", aere);
+                "Failed to patch transaction", aere);
             LOGGER.errorContext(requestId, patchException, debugMap);
             throw patchException;
         }
@@ -91,8 +91,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     @Override
     public void addLink(String id, LinkType linkType, String link) {
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
-                .orElseThrow(() -> new MongoException(
-                        "Failed to add link to Company account entity"));
+            .orElseThrow(() -> new MongoException(
+                "Failed to add link to Company account entity"));
         CompanyAccountDataEntity companyAccountDataEntity = companyAccountEntity.getData();
         Map<String, String> map = companyAccountDataEntity.getLinks();
         map.put(linkType.getLink(), link);
@@ -108,7 +108,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private String createSelfLink(Transaction transaction, String id) {
         return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName()
-                + "/" + id;
+            + "/" + id;
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
@@ -126,7 +126,24 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
-    public CompanyAccountEntity findById(String id) {
-        return companyAccountRepository.findById(id).orElse(null);
+    public ResponseObject<CompanyAccount> findById(String id, String requestId)
+        throws DataException {
+
+        CompanyAccountEntity companyAccountEntity;
+        try {
+            companyAccountEntity = companyAccountRepository.findById(id).orElse(null);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Company Account", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
+
+        if (companyAccountEntity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        CompanyAccount companyAccount = companyAccountTransformer.transform(companyAccountEntity);
+        return new ResponseObject<>(ResponseStatus.FOUND, companyAccount);
     }
 }
