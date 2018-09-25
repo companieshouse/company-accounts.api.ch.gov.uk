@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
+
 import javax.validation.Valid;
 
 @JsonInclude(Include.NON_NULL)
@@ -12,7 +13,7 @@ public class BalanceSheet {
     public static final int MAX_RANGE = 99999999;
     public static final int MIN_RANGE = 0;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
     @JsonProperty("called_up_share_capital_not_paid")
     private Integer calledUpShareCapitalNotPaid;
 
