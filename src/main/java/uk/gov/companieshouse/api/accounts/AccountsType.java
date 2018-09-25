@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

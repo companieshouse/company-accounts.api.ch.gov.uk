@@ -5,6 +5,7 @@ package uk.gov.companieshouse.api.accounts.validation;
  */
 public enum LocationType {
 
+    REQUEST_BODY("request-body"),
     JSON_PATH("json-path");
 
     private String value;

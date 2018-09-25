@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.validation;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,6 +12,7 @@ import java.util.Map;
 /**
  * Represents a validation error
  */
+@JsonInclude(Include.NON_NULL)
 public class Error {
 
     @JsonProperty("error")
@@ -45,12 +48,6 @@ public class Error {
         if (error == null || error.isEmpty()) {
             throw new IllegalArgumentException("Error cannot be null or empty");
         }
-        if (location == null || location.isEmpty()) {
-            throw new IllegalArgumentException("Location cannot be null or empty");
-        }
-        if (locationType == null || locationType.isEmpty()) {
-            throw new IllegalArgumentException("Location type cannot be null or empty");
-        }
         if (type == null || type.isEmpty()) {
             throw new IllegalArgumentException("Type cannot be null or empty");
         }
@@ -59,30 +56,6 @@ public class Error {
         this.location = location;
         this.locationType = locationType;
         this.type = type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Error other = (Error) o;
-
-        if (!error.equals(other.error)) return false;
-        if (errorValues != null ? !errorValues.equals(other.errorValues) : other.errorValues != null) return false;
-        if (!location.equals(other.location)) return false;
-        if (!locationType.equals(other.locationType)) return false;
-        return type.equals(other.type);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = error.hashCode();
-        result = 31 * result + (errorValues != null ? errorValues.hashCode() : 0);
-        result = 31 * result + location.hashCode();
-        result = 31 * result + locationType.hashCode();
-        result = 31 * result + type.hashCode();
-        return result;
     }
 
     /**

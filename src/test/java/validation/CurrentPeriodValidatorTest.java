@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class currentPeriodValidatorTest {
+public class CurrentPeriodValidatorTest {
 
     String CURRENT_PERIOD_PATH = "$.current_period";
     String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
