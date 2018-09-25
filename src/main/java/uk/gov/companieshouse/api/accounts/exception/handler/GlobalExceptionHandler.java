@@ -58,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         Errors errors = new Errors();
         Error error = new Error(ErrorMessageKeys.INVALID_VALUE.getKey(), message.toString(),
-            LocationType.JSON_BODY.getValue(), ErrorType.VALIDATION.getType());
+            LocationType.REQUEST_BODY.getValue(), ErrorType.VALIDATION.getType());
         errors.addError(error);
         return new ResponseEntity<>(errors, headers, status);
     }
