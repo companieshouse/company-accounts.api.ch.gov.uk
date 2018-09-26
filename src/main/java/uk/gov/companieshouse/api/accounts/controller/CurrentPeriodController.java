@@ -67,7 +67,8 @@ public class CurrentPeriodController {
         currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
         if (errors.hasErrors()) {
 
-            LOGGER.error("Current period validation failure");
+            LOGGER.error(
+                "Current period validation failure");
             logValidationFailureError(getRequestId(request), errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

@@ -9,14 +9,16 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
-import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -27,10 +29,10 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class SmallFullService implements
-    ParentService<SmallFull> {
+    ParentService<SmallFull, SmallFullLinkType> {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private SmallFullRepository smallFullRepository;
 
@@ -42,9 +44,9 @@ public class SmallFullService implements
 
     @Autowired
     public SmallFullService(SmallFullRepository smallFullRepository,
-            SmallFullTransformer smallFullTransformer,
-            CompanyAccountService companyAccountService,
-            KeyIdGenerator keyIdGenerator) {
+        SmallFullTransformer smallFullTransformer,
+        CompanyAccountService companyAccountService,
+        KeyIdGenerator keyIdGenerator) {
         this.smallFullRepository = smallFullRepository;
         this.smallFullTransformer = smallFullTransformer;
         this.companyAccountService = companyAccountService;
@@ -53,8 +55,8 @@ public class SmallFullService implements
 
     @Override
     public ResponseObject<SmallFull> create(SmallFull smallFull, Transaction transaction,
-            String companyAccountId, String requestId)
-            throws DataException {
+        String companyAccountId, String requestId)
+        throws DataException {
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(smallFull, selfLink);
         smallFull.setEtag(GenerateEtagUtil.generateEtag());
@@ -76,12 +78,13 @@ public class SmallFullService implements
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                    "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
+                "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
             LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
 
-        companyAccountService.addLink(companyAccountId, LinkType.SMALL_FULL, selfLink);
+        companyAccountService
+            .addLink(companyAccountId, CompanyAccountLinkType.SMALL_FULL, selfLink);
 
         return new ResponseObject<>(ResponseStatus.CREATED, smallFull);
     }
@@ -108,12 +111,12 @@ public class SmallFullService implements
     }
 
     @Override
-    public void addLink(String id, LinkType linkType, String link, String requestId)
-            throws DataException {
+    public void addLink(String id, SmallFullLinkType linkType, String link, String requestId)
+        throws DataException {
         String smallFullId = generateID(id);
         SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to add get Small full entity to add link"));
+            .orElseThrow(() -> new DataException(
+                "Failed to add get Small full entity to add link"));
         smallFullEntity.getData().getLinks().put(linkType.getLink(), link);
 
         try {
@@ -137,14 +140,14 @@ public class SmallFullService implements
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName();
+        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName();
     }
 
     private void initLinks(SmallFull smallFull, String link) {
         Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), link);
+        map.put(SmallFullLinkType.SELF.getLink(), link);
         smallFull.setLinks(map);
     }
 }

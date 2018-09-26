@@ -14,24 +14,33 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 
 @Component
 public class TransactionManagerImpl implements TransactionManager {
 
+    private static final String ID_PARAMETER = "{id}";
+    private static final String X_REQUEST_ID = "X-Request-Id";
+    /**
+     * represents the Authorization header name in the request
+     */
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final RestTemplate restTemplate = createRestTemplate();
     @Autowired
     private TransactionServiceProperties configuration;
 
-    private static final String ID_PARAMETER = "{id}";
-    private static final String X_REQUEST_ID = "X-Request-Id";
-
-    /** represents the Authorization header name in the request */
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-
-    private static final RestTemplate restTemplate = createRestTemplate();
-
     public TransactionManagerImpl(TransactionServiceProperties configuration) {
         this.configuration = configuration;
+    }
+
+    /**
+     * Creates the rest template when class first loads
+     *
+     * @return Returns a statically created rest template
+     */
+    private static RestTemplate createRestTemplate() {
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        return new RestTemplate(requestFactory);
     }
 
     /**
@@ -58,7 +67,8 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestId - id of the request
      * @param link - link of the resource to add to the transaction resources
      */
-    public void updateTransaction(String transactionId, String requestId, String link) throws ApiErrorResponseException {
+    public void updateTransaction(String transactionId, String requestId, String link)
+        throws ApiErrorResponseException {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("resources", createResourceMap(link));
 
@@ -71,19 +81,9 @@ public class TransactionManagerImpl implements TransactionManager {
 
         String patchUrl = getPatchUrl(transactionId);
 
-        if(!patchTransaction(patchUrl, requestEntity)){
+        if (!patchTransaction(patchUrl, requestEntity)) {
             throw new ApiErrorResponseException("API error");
         }
-    }
-
-    /**
-     * Creates the rest template when class first loads
-     *
-     * @return Returns a statically created rest template
-     */
-    private static RestTemplate createRestTemplate() {
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        return new RestTemplate(requestFactory);
     }
 
     /**
@@ -147,7 +147,8 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestEntity - the request entity object
      */
     private ResponseEntity<Transaction> getTransaction(String url, HttpEntity requestEntity) {
-        return restTemplate.exchange(getRootUri() + url, HttpMethod.GET, requestEntity, Transaction.class);
+        return restTemplate
+            .exchange(getRootUri() + url, HttpMethod.GET, requestEntity, Transaction.class);
     }
 
     /**
@@ -157,7 +158,8 @@ public class TransactionManagerImpl implements TransactionManager {
      * @param requestEntity - the request entity object
      */
     private boolean patchTransaction(String url, HttpEntity requestEntity) {
-        ResponseEntity<?> response = restTemplate.exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
+        ResponseEntity<?> response = restTemplate
+            .exchange(getRootUri() + url, HttpMethod.PATCH, requestEntity, Void.class);
 
         return (response.getStatusCode() != HttpStatus.OK);
 
@@ -168,16 +170,16 @@ public class TransactionManagerImpl implements TransactionManager {
      *
      * @param link - the link in which to add to the resource
      */
-    private Map createResourceMap(String link){
+    private Map createResourceMap(String link) {
         Resources resource = new Resources();
         resource.setKind(Kind.COMPANY_ACCOUNTS.getValue());
 
-        Map<String,String> links = new HashMap<>();
-        links.put(LinkType.RESOURCE.getLink(), link);
+        Map<String, String> links = new HashMap<>();
+        links.put(TransactionLinkType.RESOURCE.getLink(), link);
         resource.setLinks(links);
         resource.setUpdatedAt(new Date());
 
-        Map<String,Resources> resourceMap = new HashMap<>();
+        Map<String, Resources> resourceMap = new HashMap<>();
         resourceMap.put(link, resource);
         return resourceMap;
     }

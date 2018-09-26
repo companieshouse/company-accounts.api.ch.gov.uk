@@ -12,8 +12,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -107,7 +108,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
         CompanyAccount companyAccount = responseObject.getData();
 
-        String accountsSelf = companyAccount.getLinks().get(LinkType.SELF.getLink());
+        String accountsSelf = companyAccount.getLinks().get(BasicLinkType.SELF.getLink());
         Map<String, Resources> resourcesList = transaction.getResources();
         if (!isLinkInResourceMap(resourcesList, accountsSelf)) {
             LOGGER.debugRequest(request,
@@ -125,7 +126,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         for (Entry<String, Resources> entry : resourcesList.entrySet()) {
             Resources resources = entry.getValue();
             if (resources.getKind().equals(Kind.COMPANY_ACCOUNTS.getValue()) && resources.getLinks()
-                .get(LinkType.RESOURCE.getLink()).equals(accountsSelf)) {
+                .get(TransactionLinkType.RESOURCE.getLink()).equals(accountsSelf)) {
                 return true;
             }
         }

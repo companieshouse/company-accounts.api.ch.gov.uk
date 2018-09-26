@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
@@ -81,7 +83,8 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
             throw dataException;
         }
 
-        smallFullService.addLink(companyAccountId, LinkType.PREVIOUS_PERIOD, selfLink, requestId);
+        smallFullService
+            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD, selfLink, requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
     }
@@ -106,7 +109,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     private String buildSelfLink(Transaction transaction, String companyAccountId) {
 
         StringBuilder builder = new StringBuilder();
-        builder.append(transaction.getLinks().get(LinkType.SELF.getLink())).append("/")
+        builder.append(transaction.getLinks().get(TransactionLinkType.SELF.getLink())).append("/")
             .append(ResourceName.COMPANY_ACCOUNT.getName()).append("/")
             .append(companyAccountId).append("/")
             .append(ResourceName.SMALL_FULL.getName()).append("/")
@@ -117,7 +120,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     private void initLinks(PreviousPeriod previousPeriod, String link) {
         Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), link);
+        map.put(BasicLinkType.SELF.getLink(), link);
         previousPeriod.setLinks(map);
     }
 }

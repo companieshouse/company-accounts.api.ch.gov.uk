@@ -11,8 +11,9 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
@@ -117,8 +118,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         SmallFull smallFull = responseObject.getData();
 
         String companyAccountLink = companyAccount.getLinks()
-            .get(LinkType.SMALL_FULL.getLink());
-        String smallFullSelf = smallFull.getLinks().get(LinkType.SELF.getLink());
+            .get(CompanyAccountLinkType.SMALL_FULL.getLink());
+        String smallFullSelf = smallFull.getLinks().get(SmallFullLinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,
                 "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",

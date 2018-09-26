@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.Basic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,9 +20,10 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.LinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
@@ -122,10 +124,10 @@ class FilingServiceImplTest {
     private Map<String, String> createAccountEntityLinks() {
         Map<String, String> dataLinks = new HashMap<>();
 
-        dataLinks.put(LinkType.SELF.getLink(),
+        dataLinks.put(BasicLinkType.SELF.getLink(),
             String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
 
-        dataLinks.put(LinkType.SMALL_FULL.getLink(),
+        dataLinks.put(CompanyAccountLinkType.SMALL_FULL.getLink(),
             String.format("/transactions/%s/company-accounts/%s/small-full/%s",
                 TRANSACTION_ID,
                 ACCOUNTS_ID,
