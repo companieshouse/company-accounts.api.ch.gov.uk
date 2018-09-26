@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
@@ -21,6 +20,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -78,7 +78,7 @@ public class CurrentPeriodServiceTest {
         setUpCreate();
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
         ResponseObject<CurrentPeriod> result = currentPeriodService
-                .create(currentPeriod, transaction, "", "");
+            .create(currentPeriod, transaction, "", "");
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }
@@ -88,7 +88,7 @@ public class CurrentPeriodServiceTest {
     public void createSmallfullDuplicateKey() throws DataException {
         setUpCreate();
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
-                .any(CurrentPeriod.class));
+            .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(duplicateKeyException);
         ResponseObject response = currentPeriodService.create(currentPeriod, transaction, "", "");
         assertNotNull(response);
@@ -101,7 +101,7 @@ public class CurrentPeriodServiceTest {
     void createSmallfullMongoExceptionFailure() throws DataException {
         setUpCreate();
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
-                .any(CurrentPeriod.class));
+            .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);
         Executable executable = () -> {
             currentPeriodService.create(currentPeriod, transaction, "", "");
@@ -113,10 +113,10 @@ public class CurrentPeriodServiceTest {
     @DisplayName("Tests the successful find of a currentPeriod resource")
     public void findCurrentPeriod() throws DataException {
         when(currentPeriodRepository.findById(""))
-                .thenReturn(Optional.ofNullable(currentPeriodEntity));
+            .thenReturn(Optional.ofNullable(currentPeriodEntity));
         when(currentPeriodTransformer.transform(currentPeriodEntity)).thenReturn(currentPeriod);
         ResponseObject<CurrentPeriod> result = currentPeriodService
-                .findById("", "");
+            .findById("", "");
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }

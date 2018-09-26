@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
@@ -21,6 +20,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
@@ -87,7 +87,7 @@ public class SmallFullServiceTest {
     public void createSmallfullDuplicateKey() throws DataException {
         setUpCreate();
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
-                .any(SmallFull.class));
+            .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
         ResponseObject response = smallFullService.create(smallFull, transaction, "", "");
         assertNotNull(response);
@@ -100,7 +100,7 @@ public class SmallFullServiceTest {
     void createSmallfullMongoExceptionFailure() throws DataException {
         setUpCreate();
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
-                .any(SmallFull.class));
+            .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
         Executable executable = () -> {
             smallFullService.create(smallFull, transaction, "", "");
@@ -114,7 +114,7 @@ public class SmallFullServiceTest {
         when(smallFullRepository.findById("")).thenReturn(Optional.ofNullable(smallFullEntity));
         when(smallFullTransformer.transform(smallFullEntity)).thenReturn(smallFull);
         ResponseObject<SmallFull> result = smallFullService
-                .findById("", "");
+            .findById("", "");
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
     }

@@ -1,8 +1,10 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -21,9 +23,6 @@ import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
@@ -105,7 +104,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     private String buildSelfLink(Transaction transaction, String companyAccountId) {
-        
+
         StringBuilder builder = new StringBuilder();
         builder.append(transaction.getLinks().get(LinkType.SELF.getLink())).append("/")
             .append(ResourceName.COMPANY_ACCOUNT.getName()).append("/")
