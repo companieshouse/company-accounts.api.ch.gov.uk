@@ -1,10 +1,10 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
