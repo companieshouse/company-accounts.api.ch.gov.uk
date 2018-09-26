@@ -5,16 +5,8 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
-import uk.gov.companieshouse.api.accounts.validation.ErrorMessageKeys;
-import uk.gov.companieshouse.api.accounts.validation.ErrorType;
-import uk.gov.companieshouse.api.accounts.validation.LocationType;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
