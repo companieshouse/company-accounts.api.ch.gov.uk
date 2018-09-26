@@ -24,7 +24,7 @@ public class CurrentPeriodValidatorTest {
     Errors errors = new Errors();
 
     @Test
-    @DisplayName("Test total fixed assets uk.gov.companieshouse.api.accounts.validation")
+    @DisplayName("Test total fixed assets validation")
     public void validateTotalFixedAssets() {
 
         FixedAssets fixedAssets = new FixedAssets();

@@ -68,7 +68,7 @@ public class CurrentPeriodController {
         if (errors.hasErrors()) {
 
             LOGGER.error(
-                "Current period uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation failure");
+                "Current period validation failure");
             logValidationFailureError(getRequestId(request), errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

@@ -7,7 +7,7 @@ import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Used to encapsulate uk.gov.companieshouse.api.accounts.validation errors
+ * Used to encapsulate validation errors
  */
 public class Errors {
 

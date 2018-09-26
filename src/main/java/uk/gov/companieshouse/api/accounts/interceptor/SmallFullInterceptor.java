@@ -42,8 +42,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
      * This class validates a Small-full account exists for the given CompanyAccount. Validation is
      * carried out via a database lookup for the SmallFullEntity Object then matching the retrieved
      * Entities 'self' link to the session stored CompanyAccountEntities 'small_full_accounts' link.
-     * Providing this uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation
-     * passes it assigns the SmallFullEntity to the session.
+     * Providing this validation passes it assigns the SmallFullEntity to the session.
      *
      * @param request - current HTTP request
      * @param response - current HTTP response
