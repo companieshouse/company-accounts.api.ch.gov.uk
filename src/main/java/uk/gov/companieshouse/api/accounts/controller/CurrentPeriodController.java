@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -68,7 +67,8 @@ public class CurrentPeriodController {
         currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
         if (errors.hasErrors()) {
 
-            LOGGER.error("Current period validation failure");
+            LOGGER.error(
+                "Current period uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation failure");
             logValidationFailureError(getRequestId(request), errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

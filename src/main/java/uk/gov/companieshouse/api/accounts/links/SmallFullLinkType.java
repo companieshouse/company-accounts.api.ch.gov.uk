@@ -1,10 +1,8 @@
-package uk.gov.companieshouse.api.accounts;
+package uk.gov.companieshouse.api.accounts.links;
 
-public enum LinkType {
+public enum SmallFullLinkType implements LinkType {
+
     SELF("self"),
-    RESOURCE("resource"),
-    COMPANY_ACCOUNT("company_account"),
-    SMALL_FULL("small_full_accounts"),
     ACCOUNTING_POLICY_NOTE("accounting_policy_note"),
     APPROVAL("approval"),
     CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE("creditors_after_more_than_one_year_note"),
@@ -19,12 +17,11 @@ public enum LinkType {
 
     private String link;
 
-    LinkType(String link) {
+    SmallFullLinkType(String link) {
         this.link = link;
     }
 
     public String getLink() {
         return link;
     }
-
 }

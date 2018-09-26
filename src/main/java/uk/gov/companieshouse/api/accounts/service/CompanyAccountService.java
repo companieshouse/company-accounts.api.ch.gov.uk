@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service;
 
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -21,6 +21,6 @@ public interface CompanyAccountService {
     ResponseObject<CompanyAccount> findById(String id, String requestId)
         throws DataException;
 
-    void addLink(String id, LinkType linkType, String link);
+    void addLink(String id, CompanyAccountLinkType linkType, String link);
 
 }

@@ -25,7 +25,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.LinkType;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -142,7 +143,7 @@ public class CompanyAccountServiceImplTest {
      */
     private Map<String, String> createLinksMap() {
         Map<String, String> links = new HashMap<>();
-        links.put(LinkType.SELF.getLink(), "selfLinkTest");
+        links.put(CompanyAccountLinkType.SELF.getLink(), "selfLinkTest");
         return links;
     }
 }

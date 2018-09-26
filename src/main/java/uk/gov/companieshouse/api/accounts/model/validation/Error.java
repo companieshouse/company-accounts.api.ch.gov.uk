@@ -3,14 +3,14 @@ package uk.gov.companieshouse.api.accounts.model.validation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Represents a validation error
+ * Represents a uk.gov.companieshouse.api.accounts.validation error
  */
 @JsonInclude(Include.NON_NULL)
 public class Error {
@@ -38,10 +38,6 @@ public class Error {
     /**
      * Constructor
      *
-     * @param error
-     * @param location
-     * @param locationType
-     * @param type
      * @throws IllegalArgumentException on null or empty arguments
      */
     public Error(String error, String location, String locationType, String type) {
@@ -58,11 +54,31 @@ public class Error {
         this.type = type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Error error1 = (Error) o;
+        return Objects.equals(getError(), error1.getError()) &&
+            Objects.equals(getErrorValues(), error1.getErrorValues()) &&
+            Objects.equals(getLocation(), error1.getLocation()) &&
+            Objects.equals(getLocationType(), error1.getLocationType()) &&
+            Objects.equals(getType(), error1.getType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(getError(), getErrorValues(), getLocation(), getLocationType(), getType());
+    }
+
     /**
      * Add an error value
      *
-     * @param argument
-     * @param value
      * @throws IllegalArgumentException on null or empty arguments
      */
     public void addErrorValue(String argument, String value) {
@@ -83,7 +99,7 @@ public class Error {
     }
 
     public Map<String, String> getErrorValues() {
-        if(errorValues != null) {
+        if (errorValues != null) {
             return Collections.unmodifiableMap(errorValues);
         }
 

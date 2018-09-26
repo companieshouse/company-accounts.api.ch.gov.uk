@@ -1,14 +1,13 @@
 package uk.gov.companieshouse.api.accounts.model.validation;
 
-    import com.fasterxml.jackson.annotation.JsonIgnore;
-    import com.fasterxml.jackson.annotation.JsonProperty;
-    import org.springframework.data.mongodb.core.mapping.Field;
-
-    import java.util.HashSet;
-    import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.HashSet;
+import java.util.Set;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Used to encapsulate validation errors
+ * Used to encapsulate uk.gov.companieshouse.api.accounts.validation errors
  */
 public class Errors {
 
@@ -19,7 +18,6 @@ public class Errors {
     /**
      * Add the given {@link Error}
      *
-     * @param error
      * @return True if added, false otherwise
      * @throws IllegalArgumentException on null errors
      */
@@ -43,9 +41,7 @@ public class Errors {
     /**
      * Determine whether the given {@link Error} is contained
      *
-     * @param error
      * @return True or false
-     * @throws IllegalArgumentException
      */
     public boolean containsError(Error error) {
         if (error == null) {

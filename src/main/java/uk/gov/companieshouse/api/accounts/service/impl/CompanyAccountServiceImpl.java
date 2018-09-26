@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -89,7 +89,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     @Override
-    public void addLink(String id, LinkType linkType, String link) {
+    public void addLink(String id, CompanyAccountLinkType linkType, String link) {
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
             .orElseThrow(() -> new MongoException(
                 "Failed to add link to Company account entity"));
@@ -102,7 +102,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
         Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), companyAccountLink);
+        map.put(CompanyAccountLinkType.SELF.getLink(), companyAccountLink);
         companyAccount.setLinks(map);
     }
 
@@ -112,7 +112,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
-        return transaction.getLinks().get(LinkType.SELF.getLink());
+        return transaction.getLinks().get(CompanyAccountLinkType.SELF.getLink());
     }
 
     private void addEtag(CompanyAccount rest) {

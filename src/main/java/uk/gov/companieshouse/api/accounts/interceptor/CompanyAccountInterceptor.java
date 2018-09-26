@@ -12,8 +12,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -43,8 +44,8 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
      * This method extracts the 'company_account' parameter passed via the URI then validates it.
      * Validation is carried out via a database lookup for a CompanyAccountEntity Object then
      * matching the retrieved Entities 'self' link to the session stored Transactions
-     * 'company_account' link. Providing this validation passes it assigns the CompanyAccountEntity
-     * to the session.
+     * 'company_account' link. Providing this uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation
+     * passes it assigns the CompanyAccountEntity to the session.
      *
      * @param request - current HTTP request
      * @param response - current HTTP response
@@ -107,7 +108,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
         CompanyAccount companyAccount = responseObject.getData();
 
-        String accountsSelf = companyAccount.getLinks().get(LinkType.SELF.getLink());
+        String accountsSelf = companyAccount.getLinks().get(BasicLinkType.SELF.getLink());
         Map<String, Resources> resourcesList = transaction.getResources();
         if (!isLinkInResourceMap(resourcesList, accountsSelf)) {
             LOGGER.debugRequest(request,
@@ -125,7 +126,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         for (Entry<String, Resources> entry : resourcesList.entrySet()) {
             Resources resources = entry.getValue();
             if (resources.getKind().equals(Kind.COMPANY_ACCOUNTS.getValue()) && resources.getLinks()
-                .get(LinkType.RESOURCE.getLink()).equals(accountsSelf)) {
+                .get(TransactionLinkType.RESOURCE.getLink()).equals(accountsSelf)) {
                 return true;
             }
         }

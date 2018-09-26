@@ -11,8 +11,9 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
@@ -41,7 +42,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
      * This class validates a Small-full account exists for the given CompanyAccount. Validation is
      * carried out via a database lookup for the SmallFullEntity Object then matching the retrieved
      * Entities 'self' link to the session stored CompanyAccountEntities 'small_full_accounts' link.
-     * Providing this validation passes it assigns the SmallFullEntity to the session.
+     * Providing this uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation
+     * passes it assigns the SmallFullEntity to the session.
      *
      * @param request - current HTTP request
      * @param response - current HTTP response
@@ -117,8 +119,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         SmallFull smallFull = responseObject.getData();
 
         String companyAccountLink = companyAccount.getLinks()
-            .get(LinkType.SMALL_FULL.getLink());
-        String smallFullSelf = smallFull.getLinks().get(LinkType.SELF.getLink());
+            .get(CompanyAccountLinkType.SMALL_FULL.getLink());
+        String smallFullSelf = smallFull.getLinks().get(SmallFullLinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,
                 "SmallFullInterceptor error: The SmallFull self link does not exist in the CompanyAccounts links",

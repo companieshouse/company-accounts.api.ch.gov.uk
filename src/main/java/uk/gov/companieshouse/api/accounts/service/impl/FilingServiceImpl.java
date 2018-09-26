@@ -101,15 +101,15 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Validates the ixbrl against TNEP. This validation is driven by the environment and it can be
-     * disable.
+     * Validates the ixbrl against TNEP. This uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation
+     * is driven by the environment and it can be disable.
      */
     private boolean isValidIxbrl() {
         //TODO: this will be set to true when TNEP Validation plugged in.(STORY SFA-574)
         boolean isIxbrlValid = false;
         if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
-            //TODO Add TNEP validation to be added when functionality is implemented . (STORY SFA-574)
-            //isIxbrlValid will be set to false if fails the tnep validation.
+            //TODO Add TNEP uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation to be added when functionality is implemented . (STORY SFA-574)
+            //isIxbrlValid will be set to false if fails the tnep uk.gov.companieshouse.api.accounts.uk.gov.companieshouse.api.accounts.validation.
             isIxbrlValid = true;
         }
 

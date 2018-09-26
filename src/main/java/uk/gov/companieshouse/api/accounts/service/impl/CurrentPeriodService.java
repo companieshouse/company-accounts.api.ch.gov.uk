@@ -9,9 +9,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
-import uk.gov.companieshouse.api.accounts.LinkType;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
@@ -29,7 +30,7 @@ public class CurrentPeriodService implements
     ResourceService<CurrentPeriod> {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private CurrentPeriodRepository currentPeriodRepository;
 
@@ -41,10 +42,10 @@ public class CurrentPeriodService implements
 
     @Autowired
     public CurrentPeriodService(
-            CurrentPeriodRepository currentPeriodRepository,
-            CurrentPeriodTransformer currentPeriodTransformer,
-            SmallFullService smallFullService,
-            KeyIdGenerator keyIdGenerator) {
+        CurrentPeriodRepository currentPeriodRepository,
+        CurrentPeriodTransformer currentPeriodTransformer,
+        SmallFullService smallFullService,
+        KeyIdGenerator keyIdGenerator) {
         this.currentPeriodRepository = currentPeriodRepository;
         this.currentPeriodTransformer = currentPeriodTransformer;
         this.smallFullService = smallFullService;
@@ -53,9 +54,9 @@ public class CurrentPeriodService implements
 
     @Override
     public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
-            Transaction transaction,
-            String companyAccountId, String requestId)
-            throws DataException {
+        Transaction transaction,
+        String companyAccountId, String requestId)
+        throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(currentPeriod, selfLink);
@@ -78,19 +79,20 @@ public class CurrentPeriodService implements
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                    "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
+                "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
             LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
 
-        smallFullService.addLink(companyAccountId, LinkType.CURRENT_PERIOD, selfLink, requestId);
+        smallFullService
+            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD, selfLink, requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
     public ResponseObject<CurrentPeriod> findById(String id, String requestId)
-            throws DataException {
+        throws DataException {
         CurrentPeriodEntity currentPeriodEntity;
         try {
             currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
@@ -115,15 +117,15 @@ public class CurrentPeriodService implements
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(LinkType.SELF.getLink()) + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
-                + ResourceName.CURRENT_PERIOD.getName();
+        return transaction.getLinks().get(BasicLinkType.SELF.getLink()) + "/"
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+            + ResourceName.CURRENT_PERIOD.getName();
     }
 
     private void initLinks(CurrentPeriod currentPeriod, String link) {
         Map<String, String> map = new HashMap<>();
-        map.put(LinkType.SELF.getLink(), link);
+        map.put(BasicLinkType.SELF.getLink(), link);
         currentPeriod.setLinks(map);
     }
 }

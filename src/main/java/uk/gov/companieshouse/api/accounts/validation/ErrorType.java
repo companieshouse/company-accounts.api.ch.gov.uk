@@ -6,7 +6,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 public enum ErrorType {
 
     SERVICE("ch:service"),
-    VALIDATION("ch:validation");
+    VALIDATION("ch:uk.gov.companieshouse.api.accounts.validation");
 
     private String type;
 
