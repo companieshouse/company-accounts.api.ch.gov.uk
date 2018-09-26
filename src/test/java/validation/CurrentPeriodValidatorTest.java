@@ -1,6 +1,5 @@
 package validation;
 
-import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
@@ -13,6 +12,9 @@ import uk.gov.companieshouse.api.accounts.validation.ErrorMessageKeys;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,6 +33,8 @@ public class CurrentPeriodValidatorTest {
     @Test
     @DisplayName("Test total fixed assets validation")
     public void validateTotalFixedAssets() {
+        
+        Errors errors = new Errors();
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(5);
@@ -40,10 +44,9 @@ public class CurrentPeriodValidatorTest {
 
         validator.validateCurrentPeriod(currentPeriod, errors);
 
-        assertTrue(errors.containsError(
-            new Error(ErrorMessageKeys.INCORRECT_TOTAL.getKey(), TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-
+        System.out.println(errors);
+   
+        assertTrue(errors.hasErrors());
+        assertEquals(1, errors.getErrorCount());
     }
 }
