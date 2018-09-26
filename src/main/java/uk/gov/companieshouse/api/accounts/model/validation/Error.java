@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Represents a uk.gov.companieshouse.api.accounts.validation error
+ * Represents a validation error
  */
 @JsonInclude(Include.NON_NULL)
 public class Error {

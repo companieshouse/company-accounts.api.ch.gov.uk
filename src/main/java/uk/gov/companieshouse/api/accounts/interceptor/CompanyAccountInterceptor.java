@@ -44,8 +44,8 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
      * This method extracts the 'company_account' parameter passed via the URI then validates it.
      * Validation is carried out via a database lookup for a CompanyAccountEntity Object then
      * matching the retrieved Entities 'self' link to the session stored Transactions
-     * 'company_account' link. Providing this validation
-     * passes it assigns the CompanyAccountEntity to the session.
+     * 'company_account' link. Providing this validation passes it assigns the CompanyAccountEntity
+     * to the session.
      *
      * @param request - current HTTP request
      * @param response - current HTTP response

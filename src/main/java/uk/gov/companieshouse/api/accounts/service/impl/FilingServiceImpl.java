@@ -101,8 +101,8 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Validates the ixbrl against TNEP. This validation
-     * is driven by the environment and it can be disable.
+     * Validates the ixbrl against TNEP. This validation is driven by the environment and it can be
+     * disable.
      */
     private boolean isValidIxbrl() {
         //TODO: this will be set to true when TNEP Validation plugged in.(STORY SFA-574)
