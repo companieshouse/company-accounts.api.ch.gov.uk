@@ -35,8 +35,6 @@ public class CurrentPeriodValidatorTest {
         currentPeriod.setBalanceSheet(balanceSheet);
 
         validator.validateCurrentPeriod(currentPeriod, errors);
-
-        System.out.println(errors);
    
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
