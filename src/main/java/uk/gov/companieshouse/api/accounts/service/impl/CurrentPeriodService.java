@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
@@ -117,7 +118,7 @@ public class CurrentPeriodService implements
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(BasicLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
             + ResourceName.CURRENT_PERIOD.getName();

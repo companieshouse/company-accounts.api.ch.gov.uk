@@ -15,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -112,7 +113,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
-        return transaction.getLinks().get(CompanyAccountLinkType.SELF.getLink());
+        return transaction.getLinks().get(TransactionLinkType.SELF.getLink());
     }
 
     private void addEtag(CompanyAccount rest) {
