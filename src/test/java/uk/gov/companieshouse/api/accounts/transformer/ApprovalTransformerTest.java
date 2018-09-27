@@ -31,7 +31,7 @@ public class ApprovalTransformerTest {
     }
 
     @Test
-    @DisplayName("Tests approval transformer with populated object and validates values returned")
+    @DisplayName("Tests approval transformer with populated Rest object and validates values returned")
     public void testRestToEntityTransformerWithPopulatedObject() {
 
         Approval approval = new Approval();
@@ -51,5 +51,29 @@ public class ApprovalTransformerTest {
         assertEquals(NAME, approvalDataEntity.getName());
         assertEquals(new HashMap<>(), approvalDataEntity.getLinks());
     }
+
+    @Test
+    @DisplayName("Tests approval transformer with populated Entity object and validates values returned")
+    public void testEntityToRestTransformerWithPopulatedObject() {
+
+        ApprovalEntity approvalEntity = new ApprovalEntity();
+        ApprovalDataEntity approvalDataEntity = new ApprovalDataEntity();
+        approvalDataEntity.setEtag(ETAG);
+        approvalDataEntity.setKind(KIND);
+        approvalDataEntity.setName(NAME);
+        approvalDataEntity.setLinks(new HashMap<>());
+        approvalEntity.setData(approvalDataEntity);
+
+
+        Approval approval = approvalTransformer.transform(approvalEntity);
+
+
+        assertNotNull(approval);
+        assertEquals(ETAG, approval.getEtag());
+        assertEquals(KIND, approval.getKind());
+        assertEquals(NAME, approval.getName());
+        assertEquals(new HashMap<>(), approval.getLinks());
+    }
+
 
 }
