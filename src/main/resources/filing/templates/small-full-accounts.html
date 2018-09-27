@@ -1675,12 +1675,12 @@ ul.accounts-comps-ct {
                 <tr class="figures">
                   <td id="ac999-label">Called up share capital not paid:</td>
                   <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
-                  <td class="strong text--right">
+                  <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
                     <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
                   </td>
 
                   {{if $calledUpShareCapitalNotPaid.previous_amount}}
-                    <td id="ac999-prev-val" class="text--right">
+                    <td id="called-up-share-capital-not-paid-prev" class="text--right">
                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="PY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.previous_amount}}</ix:nonFraction>
                     </td>
                   {{end}}
@@ -1696,12 +1696,12 @@ ul.accounts-comps-ct {
                 <tr class = "figures">
                   <td id = "tangible-assets-heading">Tangible assets:</td>
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
-                  <td id="ac44-curr-val" class="strong figure">
+                  <td id="tangible-curr" class="strong figure">
                     <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
                   </td>
 
                   {{if $fixedAssets.tangible.previous_amount}}
-                    <td id="ac44-prev-val" class="text--right">
+                    <td id="tangible-prev" class="text--right">
                       <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
                     </td>
                 {{end}}
@@ -1710,12 +1710,12 @@ ul.accounts-comps-ct {
               <tr class = "figures">
                 <td id = "total-fixed-assets-heading" class="strong">Total fixed assets:</td>
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
-                <td id="ac48-curr-val" class="strong total">
+                <td id="fixed-assets-curr-total" class="strong total">
                   <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
                 </td>
 
                 {{if $fixedAssets.tangible.previous_amount}}
-                  <td id="ac48-prev-val" class="total">
+                  <td id="fixed-assets-prev-total" class="total">
                     <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
                   </td>
                 {{end}}
