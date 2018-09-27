@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 public class CompanyAccountTransformer implements
         GenericTransformer<CompanyAccount, CompanyAccountEntity> {
 
+    @Override
     public CompanyAccountEntity transform(CompanyAccount companyAccount) {
         CompanyAccountDataEntity companyAccountDataEntity = new CompanyAccountDataEntity();
         CompanyAccountEntity companyAccountEntity = new CompanyAccountEntity();
