@@ -70,13 +70,10 @@ public class ApprovalServiceTest {
     @InjectMocks
     private ApprovalService approvalService;
 
-    public void setUpCreate() {
-    }
 
     @Test
     @DisplayName("Tests the successful creation of an Approval resource")
     public void canCreateAnApproval() throws DataException {
-        setUpCreate();
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
         ResponseObject<Approval> result = approvalService
             .create(approval, transaction, "", "");
@@ -87,7 +84,6 @@ public class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating an Approval resource")
     public void createApprovalDuplicateKey() throws DataException {
-        setUpCreate();
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(duplicateKeyException);
@@ -100,7 +96,6 @@ public class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating an Approval")
     void createApprovalMongoExceptionFailure() throws DataException {
-        setUpCreate();
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
