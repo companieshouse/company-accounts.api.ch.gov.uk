@@ -56,7 +56,7 @@ public class ApprovalService implements ResourceService<Approval> {
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.CURRENT_PERIOD.getValue());
+        rest.setKind(Kind.APPROVAL.getValue());
         ApprovalEntity approvalEntity = approvalTransformer.transform(rest);
 
         final Map<String, Object> debugMap = new HashMap<>();
@@ -80,7 +80,7 @@ public class ApprovalService implements ResourceService<Approval> {
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD, selfLink, requestId);
+            .addLink(companyAccountId, SmallFullLinkType.APPROVAL, selfLink, requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
