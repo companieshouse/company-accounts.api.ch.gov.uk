@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
- import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CalledUpSharedCapitalNotPaid {
+public class TangibleAssets {
 
     @JsonProperty("current_amount")
     private int currentAmount;
@@ -26,3 +26,4 @@ public class CalledUpSharedCapitalNotPaid {
         this.previousAmount = previousAmount;
     }
 }
+
