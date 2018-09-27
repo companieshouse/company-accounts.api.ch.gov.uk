@@ -13,7 +13,9 @@ public class FixedAssets {
     @JsonProperty("previous_total")
     public int totalFixedAssetsPrevious;
 
-    public TangibleAssets getTangibleAssets() { return tangibleAssets; }
+    public TangibleAssets getTangibleAssets() {
+        return tangibleAssets;
+    }
 
     public void setTangibleAssets( TangibleAssets tangibleAssets) {
         this.tangibleAssets = tangibleAssets;

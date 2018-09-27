@@ -6,6 +6,7 @@ public class TangibleAssets {
 
     @JsonProperty("current_amount")
     private int currentAmount;
+
     @JsonProperty("previous_amount")
     private int previousAmount;
 
