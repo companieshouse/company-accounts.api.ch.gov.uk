@@ -25,10 +25,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-
-
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -50,6 +47,7 @@ public class PreviousPeriodControllerTest {
     public static final String CREATE = "create";
     public static final String FIND = "find";
     public static final String SELF = "self";
+    public static final String COMPANY_ACCOUNT_ID = "12345";
 
     @Mock
     private HttpServletRequest request;
@@ -102,8 +100,7 @@ public class PreviousPeriodControllerTest {
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(companyAccountEntity).when(request)
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        doReturn("12345").when(companyAccountEntity).getId();
-
+        doReturn("COMPANY_ACCOUNT_ID").when(companyAccountEntity).getId();
     }
 
     @Test
@@ -125,7 +122,7 @@ public class PreviousPeriodControllerTest {
         doReturn("123456").when(transaction).getCompanyNumber();
         doReturn(links).when(smallFull).getLinks();
         doReturn("7890").when(links).get(SELF);
-        ResponseEntity response = previousPeriodController.create(previousPeriod, bindingResult, request);
+        ResponseEntity response = previousPeriodController.create(previousPeriod, bindingResult, COMPANY_ACCOUNT_ID, request);
 
         verify(apiResponseMapper, times(1)).map(any(), any(), any());
 
@@ -145,27 +142,27 @@ public class PreviousPeriodControllerTest {
         when(apiResponseMapper.map(exception))
             .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
         ResponseEntity response = previousPeriodController
-            .create(previousPeriod, bindingResult, request);
+            .create(previousPeriod, bindingResult, "COMPANY_ACCOUNT_ID", request);
 
         verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).map(exception);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-
     }
     
     @Test
     @DisplayName("Test correct response when binding result has an error")
 
-    public void badRequestWhenValidationFails() throws DataException{
+    public void badRequestWhenValidationFails() {
         
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(any(), any())).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
         
-        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult, request);
+        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,
+            COMPANY_ACCOUNT_ID, request);
 
         assertTrue(bindingResult.hasErrors());
         verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(any(), any());

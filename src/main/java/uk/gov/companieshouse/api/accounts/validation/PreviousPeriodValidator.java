@@ -1,12 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.validation.*;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
-
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 import javax.validation.Valid;
 
@@ -18,7 +15,8 @@ public class PreviousPeriodValidator extends BaseValidator {
     String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
-    public uk.gov.companieshouse.api.accounts.model.validation.Errors validatePreviousPeriod(@Valid PreviousPeriod previousPeriod, uk.gov.companieshouse.api.accounts.model.validation.Errors errors) {
+    public Errors validatePreviousPeriod(
+        @Valid PreviousPeriod previousPeriod, Errors errors) {
 
         if (previousPeriod.getBalanceSheet() != null) {
 
@@ -42,7 +40,4 @@ public class PreviousPeriodValidator extends BaseValidator {
             validateAggregateTotal(fixedAssetsTotal, calculatedTotal, TOTAL_PATH, errors);
         }
     }
-
-
-
 }
