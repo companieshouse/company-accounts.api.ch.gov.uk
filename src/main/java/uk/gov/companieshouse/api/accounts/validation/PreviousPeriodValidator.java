@@ -26,8 +26,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         return errors;
     }
 
-    private void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod,
-        uk.gov.companieshouse.api.accounts.model.validation.Errors errors) {
+    private void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
         FixedAssets fixedAssets = previousPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 

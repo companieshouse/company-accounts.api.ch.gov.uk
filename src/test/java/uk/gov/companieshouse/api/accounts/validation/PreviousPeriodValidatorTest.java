@@ -6,8 +6,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.validation.*;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,7 +21,7 @@ public class PreviousPeriodValidatorTest {
 
     PreviousPeriod previousPeriod = new PreviousPeriod();
     BalanceSheet balanceSheet = new BalanceSheet();
-    uk.gov.companieshouse.api.accounts.model.validation.Errors errors = new uk.gov.companieshouse.api.accounts.model.validation.Errors();
+   Errors errors = new Errors();
 
     @Test
     @DisplayName("Test total fixed assets validation")
