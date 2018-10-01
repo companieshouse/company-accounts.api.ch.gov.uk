@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 
 @JsonInclude(Include.NON_NULL)
 public class Approval extends RestObject {
@@ -13,7 +14,9 @@ public class Approval extends RestObject {
     @JsonProperty("date")
     private LocalDate date;
 
+    @NotNull
     @JsonProperty("name")
+    @CharSetValid
     private String name;
 
     public LocalDate getDate() {
