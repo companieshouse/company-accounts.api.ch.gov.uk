@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,16 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.ApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -39,7 +32,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 @TestInstance(Lifecycle.PER_CLASS)
 public class ApprovalControllerTest {
 
@@ -48,9 +40,6 @@ public class ApprovalControllerTest {
 
     @Mock
     private Transaction transaction;
-
-    @Mock
-    private SmallFull smallFull;
 
     @Mock
     private Approval approval;
@@ -69,8 +58,6 @@ public class ApprovalControllerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException, DataException {
-        mockPathVariables();
-        mockRequestAttributes();
         when(request.getAttribute("transaction")).thenReturn(transaction);
         when(request.getHeader("X-Request-Id")).thenReturn("test");
     }
@@ -97,7 +84,7 @@ public class ApprovalControllerTest {
     }
 
     @Test
-    @DisplayName("Tests the unsuccessful request to create previous period")
+    @DisplayName("Tests the unsuccessful request to create Approval")
     void createPreviousPeriodError() throws DataException {
         DataException exception = new DataException("string");
         when(approvalService.create(any(), any(), any(), any())).thenThrow(exception);
@@ -129,18 +116,5 @@ public class ApprovalControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(approval, response.getBody());
-    }
-
-    private void mockPathVariables() {
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
-        doReturn(pathVariables).when(request)
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-    }
-
-    private void mockRequestAttributes() {
-        doReturn(transaction).when(request)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
     }
 }
