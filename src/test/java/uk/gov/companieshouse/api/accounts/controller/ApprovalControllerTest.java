@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +30,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.ApprovalService;
@@ -52,9 +53,6 @@ public class ApprovalControllerTest {
     private SmallFull smallFull;
 
     @Mock
-    private CompanyAccountEntity companyAccountEntity;
-
-    @Mock
     private Approval approval;
 
     @Mock
@@ -64,9 +62,6 @@ public class ApprovalControllerTest {
     private ApprovalService approvalService;
 
     @Mock
-    private Map<String, String> links;
-
-    @Mock
     private ApiResponseMapper apiResponseMapper;
 
     @InjectMocks
@@ -74,54 +69,78 @@ public class ApprovalControllerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException, DataException {
+        mockPathVariables();
+        mockRequestAttributes();
         when(request.getAttribute("transaction")).thenReturn(transaction);
         when(request.getHeader("X-Request-Id")).thenReturn("test");
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-            approval);
-        doReturn(responseObject).when(approvalService)
-            .create(any(Approval.class), any(Transaction.class), anyString(), anyString());
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(responseObject.getData());
-        when(apiResponseMapper.map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getValidationErrorData()))
-            .thenReturn(responseEntity);
-        Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("companyAccountId", "123456");
-        doReturn(pathVariables).when(request)
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        doReturn(transaction).when(request)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
-        doReturn(responseObject).when(approvalService).findById("create", "test");
-        doReturn(new ResponseObject(ResponseStatus.FOUND,
-            approval)).when(approvalService).findById("find", "test");
-        doReturn("123456").when(transaction).getCompanyNumber();
-        doReturn(links).when(smallFull).getLinks();
-        doReturn("7890").when(links).get("self");
     }
 
     @Test
     @DisplayName("Tests the successful creation of a approval resource")
-    public void canCreateApproval() throws NoSuchAlgorithmException {
+    public void canCreateApproval() throws NoSuchAlgorithmException, DataException {
+        ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
+            approval);
+        doReturn(successCreateResponse).when(approvalService)
+            .create(any(Approval.class), any(Transaction.class), anyString(), anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+            .body(successCreateResponse.getData());
+        when(apiResponseMapper.map(successCreateResponse.getStatus(),
+            successCreateResponse.getData(), successCreateResponse.getValidationErrorData()))
+            .thenReturn(responseEntity);
+
         ResponseEntity response = approvalController
-            .create(approval, bindingResult, "123456", request);
+            .create(approval, bindingResult, "", request);
+
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(approval, response.getBody());
     }
 
     @Test
-    @DisplayName("Test the retreval of a approval resource")
-    public void canRetrieveApproval() throws NoSuchAlgorithmException {
+    @DisplayName("Tests the unsuccessful request to create previous period")
+    void createPreviousPeriodError() throws DataException {
+        DataException exception = new DataException("string");
+        when(approvalService.create(any(), any(), any(), any())).thenThrow(exception);
+        when(apiResponseMapper.map(exception))
+            .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
 
+        ResponseEntity response = approvalController
+            .create(approval, bindingResult, "", request);
+
+        verify(approvalService, times(1)).create(any(), any(), any(), any());
+        verify(apiResponseMapper, times(1)).map(exception);
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Test the retreval of a approval resource")
+    public void canRetrieveApproval() throws NoSuchAlgorithmException, DataException {
+        ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
+            approval);
+        doReturn(successFindResponse).when(approvalService).findById("find", "test");
         doReturn("find").when(approvalService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(approval);
         when(apiResponseMapper.mapGetResponse(approval,
             request)).thenReturn(responseEntity);
+
         ResponseEntity response = approvalController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(approval, response.getBody());
+    }
+
+    private void mockPathVariables() {
+        Map<String, String> pathVariables = new HashMap<>();
+        pathVariables.put("companyAccountId", "123456");
+        doReturn(pathVariables).when(request)
+            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+    }
+
+    private void mockRequestAttributes() {
+        doReturn(transaction).when(request)
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
     }
 }

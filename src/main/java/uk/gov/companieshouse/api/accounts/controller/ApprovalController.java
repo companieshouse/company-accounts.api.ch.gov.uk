@@ -52,58 +52,47 @@ public class ApprovalController {
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-        Errors errors = new Errors();
+        LogContext logContext = LogHelper.createNewLogContext(request);
+        String requestId = request.getHeader(REQUEST_ID);
 
         if (bindingResult.hasErrors()) {
 
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
+            Errors errors = errorMapper
+                .mapBindingResultErrorsToErrorModel(bindingResult, new Errors());
 
-        }
-
-        if (errors.hasErrors()) {
-
-            LOGGER.error(
-                "Approval validation failure");
-            logValidationFailureError(getRequestId(request), errors);
-
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
+            if (errors.hasErrors()) {
+                LOGGER.error("Approval validation failure", logContext);
+                logValidationFailureError(requestId, errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
         }
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
-
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Approval> responseObject = approvalService
                 .create(approval, transaction, companyAccountId, requestId);
-            responseEntity = apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
-
+            return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getValidationErrorData());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
             LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            return apiResponseMapper.map(ex);
         }
 
-        return responseEntity;
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
-        LogContext logContext = LogHelper.createNewLogContext(request);
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader("X-Request-Id");
+        String requestId = request.getHeader(REQUEST_ID);
         String approvalId = approvalService.generateID(companyAccountId);
         ResponseObject<Approval> responseObject;
 
@@ -128,7 +117,4 @@ public class ApprovalController {
         LOGGER.traceContext(requestId, "", logMap);
     }
 
-    private String getRequestId(HttpServletRequest request) {
-        return request.getHeader("X-Request-Id");
-    }
 }
