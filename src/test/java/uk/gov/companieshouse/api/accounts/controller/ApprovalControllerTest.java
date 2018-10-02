@@ -85,7 +85,7 @@ public class ApprovalControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful request to create Approval")
-    void createPreviousPeriodError() throws DataException {
+    void createApprovalError() throws DataException {
         DataException exception = new DataException("string");
         when(approvalService.create(any(), any(), any(), any())).thenThrow(exception);
         when(apiResponseMapper.map(exception))
