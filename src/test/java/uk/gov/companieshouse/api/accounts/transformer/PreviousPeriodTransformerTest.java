@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PreviousPeriodTransformerTest {
 
-    private static final Integer CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5;
+    private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
 

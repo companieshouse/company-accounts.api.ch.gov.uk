@@ -10,24 +10,24 @@ public class FixedAssets {
 
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
     @JsonProperty("tangible")
-    private Integer tangible;
+    private Long tangible;
 
     @JsonProperty("total")
-    private Integer totalFixedAssets;
+    private Long totalFixedAssets;
 
-    public Integer getTangible() {
+    public Long getTangible() {
         return tangible;
     }
 
-    public void setTangible(Integer tangible) {
+    public void setTangible(Long tangible) {
         this.tangible = tangible;
     }
 
-    public Integer getTotalFixedAssets() {
+    public Long getTotalFixedAssets() {
         return totalFixedAssets;
     }
 
-    public void setTotalFixedAssets(Integer totalFixedAssets) {
+    public void setTotalFixedAssets(Long totalFixedAssets) {
         this.totalFixedAssets = totalFixedAssets;
     }
 }

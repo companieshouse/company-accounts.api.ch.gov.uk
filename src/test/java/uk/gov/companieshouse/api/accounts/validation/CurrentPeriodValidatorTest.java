@@ -28,8 +28,8 @@ public class CurrentPeriodValidatorTest {
     public void validateTotalFixedAssets() {
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(5);
-        fixedAssets.setTotalFixedAssets(10);
+        fixedAssets.setTangible(5L);
+        fixedAssets.setTotalFixedAssets(10L);
         balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
 
