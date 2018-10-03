@@ -15,17 +15,17 @@ public class BalanceSheet {
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
     @JsonProperty("called_up_share_capital_not_paid")
-    private Integer calledUpShareCapitalNotPaid;
+    private Long calledUpShareCapitalNotPaid;
 
     @Valid
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
 
-    public Integer getCalledUpShareCapitalNotPaid() {
+    public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
 
-    public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
+    public void setCalledUpShareCapitalNotPaid(Long calledUpShareCapitalNotPaid) {
         this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid;
     }
 

@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodTransformerTest {
 
-    private static final Integer CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5;
-    private static final Integer TANGIBLE_VALID = 10;
-    private static final Integer FIXED_ASSETS_TOTAL_VALID = 10;
+    private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
+    private static final Long TANGIBLE_VALID = 10L;
+    private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
 
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 

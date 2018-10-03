@@ -5,24 +5,24 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class FixedAssetsEntity {
 
     @Field("tangible")
-    private Integer tangible;
+    private Long tangible;
 
     @Field("total")
-    private Integer totalFixedAssets;
+    private Long totalFixedAssets;
 
-    public Integer getTangible() {
+    public Long getTangible() {
         return tangible;
     }
 
-    public void setTangible(Integer tangible) {
+    public void setTangible(Long tangible) {
         this.tangible = tangible;
     }
 
-    public Integer getTotalFixedAssets() {
+    public Long getTotalFixedAssets() {
         return totalFixedAssets;
     }
 
-    public void setTotalFixedAssets(Integer totalFixedAssets) {
+    public void setTotalFixedAssets(Long totalFixedAssets) {
         this.totalFixedAssets = totalFixedAssets;
     }
 }
