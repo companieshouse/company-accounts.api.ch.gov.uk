@@ -7,16 +7,16 @@ public class BalanceSheetEntity {
 
     @NotNull
     @Field("called_up_share_capital_not_paid")
-    private Integer calledUpShareCapitalNotPaid;
+    private Long calledUpShareCapitalNotPaid;
 
     @Field("fixed_assets")
     private FixedAssetsEntity fixedAssets;
 
-    public Integer getCalledUpShareCapitalNotPaid() {
+    public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
 
-    public void setCalledUpShareCapitalNotPaid(Integer calledUpShareCapitalNotPaid) {
+    public void setCalledUpShareCapitalNotPaid(Long calledUpShareCapitalNotPaid) {
         this.calledUpShareCapitalNotPaid = calledUpShareCapitalNotPaid; }
 
     public FixedAssetsEntity getFixedAssets() {

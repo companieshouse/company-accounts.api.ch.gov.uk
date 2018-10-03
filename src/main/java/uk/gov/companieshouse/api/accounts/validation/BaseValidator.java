@@ -14,7 +14,7 @@ public class BaseValidator {
      * @param location
      * @param errors
      */
-    protected void validateAggregateTotal(Integer total, Integer expectedTotal, String location,
+    protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
         Errors errors) {
         if (expectedTotal == null) {
             if (total != null && !total.equals(0)) {
