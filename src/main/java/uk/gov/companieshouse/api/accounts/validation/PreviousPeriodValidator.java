@@ -30,11 +30,11 @@ public class PreviousPeriodValidator extends BaseValidator {
         FixedAssets fixedAssets = previousPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
-            Integer tangible = fixedAssets.getTangible();
-            Integer fixedAssetsTotal = fixedAssets.getTotalFixedAssets();
+            Long tangible = fixedAssets.getTangible();
+            Long fixedAssetsTotal = fixedAssets.getTotalFixedAssets();
 
             // Will calculate the total of all fixedAssets fields as they are added to the balance sheet
-            Integer calculatedTotal = tangible;
+            Long calculatedTotal = tangible;
 
             validateAggregateTotal(fixedAssetsTotal, calculatedTotal, TOTAL_PATH, errors);
         }

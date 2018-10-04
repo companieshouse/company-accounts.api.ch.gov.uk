@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CurrentPeriodValidatorTest {
 
-    String CURRENT_PERIOD_PATH = "$.current_period";
-    String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
-    String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
+    private static final String CURRENT_PERIOD_PATH = "$.current_period";
+    private static final String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
+    private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
 
     CurrentPeriodValidator validator = new CurrentPeriodValidator();
 
@@ -28,8 +28,8 @@ public class CurrentPeriodValidatorTest {
     public void validateTotalFixedAssets() {
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(5);
-        fixedAssets.setTotalFixedAssets(10);
+        fixedAssets.setTangible(5L);
+        fixedAssets.setTotalFixedAssets(10L);
         balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
 

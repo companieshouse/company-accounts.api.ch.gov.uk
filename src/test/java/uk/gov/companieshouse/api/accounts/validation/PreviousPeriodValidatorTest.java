@@ -13,23 +13,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PreviousPeriodValidatorTest {
 
-    String PREVIOUS_PERIOD_PATH = "$.previous_period";
-    String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
-    String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
+    private static final String PREVIOUS_PERIOD_PATH = "$.previous_period";
+    private static final String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
+    private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
+
+    private static final long TANGIBLE = 5;
+    private static final long TOTAL_FIXED_ASSETS = 10;
 
     PreviousPeriodValidator validator = new PreviousPeriodValidator();
 
     PreviousPeriod previousPeriod = new PreviousPeriod();
     BalanceSheet balanceSheet = new BalanceSheet();
-   Errors errors = new Errors();
+    Errors errors = new Errors();
 
     @Test
     @DisplayName("Test total fixed assets validation")
     public void validateTotalFixedAssets() {
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(5);
-        fixedAssets.setTotalFixedAssets(10);
+        fixedAssets.setTangible(TANGIBLE);
+        fixedAssets.setTotalFixedAssets(TOTAL_FIXED_ASSETS);
         balanceSheet.setFixedAssets(fixedAssets);
         previousPeriod.setBalanceSheet(balanceSheet);
 
