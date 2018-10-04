@@ -6,6 +6,8 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.charset.validation.CharSetValidation;
+import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
@@ -18,6 +20,11 @@ public class ApplicationConfiguration {
     @Bean
     public MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
         return MessageDigest.getInstance(MessageDigestAlgorithms.SHA_256);
+    }
+
+    @Bean
+    public CharSetValidation getCharSetValidation() {
+        return new CharSetValidationImpl();
     }
 
     @Bean

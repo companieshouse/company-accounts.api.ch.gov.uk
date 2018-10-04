@@ -1,8 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -14,11 +12,13 @@ import uk.gov.companieshouse.charset.CharSet;
 
 @Documented
 @Retention(RUNTIME)
-@Target({FIELD, ANNOTATION_TYPE, PARAMETER})
+@Target(FIELD)
 @Constraint(validatedBy = CharSetValidatorImpl.class)
 public @interface CharSetValid {
 
-    String message() default "Its all gone wrong";
+    String message() default "INVALID_VALUE";
+
+    CharSet value() default CharSet.CHARECTER_SET_1;
 
     Class<?>[] groups() default {};
 

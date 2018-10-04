@@ -6,15 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.charset.CharSet;
 import uk.gov.companieshouse.charset.validation.CharSetValidation;
-import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
 
 @Component
 public class CharSetValidatorImpl implements ConstraintValidator<CharSetValid, String> {
 
+    @Autowired
+    CharSetValidation charSetValidation;
+
+    private CharSet charSet;
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        return value != null && new CharSetValidationImpl()
-            .validateCharSet(CharSet.CHARECTER_SET_3, value);
+    public void initialize(CharSetValid constraintAnnotation) {
+        this.charSet = constraintAnnotation.value();
+    }
+
+    @Override
+    public boolean isValid(String underTest, ConstraintValidatorContext constraintValidatorContext) {
+        return underTest == null || charSetValidation.validateCharSet(charSet, underTest);
     }
 }
