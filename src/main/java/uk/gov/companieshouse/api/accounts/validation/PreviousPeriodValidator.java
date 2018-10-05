@@ -10,10 +10,10 @@ import javax.validation.Valid;
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
 
-    String PREVIOUS_PERIOD_PATH = "$.previous_period";
-    String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
-    String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
-    String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
+    private static String  PREVIOUS_PERIOD_PATH = "$.previous_period";
+    private static String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
+    private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
+    private static String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
     public Errors validatePreviousPeriod(
         @Valid PreviousPeriod previousPeriod, Errors errors) {

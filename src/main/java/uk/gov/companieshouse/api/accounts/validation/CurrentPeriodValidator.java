@@ -14,10 +14,10 @@ import javax.validation.Valid;
 @Component
 public class CurrentPeriodValidator extends BaseValidator {
 
-    String CURRENT_PERIOD_PATH = "$.current_period";
-    String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
-    String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
-    String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
+    private static String CURRENT_PERIOD_PATH = "$.current_period";
+    private static String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
+    private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
+    private static String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod, Errors errors) {
 
