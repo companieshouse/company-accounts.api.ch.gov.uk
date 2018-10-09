@@ -10,8 +10,8 @@ import javax.validation.Valid;
 @JsonInclude(Include.NON_NULL)
 public class BalanceSheet {
 
-    public static final int MAX_RANGE = 99999999;
-    public static final int MIN_RANGE = 0;
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = 0;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
     @JsonProperty("called_up_share_capital_not_paid")

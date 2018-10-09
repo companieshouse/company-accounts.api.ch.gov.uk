@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -48,6 +49,9 @@ public class PreviousPeriodControllerTest {
 
     @Mock
     private CompanyAccountEntity companyAccountEntity;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @Mock
     private PreviousPeriodService previousPeriodService;
@@ -82,7 +86,7 @@ public class PreviousPeriodControllerTest {
             responseObject.getData(), responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
 
-        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request);
+        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request, bindingResult);
 
         verify(apiResponseMapper, times(1)).map(any(), any(), any());
 
@@ -101,7 +105,7 @@ public class PreviousPeriodControllerTest {
 
         when(apiResponseMapper.map(exception))
             .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
-        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request);
+        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request, bindingResult);
 
         verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).map(exception);
