@@ -60,9 +60,7 @@ public class CurrentPeriodService implements
         throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
-        initLinks(currentPeriod, selfLink);
-        currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
-        currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+        populateDefaultReadonly(currentPeriod, selfLink);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         final Map<String, Object> debugMap = new HashMap<>();
@@ -92,6 +90,33 @@ public class CurrentPeriodService implements
     }
 
     @Override
+    public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
+        String companyAccountId, String requestId) throws DataException {
+
+        String selfLink = createSelfLink(transaction, companyAccountId);
+        populateDefaultReadonly(rest, selfLink);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
+        String id = generateID(companyAccountId);
+        currentPeriodEntity.setId(id);
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
+        debugMap.put("id", id);
+
+        try {
+            currentPeriodRepository.save(currentPeriodEntity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException(
+                "Failed to update " + ResourceName.SMALL_FULL.getName(), me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
+    }
+
+    @Override
     public ResponseObject<CurrentPeriod> findById(String id, String requestId)
         throws DataException {
         CurrentPeriodEntity currentPeriodEntity;
@@ -117,16 +142,19 @@ public class CurrentPeriodService implements
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
+    private void populateDefaultReadonly(CurrentPeriod currentPeriod, String link) {
+        Map<String, String> map = new HashMap<>();
+        map.put(BasicLinkType.SELF.getLink(), link);
+
+        currentPeriod.setLinks(map);
+        currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
+        currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+    }
+
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
             + ResourceName.CURRENT_PERIOD.getName();
-    }
-
-    private void initLinks(CurrentPeriod currentPeriod, String link) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
-        currentPeriod.setLinks(map);
     }
 }

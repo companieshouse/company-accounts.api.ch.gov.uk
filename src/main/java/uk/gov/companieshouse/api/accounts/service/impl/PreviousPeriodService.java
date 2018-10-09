@@ -90,14 +90,19 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
+    public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
+        String companyAccountId, String requestId) throws DataException {
+        //TODO implement method
+        return null;
+    }
 
+    @Override
+    public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
         return null;
     }
 
     @Override
     public String generateID(String value) {
-
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 

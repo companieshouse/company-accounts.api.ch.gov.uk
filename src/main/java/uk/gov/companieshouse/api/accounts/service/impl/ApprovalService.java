@@ -86,6 +86,13 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
+    public ResponseObject<Approval> update(Approval rest, Transaction transaction,
+        String companyAccountId, String requestId) throws DataException {
+        //TODO implement method
+        return null;
+    }
+
+    @Override
     public ResponseObject<Approval> findById(String id, String requestId) throws DataException {
         ApprovalEntity approvalEntity;
         try {

@@ -25,10 +25,12 @@ public class ApiResponseMapper {
      * Builds a Response Entity based on the supplied status, entity and error data.
      */
     public ResponseEntity map(ResponseStatus status, RestObject restObject,
-            ValidationErrorData validationErrorData) {
+        ValidationErrorData validationErrorData) {
         switch (status) {
             case CREATED:
                 return ResponseEntity.status(HttpStatus.CREATED).body(restObject);
+            case UPDATED:
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             case DUPLICATE_KEY_ERROR:
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             default:
