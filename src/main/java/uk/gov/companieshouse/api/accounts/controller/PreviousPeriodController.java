@@ -33,12 +33,14 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class PreviousPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private PreviousPeriodService previousPeriodService;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
+
     @Autowired
     private ErrorMapper errorMapper;
 
@@ -60,8 +62,6 @@ public class PreviousPeriodController {
 
         Transaction transaction = getTransactionFromRequest(request);
         ResponseEntity responseEntity;
-
-        System.out.println("its here");
 
         try {
             ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, requestId);
@@ -90,6 +90,6 @@ public class PreviousPeriodController {
     }
 
     private String getRequestId(HttpServletRequest request) {
-        return request.getHeader("X-Request-Id");
+        return request.getHeader(REQUEST_ID);
     }
 }
