@@ -110,8 +110,7 @@ public class PreviousPeriodControllerTest {
     @DisplayName("Tests the successful creation of a previous period resource")
     void canCreatePreviousPeriod() throws DataException {
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-                previousPeriod);
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
         doReturn(responseObject).when(previousPeriodService)
                 .create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)

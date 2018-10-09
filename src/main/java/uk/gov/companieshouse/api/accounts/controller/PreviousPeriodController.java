@@ -51,6 +51,7 @@ public class PreviousPeriodController {
     private PreviousPeriodValidator previousPeriodValidator;
 
     @PostMapping
+
     public ResponseEntity create(@Valid @RequestBody PreviousPeriod previousPeriod, BindingResult bindingResult,
         @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
@@ -81,9 +82,8 @@ public class PreviousPeriodController {
         ResponseEntity responseEntity;
         try {
             ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, requestId);
-            responseEntity = apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
-
+            responseEntity = apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
+          
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
