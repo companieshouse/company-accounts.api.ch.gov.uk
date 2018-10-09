@@ -161,15 +161,12 @@ public class PreviousPeriodControllerTest {
 
 
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(any(), any())).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
         ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,
                 COMPANY_ACCOUNT_ID, request);
 
         assertTrue(bindingResult.hasErrors());
-        verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(any(), any());
-        verify(previousPeriodValidator, times(1)).validatePreviousPeriod(any(), any());
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

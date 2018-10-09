@@ -62,6 +62,8 @@ public class CurrentPeriodController {
 
             errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
 
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
         }
 
         currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);

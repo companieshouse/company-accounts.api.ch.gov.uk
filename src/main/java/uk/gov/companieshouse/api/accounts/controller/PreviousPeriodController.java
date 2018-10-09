@@ -60,6 +60,7 @@ public class PreviousPeriodController {
 
             errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
 
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         previousPeriodValidator.validatePreviousPeriod(previousPeriod, errors);
