@@ -46,7 +46,7 @@ public class PreviousPeriodController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid PreviousPeriod previousPeriod,
-            @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request, BindingResult bindingResult) {
+            BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
         String requestId = getRequestId(request);
         Errors errors = new Errors();
 
