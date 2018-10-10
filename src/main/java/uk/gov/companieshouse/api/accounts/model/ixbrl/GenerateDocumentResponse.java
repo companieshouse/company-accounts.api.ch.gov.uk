@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.model.ixbrl;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import java.util.Map;
-import org.springframework.hateoas.Links;
 
 public class GenerateDocumentResponse {
 
