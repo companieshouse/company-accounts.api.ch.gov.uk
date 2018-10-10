@@ -1676,9 +1676,9 @@ ul.accounts-comps-ct {
                   <td id="ac999-label">Called up share capital not paid:</td>
                   <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
                   {{if isNotEmpty $calledUpShareCapitalNotPaid.current_amount}}
-                  <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
-                    <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
-                  </td>
+                    <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
+                      <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
+                    </td>
                   {{end}}
 
                   {{if isNotEmpty $calledUpShareCapitalNotPaid.previous_amount}}
@@ -1700,9 +1700,9 @@ ul.accounts-comps-ct {
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
 
                   {{if isNotEmpty $fixedAssets.tangible.current_amount}}
-                  <td id="tangible-curr" class="strong figure">
-                    <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
-                  </td>
+                    <td id="tangible-curr" class="strong figure">
+                      <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
+                    </td>
                   {{end}}
 
                   {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
@@ -1717,9 +1717,9 @@ ul.accounts-comps-ct {
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
                 {{if isNotEmpty $fixedAssets.current_total}}
-                <td id="fixed-assets-curr-total" class="strong total">
-                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
-                </td>
+                  <td id="fixed-assets-curr-total" class="strong total">
+                    <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
+                  </td>
                 {{end}}
 
                 {{if isNotEmpty $fixedAssets.previous_total}}
@@ -1761,24 +1761,24 @@ ul.accounts-comps-ct {
           {{end}}
 
           {{- if isNotEmpty .small_full_account.approval_date -}}
-          <div>
-            <p class="strong">
-            This report was approved by the board of directors on
+            <div>
+              <p class="strong">
+              This report was approved by the board of directors on
 
-              <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_account.approval_date}}</ix:nonNumeric>
+                <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_account.approval_date}}</ix:nonNumeric>
 
-            <br />
-            and signed on behalf of the board by:
-            </p>
-            <p>
-               Name:
+              <br />
+              and signed on behalf of the board by:
+              </p>
+              <p>
+                 Name:
 
-               <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_account.approval_name}}</ix:nonNumeric>
+                 <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_account.approval_name}}</ix:nonNumeric>
 
-             <br />
-                Status: Director
-            </p>
-          </div>
+               <br />
+                  Status: Director
+              </p>
+            </div>
            {{end}}
           <p class="text--center">The notes form part of these financial statements</p>
         </div>
