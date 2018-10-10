@@ -5,8 +5,8 @@ import org.hibernate.validator.constraints.Range;
 
 public class FixedAssets {
 
-    public static final int MAX_RANGE = 99999999;
-    public static final int MIN_RANGE = 0;
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = 0;
 
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "VALUE_OUTSIDE_RANGE")
     @JsonProperty("tangible")
