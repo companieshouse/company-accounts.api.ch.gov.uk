@@ -98,18 +98,19 @@ public class PreviousPeriodControllerTest {
     void setUp() {
         when(request.getAttribute(TRANSACTION_STRING)).thenReturn(transaction);
         when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
+
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(companyAccountEntity).when(request)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn("COMPANY_ACCOUNT_ID").when(companyAccountEntity).getId();
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     @Test
     @DisplayName("Tests the successful creation of a previous period resource")
     void canCreatePreviousPeriod() throws DataException {
-
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
         doReturn(responseObject).when(previousPeriodService).create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
