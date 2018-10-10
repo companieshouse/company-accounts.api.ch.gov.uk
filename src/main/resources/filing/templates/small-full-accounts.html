@@ -1719,17 +1719,17 @@ ul.accounts-comps-ct {
                 <td id = "total-fixed-assets-heading" class="strong">Total fixed assets:</td>
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
-                {{if isNotEmpty $fixedAssets.current_total}}
                   <td id="fixed-assets-curr-total" class="strong total">
-                    <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
+                    {{if isNotEmpty $fixedAssets.current_total}}
+                      <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
+                    {{end}}
                   </td>
-                {{end}}
 
-                {{if isNotEmpty $fixedAssets.previous_total}}
                   <td id="fixed-assets-prev-total" class="total">
-                    <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
+                    {{if isNotEmpty $fixedAssets.previous_total}}
+                     <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
+                    {{end}}
                   </td>
-                {{end}}
               </tr>
               {{end}}
 
