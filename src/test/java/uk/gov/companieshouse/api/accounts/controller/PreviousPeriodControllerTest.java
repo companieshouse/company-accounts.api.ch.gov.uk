@@ -155,9 +155,15 @@ public class PreviousPeriodControllerTest {
 
     public void badRequestWhenValidatorFails() {
 
+        when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
 
+        when(errors.hasErrors()).thenReturn(true);
 
- 
+        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,
+                COMPANY_ACCOUNT_ID, request);
+
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+
     }
 }
