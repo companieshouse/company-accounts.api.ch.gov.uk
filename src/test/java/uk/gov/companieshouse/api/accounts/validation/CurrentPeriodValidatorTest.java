@@ -33,7 +33,9 @@ public class CurrentPeriodValidatorTest {
         balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        validator.validateCurrentPeriod(currentPeriod, errors);
+
+
+       Errors errors =  validator.validateCurrentPeriod(currentPeriod);
 
         assertTrue(errors.containsError(
             new Error(ErrorMessageKeys.INCORRECT_TOTAL.getKey(), TOTAL_PATH,

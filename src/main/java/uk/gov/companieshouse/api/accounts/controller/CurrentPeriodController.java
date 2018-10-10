@@ -56,17 +56,14 @@ public class CurrentPeriodController {
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-        Errors errors = new Errors();
 
         if (bindingResult.hasErrors()) {
-
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
         }
 
-        currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
         if (errors.hasErrors()) {
 
             LOGGER.error(

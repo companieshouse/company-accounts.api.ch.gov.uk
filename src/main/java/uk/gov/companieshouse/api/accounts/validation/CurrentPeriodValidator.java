@@ -19,7 +19,9 @@ public class CurrentPeriodValidator extends BaseValidator {
     private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
-    public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod, Errors errors) {
+    public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod) {
+
+        Errors errors = new Errors();
 
         if (currentPeriod.getBalanceSheet() != null) {
 
