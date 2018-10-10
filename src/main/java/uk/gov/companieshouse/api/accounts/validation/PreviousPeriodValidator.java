@@ -16,7 +16,9 @@ public class PreviousPeriodValidator extends BaseValidator {
     private static String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
 
     public Errors validatePreviousPeriod(
-        @Valid PreviousPeriod previousPeriod, Errors errors) {
+        @Valid PreviousPeriod previousPeriod) {
+
+        Errors errors = new Errors();
 
         if (previousPeriod.getBalanceSheet() != null) {
 
@@ -26,7 +28,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         return errors;
     }
 
-    private void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
+    public void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
         FixedAssets fixedAssets = previousPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 

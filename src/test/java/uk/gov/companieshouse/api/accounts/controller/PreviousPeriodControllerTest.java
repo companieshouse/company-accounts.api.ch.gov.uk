@@ -95,7 +95,7 @@ public class PreviousPeriodControllerTest {
     private PreviousPeriodController previousPeriodController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(request.getAttribute(TRANSACTION_STRING)).thenReturn(transaction);
         when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
         doReturn(transaction).when(request)
@@ -111,20 +111,13 @@ public class PreviousPeriodControllerTest {
     void canCreatePreviousPeriod() throws DataException {
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
-        doReturn(responseObject).when(previousPeriodService)
-                .create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseObject.getData());
-        when(apiResponseMapper.map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getValidationErrorData()))
-                .thenReturn(responseEntity);
-        doReturn(responseObject).when(previousPeriodService).findById(CREATE, TEST);
-        doReturn(new ResponseObject(ResponseStatus.FOUND,
-                previousPeriod)).when(previousPeriodService).findById(FIND, TEST);
-        doReturn("123456").when(transaction).getCompanyNumber();
-        doReturn(links).when(smallFull).getLinks();
-        doReturn("7890").when(links).get(SELF);
-        ResponseEntity response = previousPeriodController.create(previousPeriod, bindingResult, COMPANY_ACCOUNT_ID, request);
+        doReturn(responseObject).when(previousPeriodService).create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        when(apiResponseMapper.map(responseObject.getStatus(),responseObject.getData(), responseObject.getValidationErrorData())).thenReturn(responseEntity);
+
+        when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
+
+        ResponseEntity response = previousPeriodController.create(previousPeriod, bindingResult, "", request);
 
         verify(apiResponseMapper, times(1)).map(any(), any(), any());
 
@@ -139,12 +132,12 @@ public class PreviousPeriodControllerTest {
 
         DataException exception = new DataException("string");
 
+        when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
+
         when(previousPeriodService.create(any(), any(), any(), any())).thenThrow(exception);
 
-        when(apiResponseMapper.map(exception))
-                .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
-        ResponseEntity response = previousPeriodController
-                .create(previousPeriod, bindingResult, "COMPANY_ACCOUNT_ID", request);
+        when(apiResponseMapper.map(exception)).thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
+        ResponseEntity response = previousPeriodController.create(previousPeriod, bindingResult,"", request);
 
         verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).map(exception);

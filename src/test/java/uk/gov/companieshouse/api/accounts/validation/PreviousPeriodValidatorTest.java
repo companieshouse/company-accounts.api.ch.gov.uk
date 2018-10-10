@@ -36,7 +36,7 @@ public class PreviousPeriodValidatorTest {
         balanceSheet.setFixedAssets(fixedAssets);
         previousPeriod.setBalanceSheet(balanceSheet);
 
-        validator.validatePreviousPeriod(previousPeriod, errors);
+        validator.validateTotalFixedAssets(previousPeriod, errors);
 
         assertTrue(errors.containsError(
             new Error(ErrorMessageKeys.INCORRECT_TOTAL.getKey(), TOTAL_PATH,

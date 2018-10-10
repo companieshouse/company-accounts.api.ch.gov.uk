@@ -37,6 +37,7 @@ import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPL
 public class PreviousPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private PreviousPeriodService previousPeriodService;
@@ -55,33 +56,28 @@ public class PreviousPeriodController {
     public ResponseEntity create(@Valid @RequestBody PreviousPeriod previousPeriod, BindingResult bindingResult,
         @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
-        Errors errors = new Errors();
-
         if (bindingResult.hasErrors()) {
-
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        previousPeriodValidator.validatePreviousPeriod(previousPeriod, errors);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
         if (errors.hasErrors()) {
 
             LOGGER.error(
-                "Current period validation failure");
+                    "Current period validation failure");
             logValidationFailureError(getRequestId(request), errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        String requestId = request.getHeader("X-Request-Id");
-
+        Transaction transaction = getTransactionFromRequest(request);
         ResponseEntity responseEntity;
+
         try {
-            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, requestId);
+            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, REQUEST_ID);
             responseEntity = apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
           
         } catch (DataException ex) {
@@ -101,6 +97,10 @@ public class PreviousPeriodController {
         logMap.put("message", "Validation failure");
         logMap.put("Errors: ", errors);
         LOGGER.traceContext(requestId, "", logMap);
+    }
+
+    private Transaction getTransactionFromRequest(HttpServletRequest request) {
+        return (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     private String getRequestId(HttpServletRequest request) {
