@@ -1675,17 +1675,18 @@ ul.accounts-comps-ct {
                 <tr class="figures">
                   <td id="ac999-label">Called up share capital not paid:</td>
                   <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
-                  {{if isNotEmpty $calledUpShareCapitalNotPaid.current_amount}}
-                    <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
-                      <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
-                    </td>
-                  {{end}}
 
-                  {{if isNotEmpty $calledUpShareCapitalNotPaid.previous_amount}}
-                    <td id="called-up-share-capital-not-paid-prev" class="text--right">
-                      <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="PY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.previous_amount}}</ix:nonFraction>
+                    <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
+                      {{if isNotEmpty $calledUpShareCapitalNotPaid.current_amount}}
+                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
+                      {{end}}
                     </td>
-                  {{end}}
+
+                    <td id="called-up-share-capital-not-paid-prev" class="text--right">
+                      {{if isNotEmpty $calledUpShareCapitalNotPaid.previous_amount}}
+                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="PY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
                 </tr>
               {{end}}
 
@@ -1699,17 +1700,19 @@ ul.accounts-comps-ct {
                   <td id = "tangible-assets-heading">Tangible assets:</td>
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
 
-                  {{if isNotEmpty $fixedAssets.tangible.current_amount}}
-                    <td id="tangible-curr" class="strong figure">
-                      <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
-                    </td>
-                  {{end}}
 
-                  {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
-                    <td id="tangible-prev" class="text--right">
-                      <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
+                    <td id="tangible-curr" class="strong figure">
+                      {{if isNotEmpty $fixedAssets.tangible.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
+                      {{end}}
                     </td>
-                  {{end}}
+
+
+                    <td id="tangible-prev" class="text--right">
+                      {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
               </tr>
 
               <tr class = "figures">
