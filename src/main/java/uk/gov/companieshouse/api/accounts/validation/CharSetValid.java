@@ -18,7 +18,7 @@ public @interface CharSetValid {
 
     String message() default "INVALID_VALUE";
 
-    CharSet value() default CharSet.CHARECTER_SET_1;
+    CharSet value() default CharSet.CHARACTER_SET_1;
 
     Class<?>[] groups() default {};
 

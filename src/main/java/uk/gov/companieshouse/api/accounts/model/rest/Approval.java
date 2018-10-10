@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.PastOrPresent;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
@@ -21,7 +19,7 @@ public class Approval extends RestObject {
 
     @NotNull
     @JsonProperty("name")
-    @CharSetValid(CharSet.CHARECTER_SET_2)
+    @CharSetValid(CharSet.CHARACTER_SET_2)
     private String name;
 
     public LocalDate getDate() {
