@@ -59,8 +59,7 @@ public class CurrentPeriodService implements
         String companyAccountId, String requestId)
         throws DataException {
 
-        String selfLink = createSelfLink(transaction, companyAccountId);
-        populateDefaultReadonly(currentPeriod, selfLink);
+        populateMetadata(currentPeriod, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         final Map<String, Object> debugMap = new HashMap<>();
@@ -84,7 +83,8 @@ public class CurrentPeriodService implements
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD, selfLink, requestId);
+            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
+                createSelfLink(transaction, companyAccountId), requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
@@ -93,8 +93,7 @@ public class CurrentPeriodService implements
     public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
         String companyAccountId, String requestId) throws DataException {
 
-        String selfLink = createSelfLink(transaction, companyAccountId);
-        populateDefaultReadonly(rest, selfLink);
+        populateMetadata(rest, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
         String id = generateID(companyAccountId);
         currentPeriodEntity.setId(id);
@@ -142,16 +141,17 @@ public class CurrentPeriodService implements
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
-    private void populateDefaultReadonly(CurrentPeriod currentPeriod, String link) {
+    private void populateMetadata(CurrentPeriod currentPeriod, Transaction transaction,
+        String companyAccountId) {
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
+        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
 
         currentPeriod.setLinks(map);
         currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
         currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
     }
 
-    public String createSelfLink(Transaction transaction, String companyAccountId) {
+    private String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"

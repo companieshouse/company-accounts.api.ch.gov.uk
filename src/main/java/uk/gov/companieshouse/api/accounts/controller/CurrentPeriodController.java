@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
@@ -112,7 +110,7 @@ public class CurrentPeriodController {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFull.getLinks().get(SmallFullLinkType.CURRENT_PERIOD.getLink()) == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Errors errors = new Errors();
@@ -141,8 +139,7 @@ public class CurrentPeriodController {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
                 .update(currentPeriod, transaction, companyAccountId, requestId);
             responseEntity = apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
+                .map(responseObject.getStatus(), null, responseObject.getValidationErrorData());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();

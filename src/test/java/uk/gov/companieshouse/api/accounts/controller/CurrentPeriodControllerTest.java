@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -112,13 +112,13 @@ public class CurrentPeriodControllerTest {
         doReturn(smallFull).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();
-        links.put(ResourceName.CURRENT_PERIOD.getName(), "link");
+        links.put(SmallFullLinkType.CURRENT_PERIOD.getLink(), "link");
         when(smallFull.getLinks()).thenReturn(links);
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
             currentPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getValidationErrorData()))
+            null, responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
         doReturn(responseObject).when(currentPeriodService)
             .update(currentPeriod, null, "12345", null);
@@ -140,6 +140,6 @@ public class CurrentPeriodControllerTest {
         ResponseEntity response = currentPeriodController
             .update(currentPeriod, bindingResult, "123456", request);
         assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }
