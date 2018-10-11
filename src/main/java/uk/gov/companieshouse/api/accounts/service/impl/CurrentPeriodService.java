@@ -84,7 +84,7 @@ public class CurrentPeriodService implements
 
         smallFullService
             .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
-                createSelfLink(transaction, companyAccountId), requestId);
+                currentPeriod.getLinks().get(BasicLinkType.SELF.getLink()), requestId);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
