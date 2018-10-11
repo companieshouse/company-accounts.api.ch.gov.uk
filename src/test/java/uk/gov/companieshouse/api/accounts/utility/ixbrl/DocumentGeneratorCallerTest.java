@@ -1,0 +1,142 @@
+package uk.gov.companieshouse.api.accounts.utility.ixbrl;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorRequest;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
+
+@ExtendWith(MockitoExtension.class)
+@TestInstance(Lifecycle.PER_CLASS)
+public class DocumentGeneratorCallerTest {
+
+    private static final String TRANSACTION_ID = "1234561-1234561-1234561";
+    private static final String ACCOUNTS_ID = "1234561";
+    private static final String ACCOUNTS_RESOURCE_URI =
+        "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
+
+    private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
+    private static final String PERIOD_END_ON_KEY = "period_end_on";
+
+    private DocumentGeneratorCaller documentGeneratorCaller;
+
+    @Mock
+    private RestTemplate restTemplateMock;
+
+    @BeforeEach
+    void setUpBeforeEach() {
+        documentGeneratorCaller = new DocumentGeneratorCaller(restTemplateMock);
+    }
+
+    @Test
+    @DisplayName("Document Generator Caller generates the DocumentGeneratorResponse successfully. Document Generator call returned correct status code")
+    void shouldGenerateDocumentGeneratorResponseCallDocumentGeneratorIsSuccessful() {
+        doReturn(createDocumentGeneratorResponseEntity(HttpStatus.CREATED))
+            .when(restTemplateMock)
+            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+                eq(DocumentGeneratorResponse.class));
+
+        DocumentGeneratorResponse response = documentGeneratorCaller
+            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+
+        verifyRestTemplateMockNumOfCalls();
+        assertNotNull(response);
+    }
+
+    @Test
+    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Document Generator call returned wrong status code")
+    void shouldNotGenerateDocumentGeneratorResponseCallDocumentGeneratorIsUnsuccessful() {
+        doReturn(createDocumentGeneratorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR))
+            .when(restTemplateMock)
+            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+                eq(DocumentGeneratorResponse.class));
+
+        DocumentGeneratorResponse response = documentGeneratorCaller
+            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+
+        verifyRestTemplateMockNumOfCalls();
+        assertNull(response);
+    }
+
+    @Test
+    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Document Generator throws an exception")
+    void shouldNotGenerateDocumentGeneratorResponseDocumentGeneratorThrowsException() {
+
+        when(restTemplateMock.postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+            eq(DocumentGeneratorResponse.class)))
+            .thenThrow(RestClientException.class);
+
+        DocumentGeneratorResponse response = documentGeneratorCaller
+            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+
+        verifyRestTemplateMockNumOfCalls();
+        assertNull(response);
+    }
+
+    /**
+     * Verifies number of calls to the postForEntity.
+     */
+    private void verifyRestTemplateMockNumOfCalls() {
+        verify(restTemplateMock, times(1))
+            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+                eq(DocumentGeneratorResponse.class));
+    }
+
+    /**
+     * creates dummy Document Generator response entity with the status passed in.
+     *
+     * @return ResponseEntity<> with the desired transaction
+     */
+    private ResponseEntity<DocumentGeneratorResponse> createDocumentGeneratorResponseEntity(
+        HttpStatus httpStatus) {
+
+        DocumentGeneratorResponse documentGeneratorResponse = createDocumentGeneratorResponse();
+
+        return new ResponseEntity<>(documentGeneratorResponse, httpStatus);
+    }
+
+
+    /**
+     * Create a Document Generator Response with all needed information to generate the filing.
+     *
+     * @return
+     */
+    private DocumentGeneratorResponse createDocumentGeneratorResponse() {
+        DocumentGeneratorResponse documentGeneratorResponse = new DocumentGeneratorResponse();
+
+        Links links = new Links();
+        links.setLocation(IXBRL_LOCATION);
+        documentGeneratorResponse.setLinks(links);
+
+        Map<String, String> descriptionValues = new HashMap<>();
+        descriptionValues.put(PERIOD_END_ON_KEY, "2018-01-01");
+        documentGeneratorResponse.setDescriptionValues(descriptionValues);
+
+        documentGeneratorResponse
+            .setDescription("Small full accounts made up to 18 January 2018");
+
+        return documentGeneratorResponse;
+    }
+}
