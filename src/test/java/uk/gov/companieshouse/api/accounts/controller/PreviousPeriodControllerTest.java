@@ -61,20 +61,13 @@ public class PreviousPeriodControllerTest {
     @BeforeEach
     public void setUp() {
         when(request.getHeader(X_REQUEST_ID)).thenReturn(TEST);
-        doReturn(transaction).when(request)
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-        doReturn(companyAccountEntity).when(request)
-            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        doReturn("12345").when(companyAccountEntity).getId();
-
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
     @Test
     @DisplayName("Tests the successful creation of a previous period resource")
     void canCreatePreviousPeriod() throws DataException {
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-            previousPeriod);
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
         doReturn(responseObject).when(previousPeriodService)
             .create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
@@ -83,8 +76,7 @@ public class PreviousPeriodControllerTest {
             responseObject.getData(), responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
 
-        ResponseEntity response = previousPeriodController
-            .create(previousPeriod, request);
+        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request);
 
         verify(apiResponseMapper, times(1)).map(any(), any(), any());
 
@@ -103,8 +95,7 @@ public class PreviousPeriodControllerTest {
 
         when(apiResponseMapper.map(exception))
             .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
-        ResponseEntity response = previousPeriodController
-            .create(previousPeriod, request);
+        ResponseEntity response = previousPeriodController.create(previousPeriod, "", request);
 
         verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).map(exception);
