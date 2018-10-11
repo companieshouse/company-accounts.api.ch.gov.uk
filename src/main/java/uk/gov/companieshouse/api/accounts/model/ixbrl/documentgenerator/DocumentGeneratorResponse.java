@@ -1,10 +1,10 @@
-package uk.gov.companieshouse.api.accounts.model.ixbrl;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import java.util.Map;
 
-public class GenerateDocumentResponse {
+public class DocumentGeneratorResponse {
 
     @JsonProperty("links")
     private Links links;
