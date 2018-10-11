@@ -1,8 +1,15 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +24,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,5 +60,26 @@ public class PreviousPeriodController {
         }
 
         return responseEntity;
+    }
+
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String requestId = request.getHeader("X-Request-Id");
+        String previousPeriodId = previousPeriodService.generateID(companyAccountId);
+        ResponseObject<PreviousPeriod> responseObject;
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+
+        try {
+            responseObject = previousPeriodService.findById(previousPeriodId, requestId);
+        } catch (DataException de) {
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
+        }
+
+        return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
     }
 }

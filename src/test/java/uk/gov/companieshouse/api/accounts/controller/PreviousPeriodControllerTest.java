@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -105,5 +106,34 @@ public class PreviousPeriodControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Test the successful retrieval of a previous period resource")
+    public void canRetrievePreviousPeriod() throws DataException {
+        doReturn("find").when(previousPeriodService).generateID("123456");
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
+        doReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod)).when(previousPeriodService).findById("find", "test");
+        when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
 
+        ResponseEntity response = previousPeriodController.get("123456", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(previousPeriod, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Test the unsuccessful retrieval of a previous period resource")
+    public void canRetrievePreviousPeriodFailed() throws DataException {
+        doReturn("find").when(previousPeriodService).generateID("123456");
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        when(previousPeriodService.findById(anyString(), anyString())).thenThrow(new DataException("error"));
+
+        when(apiResponseMapper.map(any(DataException.class))).thenReturn(responseEntity);
+
+        ResponseEntity response = previousPeriodController.get("123456", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 }

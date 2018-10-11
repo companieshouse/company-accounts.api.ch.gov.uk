@@ -32,7 +32,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    private PreviousPeriodRespository previousPeriodRespository;
+    private PreviousPeriodRespository previousPeriodRepository;
 
     private PreviousPeriodTransformer previousPeriodTransformer;
 
@@ -46,7 +46,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         PreviousPeriodTransformer previousPeriodTransformer,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
-        this.previousPeriodRespository = previousPeriodRepository;
+        this.previousPeriodRepository = previousPeriodRepository;
         this.previousPeriodTransformer = previousPeriodTransformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
@@ -72,7 +72,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         debugMap.put("id", id);
 
         try {
-            previousPeriodRespository.insert(previousPeriodEntity);
+            previousPeriodRepository.insert(previousPeriodEntity);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorContext(requestId, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
@@ -90,9 +90,23 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
+    public ResponseObject<PreviousPeriod> findById(String id, String requestId) throws DataException {
+        PreviousPeriodEntity previousPeriodEntity;
+        try {
+            previousPeriodEntity = previousPeriodRepository.findById(id).orElse(null);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Previous Period", me);
+            LOGGER.errorContext(requestId, dataException, debugMap);
+            throw dataException;
+        }
 
-        return null;
+        if (previousPeriodEntity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        PreviousPeriod previousPeriod = previousPeriodTransformer.transform(previousPeriodEntity);
+        return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
     }
 
     @Override
