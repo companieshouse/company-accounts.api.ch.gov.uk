@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
+import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -32,7 +32,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    private PreviousPeriodRespository previousPeriodRespository;
+    private PreviousPeriodRepository previousPeriodRespository;
 
     private PreviousPeriodTransformer previousPeriodTransformer;
 
@@ -42,7 +42,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     @Autowired
     public PreviousPeriodService(
-        PreviousPeriodRespository previousPeriodRepository,
+        PreviousPeriodRepository previousPeriodRepository,
         PreviousPeriodTransformer previousPeriodTransformer,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
