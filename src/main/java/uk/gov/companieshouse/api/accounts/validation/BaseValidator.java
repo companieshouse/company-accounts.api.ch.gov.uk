@@ -17,7 +17,7 @@ public class BaseValidator {
     protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
         Errors errors) {
         if (expectedTotal == null) {
-            if (total != null && !total.equals(0)) {
+            if (total != null && !total.equals(0L)) {
                 addIncorrectTotalError(errors, location);
             }
         } else if (total == null || !total.equals(expectedTotal)) {
