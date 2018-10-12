@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -49,6 +50,9 @@ public class CurrentPeriodControllerTest {
     private BindingResult bindingResult;
 
     @Mock
+    Errors errors;
+
+    @Mock
     private CurrentPeriodService currentPeriodService;
 
     @Mock
@@ -68,16 +72,14 @@ public class CurrentPeriodControllerTest {
     public void canCreateCurrentPeriod() throws DataException {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             currentPeriod);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(responseObject.getData());
-        when(apiResponseMapper.map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getValidationErrorData()))
-            .thenReturn(responseEntity);
-        doReturn(responseObject).when(currentPeriodService)
-            .create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
 
-        ResponseEntity response = currentPeriodController
-            .create(currentPeriod, bindingResult, "123456", request);
+        doReturn(responseObject).when(currentPeriodService).create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        when(apiResponseMapper.map(responseObject.getStatus(),responseObject.getData(), responseObject.getValidationErrorData())).thenReturn(responseEntity);
+
+        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
+
+        ResponseEntity response = currentPeriodController.create(currentPeriod, bindingResult, "", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

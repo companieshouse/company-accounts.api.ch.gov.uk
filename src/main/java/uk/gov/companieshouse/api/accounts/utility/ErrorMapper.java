@@ -20,7 +20,9 @@ public class ErrorMapper {
      * @param errors
      * @return
      */
-    public Errors mapBindingResultErrorsToErrorModel(BindingResult bindingResult, Errors errors) {
+    public Errors mapBindingResultErrorsToErrorModel(BindingResult bindingResult) {
+
+        Errors errors = new Errors();
 
         for (Object object : bindingResult.getAllErrors()) {
 

@@ -5,21 +5,24 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CurrentPeriodValidatorTest {
+public class PreviousPeriodValidatorTest {
 
-    private static final String CURRENT_PERIOD_PATH = "$.current_period";
-    private static final String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
+    private static final String PREVIOUS_PERIOD_PATH = "$.previous_period";
+    private static final String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
     private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
 
-    CurrentPeriodValidator validator = new CurrentPeriodValidator();
+    private static final long TANGIBLE = 5;
+    private static final long TOTAL_FIXED_ASSETS = 10;
 
-    CurrentPeriod currentPeriod = new CurrentPeriod();
+    PreviousPeriodValidator validator = new PreviousPeriodValidator();
+
+    PreviousPeriod previousPeriod = new PreviousPeriod();
     BalanceSheet balanceSheet = new BalanceSheet();
     Errors errors = new Errors();
 
@@ -28,14 +31,12 @@ public class CurrentPeriodValidatorTest {
     public void validateTotalFixedAssets() {
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(5L);
-        fixedAssets.setTotalFixedAssets(10L);
+        fixedAssets.setTangible(TANGIBLE);
+        fixedAssets.setTotalFixedAssets(TOTAL_FIXED_ASSETS);
         balanceSheet.setFixedAssets(fixedAssets);
-        currentPeriod.setBalanceSheet(balanceSheet);
+        previousPeriod.setBalanceSheet(balanceSheet);
 
-
-
-       Errors errors =  validator.validateCurrentPeriod(currentPeriod);
+        validator.validateTotalFixedAssets(previousPeriod, errors);
 
         assertTrue(errors.containsError(
             new Error(ErrorMessageKeys.INCORRECT_TOTAL.getKey(), TOTAL_PATH,
