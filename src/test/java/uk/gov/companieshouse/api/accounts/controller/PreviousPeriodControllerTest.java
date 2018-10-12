@@ -152,8 +152,12 @@ public class PreviousPeriodControllerTest {
     @DisplayName("Test the successful retrieval of a previous period resource")
     public void canRetrievePreviousPeriod() throws DataException {
         doReturn("find").when(previousPeriodService).generateID("123456");
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
+        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
+
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
-        doReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod)).when(previousPeriodService).findById("find", "test");
+
+        when(previousPeriodService.findById(anyString(), anyString())).thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
         when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
 
         ResponseEntity response = previousPeriodController.get("123456", request);
@@ -167,9 +171,11 @@ public class PreviousPeriodControllerTest {
     @DisplayName("Test the unsuccessful retrieval of a previous period resource")
     public void canRetrievePreviousPeriodFailed() throws DataException {
         doReturn("find").when(previousPeriodService).generateID("123456");
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
+        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
+
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         when(previousPeriodService.findById(anyString(), anyString())).thenThrow(new DataException("error"));
-
         when(apiResponseMapper.map(any(DataException.class))).thenReturn(responseEntity);
 
         ResponseEntity response = previousPeriodController.get("123456", request);
@@ -188,6 +194,5 @@ public class PreviousPeriodControllerTest {
         ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,COMPANY_ACCOUNT_ID, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
     }
 }
