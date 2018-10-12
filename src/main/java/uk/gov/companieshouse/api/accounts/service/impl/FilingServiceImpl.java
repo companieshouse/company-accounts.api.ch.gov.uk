@@ -112,7 +112,7 @@ public class FilingServiceImpl implements FilingService {
         String companyAccountsURI = companyAccount.getLinks()
             .get(CompanyAccountLinkType.SELF.getLink());
 
-        //TODO: Check information from document generator's response is correct. Implementation does NOT exist yet. (STORY SFA-595)
+        //TODO: Check information from document generator's response is correct (SFA-595). After the doc. generator implementation for small full is done.
         DocumentGeneratorResponse documentGeneratorResponse =
             documentGeneratorCaller
                 .callDocumentGeneratorService(transaction.getId(), companyAccountsURI);
@@ -189,7 +189,7 @@ public class FilingServiceImpl implements FilingService {
         filing.setDescriptionIdentifier(accountsType.getAccountType());
         filing.setKind(accountsType.getKind());
 
-        //TODO Check if documentGeneratorResponse contains correct information: periodEndDate, descriptionValues, description. When Implementation is completed (STORY SFA-595)
+        //TODO Check if documentGeneratorResponse contains correct information: periodEndDate, descriptionValues, description (SFA-595). Doc Generator does not cater for small full yet, waiting for this change.
         filing.setDescriptionValues(documentGeneratorResponse.getDescriptionValues());
         filing.setDescription(documentGeneratorResponse.getDescription());
         filing.setData(
@@ -209,7 +209,7 @@ public class FilingServiceImpl implements FilingService {
     private LocalDate getPeriodEndDate(
         DocumentGeneratorResponse documentGeneratorResponse) {
 
-        //TODO check the periodEndDate is being formatted to: YYYY MM DD.
+        //TODO check the periodEndDate is being formatted to: YYYY MM DD.(SFA-595)
         if (documentGeneratorResponse.getDescriptionValues().containsKey(PERIOD_END_ON)) {
             return LocalDate
                 .parse(documentGeneratorResponse.getDescriptionValues().get(PERIOD_END_ON));
@@ -225,7 +225,7 @@ public class FilingServiceImpl implements FilingService {
      * @return {@link Map<String,String>} containing period end date, to match filing model
      */
     private Map<String, String> getDescriptionValues(LocalDate periodEndDate) {
-        //TODO remove this method if no longer needed. it was used by filing.setDescriptionValues()
+        //TODO remove this method if no longer needed. it was used by filing.setDescriptionValues(). (SFA-595)
         Map<String, String> descriptionValues = new HashMap<>();
         descriptionValues.put(PERIOD_END_ON, periodEndDate.toString());
 
