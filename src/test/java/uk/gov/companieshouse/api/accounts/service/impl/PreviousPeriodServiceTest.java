@@ -23,7 +23,7 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
+import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -41,7 +41,7 @@ public class PreviousPeriodServiceTest {
     private Transaction transaction;
 
     @Mock
-    private PreviousPeriodRespository previousPeriodRepository;
+    private PreviousPeriodRepository previousPeriodRepository;
 
     @Mock
     private SmallFullService smallFullService;
