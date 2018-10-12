@@ -58,7 +58,7 @@ public class ApprovalController {
         if (bindingResult.hasErrors()) {
 
             Errors errors = errorMapper
-                .mapBindingResultErrorsToErrorModel(bindingResult, new Errors());
+                .mapBindingResultErrorsToErrorModel(bindingResult);
 
             if (errors.hasErrors()) {
                 LOGGER.error("Approval validation failure", logContext);
