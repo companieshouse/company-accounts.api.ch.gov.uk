@@ -117,15 +117,15 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
             String id = generateID(companyAccountId);
             previousPeriodEntity.setId(id);
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            debugMap.put("company_accounts_id", companyAccountId);
-            debugMap.put("id", id);
-
             try {
                 previousPeriodRepository.save(previousPeriodEntity);
             } catch (MongoException me) {
                 DataException dataException = new DataException("Failed to update " + ResourceName.SMALL_FULL.getName(), me);
+
+                final Map<String, Object> debugMap = new HashMap<>();
+                debugMap.put("transaction_id", transaction.getId());
+                debugMap.put("company_accounts_id", companyAccountId);
+                debugMap.put("id", id);
                 LOGGER.errorContext(requestId, dataException, debugMap);
                 throw dataException;
             }
