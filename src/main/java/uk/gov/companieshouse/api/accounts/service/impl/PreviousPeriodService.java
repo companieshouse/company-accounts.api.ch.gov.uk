@@ -120,7 +120,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
             try {
                 previousPeriodRepository.save(previousPeriodEntity);
             } catch (MongoException me) {
-                DataException dataException = new DataException("Failed to update " + ResourceName.SMALL_FULL.getName(), me);
+                DataException dataException = new DataException("Failed to update " + ResourceName.PREVIOUS_PERIOD.getName(), me);
 
                 final Map<String, Object> debugMap = new HashMap<>();
                 debugMap.put("transaction_id", transaction.getId());
