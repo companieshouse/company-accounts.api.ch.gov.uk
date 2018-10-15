@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
-import java.util.HashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+
+import java.util.HashMap;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)

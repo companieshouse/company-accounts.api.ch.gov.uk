@@ -32,7 +32,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.util.LogContext;
 import uk.gov.companieshouse.logging.util.LogHelper;
 
 @RestController
@@ -59,15 +58,14 @@ public class CurrentPeriodController {
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-        Errors errors = new Errors();
 
         if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
-
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
         if (errors.hasErrors()) {
 
             LOGGER.error(
@@ -116,10 +114,10 @@ public class CurrentPeriodController {
         Errors errors = new Errors();
 
         if (bindingResult.hasErrors()) {
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, errors);
+            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
         }
 
-        currentPeriodValidator.validateCurrentPeriod(currentPeriod, errors);
+        currentPeriodValidator.validateCurrentPeriod(currentPeriod);
         if (errors.hasErrors()) {
             LOGGER.error(
                 "Current period validation failure");
@@ -154,12 +152,12 @@ public class CurrentPeriodController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
-        LogContext logContext = LogHelper.createNewLogContext(request);
+        LogHelper.createNewLogContext(request);
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader("X-Request-Id");
+        String requestId = request.getHeader(REQUEST_ID);
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -185,6 +183,6 @@ public class CurrentPeriodController {
     }
 
     private String getRequestId(HttpServletRequest request) {
-        return request.getHeader("X-Request-Id");
+        return request.getHeader(REQUEST_ID);
     }
 }
