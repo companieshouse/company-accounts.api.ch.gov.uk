@@ -1,6 +1,18 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -8,8 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -26,19 +36,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -151,19 +149,50 @@ public class PreviousPeriodControllerTest {
     }
 
     @Test
+    @DisplayName("Test the successful retrieval of a previous period resource")
+    public void canRetrievePreviousPeriod() throws DataException {
+        doReturn("find").when(previousPeriodService).generateID("123456");
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
+        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
+
+        when(previousPeriodService.findById(anyString(), anyString())).thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
+        when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
+
+        ResponseEntity response = previousPeriodController.get("123456", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(previousPeriod, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Test the unsuccessful retrieval of a previous period resource")
+    public void canRetrievePreviousPeriodFailed() throws DataException {
+        doReturn("find").when(previousPeriodService).generateID("123456");
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
+        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        when(previousPeriodService.findById(anyString(), anyString())).thenThrow(new DataException("error"));
+        when(apiResponseMapper.map(any(DataException.class))).thenReturn(responseEntity);
+
+        ResponseEntity response = previousPeriodController.get("123456", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
     @DisplayName("Test correct response when validator fails")
-
     public void badRequestWhenValidatorFails() {
-
         when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
-
         when(errors.hasErrors()).thenReturn(true);
 
-        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,
-                COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,COMPANY_ACCOUNT_ID, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-
     }
 }
