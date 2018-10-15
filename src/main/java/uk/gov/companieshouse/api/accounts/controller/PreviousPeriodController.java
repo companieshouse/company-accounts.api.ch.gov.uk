@@ -124,18 +124,16 @@ public class PreviousPeriodController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Errors errors = new Errors();
-
         if (bindingResult.hasErrors()) {
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        previousPeriodValidator.validatePreviousPeriod(previousPeriod);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
         if (errors.hasErrors()) {
             LOGGER.error( "Previous period validation failure");
             logValidationFailureError(getRequestId(request), errors);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());

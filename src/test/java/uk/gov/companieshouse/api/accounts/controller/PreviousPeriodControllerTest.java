@@ -170,12 +170,13 @@ public class PreviousPeriodControllerTest {
     public void canUpdatePreviousPeriod() throws DataException {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
+
+        when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, previousPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),null, responseObject.getValidationErrorData()))
                 .thenReturn(responseEntity);
-        doReturn(responseObject).when(previousPeriodService)
-                .update(previousPeriod, null, "12345", null);
+        doReturn(responseObject).when(previousPeriodService).update(previousPeriod, null, "12345", null);
 
         ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
 
@@ -184,7 +185,7 @@ public class PreviousPeriodControllerTest {
     }
 
     @Test
-    @DisplayName("PUT - Tests the unsuccessful update of a previous period resource")
+    @DisplayName("PUT - Tests the unsuccessful update of a previous period resource due to no link to small full resource")
     public void canUpdatePreviousPeriodFail() {
         mockSmallFull();
         when(smallFull.getLinks()).thenReturn(new HashMap<>());
@@ -199,8 +200,6 @@ public class PreviousPeriodControllerTest {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errors.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(any())).thenReturn(errors);
 
         ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
         assertNotNull(response);
@@ -208,22 +207,18 @@ public class PreviousPeriodControllerTest {
     }
 
     @Test
-    @DisplayName("PUT - Tests the successful update of a previous period resource")
-    public void canUpdatePreviousPeriodFailOnUpdate() throws DataException {
+    @DisplayName("PUT - Tests the unsuccessful update of a previous period resource due to validation errors")
+    public void canUpdatePreviousPeriodFailOnUpdate() {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
 
-        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
-
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
-        when(apiResponseMapper.map(any(Exception.class))).thenReturn(responseEntity);
-        when(previousPeriodService.update(any(), any(), any(), any())).thenThrow(new DataException("ERROR"));
+        when(errors.hasErrors()).thenReturn(true);
+        when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);
 
         ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
 
         assertNotNull(response);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
