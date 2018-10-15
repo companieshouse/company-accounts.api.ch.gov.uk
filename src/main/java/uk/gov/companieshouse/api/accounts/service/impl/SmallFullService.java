@@ -90,6 +90,13 @@ public class SmallFullService implements
     }
 
     @Override
+    public ResponseObject<SmallFull> update(SmallFull rest, Transaction transaction,
+        String companyAccountId, String requestId) throws DataException {
+        //TODO implement method
+        return null;
+    }
+
+    @Override
     public ResponseObject<SmallFull> findById(String id, String requestId) throws DataException {
         SmallFullEntity smallFullEntity;
         try {
