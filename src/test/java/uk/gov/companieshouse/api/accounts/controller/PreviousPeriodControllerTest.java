@@ -1,6 +1,18 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -8,13 +20,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
@@ -26,19 +37,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -163,7 +161,76 @@ public class PreviousPeriodControllerTest {
                 COMPANY_ACCOUNT_ID, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
+    @Test
+    @DisplayName("PUT - Tests the successful update of a previous period resource")
+    public void canUpdatePreviousPeriod() throws DataException {
+        mockSmallFull();
+        mockPreviousPeriodLinkOnSmallFullResource();
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, previousPeriod);
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(),null, responseObject.getValidationErrorData()))
+                .thenReturn(responseEntity);
+        doReturn(responseObject).when(previousPeriodService)
+                .update(previousPeriod, null, "12345", null);
 
+        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("PUT - Tests the unsuccessful update of a previous period resource")
+    public void canUpdatePreviousPeriodFail() {
+        mockSmallFull();
+        when(smallFull.getLinks()).thenReturn(new HashMap<>());
+        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("PUT - Tests the unsuccessful update of a previous period resource due to binding result errors")
+    public void canUpdatePreviousPeriodFailBindingResultErrors() {
+        mockSmallFull();
+        mockPreviousPeriodLinkOnSmallFullResource();
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errors.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(any())).thenReturn(errors);
+
+        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("PUT - Tests the successful update of a previous period resource")
+    public void canUpdatePreviousPeriodFailOnUpdate() throws DataException {
+        mockSmallFull();
+        mockPreviousPeriodLinkOnSmallFullResource();
+
+        doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        when(apiResponseMapper.map(any(Exception.class))).thenReturn(responseEntity);
+        when(previousPeriodService.update(any(), any(), any(), any())).thenThrow(new DataException("ERROR"));
+
+        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    private void mockSmallFull() {
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
+    }
+
+    private void mockPreviousPeriodLinkOnSmallFullResource() {
+        HashMap<String, String> links = new HashMap<>();
+        links.put(SmallFullLinkType.PREVIOUS_PERIOD.getLink(), "link");
+        when(smallFull.getLinks()).thenReturn(links);
     }
 }

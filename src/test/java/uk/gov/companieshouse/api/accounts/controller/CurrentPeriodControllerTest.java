@@ -133,7 +133,7 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful update of a currentPeriod resource")
-    public void canUpateCurrentPeriodFail() throws DataException {
+    public void canUpdateCurrentPeriodFail() throws DataException {
         doReturn(smallFull).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();
