@@ -5,5 +5,6 @@ public enum ResponseStatus {
     DUPLICATE_KEY_ERROR,
     NOT_FOUND,
     FOUND,
+    UPDATED,
     CREATED
 }

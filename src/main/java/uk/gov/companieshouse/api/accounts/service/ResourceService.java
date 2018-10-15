@@ -11,6 +11,10 @@ public interface ResourceService<T extends RestObject> {
         String requestId)
         throws DataException;
 
+    ResponseObject<T> update(T rest, Transaction transaction, String companyAccountId,
+        String requestId)
+        throws DataException;
+
     ResponseObject<T> findById(String id, String requestId)
         throws DataException;
 

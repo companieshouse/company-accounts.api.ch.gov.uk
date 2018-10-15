@@ -109,9 +109,15 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
     }
 
+    public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
+        String companyAccountId, String requestId) throws DataException {
+        //TODO implement method
+        return null;
+    }
+
+
     @Override
     public String generateID(String value) {
-
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 
