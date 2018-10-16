@@ -4,13 +4,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class CurrentAssetsEntity {
 
-    @Field)("total")
+    @Field("total")
     private Long totalCurrentAssets;
-    @Field)("stocks")
+    @Field("stocks")
     private Long stocks;
-    @Field)("debtors")
+    @Field("debtors")
     private Long debtors;
-    @Field)("cash_at_bank_and_in_hand")
+    @Field("cash_at_bank_and_in_hand")
     private Long cashAtBankAndInHand;
 
     public Long getTotalCurrentAssets() {
