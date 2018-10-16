@@ -30,8 +30,8 @@ public class CurrentPeriodTransformerTest {
     private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
     private static final Long TANGIBLE_VALID = 10L;
     private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
-    private static final Long VALID_VALUE = 100L;
-    private static final Long CURRENT_ASSETS_TOTAL = 300l;
+    private static final Long CURRENT_ASSETS_VALID = 100L;
+    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300l;
 
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
@@ -61,10 +61,10 @@ public class CurrentPeriodTransformerTest {
         balanceSheet.setFixedAssets(fixedAssets);
 
         CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setStocks(VALID_VALUE);
-        currentAssets.setDebtors(VALID_VALUE);
-        currentAssets.setCashAtBankAndInHand(VALID_VALUE);
-        currentAssets.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL);
+        currentAssets.setStocks(CURRENT_ASSETS_VALID);
+        currentAssets.setDebtors(CURRENT_ASSETS_VALID);
+        currentAssets.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
+        currentAssets.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL_VALID);
 
         balanceSheet.setCurrentAssets(currentAssets);
 
@@ -85,10 +85,10 @@ public class CurrentPeriodTransformerTest {
         assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
 
-        assertEquals(VALID_VALUE, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
-        assertEquals(VALID_VALUE, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
-        assertEquals(VALID_VALUE, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
-        assertEquals(CURRENT_ASSETS_TOTAL, data.getBalanceSheetEntity().getCurrentAssets().getTotalCurrentAssets());
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotalCurrentAssets());
 
         assertEquals("kind", data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
@@ -107,10 +107,10 @@ public class CurrentPeriodTransformerTest {
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
 
         CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
-        currentAssetsEntity.setStocks(VALID_VALUE);
-        currentAssetsEntity.setDebtors(VALID_VALUE);
-        currentAssetsEntity.setCashAtBankAndInHand(VALID_VALUE);
-        currentAssetsEntity.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL);
+        currentAssetsEntity.setStocks(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setDebtors(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL_VALID);
 
         balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
 
@@ -129,10 +129,10 @@ public class CurrentPeriodTransformerTest {
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, currentPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
         assertEquals(TANGIBLE_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
-        assertEquals(VALID_VALUE, currentPeriod.getBalanceSheet().getCurrentAssets().getStocks());
-        assertEquals(VALID_VALUE, currentPeriod.getBalanceSheet().getCurrentAssets().getDebtors());
-        assertEquals(VALID_VALUE, currentPeriod.getBalanceSheet().getCurrentAssets().getCashAtBankAndInHand());
-        assertEquals(CURRENT_ASSETS_TOTAL, currentPeriod.getBalanceSheet().getCurrentAssets().getTotalCurrentAssets());
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getStocks());
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getTotalCurrentAssets());
         assertEquals("kind", currentPeriod.getKind());
         assertEquals(new HashMap<>(), currentPeriod.getLinks());
     }
