@@ -31,7 +31,7 @@ public class CurrentPeriodTransformerTest {
     private static final Long TANGIBLE_VALID = 10L;
     private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
     private static final Long CURRENT_ASSETS_VALID = 100L;
-    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300l;
+    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300L;
 
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
