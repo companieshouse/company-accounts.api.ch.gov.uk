@@ -16,7 +16,7 @@ import uk.gov.companieshouse.charset.CharSet;
 @Constraint(validatedBy = CharSetValidatorImpl.class)
 public @interface CharSetValid {
 
-    String message() default "INVALID_VALUE";
+  String message() default "{invalid.characters.entered}";
 
     CharSet value() default CharSet.CHARACTER_SET_1;
 

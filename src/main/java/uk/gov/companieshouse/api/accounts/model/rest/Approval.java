@@ -14,7 +14,7 @@ public class Approval extends RestObject {
 
     @NotNull
     @JsonProperty("date")
-    @PastOrPresent(message="PAST_OR_PRESENT_DATE")
+    @PastOrPresent
     private LocalDate date;
 
     @NotNull
