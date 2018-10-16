@@ -1717,6 +1717,7 @@ ul.accounts-comps-ct {
 
               <tr class = "figures">
                 <td id = "total-fixed-assets-heading" class="strong">Total fixed assets:</td>
+
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
                   <td id="fixed-assets-curr-total" class="strong total">
@@ -1731,6 +1732,103 @@ ul.accounts-comps-ct {
                     {{end}}
                   </td>
               </tr>
+              {{end}}
+
+              <!-- BALANCE SHEET - CURRENT ASSETS -->
+
+              {{if $currentAssets := $balanceSheet.current_assets}}
+
+                <tr>
+                  <th class = "strong" id="current-assets-heading">Current assets</th>
+                </tr>
+
+                <!-- BALANCE SHEET - CURRENT ASSETS - STOCKS -->
+
+              {{if $stocks := $currentAssets.stocks}}
+                <tr class="figures">
+                  <td id="stocks-label">Stocks:</td>
+
+                  <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes"></td>
+
+                  <td id="stocks-curr-val" class="strong figure">
+                    {{if isNotEmpty $stocks.current_amount}}
+                      <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.current_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                  <td id="stocks-prev-val" class="figure">
+                    {{if isNotEmpty $stocks.previous_amount}}
+                     <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.previous_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+                </tr>
+              {{end}}
+
+                <!-- BALANCE SHEET - CURRENT ASSETS - DEBTORS -->
+
+              {{if $debtors := $currentAssets.debtors}}
+                <tr class="figures">
+                  <td id="ac52-label">Debtors:</td>
+
+                  <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes"></td>
+
+                  <td id="ac52-curr-val" class="strong figure">
+                    {{if isNotEmpty $debtors.current_amount}}
+                     <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.current_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                  <td id="ac52-prev-val" class="figure">
+                    {{if isNotEmpty $debtors.previous_amount}}
+                     <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.previous_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                </tr>
+              {{end}}
+
+                <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
+              {{if $cashAtBank := $currentAssets.cash_at_bank_and_in_hand}}
+                <tr class="figures">
+                  <td id="ac54-label">Cash at bank and in hand:</td>
+
+                  <td class="figure noteIndex" id="uk-busCashBankOnHandCY_ENDNoteIndexes"></td>
+
+                  <td id="ac54-curr-val" class="strong figure">
+                    {{if isNotEmpty $cashAtBank.current_amount}}
+                     <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.current_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                  <td id="ac54-prev-val" class="figure">
+                    {{if isNotEmpty $cashAtBank.previous_amount}}
+                      <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.previous_amount}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                </tr>
+              {{end}}
+
+                <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
+
+                <tr class="figures">
+                  <td id="ac56-label" class="strong">Total current assets:</td>
+
+                  <td class="figure noteIndex" id="uk-busCurrentAssetsCY_ENDNoteIndexes"></td>
+
+                  <td id="ac56-curr-val" class="strong total">
+                    {{if isNotEmpty $currentAssets.current_total}}
+                     <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{$currentAssets.current_total}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+
+                  <td id="ac56-prev-val" class="total">
+                    {{if isNotEmpty $currentAssets.previous_total}}
+                      <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{$currentAssets.previous_total}}</ix:nonFraction>
+                    {{end}}
+                  </td>
+                </tr>
+
               {{end}}
 
             </tbody>
