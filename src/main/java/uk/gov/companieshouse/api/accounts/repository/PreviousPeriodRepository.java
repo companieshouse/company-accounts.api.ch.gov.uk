@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 
 @Repository
-public interface PreviousPeriodRespository extends MongoRepository<PreviousPeriodEntity, String> {
+public interface PreviousPeriodRepository extends MongoRepository<PreviousPeriodEntity, String> {
 
 }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,7 +23,7 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRespository;
+import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -40,7 +41,7 @@ public class PreviousPeriodServiceTest {
     private Transaction transaction;
 
     @Mock
-    private PreviousPeriodRespository previousPeriodRepository;
+    private PreviousPeriodRepository previousPeriodRepository;
 
     @Mock
     private SmallFullService smallFullService;
@@ -99,6 +100,38 @@ public class PreviousPeriodServiceTest {
         Executable executable = () -> {
             previousPeriodService.create(previousPeriod, transaction, "", "");
         };
+        assertThrows(DataException.class, executable);
+    }
+
+    @Test
+    @DisplayName("Tests the successful find of a previous period resource")
+    public void findPreviousPeriod() throws DataException {
+        when(previousPeriodRepository.findById("")).thenReturn(Optional.ofNullable(previousPeriodEntity));
+        when(previousPeriodTransformer.transform(previousPeriodEntity)).thenReturn(previousPeriod);
+
+        ResponseObject<PreviousPeriod> result = previousPeriodService.findById("", "");
+
+        assertNotNull(result);
+        assertEquals(previousPeriod, result.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the unsuccessful find of a previous period resource")
+    public void findPreviousPeriodNotFound() throws DataException {
+        when(previousPeriodRepository.findById("")).thenReturn(Optional.empty());
+        ResponseObject<PreviousPeriod> result = previousPeriodService.findById("", "");
+
+        assertNotNull(result);
+        assertEquals(ResponseStatus.NOT_FOUND, result.getStatus());
+        assertNull(result.getData());
+    }
+
+    @Test
+    @DisplayName("Tests mongo exception thrown on find of a previous period resource")
+    public void findPreviousPeriodMongoException() throws DataException {
+        when(previousPeriodRepository.findById("")).thenThrow(mongoException);
+        Executable executable = () -> previousPeriodService.findById("", "");
+
         assertThrows(DataException.class, executable);
     }
 }

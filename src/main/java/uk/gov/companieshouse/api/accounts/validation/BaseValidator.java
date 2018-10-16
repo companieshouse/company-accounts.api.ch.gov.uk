@@ -1,10 +1,14 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import org.springframework.beans.factory.annotation.Value;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 
 public class BaseValidator {
+
+    @Value("${incorrect.total}")
+    private String incorrectTotal;
 
     /**
      * Validate the given total is correctly aggregated
@@ -17,7 +21,7 @@ public class BaseValidator {
     protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
         Errors errors) {
         if (expectedTotal == null) {
-            if (total != null && !total.equals(0)) {
+            if (total != null && !total.equals(0L)) {
                 addIncorrectTotalError(errors, location);
             }
         } else if (total == null || !total.equals(expectedTotal)) {
@@ -32,7 +36,7 @@ public class BaseValidator {
      * @param location
      */
     protected void addIncorrectTotalError(Errors errors, String location) {
-        addError(errors, ErrorMessageKeys.INCORRECT_TOTAL, location);
+        addError(errors, incorrectTotal, location);
     }
 
     /**
@@ -42,8 +46,8 @@ public class BaseValidator {
      * @param messageKey
      * @param location
      */
-    protected void addError(Errors errors, ErrorMessageKeys messageKey, String location) {
-        errors.addError(new Error(messageKey.getKey(), location, LocationType.JSON_PATH.getValue(),
+    protected void addError(Errors errors, String messageKey, String location) {
+        errors.addError(new Error(messageKey, location, LocationType.JSON_PATH.getValue(),
             ErrorType.VALIDATION.getType()));
     }
 }
