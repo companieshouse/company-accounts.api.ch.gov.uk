@@ -107,7 +107,7 @@ public class CurrentPeriodService implements
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                "Failed to update " + ResourceName.SMALL_FULL.getName(), me);
+                "Failed to update " + ResourceName.CURRENT_PERIOD.getName(), me);
             LOGGER.errorContext(requestId, dataException, debugMap);
             throw dataException;
         }
