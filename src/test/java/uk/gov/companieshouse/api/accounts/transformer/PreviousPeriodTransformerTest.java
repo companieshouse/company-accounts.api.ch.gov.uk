@@ -16,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.OtherLiabilitiesOrAssetsE
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 
@@ -57,6 +58,11 @@ public class PreviousPeriodTransformerTest {
         previousPeriod.setKind(KIND);
         previousPeriod.setLinks(new HashMap<>());
 
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(TANGIBLE_VALID);
+        fixedAssets.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        balanceSheet.setFixedAssets(fixedAssets);
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets =  new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(OTHER_LIABILITIES_OR_ASSETS_VALID);
         otherLiabilitiesOrAssets.setNetCurrentAssets(OTHER_LIABILITIES_OR_ASSETS_VALID);
@@ -74,6 +80,8 @@ public class PreviousPeriodTransformerTest {
         assertNotNull(previousPeriodEntity);
         assertEquals(ETAG, data.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
+        assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
 
         testEntityAssertsOtherLiabilitiesOrAssetsEntity(data);
         assertEquals(KIND, data.getKind());
