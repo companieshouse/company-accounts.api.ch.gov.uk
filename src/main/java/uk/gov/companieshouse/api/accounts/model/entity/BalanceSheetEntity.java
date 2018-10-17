@@ -12,6 +12,9 @@ public class BalanceSheetEntity {
     @Field("fixed_assets")
     private FixedAssetsEntity fixedAssets;
 
+    @Field("other_liabilities_or_assets")
+    private OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -24,4 +27,12 @@ public class BalanceSheetEntity {
     }
 
     public void setFixedAssets(FixedAssetsEntity fixedAssets) { this.fixedAssets = fixedAssets; }
+
+    public OtherLiabilitiesOrAssetsEntity getOtherLiabilitiesOrAssetsEntity() {
+        return otherLiabilitiesOrAssetsEntity;
+    }
+
+    public void setOtherLiabilitiesOrAssetsEntity(OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity) {
+        this.otherLiabilitiesOrAssetsEntity = otherLiabilitiesOrAssetsEntity;
+    }
 }
