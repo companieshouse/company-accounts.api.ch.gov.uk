@@ -22,8 +22,7 @@ public class CurrentPeriodValidatorTest {
     private static final String CURRENT_PERIOD_PATH = "$.current_period";
     private static final String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
     private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
-
-    private static String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
+    private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
     CurrentPeriodValidator validator = new CurrentPeriodValidator();
 
@@ -40,6 +39,7 @@ public class CurrentPeriodValidatorTest {
         fixedAssets.setTotalFixedAssets(10L);
         balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
+
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
         validator.validateTotalFixedAssets(currentPeriod, errors);
@@ -52,7 +52,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test total current assets validation")
+    @DisplayName("Test incorrect total current assets validation")
     public void validateTotalCurrentAssets(){
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -74,9 +74,8 @@ public class CurrentPeriodValidatorTest {
 
     }
 
-
     @Test
-    @DisplayName("Test total current assets validation with empty values")
+    @DisplayName("Test current assets validation with empty values")
     public void validateTotalCurrentAssetsWithEmptyValues() {
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -109,6 +108,7 @@ public class CurrentPeriodValidatorTest {
         currentAssets.setTotalCurrentAssets(15L);
 
         balanceSheet.setCurrentAssets(currentAssets);
+
         currentPeriod.setBalanceSheet(balanceSheet);
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
@@ -116,5 +116,5 @@ public class CurrentPeriodValidatorTest {
 
         assertFalse(errors.hasErrors());
 
-}
+    }
 }
