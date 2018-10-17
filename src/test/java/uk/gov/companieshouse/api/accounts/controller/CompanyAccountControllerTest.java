@@ -74,7 +74,7 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED,
             companyAccount);
         when(companyAccountServiceMock
-                .create(companyAccount, transactionMock, "test"))
+                .create(companyAccount, transactionMock, httpServletRequestMock))
                 .thenReturn(responseObject);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
@@ -100,7 +100,7 @@ public class CompanyAccountControllerTest {
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
             companyAccount);
         when(companyAccountServiceMock
-                .create(companyAccount, transactionMock, "test"))
+                .create(companyAccount, transactionMock, httpServletRequestMock))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
@@ -121,7 +121,7 @@ public class CompanyAccountControllerTest {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         doThrow(mock(DataException.class)).when(companyAccountServiceMock)
-                .create(companyAccount, transactionMock, "test");
+                .create(companyAccount, transactionMock, httpServletRequestMock);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
         when(apiResponseMapper.map(any(DataException.class)))

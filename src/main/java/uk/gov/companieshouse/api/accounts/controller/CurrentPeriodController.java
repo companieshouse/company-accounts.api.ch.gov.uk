@@ -39,7 +39,6 @@ import uk.gov.companieshouse.logging.util.LogHelper;
 public class CurrentPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
@@ -70,7 +69,7 @@ public class CurrentPeriodController {
 
             LOGGER.error(
                 "Current period validation failure");
-            logValidationFailureError(getRequestId(request), errors);
+            logValidationFailureError(request, errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 
@@ -79,13 +78,11 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
-
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
-                .create(currentPeriod, transaction, companyAccountId, requestId);
+                .create(currentPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getValidationErrorData());
@@ -121,7 +118,7 @@ public class CurrentPeriodController {
         if (errors.hasErrors()) {
             LOGGER.error(
                 "Current period validation failure");
-            logValidationFailureError(getRequestId(request), errors);
+            logValidationFailureError(request, errors);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 
         }
@@ -129,13 +126,11 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
-
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
-                .update(currentPeriod, transaction, companyAccountId, requestId);
+                .update(currentPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), null, responseObject.getValidationErrorData());
 
@@ -157,7 +152,6 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -165,7 +159,7 @@ public class CurrentPeriodController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = currentPeriodService.findById(currentPeriodId, requestId);
+            responseObject = currentPeriodService.findById(currentPeriodId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
@@ -175,14 +169,10 @@ public class CurrentPeriodController {
 
     }
 
-    private void logValidationFailureError(String requestId, Errors errors) {
+    private void logValidationFailureError(HttpServletRequest request, Errors errors) {
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("message", "Validation failure");
         logMap.put("Errors: ", errors);
-        LOGGER.traceContext(requestId, "", logMap);
-    }
-
-    private String getRequestId(HttpServletRequest request) {
-        return request.getHeader(REQUEST_ID);
+        LOGGER.traceRequest(request, "", logMap);
     }
 }

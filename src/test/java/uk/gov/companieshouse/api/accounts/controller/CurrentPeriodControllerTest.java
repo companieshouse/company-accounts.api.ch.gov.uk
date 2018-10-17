@@ -75,7 +75,7 @@ public class CurrentPeriodControllerTest {
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             currentPeriod);
 
-        doReturn(responseObject).when(currentPeriodService).create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
+        doReturn(responseObject).when(currentPeriodService).create(any(CurrentPeriod.class), any(Transaction.class), anyString(), any(HttpServletRequest.class));
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),responseObject.getData(), responseObject.getValidationErrorData())).thenReturn(responseEntity);
 
@@ -96,7 +96,7 @@ public class CurrentPeriodControllerTest {
         doReturn("find").when(currentPeriodService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-            currentPeriod)).when(currentPeriodService).findById("find", "test");
+            currentPeriod)).when(currentPeriodService).findById("find", request);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
             request)).thenReturn(responseEntity);
 
@@ -122,7 +122,7 @@ public class CurrentPeriodControllerTest {
             null, responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
         doReturn(responseObject).when(currentPeriodService)
-            .update(currentPeriod, null, "12345", null);
+            .update(currentPeriod, null, "12345", request);
 
         ResponseEntity response = currentPeriodController
             .update(currentPeriod, bindingResult, "12345", request);

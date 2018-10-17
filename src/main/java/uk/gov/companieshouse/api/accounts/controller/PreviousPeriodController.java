@@ -35,7 +35,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class PreviousPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private PreviousPeriodService previousPeriodService;
@@ -65,7 +64,7 @@ public class PreviousPeriodController {
 
             LOGGER.error(
                     "Current period validation failure");
-            logValidationFailureError(getRequestId(request), errors);
+            logValidationFailureError(request, errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 
@@ -75,7 +74,7 @@ public class PreviousPeriodController {
         ResponseEntity responseEntity;
 
         try {
-            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, REQUEST_ID);
+            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
           
         } catch (DataException ex) {
@@ -95,7 +94,6 @@ public class PreviousPeriodController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = getRequestId(request);
         String previousPeriodId = previousPeriodService.generateID(companyAccountId);
         ResponseObject<PreviousPeriod> responseObject;
 
@@ -103,7 +101,7 @@ public class PreviousPeriodController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = previousPeriodService.findById(previousPeriodId, requestId);
+            responseObject = previousPeriodService.findById(previousPeriodId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
@@ -116,14 +114,10 @@ public class PreviousPeriodController {
         return (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
     }
 
-    private String getRequestId(HttpServletRequest request) {
-        return request.getHeader(REQUEST_ID);
-    }
-
-    void logValidationFailureError(String requestId, Errors errors) {
+    void logValidationFailureError(HttpServletRequest request, Errors errors) {
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("message", "Validation failure");
         logMap.put("Errors: ", errors);
-        LOGGER.traceContext(requestId, "", logMap);
+        LOGGER.traceRequest(request, "", logMap);
     }
 }

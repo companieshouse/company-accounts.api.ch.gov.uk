@@ -68,7 +68,7 @@ public class ApprovalControllerTest {
         ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
             approval);
         doReturn(successCreateResponse).when(approvalService)
-            .create(any(Approval.class), any(Transaction.class), anyString(), anyString());
+            .create(any(Approval.class), any(Transaction.class), anyString(), any(HttpServletRequest.class));
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(successCreateResponse.getData());
         when(apiResponseMapper.map(successCreateResponse.getStatus(),
@@ -105,7 +105,7 @@ public class ApprovalControllerTest {
     public void canRetrieveApproval() throws NoSuchAlgorithmException, DataException {
         ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
             approval);
-        doReturn(successFindResponse).when(approvalService).findById("find", "test");
+        doReturn(successFindResponse).when(approvalService).findById("find", request);
         doReturn("find").when(approvalService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(approval);
         when(apiResponseMapper.mapGetResponse(approval,

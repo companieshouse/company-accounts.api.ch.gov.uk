@@ -97,7 +97,7 @@ public class PreviousPeriodControllerTest {
     void canCreatePreviousPeriod() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
-        doReturn(responseObject).when(previousPeriodService).create(any(PreviousPeriod.class), any(Transaction.class), anyString(), anyString());
+        doReturn(responseObject).when(previousPeriodService).create(any(PreviousPeriod.class), any(Transaction.class), anyString(), any(HttpServletRequest.class));
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(),responseObject.getData(), responseObject.getValidationErrorData())).thenReturn(responseEntity);
 
@@ -153,11 +153,10 @@ public class PreviousPeriodControllerTest {
     public void canRetrievePreviousPeriod() throws DataException {
         doReturn("find").when(previousPeriodService).generateID("123456");
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
-        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
 
-        when(previousPeriodService.findById(anyString(), anyString())).thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
+        when(previousPeriodService.findById(anyString(), any(HttpServletRequest.class))).thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
         when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
 
         ResponseEntity response = previousPeriodController.get("123456", request);
@@ -172,10 +171,9 @@ public class PreviousPeriodControllerTest {
     public void canRetrievePreviousPeriodFailed() throws DataException {
         doReturn("find").when(previousPeriodService).generateID("123456");
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
-        when(request.getHeader("X-Request-Id")).thenReturn("REQUEST_ID");
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        when(previousPeriodService.findById(anyString(), anyString())).thenThrow(new DataException("error"));
+        when(previousPeriodService.findById(anyString(), any(HttpServletRequest.class))).thenThrow(new DataException("error"));
         when(apiResponseMapper.map(any(DataException.class))).thenReturn(responseEntity);
 
         ResponseEntity response = previousPeriodController.get("123456", request);

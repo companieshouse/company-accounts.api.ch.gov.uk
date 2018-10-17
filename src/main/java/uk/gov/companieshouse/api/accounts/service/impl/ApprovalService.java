@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
+import uk.gov.companieshouse.api.accounts.validation.Errors;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -54,7 +57,8 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Override
     public ResponseObject<Approval> create(Approval rest, Transaction transaction,
-        String companyAccountId, String requestId) throws DataException {
+        String companyAccountId, HttpServletRequest request) throws DataException {
+
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
@@ -72,30 +76,30 @@ public class ApprovalService implements ResourceService<Approval> {
         try {
             approvalRepository.insert(approvalEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
+            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.APPROVAL, selfLink, requestId);
+            .addLink(companyAccountId, SmallFullLinkType.APPROVAL, selfLink, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
     public ResponseObject<Approval> update(Approval rest, Transaction transaction,
-        String companyAccountId, String requestId) throws DataException {
+        String companyAccountId, HttpServletRequest request) throws DataException {
         //TODO implement method
         return null;
     }
 
     @Override
-    public ResponseObject<Approval> findById(String id, String requestId) throws DataException {
+    public ResponseObject<Approval> findById(String id, HttpServletRequest request) throws DataException {
         ApprovalEntity approvalEntity;
         try {
             approvalEntity = approvalRepository.findById(id).orElse(null);
@@ -103,7 +107,7 @@ public class ApprovalService implements ResourceService<Approval> {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
             DataException dataException = new DataException("Failed to find Approval", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 

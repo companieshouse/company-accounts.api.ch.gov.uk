@@ -52,7 +52,7 @@ public class SmallFullController {
         ResponseEntity responseEntity;
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
-                .create(smallFull, transaction, companyAccountId, requestId);
+                .create(smallFull, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getValidationErrorData());
