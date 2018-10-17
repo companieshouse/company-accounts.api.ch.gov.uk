@@ -45,15 +45,15 @@ public class CurrentPeriodValidatorTest {
         validator.validateTotalFixedAssets(currentPeriod, errors);
 
         assertTrue(errors.containsError(
-            new Error("incorrect_total", TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+                new Error("incorrect_total", TOTAL_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
 
     }
 
     @Test
     @DisplayName("Test incorrect total current assets validation")
-    public void validateTotalCurrentAssets(){
+    public void validateTotalCurrentAssets() {
 
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setStocks(5L);

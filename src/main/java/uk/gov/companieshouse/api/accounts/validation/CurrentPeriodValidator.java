@@ -50,12 +50,11 @@ public class CurrentPeriodValidator extends BaseValidator {
         calculatedTotal += debtors == null ? 0L : debtors;
         calculatedTotal += cashAtBandAndInHand == null ? 0L : cashAtBandAndInHand;
 
-        validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH, errors );
+        validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH, errors);
 
     }
 
-    public void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod,
-        Errors errors) {
+    public void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod, Errors errors) {
         FixedAssets fixedAssets = currentPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
