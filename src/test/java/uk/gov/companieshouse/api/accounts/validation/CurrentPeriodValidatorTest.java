@@ -2,6 +2,8 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
@@ -32,13 +34,13 @@ public class CurrentPeriodValidatorTest {
         fixedAssets.setTotalFixedAssets(10L);
         balanceSheet.setFixedAssets(fixedAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
-
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
 
        Errors errors =  validator.validateCurrentPeriod(currentPeriod);
 
         assertTrue(errors.containsError(
-            new Error(ErrorMessageKeys.INCORRECT_TOTAL.getKey(), TOTAL_PATH,
+            new Error("incorrect_total", TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
