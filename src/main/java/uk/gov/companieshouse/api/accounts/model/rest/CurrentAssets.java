@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
-
 import javax.validation.constraints.NotNull;
 
 public class CurrentAssets {
