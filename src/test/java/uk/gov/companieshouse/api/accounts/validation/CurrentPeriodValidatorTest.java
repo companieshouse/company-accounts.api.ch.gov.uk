@@ -34,10 +34,7 @@ public class CurrentPeriodValidatorTest {
     @DisplayName("Test total fixed assets validation")
     public void validateTotalFixedAssets() {
 
-        FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(5L);
-        fixedAssets.setTotalFixedAssets(10L);
-        balanceSheet.setFixedAssets(fixedAssets);
+        addInvalidFixedAssetsToBalanceSheet();
         currentPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
@@ -55,13 +52,7 @@ public class CurrentPeriodValidatorTest {
     @DisplayName("Test incorrect total current assets validation")
     public void validateTotalCurrentAssets() {
 
-        CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setStocks(5L);
-        currentAssets.setDebtors(5L);
-        currentAssets.setCashAtBankAndInHand(5L);
-        currentAssets.setTotalCurrentAssets(10L);
-
-        balanceSheet.setCurrentAssets(currentAssets);
+        addInvalidCurrentAssetsToBalanceSheet();
         currentPeriod.setBalanceSheet(balanceSheet);
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
@@ -116,5 +107,40 @@ public class CurrentPeriodValidatorTest {
 
         assertFalse(errors.hasErrors());
 
+    }
+
+    @Test
+    @DisplayName("Test validate whole current period")
+    public void validateCurrentPeriod(){
+
+        addInvalidFixedAssetsToBalanceSheet();
+        addInvalidCurrentAssetsToBalanceSheet();
+
+        currentPeriod.setBalanceSheet(balanceSheet);
+
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+
+        errors = validator.validateCurrentPeriod(currentPeriod);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
+    }
+
+    private void addInvalidFixedAssetsToBalanceSheet() {
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(5L);
+        fixedAssets.setTotalFixedAssets(10L);
+
+        balanceSheet.setFixedAssets(fixedAssets);
+    }
+
+    private void addInvalidCurrentAssetsToBalanceSheet() {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(5L);
+        currentAssets.setDebtors(5L);
+        currentAssets.setCashAtBankAndInHand(5L);
+        currentAssets.setTotalCurrentAssets(10L);
+
+        balanceSheet.setCurrentAssets(currentAssets);
     }
 }
