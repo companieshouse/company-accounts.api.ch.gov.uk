@@ -19,7 +19,7 @@ public class CurrentPeriodValidator extends BaseValidator {
     private static String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
     private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static String FIXED_ASSETS_TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
-    private static String CURRENT_ASSETS_TOTAL_PATH = "$.current_period.balance_sheet.current_assets.total";
+    private static String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod) {
 

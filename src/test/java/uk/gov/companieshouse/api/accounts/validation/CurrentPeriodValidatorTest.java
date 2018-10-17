@@ -23,7 +23,7 @@ public class CurrentPeriodValidatorTest {
     private static final String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
     private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
 
-    private static String CURRENT_ASSETS_TOTAL_PATH = "$.current_period.balance_sheet.current_assets.total";
+    private static String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
     CurrentPeriodValidator validator = new CurrentPeriodValidator();
 
