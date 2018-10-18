@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -97,20 +98,18 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a previous period")
-    void createSmallfullMongoExceptionFailure() throws DataException {
+    void createSmallfullMongoExceptionFailure() {
         doReturn(previousPeriodEntity).when(previousPeriodTransformer).transform(ArgumentMatchers
             .any(PreviousPeriod.class));
         when(previousPeriodRepository.insert(previousPeriodEntity)).thenThrow(mongoException);
-        Executable executable = () -> {
-            previousPeriodService.create(previousPeriod, transaction, "", request);
-        };
-        assertThrows(DataException.class, executable);
+
+        assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, "", request));
     }
 
     @Test
     @DisplayName("Tests the successful find of a previous period resource")
     public void findPreviousPeriod() throws DataException {
-        when(previousPeriodRepository.findById("")).thenReturn(Optional.ofNullable(previousPeriodEntity));
+        when(previousPeriodRepository.findById("")).thenReturn(Optional.of(previousPeriodEntity));
         when(previousPeriodTransformer.transform(previousPeriodEntity)).thenReturn(previousPeriod);
 
         ResponseObject<PreviousPeriod> result = previousPeriodService.findById("", request);
@@ -132,10 +131,28 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a previous period resource")
-    public void findPreviousPeriodMongoException() throws DataException {
+    public void findPreviousPeriodMongoException() {
         when(previousPeriodRepository.findById("")).thenThrow(mongoException);
         Executable executable = () -> previousPeriodService.findById("", request);
 
         assertThrows(DataException.class, executable);
+    }
+
+    @Test
+    @DisplayName("PUT - Success - Previous Period")
+    public void canUpdatePreviousPeriod() throws DataException {
+        when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
+        ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, "", request);
+        assertNotNull(result);
+        assertEquals(previousPeriod, result.getData());
+    }
+
+    @Test
+    @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
+    public void canUpdatePreviousPeriodFailureMongoException() {
+        when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
+        when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
+
+        assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, "", request));
     }
 }

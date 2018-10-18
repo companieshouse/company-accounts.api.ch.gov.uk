@@ -112,8 +112,26 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
-        //TODO implement method
-        return null;
+
+        populateMetadata(rest, transaction, companyAccountId);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(rest);
+        String id = generateID(companyAccountId);
+        previousPeriodEntity.setId(id);
+
+        try {
+            previousPeriodRepository.save(previousPeriodEntity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException("Failed to update " + ResourceName.PREVIOUS_PERIOD.getName(), me);
+
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            debugMap.put("company_accounts_id", companyAccountId);
+            debugMap.put("id", id);
+            LOGGER.errorRequest(request, dataException, debugMap);
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
@@ -122,8 +140,17 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-
         return buildSelfLink(transaction, companyAccountId);
+    }
+
+    private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
+            String companyAccountId) {
+        Map<String, String> map = new HashMap<>();
+        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
+
+        previousPeriod.setLinks(map);
+        previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
+        previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
     }
 
     private String buildSelfLink(Transaction transaction, String companyAccountId) {
