@@ -47,12 +47,11 @@ public class SmallFullController {
         @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
-        String requestId = request.getHeader("X-Request-Id");
 
         ResponseEntity responseEntity;
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
-                .create(smallFull, transaction, companyAccountId, requestId);
+                .create(smallFull, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getValidationErrorData());
