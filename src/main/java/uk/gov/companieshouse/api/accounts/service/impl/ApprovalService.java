@@ -67,6 +67,7 @@ public class ApprovalService implements ResourceService<Approval> {
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("company_accounts_id", companyAccountId);
         Errors errors = approvalValidator.validateApproval(rest, request);
+
         if (errors.hasErrors()) {
             DataException dataException = new DataException(
                 "Failed to validate " + ResourceName.APPROVAL.getName());
@@ -80,10 +81,6 @@ public class ApprovalService implements ResourceService<Approval> {
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.APPROVAL.getValue());
         ApprovalEntity approvalEntity = approvalTransformer.transform(rest);
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
 
         String id = generateID(companyAccountId);
         approvalEntity.setId(id);
