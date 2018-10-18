@@ -118,10 +118,9 @@ public class CurrentPeriodController {
 
         Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
         if (errors.hasErrors()) {
-            LOGGER.error("Current period validation failure");
+            LOGGER.info("Current period validation failure");
             logValidationFailureError(getRequestId(request), errors);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());

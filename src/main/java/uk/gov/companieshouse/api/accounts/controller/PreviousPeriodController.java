@@ -131,7 +131,7 @@ public class PreviousPeriodController {
 
         Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
         if (errors.hasErrors()) {
-            LOGGER.error( "Previous period validation failure");
+            LOGGER.info( "Previous period validation failure");
             logValidationFailureError(getRequestId(request), errors);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
