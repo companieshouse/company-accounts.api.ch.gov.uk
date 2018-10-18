@@ -79,7 +79,7 @@ public class CompanyAccountControllerTest {
                 .body(responseObject.getData());
         when(apiResponseMapper.map(
                 responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData()))
+                responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
@@ -103,7 +103,7 @@ public class CompanyAccountControllerTest {
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         when(apiResponseMapper.map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getValidationErrorData()))
+                responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
