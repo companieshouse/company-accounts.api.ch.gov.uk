@@ -37,14 +37,14 @@ public class PreviousPeriodValidator extends BaseValidator {
 
         Long stocks = currentAssets.getStocks();
         Long debtors = currentAssets.getDebtors();
-        Long cashAtBandAndInHand = currentAssets.getCashAtBankAndInHand();
+        Long cashAtBankAndInHand = currentAssets.getCashAtBankAndInHand();
         Long currentAssetsTotal = currentAssets.getTotalCurrentAssets();
 
         Long calculatedTotal = 0L;
 
         calculatedTotal += stocks == null ? 0L : stocks;
         calculatedTotal += debtors == null ? 0L : debtors;
-        calculatedTotal += cashAtBandAndInHand == null ? 0L : cashAtBandAndInHand;
+        calculatedTotal += cashAtBankAndInHand == null ? 0L : cashAtBankAndInHand;
 
         validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH, errors);
 
