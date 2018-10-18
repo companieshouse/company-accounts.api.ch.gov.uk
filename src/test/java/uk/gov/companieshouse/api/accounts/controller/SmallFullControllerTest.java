@@ -76,7 +76,7 @@ public class SmallFullControllerTest {
         doReturn(responseObject).when(smallFullService)
             .create(smallFull, transaction, "123456", request);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
-            responseObject.getData(), responseObject.getValidationErrorData());
+            responseObject.getData(), responseObject.getErrors());
         ResponseEntity response = smallFullController.create(smallFull, "123456", request);
 
         assertNotNull(response);

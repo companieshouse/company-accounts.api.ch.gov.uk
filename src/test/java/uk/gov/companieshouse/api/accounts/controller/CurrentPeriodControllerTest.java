@@ -80,7 +80,7 @@ public class CurrentPeriodControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
         when(apiResponseMapper
-            .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData()))
+            .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
             .thenReturn(responseEntity);
 
         when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
@@ -123,7 +123,7 @@ public class CurrentPeriodControllerTest {
             currentPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),
-            null, responseObject.getValidationErrorData()))
+            null, responseObject.getErrors()))
             .thenReturn(responseEntity);
         doReturn(responseObject).when(currentPeriodService)
             .update(currentPeriod, null, "12345", request);
