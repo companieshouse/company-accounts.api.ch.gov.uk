@@ -10,6 +10,9 @@ public class BaseValidator {
     @Value("${incorrect.total}")
     private String incorrectTotal;
 
+    @Value("${date.invalid}")
+    protected String dateInvalid;
+
     /**
      * Validate the given total is correctly aggregated
      *
