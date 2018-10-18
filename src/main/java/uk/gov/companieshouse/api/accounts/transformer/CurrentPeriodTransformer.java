@@ -6,9 +6,11 @@ import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.OtherLiabilitiesOrAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 
 @Component
 public class CurrentPeriodTransformer implements
@@ -29,6 +31,14 @@ public class CurrentPeriodTransformer implements
                 BeanUtils
                     .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+            }
+
+            // OtherLiabilitiesOrAssetsEntity
+            if (entity.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity = new OtherLiabilitiesOrAssetsEntity();
+                BeanUtils
+                        .copyProperties(entity.getBalanceSheet().getOtherLiabilitiesOrAssets(), otherLiabilitiesOrAssetsEntity);
+                balanceSheetEntity.setOtherLiabilitiesOrAssetsEntity(otherLiabilitiesOrAssetsEntity);
             }
         }
 
@@ -53,6 +63,14 @@ public class CurrentPeriodTransformer implements
                 BeanUtils.copyProperties(
                     currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
                 balanceSheet.setFixedAssets(fixedAssets);
+            }
+
+            // OtherLiabilitiesOrAssetsEntity
+            if (currentPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity() != null) {
+                OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+                BeanUtils.copyProperties(
+                        currentPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity(), otherLiabilitiesOrAssets);
+                balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
             }
         }
 

@@ -4,10 +4,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.OtherLiabilitiesOrAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 
 @Component
@@ -29,6 +31,14 @@ public class PreviousPeriodTransformer implements
                 BeanUtils
                     .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+            }
+
+            // OtherLiabilitiesOrAssetsEntity
+            if (entity.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity = new OtherLiabilitiesOrAssetsEntity();
+                BeanUtils
+                        .copyProperties(entity.getBalanceSheet().getOtherLiabilitiesOrAssets(), otherLiabilitiesOrAssetsEntity);
+                balanceSheetEntity.setOtherLiabilitiesOrAssetsEntity(otherLiabilitiesOrAssetsEntity);
             }
         }
 
@@ -53,6 +63,14 @@ public class PreviousPeriodTransformer implements
                 BeanUtils.copyProperties(
                         previousPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
                 balanceSheet.setFixedAssets(fixedAssets);
+            }
+
+            // OtherLiabilitiesOrAssetsEntity
+            if (previousPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity() != null) {
+                OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+                BeanUtils.copyProperties(
+                        previousPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity(), otherLiabilitiesOrAssets);
+                balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
             }
         }
 
