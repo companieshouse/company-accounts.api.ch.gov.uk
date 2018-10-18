@@ -6,6 +6,5 @@ public enum ResponseStatus {
     NOT_FOUND,
     FOUND,
     UPDATED,
-    CREATED,
-    VALIDATION_ERROR
+    CREATED
 }

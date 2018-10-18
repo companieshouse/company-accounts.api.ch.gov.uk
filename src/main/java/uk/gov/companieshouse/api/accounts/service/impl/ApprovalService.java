@@ -17,7 +17,6 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -25,7 +24,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -39,8 +37,6 @@ public class ApprovalService implements ResourceService<Approval> {
 
     private ApprovalTransformer approvalTransformer;
 
-    private ApprovalValidator approvalValidator;
-
     private SmallFullService smallFullService;
 
     private KeyIdGenerator keyIdGenerator;
@@ -49,12 +45,10 @@ public class ApprovalService implements ResourceService<Approval> {
     public ApprovalService(
         ApprovalRepository approvalRepository,
         ApprovalTransformer approvalTransformer,
-        ApprovalValidator approvalValidator,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
         this.approvalRepository = approvalRepository;
         this.approvalTransformer = approvalTransformer;
-        this.approvalValidator = approvalValidator;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
     }
@@ -62,25 +56,15 @@ public class ApprovalService implements ResourceService<Approval> {
     @Override
     public ResponseObject<Approval> create(Approval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
-
-        Errors errors = approvalValidator.validateApproval(rest, request);
-
-        if (errors.hasErrors()) {
-            DataException dataException = new DataException(
-                "Failed to validate " + ResourceName.APPROVAL.getName());
-            LOGGER.errorRequest(request, dataException, debugMap);
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, rest, errors);
-        }
-
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.APPROVAL.getValue());
         ApprovalEntity approvalEntity = approvalTransformer.transform(rest);
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
 
         String id = generateID(companyAccountId);
         approvalEntity.setId(id);
@@ -112,8 +96,7 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
-    public ResponseObject<Approval> findById(String id, HttpServletRequest request)
-        throws DataException {
+    public ResponseObject<Approval> findById(String id, HttpServletRequest request) throws DataException {
         ApprovalEntity approvalEntity;
         try {
             approvalEntity = approvalRepository.findById(id).orElse(null);

@@ -4,23 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
-import uk.gov.companieshouse.charset.CharSet;
 
 @JsonInclude(Include.NON_NULL)
 public class Approval extends RestObject {
 
     @NotNull
     @JsonProperty("date")
-    @PastOrPresent
     private LocalDate date;
 
-    @NotBlank
     @JsonProperty("name")
-    @CharSetValid(CharSet.CHARACTER_SET_2)
     private String name;
 
     public LocalDate getDate() {

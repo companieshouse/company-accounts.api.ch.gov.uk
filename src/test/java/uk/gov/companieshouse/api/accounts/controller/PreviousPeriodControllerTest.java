@@ -103,7 +103,7 @@ public class PreviousPeriodControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
         when(apiResponseMapper
-            .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+            .map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData()))
             .thenReturn(responseEntity);
 
         when(previousPeriodValidator.validatePreviousPeriod(any())).thenReturn(errors);

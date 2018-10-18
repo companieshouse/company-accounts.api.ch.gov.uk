@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.LogContext;
@@ -25,8 +25,7 @@ public class ApiResponseMapper {
      * Builds a Response Entity based on the supplied status, entity and error data.
      */
     public ResponseEntity map(ResponseStatus status, RestObject restObject,
-        Errors errors) {
-
+        ValidationErrorData validationErrorData) {
         switch (status) {
             case CREATED:
                 return ResponseEntity.status(HttpStatus.CREATED).body(restObject);
@@ -34,8 +33,6 @@ public class ApiResponseMapper {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             case DUPLICATE_KEY_ERROR:
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            case VALIDATION_ERROR:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

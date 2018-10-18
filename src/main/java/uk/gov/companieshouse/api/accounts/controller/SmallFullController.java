@@ -54,7 +54,7 @@ public class SmallFullController {
                 .create(smallFull, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getErrors());
+                    responseObject.getValidationErrorData());
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());

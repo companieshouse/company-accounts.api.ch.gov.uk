@@ -79,7 +79,7 @@ public class PreviousPeriodController {
                 .create(previousPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getErrors());
+                    responseObject.getValidationErrorData());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();

@@ -72,7 +72,7 @@ public class ApprovalControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(successCreateResponse.getData());
         when(apiResponseMapper.map(successCreateResponse.getStatus(),
-            successCreateResponse.getData(), successCreateResponse.getErrors()))
+            successCreateResponse.getData(), successCreateResponse.getValidationErrorData()))
             .thenReturn(responseEntity);
 
         ResponseEntity response = approvalController
