@@ -84,8 +84,7 @@ public class PreviousPeriodValidatorTest {
         previousPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
-
-
+        
         Errors errors =  validator.validatePreviousPeriod(previousPeriod);
 
         assertTrue(errors.containsError(
