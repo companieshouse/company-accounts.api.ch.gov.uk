@@ -11,8 +11,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
 
-    private static String  PREVIOUS_PERIOD_PATH = "$.previous_period";
-    private static String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
+    private static final String BALANCE_SHEET_PATH = "$.previous_period.balance_sheet";
     private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static String TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
     private static final String OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH = BALANCE_SHEET_PATH + ".net_current_assets";
