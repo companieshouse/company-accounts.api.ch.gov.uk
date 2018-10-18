@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.LogContext;
@@ -25,7 +25,7 @@ public class ApiResponseMapper {
      * Builds a Response Entity based on the supplied status, entity and error data.
      */
     public ResponseEntity map(ResponseStatus status, RestObject restObject,
-        ValidationErrorData validationErrorData) {
+        Errors errors) {
         switch (status) {
             case CREATED:
                 return ResponseEntity.status(HttpStatus.CREATED).body(restObject);

@@ -24,8 +24,8 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -71,17 +71,22 @@ public class CurrentPeriodControllerTest {
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        when(request.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
             currentPeriod);
 
-        doReturn(responseObject).when(currentPeriodService).create(any(CurrentPeriod.class), any(Transaction.class), anyString(), anyString());
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
-        when(apiResponseMapper.map(responseObject.getStatus(),responseObject.getData(), responseObject.getValidationErrorData())).thenReturn(responseEntity);
+        doReturn(responseObject).when(currentPeriodService)
+            .create(any(CurrentPeriod.class), any(Transaction.class), anyString(),
+                any(HttpServletRequest.class));
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+            .body(responseObject.getData());
+        when(apiResponseMapper
+            .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+            .thenReturn(responseEntity);
 
         when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
 
-        ResponseEntity response = currentPeriodController.create(currentPeriod, bindingResult, "", request);
+        ResponseEntity response = currentPeriodController
+            .create(currentPeriod, bindingResult, "", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -92,11 +97,10 @@ public class CurrentPeriodControllerTest {
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        when(request.getHeader("X-Request-Id")).thenReturn("test");
         doReturn("find").when(currentPeriodService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-            currentPeriod)).when(currentPeriodService).findById("find", "test");
+            currentPeriod)).when(currentPeriodService).findById("find", request);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
             request)).thenReturn(responseEntity);
 
@@ -119,10 +123,10 @@ public class CurrentPeriodControllerTest {
             currentPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),
-            null, responseObject.getValidationErrorData()))
+            null, responseObject.getErrors()))
             .thenReturn(responseEntity);
         doReturn(responseObject).when(currentPeriodService)
-            .update(currentPeriod, null, "12345", null);
+            .update(currentPeriod, null, "12345", request);
 
         when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
 

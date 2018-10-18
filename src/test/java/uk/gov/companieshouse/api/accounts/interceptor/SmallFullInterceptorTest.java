@@ -92,7 +92,7 @@ public class SmallFullInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
-        when(smallFullService.findById(anyString(), anyString())).thenReturn(responseObject);
+        when(smallFullService.findById(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);
         when(companyAccount.getLinks()).thenReturn(companyAccountLinks);
@@ -102,14 +102,14 @@ public class SmallFullInterceptorTest {
 
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
-        verify(smallFullService, times(1)).findById(anyString(), anyString());
+        verify(smallFullService, times(1)).findById(anyString(), any(HttpServletRequest.class));
         verify(httpServletRequest, times(1)).setAttribute(anyString(), any(SmallFull.class));
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
     public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
-        doThrow(mock(DataException.class)).when(smallFullService).findById(anyString(), anyString());
+        doThrow(mock(DataException.class)).when(smallFullService).findById(anyString(), any(HttpServletRequest.class));
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
     }

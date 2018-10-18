@@ -2,17 +2,12 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -70,18 +64,19 @@ public class SmallFullControllerTest {
     @DisplayName("Tests the successful creation of a smallFull resource")
     public void canCreateSmallFull() throws NoSuchAlgorithmException, DataException {
         ResponseObject<SmallFull> responseObject = new ResponseObject(
-                ResponseStatus.CREATED,
-                smallFull);
+            ResponseStatus.CREATED,
+            smallFull);
 
         doReturn(transaction).when(request)
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseObject.getData());
+            .body(responseObject.getData());
 
-        doReturn(responseObject).when(smallFullService).create(smallFull, transaction, "123456",null);
+        doReturn(responseObject).when(smallFullService)
+            .create(smallFull, transaction, "123456", request);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getValidationErrorData());
+            responseObject.getData(), responseObject.getErrors());
         ResponseEntity response = smallFullController.create(smallFull, "123456", request);
 
         assertNotNull(response);
@@ -93,7 +88,7 @@ public class SmallFullControllerTest {
     @DisplayName("Tests the successful get of a smallFull resource")
     public void canGetSmallFull() throws NoSuchAlgorithmException {
         doReturn(smallFull).when(request)
-                .getAttribute(AttributeName.SMALLFULL.getValue());
+            .getAttribute(AttributeName.SMALLFULL.getValue());
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(smallFull);
         when(apiResponseMapper.mapGetResponse(smallFull, request)).thenReturn(responseEntity);
         ResponseEntity response = smallFullController.get(request);
@@ -107,11 +102,10 @@ public class SmallFullControllerTest {
     @DisplayName("Tests the unsuccessful get of a smallFull resource")
     public void getSmallFullFail() throws NoSuchAlgorithmException {
         doReturn(null).when(request)
-                .getAttribute(AttributeName.SMALLFULL.getValue());
+            .getAttribute(AttributeName.SMALLFULL.getValue());
         when(apiResponseMapper.mapGetResponse(null, request)).thenReturn(ResponseEntity.status(
-                HttpServletResponse.SC_NOT_FOUND).build());
+            HttpServletResponse.SC_NOT_FOUND).build());
         ResponseEntity response = smallFullController.get(request);
-
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,6 +36,9 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodServiceTest {
 
+
+    @Mock
+    private HttpServletRequest request;
 
     @Mock
     private CurrentPeriod currentPeriod;
@@ -78,7 +82,7 @@ public class CurrentPeriodServiceTest {
         setUpCreate();
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
         ResponseObject<CurrentPeriod> result = currentPeriodService
-            .create(currentPeriod, transaction, "", "");
+            .create(currentPeriod, transaction, "", request);
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }
@@ -90,7 +94,7 @@ public class CurrentPeriodServiceTest {
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(duplicateKeyException);
-        ResponseObject response = currentPeriodService.create(currentPeriod, transaction, "", "");
+        ResponseObject response = currentPeriodService.create(currentPeriod, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -104,7 +108,7 @@ public class CurrentPeriodServiceTest {
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);
         Executable executable = () -> {
-            currentPeriodService.create(currentPeriod, transaction, "", "");
+            currentPeriodService.create(currentPeriod, transaction, "", request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -116,7 +120,7 @@ public class CurrentPeriodServiceTest {
             .thenReturn(Optional.ofNullable(currentPeriodEntity));
         when(currentPeriodTransformer.transform(currentPeriodEntity)).thenReturn(currentPeriod);
         ResponseObject<CurrentPeriod> result = currentPeriodService
-            .findById("", "");
+            .findById("", request);
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }
@@ -126,7 +130,7 @@ public class CurrentPeriodServiceTest {
     public void findCurrentPeriodMongoException() throws DataException {
         when(currentPeriodRepository.findById("")).thenThrow(mongoException);
         Executable executable = () -> {
-            currentPeriodService.findById("", "");
+            currentPeriodService.findById("", request);
         };
         assertThrows(DataException.class, executable);
     }

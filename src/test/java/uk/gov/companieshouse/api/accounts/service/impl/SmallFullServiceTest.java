@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,6 +36,9 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class SmallFullServiceTest {
+
+    @Mock
+    private HttpServletRequest request;
 
     @Mock
     private SmallFull smallFull;
@@ -77,7 +81,7 @@ public class SmallFullServiceTest {
     public void createAccountSuccess() throws DataException {
         setUpCreate();
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
-        ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", "");
+        ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", request);
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
     }
@@ -89,7 +93,7 @@ public class SmallFullServiceTest {
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
-        ResponseObject response = smallFullService.create(smallFull, transaction, "", "");
+        ResponseObject response = smallFullService.create(smallFull, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -103,7 +107,7 @@ public class SmallFullServiceTest {
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
         Executable executable = () -> {
-            smallFullService.create(smallFull, transaction, "", "");
+            smallFullService.create(smallFull, transaction, "", request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -114,7 +118,7 @@ public class SmallFullServiceTest {
         when(smallFullRepository.findById("")).thenReturn(Optional.ofNullable(smallFullEntity));
         when(smallFullTransformer.transform(smallFullEntity)).thenReturn(smallFull);
         ResponseObject<SmallFull> result = smallFullService
-            .findById("", "");
+            .findById("", request);
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
     }
@@ -124,7 +128,7 @@ public class SmallFullServiceTest {
     public void findSmallfullMongoException() throws DataException {
         when(smallFullRepository.findById("")).thenThrow(mongoException);
         Executable executable = () -> {
-            smallFullService.findById("", "");
+            smallFullService.findById("", request);
         };
         assertThrows(DataException.class, executable);
     }
