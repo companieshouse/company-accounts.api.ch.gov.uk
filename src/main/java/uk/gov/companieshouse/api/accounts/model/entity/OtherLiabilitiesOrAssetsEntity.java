@@ -16,8 +16,17 @@ public class OtherLiabilitiesOrAssetsEntity {
     @Field("total_assets_less_current_liabilities")
     private Long totalAssetsLessCurrentLiabilities;
 
+    @Field("creditors_due_after_one_year")
+    private Long creditorsDueAfterOneYear;
+
     @Field("provision_for_liabilities")
     private Long provisionForLiabilities;
+
+    @Field("accruals_and_deferred_income")
+    private Long accrualsAndDeferredIncome;
+
+    @Field("total_net_assets")
+    private Long totalNetAssets;
 
     public Long getPrepaymentsAndAccruedIncome() {
         return prepaymentsAndAccruedIncome;
@@ -51,11 +60,35 @@ public class OtherLiabilitiesOrAssetsEntity {
         this.totalAssetsLessCurrentLiabilities = totalAssetsLessCurrentLiabilities;
     }
 
+    public Long getCreditorsDueAfterOneYear() {
+        return creditorsDueAfterOneYear;
+    }
+
+    public void setCreditorsDueAfterOneYear(Long creditorsDueAfterOneYear) {
+        this.creditorsDueAfterOneYear = creditorsDueAfterOneYear;
+    }
+
     public Long getProvisionForLiabilities() {
         return provisionForLiabilities;
     }
 
     public void setProvisionForLiabilities(Long provisionForLiabilities) {
         this.provisionForLiabilities = provisionForLiabilities;
+    }
+
+    public Long getAccrualsAndDeferredIncome() {
+        return accrualsAndDeferredIncome;
+    }
+
+    public void setAccrualsAndDeferredIncome(Long accrualsAndDeferredIncome) {
+        this.accrualsAndDeferredIncome = accrualsAndDeferredIncome;
+    }
+
+    public Long getTotalNetAssets() {
+        return totalNetAssets;
+    }
+
+    public void setTotalNetAssets(Long totalNetAssets) {
+        this.totalNetAssets = totalNetAssets;
     }
 }

@@ -26,8 +26,20 @@ public class OtherLiabilitiesOrAssets {
     private Long totalAssetsLessCurrentLiabilities;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("creditors_due_after_one_year")
+    private Long creditorsDueAfterOneYear;
+
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("provision_for_liabilities")
     private Long provisionForLiabilities;
+
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("accruals_and_deferred_income")
+    private Long accrualsAndDeferredIncome;
+
+    @NotNull
+    @JsonProperty("total_net_assets")
+    private Long totalNetAssets;
 
     public Long getPrepaymentsAndAccruedIncome() {
         return prepaymentsAndAccruedIncome;
@@ -61,11 +73,35 @@ public class OtherLiabilitiesOrAssets {
         this.totalAssetsLessCurrentLiabilities = totalAssetsLessCurrentLiabilities;
     }
 
+    public Long getCreditorsDueAfterOneYear() {
+        return creditorsDueAfterOneYear;
+    }
+
+    public void setCreditorsDueAfterOneYear(Long creditorsDueAfterOneYear) {
+        this.creditorsDueAfterOneYear = creditorsDueAfterOneYear;
+    }
+
     public Long getProvisionForLiabilities() {
         return provisionForLiabilities;
     }
 
     public void setProvisionForLiabilities(Long provisionForLiabilities) {
         this.provisionForLiabilities = provisionForLiabilities;
+    }
+
+    public Long getAccrualsAndDeferredIncome() {
+        return accrualsAndDeferredIncome;
+    }
+
+    public void setAccrualsAndDeferredIncome(Long accrualsAndDeferredIncome) {
+        this.accrualsAndDeferredIncome = accrualsAndDeferredIncome;
+    }
+
+    public Long getTotalNetAssets() {
+        return totalNetAssets;
+    }
+
+    public void setTotalNetAssets(Long totalNetAssets) {
+        this.totalNetAssets = totalNetAssets;
     }
 }
