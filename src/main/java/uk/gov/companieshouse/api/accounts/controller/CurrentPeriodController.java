@@ -111,23 +111,19 @@ public class CurrentPeriodController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Errors errors = new Errors();
-
         if (bindingResult.hasErrors()) {
-            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        currentPeriodValidator.validateCurrentPeriod(currentPeriod);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
         if (errors.hasErrors()) {
-            LOGGER.error(
-                "Current period validation failure");
+            LOGGER.info("Current period validation failure");
             logValidationFailureError(getRequestId(request), errors);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestId = request.getHeader(REQUEST_ID);
 

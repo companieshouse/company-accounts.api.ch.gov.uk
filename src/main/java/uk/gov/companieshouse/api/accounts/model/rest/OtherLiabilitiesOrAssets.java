@@ -26,8 +26,8 @@ public class OtherLiabilitiesOrAssets {
     private Long totalAssetsLessCurrentLiabilities;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("creditors_due_after_one_year")
-    private Long creditorsDueAfterOneYear;
+    @JsonProperty("creditors_after_one_year")
+    private Long creditorsAfterOneYear;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("provision_for_liabilities")
@@ -73,12 +73,12 @@ public class OtherLiabilitiesOrAssets {
         this.totalAssetsLessCurrentLiabilities = totalAssetsLessCurrentLiabilities;
     }
 
-    public Long getCreditorsDueAfterOneYear() {
-        return creditorsDueAfterOneYear;
+    public Long getCreditorsAfterOneYear() {
+        return creditorsAfterOneYear;
     }
 
-    public void setCreditorsDueAfterOneYear(Long creditorsDueAfterOneYear) {
-        this.creditorsDueAfterOneYear = creditorsDueAfterOneYear;
+    public void setCreditorsAfterOneYear(Long creditorsAfterOneYear) {
+        this.creditorsAfterOneYear = creditorsAfterOneYear;
     }
 
     public Long getProvisionForLiabilities() {

@@ -16,8 +16,8 @@ public class OtherLiabilitiesOrAssetsEntity {
     @Field("total_assets_less_current_liabilities")
     private Long totalAssetsLessCurrentLiabilities;
 
-    @Field("creditors_due_after_one_year")
-    private Long creditorsDueAfterOneYear;
+    @Field("creditors_after_one_year")
+    private Long creditorsAfterOneYear;
 
     @Field("provision_for_liabilities")
     private Long provisionForLiabilities;
@@ -60,12 +60,12 @@ public class OtherLiabilitiesOrAssetsEntity {
         this.totalAssetsLessCurrentLiabilities = totalAssetsLessCurrentLiabilities;
     }
 
-    public Long getCreditorsDueAfterOneYear() {
-        return creditorsDueAfterOneYear;
+    public Long getCreditorsAfterOneYear() {
+        return creditorsAfterOneYear;
     }
 
-    public void setCreditorsDueAfterOneYear(Long creditorsDueAfterOneYear) {
-        this.creditorsDueAfterOneYear = creditorsDueAfterOneYear;
+    public void setCreditorsAfterOneYear(Long creditorsAfterOneYear) {
+        this.creditorsAfterOneYear = creditorsAfterOneYear;
     }
 
     public Long getProvisionForLiabilities() {
