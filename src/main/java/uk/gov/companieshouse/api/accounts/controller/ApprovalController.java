@@ -74,7 +74,7 @@ public class ApprovalController {
             ResponseObject<Approval> responseObject = approvalService
                 .create(approval, transaction, companyAccountId, request);
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData());
+                responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();

@@ -81,7 +81,7 @@ public class PreviousPeriodController {
                 .create(previousPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
+                    responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
@@ -145,7 +145,7 @@ public class PreviousPeriodController {
 
         try {
             ResponseObject<PreviousPeriod> responseObject = previousPeriodService.update(previousPeriod, transaction, companyAccountId, request);
-            responseEntity = apiResponseMapper.map(responseObject.getStatus(), null, responseObject.getValidationErrorData());
+            responseEntity = apiResponseMapper.map(responseObject.getStatus(), null, responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
