@@ -10,13 +10,11 @@ public class BaseValidator {
     @Value("${incorrect.total}")
     private String incorrectTotal;
 
+    @Value("${date.invalid}")
+    protected String dateInvalid;
+
     /**
      * Validate the given total is correctly aggregated
-     *
-     * @param total
-     * @param expectedTotal
-     * @param location
-     * @param errors
      */
     protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
         Errors errors) {
@@ -31,9 +29,6 @@ public class BaseValidator {
 
     /**
      * Add an incorrect total error for the given location
-     *
-     * @param errors
-     * @param location
      */
     protected void addIncorrectTotalError(Errors errors, String location) {
         addError(errors, incorrectTotal, location);
@@ -41,14 +36,11 @@ public class BaseValidator {
 
     /**
      * Add an error for the given location
-     *
-     * @param errors
-     * @param messageKey
-     * @param location
      */
     protected void addError(Errors errors, String messageKey, String location) {
         errors.addError(new Error(messageKey, location, LocationType.JSON_PATH.getValue(),
             ErrorType.VALIDATION.getType()));
     }
+
 }
 

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -18,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -29,7 +28,7 @@ public class ApiResponseMapperTest {
     RestObject restObject;
 
     @Mock
-    ValidationErrorData validationErrorData;
+    Errors errors;
 
     @Mock
     PatchException patchException;
@@ -43,15 +42,11 @@ public class ApiResponseMapperTest {
     @InjectMocks
     private ApiResponseMapper apiResponseMapper;
 
-    @BeforeEach
-    public void setUp() {
-
-    }
-
     @Test
     @DisplayName("Tests create response")
     void canMapCreateResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.CREATED, restObject, validationErrorData);
+        ResponseEntity responseEntity = apiResponseMapper
+            .map(ResponseStatus.CREATED, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals(restObject, responseEntity.getBody());
@@ -60,7 +55,8 @@ public class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests conflict response")
     void canMapConflictResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.DUPLICATE_KEY_ERROR, restObject, validationErrorData);
+        ResponseEntity responseEntity = apiResponseMapper
+            .map(ResponseStatus.DUPLICATE_KEY_ERROR, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
@@ -69,7 +65,8 @@ public class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests default response")
     void canMapDefaultResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.NOT_FOUND, restObject, validationErrorData);
+        ResponseEntity responseEntity = apiResponseMapper
+            .map(ResponseStatus.NOT_FOUND, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());

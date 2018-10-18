@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.response;
 
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 public class ResponseObject<T extends RestObject> {
 
@@ -8,7 +9,7 @@ public class ResponseObject<T extends RestObject> {
 
     private T data;
 
-    private ValidationErrorData validationErrorData;
+    private Errors errors;
 
     public ResponseObject(ResponseStatus status) {
         this.status = status;
@@ -17,6 +18,12 @@ public class ResponseObject<T extends RestObject> {
     public ResponseObject(ResponseStatus status, T data) {
         this.status = status;
         this.data = data;
+    }
+
+    public ResponseObject(ResponseStatus status, T data, Errors errors) {
+        this.status = status;
+        this.data = data;
+        this.errors = errors;
     }
 
     public ResponseStatus getStatus() {
@@ -35,11 +42,11 @@ public class ResponseObject<T extends RestObject> {
         this.data = data;
     }
 
-    public ValidationErrorData getValidationErrorData() {
-        return validationErrorData;
+    public Errors getErrors() {
+        return errors;
     }
 
-    public void setValidationErrorData(ValidationErrorData validationErrorData) {
-        this.validationErrorData = validationErrorData;
+    public void setErrors(Errors errors) {
+        this.errors = errors;
     }
 }

@@ -50,7 +50,8 @@ public class PreviousPeriodController {
 
     @PostMapping
 
-    public ResponseEntity create(@Valid @RequestBody PreviousPeriod previousPeriod, BindingResult bindingResult,
+    public ResponseEntity create(@Valid @RequestBody PreviousPeriod previousPeriod,
+        BindingResult bindingResult,
         @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
@@ -63,7 +64,7 @@ public class PreviousPeriodController {
         if (errors.hasErrors()) {
 
             LOGGER.error(
-                    "Current period validation failure");
+                "Current period validation failure");
             logValidationFailureError(request, errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
@@ -74,9 +75,12 @@ public class PreviousPeriodController {
         ResponseEntity responseEntity;
 
         try {
-            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.create(previousPeriod, transaction, companyAccountId, request);
-            responseEntity = apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getValidationErrorData());
-          
+            ResponseObject<PreviousPeriod> responseObject = previousPeriodService
+                .create(previousPeriod, transaction, companyAccountId, request);
+            responseEntity = apiResponseMapper
+                .map(responseObject.getStatus(), responseObject.getData(),
+                    responseObject.getErrors());
+
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
@@ -90,9 +94,10 @@ public class PreviousPeriodController {
     }
 
     @GetMapping
-    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String previousPeriodId = previousPeriodService.generateID(companyAccountId);
         ResponseObject<PreviousPeriod> responseObject;

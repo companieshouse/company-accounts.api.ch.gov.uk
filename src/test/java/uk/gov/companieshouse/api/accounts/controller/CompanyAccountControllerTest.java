@@ -70,7 +70,6 @@ public class CompanyAccountControllerTest {
     @DisplayName("Tests the successful creation of an company account resource and patching transaction resource")
     void canCreateAccountSuccesfully() throws DataException, PatchException {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
-        when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED,
             companyAccount);
         when(companyAccountServiceMock
@@ -80,7 +79,7 @@ public class CompanyAccountControllerTest {
                 .body(responseObject.getData());
         when(apiResponseMapper.map(
                 responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData()))
+                responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
@@ -96,7 +95,6 @@ public class CompanyAccountControllerTest {
     @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key error")
     void canCreateAccountWithDuplicateKeyError() throws DataException, PatchException {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
-        when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
             companyAccount);
         when(companyAccountServiceMock
@@ -105,7 +103,7 @@ public class CompanyAccountControllerTest {
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         when(apiResponseMapper.map(responseObject.getStatus(),
-                responseObject.getData(), responseObject.getValidationErrorData()))
+                responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
@@ -119,7 +117,6 @@ public class CompanyAccountControllerTest {
     @DisplayName("Tests the unsuccessful creation of an company account resource due to an internal error (MongoException")
     void canCreateAccountWithInternalError() throws DataException, PatchException {
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
-        when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("test");
         doThrow(mock(DataException.class)).when(companyAccountServiceMock)
                 .create(companyAccount, transactionMock, httpServletRequestMock);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

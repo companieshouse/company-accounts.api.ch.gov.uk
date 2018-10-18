@@ -47,7 +47,6 @@ public class SmallFullController {
         @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
-        String requestId = request.getHeader("X-Request-Id");
 
         ResponseEntity responseEntity;
         try {
@@ -55,7 +54,7 @@ public class SmallFullController {
                 .create(smallFull, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
+                    responseObject.getErrors());
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());

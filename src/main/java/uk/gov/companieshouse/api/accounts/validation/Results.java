@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 @XmlRootElement(name = "results")
 public class Results {
@@ -42,6 +43,7 @@ public class Results {
 
     @Override
     public String toString() {
-        return "Results [errors=" + errors + ", validationStatus=" + validationStatus + ", data=" + data + "]";
+        return "Results [errors=" + errors + ", validationStatus=" + validationStatus + ", data="
+            + data + "]";
     }
 }

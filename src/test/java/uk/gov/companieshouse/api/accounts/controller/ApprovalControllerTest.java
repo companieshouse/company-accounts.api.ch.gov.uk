@@ -59,7 +59,6 @@ public class ApprovalControllerTest {
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException, DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        when(request.getHeader("X-Request-Id")).thenReturn("test");
     }
 
     @Test
@@ -68,11 +67,12 @@ public class ApprovalControllerTest {
         ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
             approval);
         doReturn(successCreateResponse).when(approvalService)
-            .create(any(Approval.class), any(Transaction.class), anyString(), any(HttpServletRequest.class));
+            .create(any(Approval.class), any(Transaction.class), anyString(),
+                any(HttpServletRequest.class));
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(successCreateResponse.getData());
         when(apiResponseMapper.map(successCreateResponse.getStatus(),
-            successCreateResponse.getData(), successCreateResponse.getValidationErrorData()))
+            successCreateResponse.getData(), successCreateResponse.getErrors()))
             .thenReturn(responseEntity);
 
         ResponseEntity response = approvalController
