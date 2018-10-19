@@ -7,6 +7,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
@@ -35,16 +36,12 @@ public class PreviousPeriodValidator extends BaseValidator {
 
         CurrentAssets currentAssets = previousPeriod.getBalanceSheet().getCurrentAssets();
 
-        Long stocks = currentAssets.getStocks();
-        Long debtors = currentAssets.getDebtors();
-        Long cashAtBankAndInHand = currentAssets.getCashAtBankAndInHand();
-        Long currentAssetsTotal = currentAssets.getTotalCurrentAssets();
+        Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
+        Long debtors = Optional.ofNullable(currentAssets. getDebtors()).orElse(0L);
+        Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
+        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotalCurrentAssets()).orElse(0L);
 
-        Long calculatedTotal = 0L;
-
-        calculatedTotal += stocks == null ? 0L : stocks;
-        calculatedTotal += debtors == null ? 0L : debtors;
-        calculatedTotal += cashAtBankAndInHand == null ? 0L : cashAtBankAndInHand;
+        Long calculatedTotal = stocks + debtors + cashAtBankAndInHand;
 
         validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH, errors);
 
