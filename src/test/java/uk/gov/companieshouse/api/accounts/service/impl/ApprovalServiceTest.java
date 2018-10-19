@@ -111,10 +111,8 @@ public class ApprovalServiceTest {
             .any(Approval.class));
         doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
-        Executable executable = () -> {
-            approvalService.create(approval, transaction, "", request);
-        };
-        assertThrows(DataException.class, executable);
+        assertThrows(DataException.class,
+            () -> approvalService.create(approval, transaction, "", request));
     }
 
     @Test
@@ -133,9 +131,6 @@ public class ApprovalServiceTest {
     @DisplayName("Tests mongo exception thrown on find of an Approval resource")
     public void findApprovalMongoException() throws DataException {
         when(approvalRepository.findById("")).thenThrow(mongoException);
-        Executable executable = () -> {
-            approvalService.findById("", request);
-        };
-        assertThrows(DataException.class, executable);
+        assertThrows(DataException.class, () -> approvalService.findById("", request));
     }
 }
