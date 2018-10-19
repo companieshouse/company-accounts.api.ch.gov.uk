@@ -8,6 +8,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 /**
  * Validates Current Period
@@ -39,19 +40,14 @@ public class CurrentPeriodValidator extends BaseValidator {
 
         CurrentAssets currentAssets = currentPeriod.getBalanceSheet().getCurrentAssets();
 
-        Long stocks = currentAssets.getStocks();
-        Long debtors = currentAssets.getDebtors();
-        Long cashAtBandAndInHand = currentAssets.getCashAtBankAndInHand();
-        Long currentAssetsTotal = currentAssets.getTotalCurrentAssets();
+        Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
+        Long debtors = Optional.ofNullable(currentAssets. getDebtors()).orElse(0L);
+        Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
+        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotalCurrentAssets()).orElse(0L);
 
-        Long calculatedTotal = 0L;
-
-        calculatedTotal += stocks == null ? 0L : stocks;
-        calculatedTotal += debtors == null ? 0L : debtors;
-        calculatedTotal += cashAtBandAndInHand == null ? 0L : cashAtBandAndInHand;
+        Long calculatedTotal = stocks + debtors + cashAtBankAndInHand;
 
         validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH, errors);
-
     }
 
     public void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod, Errors errors) {
