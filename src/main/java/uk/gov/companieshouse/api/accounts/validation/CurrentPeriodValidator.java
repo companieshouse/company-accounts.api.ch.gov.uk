@@ -64,7 +64,11 @@ public class CurrentPeriodValidator extends BaseValidator {
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
         Long creditorsDueWithinOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear()).orElse(0L);
 
-        Long calculatedTotal = /* current_assets.total_current_assets + */ prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
+//        Long totalCurrentAssets;
+//        if (currentPeriod.getBalanceSheet().getCurrentAssets() != null) {
+//            totalCurrentAssets = currentPeriod.getBalanceSheet().getCurrentAssets().getTotalCurrentAssets();
+//        }
+        Long calculatedTotal = /* totalCurrentAssets + */ prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
         validateAggregateTotal(netCurrentAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
