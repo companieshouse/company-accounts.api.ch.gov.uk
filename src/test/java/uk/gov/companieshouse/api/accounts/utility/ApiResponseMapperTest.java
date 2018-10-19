@@ -26,19 +26,19 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 public class ApiResponseMapperTest {
 
     @Mock
-    RestObject restObject;
+    private RestObject restObject;
 
     @Mock
-    Errors errors;
+    private Errors errors;
 
     @Mock
-    PatchException patchException;
+    private PatchException patchException;
 
     @Mock
-    IllegalArgumentException illegalArgumentException;
+    private IllegalArgumentException illegalArgumentException;
 
     @Mock
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     @InjectMocks
     private ApiResponseMapper apiResponseMapper;

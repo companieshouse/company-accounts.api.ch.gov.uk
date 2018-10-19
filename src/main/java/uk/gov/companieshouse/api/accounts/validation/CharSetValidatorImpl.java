@@ -11,7 +11,7 @@ import uk.gov.companieshouse.charset.validation.CharSetValidation;
 public class CharSetValidatorImpl implements ConstraintValidator<CharSetValid, String> {
 
     @Autowired
-    CharSetValidation charSetValidation;
+    private CharSetValidation charSetValidation;
 
     private CharSet charSet;
 
