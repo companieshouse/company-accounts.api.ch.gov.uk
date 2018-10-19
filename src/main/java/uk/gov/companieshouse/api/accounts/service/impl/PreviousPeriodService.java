@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    private PreviousPeriodRepository previousPeriodRespository;
+    private PreviousPeriodRepository previousPeriodRepository;
 
     private PreviousPeriodTransformer previousPeriodTransformer;
 
@@ -46,7 +47,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         PreviousPeriodTransformer previousPeriodTransformer,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
-        this.previousPeriodRespository = previousPeriodRepository;
+        this.previousPeriodRepository = previousPeriodRepository;
         this.previousPeriodTransformer = previousPeriodTransformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
@@ -54,7 +55,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     @Override
     public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod,
-        Transaction transaction, String companyAccountId, String requestId) throws DataException {
+        Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(previousPeriod, selfLink);
@@ -72,38 +73,84 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         debugMap.put("id", id);
 
         try {
-            previousPeriodRespository.insert(previousPeriodEntity);
+            previousPeriodRepository.insert(previousPeriodEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
+            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.PREVIOUS_PERIOD.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD, selfLink, requestId);
+            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD, selfLink, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, String requestId) {
+    public ResponseObject<PreviousPeriod> findById(String id, HttpServletRequest request) throws DataException {
+        PreviousPeriodEntity previousPeriodEntity;
+        try {
+            previousPeriodEntity = previousPeriodRepository.findById(id).orElse(null);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Previous Period", me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+            throw dataException;
+        }
 
-        return null;
+        if (previousPeriodEntity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        PreviousPeriod previousPeriod = previousPeriodTransformer.transform(previousPeriodEntity);
+        return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
+    }
+
+    public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
+        String companyAccountId, HttpServletRequest request) throws DataException {
+
+        populateMetadata(rest, transaction, companyAccountId);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(rest);
+        String id = generateID(companyAccountId);
+        previousPeriodEntity.setId(id);
+
+        try {
+            previousPeriodRepository.save(previousPeriodEntity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException("Failed to update " + ResourceName.PREVIOUS_PERIOD.getName(), me);
+
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            debugMap.put("company_accounts_id", companyAccountId);
+            debugMap.put("id", id);
+            LOGGER.errorRequest(request, dataException, debugMap);
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
     public String generateID(String value) {
-
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-
         return buildSelfLink(transaction, companyAccountId);
+    }
+
+    private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
+            String companyAccountId) {
+        Map<String, String> map = new HashMap<>();
+        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
+
+        previousPeriod.setLinks(map);
+        previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
+        previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
     }
 
     private String buildSelfLink(Transaction transaction, String companyAccountId) {

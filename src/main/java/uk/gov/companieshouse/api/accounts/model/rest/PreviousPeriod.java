@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @JsonInclude(Include.NON_NULL)
 public class PreviousPeriod extends RestObject {
 
-    @NotNull(message="MANDATORY_ELEMENT_MISSING")
+    @NotNull
     @JsonProperty("balance_sheet")
     @Valid
     private BalanceSheet balanceSheet;
@@ -23,5 +23,3 @@ public class PreviousPeriod extends RestObject {
         this.balanceSheet = balanceSheet;
     }
 }
-
-

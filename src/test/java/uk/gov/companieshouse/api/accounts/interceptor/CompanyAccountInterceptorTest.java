@@ -72,16 +72,15 @@ public class CompanyAccountInterceptorTest {
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() throws DataException {
         setUpPathVariables();
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
         setUpReourceList("linkToCompanyAccount");
         setUpCompanyAccount();
-        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(companyAccountService.findById("123456", httpServletRequest)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(companyAccount);
 
         assertTrue(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById("123456", "1111");
+        verify(companyAccountService, times(1)).findById("123456", httpServletRequest);
         verify(httpServletRequest, times(1))
                 .setAttribute(anyString(), any(CompanyAccount.class));
     }
@@ -100,27 +99,25 @@ public class CompanyAccountInterceptorTest {
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
     public void testReturnsFalseForAFailedLookup() throws DataException {
         setUpPathVariables();
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
-        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(companyAccountService.findById("123456", httpServletRequest)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById("123456", "1111");
+        verify(companyAccountService, times(1)).findById("123456", httpServletRequest);
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false when the two links do not match")
     public void testReturnsFalseForLinksThatDoNotMatch() throws DataException {
         setUpPathVariables();
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("1111");
         setUpReourceList("badLink");
         setUpCompanyAccount();
-        when(companyAccountService.findById("123456", "1111")).thenReturn(responseObject);
+        when(companyAccountService.findById("123456", httpServletRequest)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(companyAccount);
         assertFalse(companyAccountInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
-        verify(companyAccountService, times(1)).findById("123456", "1111");
+        verify(companyAccountService, times(1)).findById("123456", httpServletRequest);
     }
 
     private void setUpReourceList(String linkToAdd) {

@@ -14,12 +14,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -36,7 +39,6 @@ import uk.gov.companieshouse.logging.util.LogHelper;
 public class CurrentPeriodController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
@@ -55,7 +57,6 @@ public class CurrentPeriodController {
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
@@ -67,7 +68,7 @@ public class CurrentPeriodController {
 
             LOGGER.error(
                 "Current period validation failure");
-            logValidationFailureError(getRequestId(request), errors);
+            logValidationFailureError(request, errors);
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 
@@ -76,17 +77,61 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<CurrentPeriod> responseObject = currentPeriodService
+                .create(currentPeriod, transaction, companyAccountId, request);
+            responseEntity = apiResponseMapper
+                .map(responseObject.getStatus(), responseObject.getData(),
+                    responseObject.getErrors());
+
+
+        } catch (DataException ex) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("transaction_id", transaction.getId());
+            LOGGER.errorRequest(request, ex, debugMap);
+            responseEntity = apiResponseMapper.map(ex);
+        }
+
+        return responseEntity;
+    }
+
+    @PutMapping
+    public ResponseEntity update(@RequestBody @Valid CurrentPeriod currentPeriod,
+        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
+
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+        if (smallFull.getLinks().get(SmallFullLinkType.CURRENT_PERIOD.getLink()) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new Errors();
+
+        if (bindingResult.hasErrors()) {
+            errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+        }
+
+        currentPeriodValidator.validateCurrentPeriod(currentPeriod);
+        if (errors.hasErrors()) {
+            LOGGER.error(
+                "Current period validation failure");
+            logValidationFailureError(request, errors);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        }
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
-                .create(currentPeriod, transaction, companyAccountId, requestId);
+                .update(currentPeriod, transaction, companyAccountId, request);
             responseEntity = apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
-                    responseObject.getValidationErrorData());
-
+                .map(responseObject.getStatus(), null, responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
@@ -106,7 +151,6 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
         String currentPeriodId = currentPeriodService.generateID(companyAccountId);
         ResponseObject<CurrentPeriod> responseObject;
 
@@ -114,7 +158,7 @@ public class CurrentPeriodController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = currentPeriodService.findById(currentPeriodId, requestId);
+            responseObject = currentPeriodService.findById(currentPeriodId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
@@ -124,14 +168,10 @@ public class CurrentPeriodController {
 
     }
 
-    private void logValidationFailureError(String requestId, Errors errors) {
+    private void logValidationFailureError(HttpServletRequest request, Errors errors) {
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("message", "Validation failure");
         logMap.put("Errors: ", errors);
-        LOGGER.traceContext(requestId, "", logMap);
-    }
-
-    private String getRequestId(HttpServletRequest request) {
-        return request.getHeader(REQUEST_ID);
+        LOGGER.traceRequest(request, "", logMap);
     }
 }

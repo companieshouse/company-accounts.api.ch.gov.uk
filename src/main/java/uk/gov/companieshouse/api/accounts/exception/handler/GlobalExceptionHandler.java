@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.HashMap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.validation.ErrorMessageKeys;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.logging.Logger;
@@ -31,6 +31,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+
+    @Value("${invalid.value}")
+    public String invalidValue;
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
@@ -57,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         Errors errors = new Errors();
-        Error error = new Error(ErrorMessageKeys.INVALID_VALUE.getKey(), message.toString(),
+        Error error = new Error(invalidValue, message.toString(),
             LocationType.REQUEST_BODY.getValue(), ErrorType.VALIDATION.getType());
         errors.addError(error);
         return new ResponseEntity<>(errors, headers, status);

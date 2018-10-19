@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class SmallFullService implements
 
     @Override
     public ResponseObject<SmallFull> create(SmallFull smallFull, Transaction transaction,
-        String companyAccountId, String requestId)
+        String companyAccountId, HttpServletRequest request)
         throws DataException {
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(smallFull, selfLink);
@@ -74,12 +75,12 @@ public class SmallFullService implements
         try {
             smallFullRepository.insert(baseEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
+            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
@@ -90,7 +91,14 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> findById(String id, String requestId) throws DataException {
+    public ResponseObject<SmallFull> update(SmallFull rest, Transaction transaction,
+        String companyAccountId, HttpServletRequest request) throws DataException {
+        //TODO implement method
+        return null;
+    }
+
+    @Override
+    public ResponseObject<SmallFull> findById(String id, HttpServletRequest request) throws DataException {
         SmallFullEntity smallFullEntity;
         try {
             smallFullEntity = smallFullRepository.findById(id).orElse(null);
@@ -98,7 +106,7 @@ public class SmallFullService implements
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
             DataException dataException = new DataException("Failed to find Small full entity", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
@@ -111,7 +119,7 @@ public class SmallFullService implements
     }
 
     @Override
-    public void addLink(String id, SmallFullLinkType linkType, String link, String requestId)
+    public void addLink(String id, SmallFullLinkType linkType, String link, HttpServletRequest request)
         throws DataException {
         String smallFullId = generateID(id);
         SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
@@ -129,7 +137,7 @@ public class SmallFullService implements
             debugMap.put("link_type", linkType.getLink());
 
             DataException dataException = new DataException("Failed to add link to Small full", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
     }

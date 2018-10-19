@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -56,13 +57,10 @@ public class CurrentPeriodService implements
     @Override
     public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
         Transaction transaction,
-        String companyAccountId, String requestId)
+        String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        String selfLink = createSelfLink(transaction, companyAccountId);
-        initLinks(currentPeriod, selfLink);
-        currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
-        currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+        populateMetadata(currentPeriod, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         final Map<String, Object> debugMap = new HashMap<>();
@@ -76,23 +74,50 @@ public class CurrentPeriodService implements
         try {
             currentPeriodRepository.insert(currentPeriodEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
+            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD, selfLink, requestId);
+            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
+                currentPeriod.getLinks().get(BasicLinkType.SELF.getLink()), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> findById(String id, String requestId)
+    public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
+        String companyAccountId, HttpServletRequest request) throws DataException {
+
+        populateMetadata(rest, transaction, companyAccountId);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
+        String id = generateID(companyAccountId);
+        currentPeriodEntity.setId(id);
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
+        debugMap.put("id", id);
+
+        try {
+            currentPeriodRepository.save(currentPeriodEntity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException(
+                "Failed to update " + ResourceName.CURRENT_PERIOD.getName(), me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
+    }
+
+    @Override
+    public ResponseObject<CurrentPeriod> findById(String id, HttpServletRequest request)
         throws DataException {
         CurrentPeriodEntity currentPeriodEntity;
         try {
@@ -101,7 +126,7 @@ public class CurrentPeriodService implements
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
             DataException dataException = new DataException("Failed to find Current period", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
@@ -117,16 +142,20 @@ public class CurrentPeriodService implements
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
-    public String createSelfLink(Transaction transaction, String companyAccountId) {
+    private void populateMetadata(CurrentPeriod currentPeriod, Transaction transaction,
+        String companyAccountId) {
+        Map<String, String> map = new HashMap<>();
+        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
+
+        currentPeriod.setLinks(map);
+        currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
+        currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+    }
+
+    private String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
             + ResourceName.CURRENT_PERIOD.getName();
-    }
-
-    private void initLinks(CurrentPeriod currentPeriod, String link) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
-        currentPeriod.setLinks(map);
     }
 }

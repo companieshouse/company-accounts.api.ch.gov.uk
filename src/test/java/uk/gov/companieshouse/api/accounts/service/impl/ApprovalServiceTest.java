@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,6 +37,9 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 @TestInstance(Lifecycle.PER_CLASS)
 public class ApprovalServiceTest {
 
+
+    @Mock
+    private HttpServletRequest request;
 
     @Mock
     private Approval approval;
@@ -76,7 +80,7 @@ public class ApprovalServiceTest {
     public void canCreateAnApproval() throws DataException {
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
         ResponseObject<Approval> result = approvalService
-            .create(approval, transaction, "", "");
+            .create(approval, transaction, "", request);
         assertNotNull(result);
         assertEquals(approval, result.getData());
     }
@@ -87,7 +91,7 @@ public class ApprovalServiceTest {
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(duplicateKeyException);
-        ResponseObject response = approvalService.create(approval, transaction, "", "");
+        ResponseObject response = approvalService.create(approval, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -100,7 +104,7 @@ public class ApprovalServiceTest {
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
         Executable executable = () -> {
-            approvalService.create(approval, transaction, "", "");
+            approvalService.create(approval, transaction, "", request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -112,7 +116,7 @@ public class ApprovalServiceTest {
             .thenReturn(Optional.ofNullable(approvalEntity));
         when(approvalTransformer.transform(approvalEntity)).thenReturn(approval);
         ResponseObject<Approval> result = approvalService
-            .findById("", "");
+            .findById("", request);
         assertNotNull(result);
         assertEquals(approval, result.getData());
     }
@@ -122,7 +126,7 @@ public class ApprovalServiceTest {
     public void findApprovalMongoException() throws DataException {
         when(approvalRepository.findById("")).thenThrow(mongoException);
         Executable executable = () -> {
-            approvalService.findById("", "");
+            approvalService.findById("", request);
         };
         assertThrows(DataException.class, executable);
     }

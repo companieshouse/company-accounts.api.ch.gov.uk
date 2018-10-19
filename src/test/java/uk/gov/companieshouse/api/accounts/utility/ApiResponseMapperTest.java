@@ -18,8 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.service.response.ValidationErrorData;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -29,7 +29,7 @@ public class ApiResponseMapperTest {
     RestObject restObject;
 
     @Mock
-    ValidationErrorData validationErrorData;
+    Errors validationErrorData;
 
     @Mock
     PatchException patchException;
