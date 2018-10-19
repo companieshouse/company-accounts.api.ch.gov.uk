@@ -151,7 +151,7 @@ public class CurrentPeriodControllerTest {
         when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
-        ResponseEntity<?> response = currentPeriodController.create(currentPeriod, bindingResult,"123456", request);
+        ResponseEntity<?> response = currentPeriodController.create(currentPeriod, bindingResult, "123456", request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }

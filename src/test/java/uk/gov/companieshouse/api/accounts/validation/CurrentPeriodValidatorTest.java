@@ -24,11 +24,18 @@ public class CurrentPeriodValidatorTest {
     private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
-    CurrentPeriodValidator validator = new CurrentPeriodValidator();
+    private BalanceSheet balanceSheet;
+    private CurrentPeriod currentPeriod;
+    private Errors errors;
 
-    CurrentPeriod currentPeriod = new CurrentPeriod();
-    BalanceSheet balanceSheet = new BalanceSheet();
-    Errors errors = new Errors();
+    @BeforeEach
+    public void setup(){
+        balanceSheet = new BalanceSheet();
+        currentPeriod = new CurrentPeriod();
+        errors = new Errors();
+    }
+
+    CurrentPeriodValidator validator = new CurrentPeriodValidator();
 
     @Test
     @DisplayName("Test total fixed assets validation")
