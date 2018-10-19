@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull;
 
 public class CurrentAssets {
 
-    public static final int MAX_RANGE = 99999999;
-    public static final int MIN_RANGE = 0;
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = 0;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("stocks")
