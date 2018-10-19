@@ -33,7 +33,7 @@ public class PreviousPeriodTransformer implements
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
             }
 
-            if(entity.getBalanceSheet().getCurrentAssets() != null){
+            if (entity.getBalanceSheet().getCurrentAssets() != null) {
                 CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
                 BeanUtils
                         .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
