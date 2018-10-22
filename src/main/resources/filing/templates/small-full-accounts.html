@@ -1553,66 +1553,66 @@ ul.accounts-comps-ct {
         {{$charsPerPage := 7000}}
         {{setValue "page-number" 0}}
         <div id="AccountsHeader" class="page margin-xx-large">
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-          <h2 class="center margin-large">Company Registration Number:
-            <br />
-            <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
-            ({{$company.jurisdiction }})
-          </h2>
+            <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+            </div>
+            <h2 class="center margin-large">Company Registration Number:
+                <br />
+                <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
+                ({{$company.jurisdiction }})
+            </h2>
             {{$period := .small_full_account.period}}
-          <h2 class="text--center margin-large" >
-            <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
-          </h2>
+            <h2 class="text--center margin-large" >
+                <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
+            </h2>
 
-          <h2 class="text--center margin-large">Period of accounts</h2>
-          <h2 class="text--center margin-large">Start date: {{$period.current_period_start_on_formatted}}</h2>
-          <h2 class="text--center">End date: {{$period.current_period_end_on_formatted}}</h2>
+            <h2 class="text--center margin-large">Period of accounts</h2>
+            <h2 class="text--center margin-large">Start date: {{$period.current_period_start_on_formatted}}</h2>
+            <h2 class="text--center">End date: {{$period.current_period_end_on_formatted}}</h2>
         </div>
 
         <div class="page" id="Contents">
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-          <h2 class="text--center">Contents of the Financial Statements</h2>
-          <p class="text--center">
-            <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
-          </p>
-          <table cellspacing="10">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="strong">
-                  <a href="#BalanceSheetSection">Balance sheet</a>
-                </td>
-                <td></td>
-              </tr>
-              {{if .small_full_account.notes}}
-              <tr>
-                <td class="strong">
-                  <a href="#AdditionalNotesSection">Additional notes</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td class="strong">
-                  <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
-                </td>
-                <td></td>
-              </tr>
-              {{end}}
-            </tbody>
-          </table>
+            <div class="header">
+                <h1 class="text--center">
+                    <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
+                </h1>
+            </div>
+            <h2 class="text--center">Contents of the Financial Statements</h2>
+            <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+            </p>
+            <table cellspacing="10">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="strong">
+                            <a href="#BalanceSheetSection">Balance sheet</a>
+                        </td>
+                        <td></td>
+                    </tr>
+                    {{if .small_full_account.notes}}
+                        <tr>
+                            <td class="strong">
+                                <a href="#AdditionalNotesSection">Additional notes</a>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="strong">
+                                <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
+                            </td>
+                            <td></td>
+                        </tr>
+                    {{end}}
+                 </tbody>
+             </table>
         </div>
 
         <!-- BALANCE SHEET -->
@@ -1621,13 +1621,13 @@ ul.accounts-comps-ct {
         {{$previousPeriod := .small_full_account.period.previous_period_start_on}}
 
         <div class="page">
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-          <h2 class="text--center">Balance sheet</h2>
-          <p class="text--center">
+            <div class="header">
+                 <h1 class="text--center">
+                     <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+             </div>
+             <h2 class="text--center">Balance sheet</h2>
+                 <p class="text--center">
             <strong>As at
               <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
             </strong>
@@ -1699,14 +1699,12 @@ ul.accounts-comps-ct {
                 <tr class = "figures">
                   <td id = "tangible-assets-heading">Tangible assets:</td>
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
-
-
+                    
                     <td id="tangible-curr" class="strong figure">
                       {{if isNotEmpty $fixedAssets.tangible.current_amount}}
                         <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
-
 
                     <td id="tangible-prev" class="text--right">
                       {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
@@ -1764,7 +1762,7 @@ ul.accounts-comps-ct {
                     </tr>
                   {{end}}
 
-                    <!-- BALANCE SHEET - CURRENT ASSETS - DEBTORS -->
+              <!-- BALANCE SHEET - CURRENT ASSETS - DEBTORS -->
 
                   {{if $debtors := $currentAssets.debtors}}
                     <tr class="figures">
@@ -1787,7 +1785,8 @@ ul.accounts-comps-ct {
                     </tr>
                   {{end}}
 
-                    <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
+              <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
+
                   {{if $cashAtBank := $currentAssets.cash_at_bank_and_in_hand}}
                     <tr class="figures">
                       <td id="cash-at-bank-and-in-hand-label">Cash at bank and in hand:</td>
@@ -1809,7 +1808,8 @@ ul.accounts-comps-ct {
                     </tr>
                   {{end}}
 
-                    <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
+              <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
+
                   {{if isNotEmpty ($current_net_current_assets := $currentAssets.current_total) ($previous_net_current_assets := $currentAssets.previous_total)}}
                       <tr class="figures">
                           <td id="ac56-label" class="strong">Total current assets:</td>
@@ -2031,7 +2031,7 @@ ul.accounts-comps-ct {
 
                  {{end}}
 
-            </tbody>
+              </tbody>
           </table>
 
           <p class="text--center">The notes form part of these financial statements</p>
