@@ -26,7 +26,7 @@ public class ApprovalValidator extends BaseValidator {
         LocalDate periodEndDate = companyAccount.getPeriodEndOn();
         LocalDate approvalDate = approval.getDate();
 
-        if (approvalDate.isBefore(periodEndDate)) {
+        if (approvalDate.isBefore(periodEndDate) || approvalDate.isEqual(periodEndDate)) {
             errors.addError(new Error(dateInvalid, DATE_PATH, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType()));
         }
