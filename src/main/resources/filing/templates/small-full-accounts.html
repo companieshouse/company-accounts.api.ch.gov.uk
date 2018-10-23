@@ -1673,7 +1673,7 @@ ul.accounts-comps-ct {
 
               {{if $calledUpShareCapitalNotPaid := $balanceSheet.called_up_share_capital_not_paid}}
                 <tr class="figures">
-                  <td id="ac999-label">Called up share capital not paid:</td>
+                  <td id="called-up-share-capital-not-paid-label">Called up share capital not paid:</td>
                   <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
 
                     <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
@@ -1697,7 +1697,7 @@ ul.accounts-comps-ct {
                   <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
                 </tr>
                 <tr class = "figures">
-                  <td id = "tangible-assets-heading">Tangible assets:</td>
+                  <td id = "tangible-assets-label">Tangible assets:</td>
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
 
                     <td id="tangible-curr" class="strong figure">
@@ -1714,7 +1714,7 @@ ul.accounts-comps-ct {
               </tr>
 
               <tr class = "figures">
-                <td id = "total-fixed-assets-heading" class="strong">Total fixed assets:</td>
+                <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
 
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
@@ -1812,7 +1812,7 @@ ul.accounts-comps-ct {
 
                   {{if isNotEmpty ($current_net_current_assets := $currentAssets.current_total) ($previous_net_current_assets := $currentAssets.previous_total)}}
                       <tr class="figures">
-                          <td id="ac56-label" class="strong">Total current assets:</td>
+                          <td id="current-assets-label" class="strong">Total current assets:</td>
 
                           <td class="figure noteIndex" id="uk-busCurrentAssetsCY_ENDNoteIndexes"></td>
 
