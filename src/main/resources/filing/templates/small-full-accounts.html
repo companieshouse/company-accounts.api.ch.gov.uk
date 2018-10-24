@@ -1672,6 +1672,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - CALLED-UP-SHARE-CAPITAL-NOT-PAID -->
 
               {{if $calledUpShareCapitalNotPaid := $balanceSheet.called_up_share_capital_not_paid}}
+
                 <tr class="figures">
                   <td id="called-up-share-capital-not-paid-label">Called up share capital not paid:</td>
                   <td class="figure noteIndex" id="CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset"></td>
@@ -1693,124 +1694,128 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - FIXED ASSETS -->
 
               {{if $fixedAssets := $balanceSheet.fixed_assets}}
-                <tr>
-                  <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
-                </tr>
-                <tr class = "figures">
-                  <td id = "tangible-assets-label">Tangible assets:</td>
+
+                  <tr>
+                      <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
+                  </tr>
+                  <tr class = "figures">
+                     <td id = "tangible-assets-label">Tangible assets:</td>
                   <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes"></td>
 
                     <td id="tangible-curr" class="strong figure">
-                      {{if isNotEmpty $fixedAssets.tangible.current_amount}}
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
-                      {{end}}
+                        {{if isNotEmpty $fixedAssets.tangible.current_amount}}
+                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
+                        {{end}}
                     </td>
 
                     <td id="tangible-prev" class="text--right">
-                      {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
-                      {{end}}
+                        {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
+                            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
+                        {{end}}
                     </td>
-              </tr>
+                  </tr>
 
-              <tr class = "figures">
-                <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
+                  <tr class = "figures">
+                      <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
 
-                <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
+                      <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
-                  <td id="fixed-assets-curr-total" class="strong total">
-                    {{if isNotEmpty $fixedAssets.current_total}}
-                      <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
-                    {{end}}
-                  </td>
+                      <td id="fixed-assets-curr-total" class="strong total">
+                          {{if isNotEmpty $fixedAssets.current_total}}
+                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
+                          {{end}}
+                      </td>
 
-                  <td id="fixed-assets-prev-total" class="total">
-                    {{if isNotEmpty $fixedAssets.previous_total}}
-                     <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
-                    {{end}}
-                  </td>
-              </tr>
+                      <td id="fixed-assets-prev-total" class="total">
+                          {{if isNotEmpty $fixedAssets.previous_total}}
+                             <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
+                          {{end}}
+                      </td>
+                  </tr>
               {{end}}
 
               <!-- BALANCE SHEET - CURRENT ASSETS -->
 
               {{if $currentAssets := $balanceSheet.current_assets}}
 
-                    <tr>
+                  <tr>
                       <th class = "strong" id="current-assets-heading">Current assets</th>
-                    </tr>
+                  </tr>
 
-                    <!-- BALANCE SHEET - CURRENT ASSETS - STOCKS -->
+                  <!-- BALANCE SHEET - CURRENT ASSETS - STOCKS -->
 
                   {{if $stocks := $currentAssets.stocks}}
-                    <tr class="figures">
-                      <td id="stocks-label">Stocks:</td>
 
-                      <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes"></td>
+                      <tr class="figures">
+                          <td id="stocks-label">Stocks:</td>
+                          <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes"></td>
 
-                      <td id="stocks-curr-val" class="strong figure">
-                        {{if isNotEmpty $stocks.current_amount}}
-                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.current_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
+                          <td id="stocks-curr-val" class="strong figure">
+                            {{if isNotEmpty $stocks.current_amount}}
+                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.current_amount}}</ix:nonFraction>
+                            {{end}}
+                          </td>
 
-                      <td id="stocks-prev-val" class="figure">
-                        {{if isNotEmpty $stocks.previous_amount}}
-                         <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.previous_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
-                    </tr>
+                          <td id="stocks-prev-val" class="figure">
+                            {{if isNotEmpty $stocks.previous_amount}}
+                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.previous_amount}}</ix:nonFraction>
+                            {{end}}
+                          </td>
+                       </tr>
                   {{end}}
 
-              <!-- BALANCE SHEET - CURRENT ASSETS - DEBTORS -->
+                 <!-- BALANCE SHEET - CURRENT ASSETS - DEBTORS -->
 
                   {{if $debtors := $currentAssets.debtors}}
-                    <tr class="figures">
-                      <td id="debtors-label">Debtors:</td>
 
-                      <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes"></td>
+                      <tr class="figures">
+                          <td id="debtors-label">Debtors:</td>
 
-                      <td id="debtors-curr-val" class="strong figure">
-                        {{if isNotEmpty $debtors.current_amount}}
-                         <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.current_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
+                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes"></td>
 
-                      <td id="debtors-prev-val" class="figure">
-                        {{if isNotEmpty $debtors.previous_amount}}
-                         <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.previous_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
+                          <td id="debtors-curr-val" class="strong figure">
+                              {{if isNotEmpty $debtors.current_amount}}
+                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.current_amount}}</ix:nonFraction>
+                             {{end}}
+                          </td>
 
-                    </tr>
+                          <td id="debtors-prev-val" class="figure">
+                              {{if isNotEmpty $debtors.previous_amount}}
+                                 <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.previous_amount}}</ix:nonFraction>
+                              {{end}}
+                          </td>
+
+                      </tr>
                   {{end}}
 
               <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
 
                   {{if $cashAtBank := $currentAssets.cash_at_bank_and_in_hand}}
-                    <tr class="figures">
-                      <td id="cash-at-bank-and-in-hand-label">Cash at bank and in hand:</td>
 
-                      <td class="figure noteIndex" id="uk-busCashBankOnHandCY_ENDNoteIndexes"></td>
+                      <tr class="figures">
+                          <td id="cash-at-bank-and-in-hand-label">Cash at bank and in hand:</td>
 
-                      <td id="cash-at-bank-curr-val" class="strong figure">
-                        {{if isNotEmpty $cashAtBank.current_amount}}
-                         <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.current_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
+                          <td class="figure noteIndex" id="uk-busCashBankOnHandCY_ENDNoteIndexes"></td>
 
-                      <td id="cash-at-bank-prev-val" class="figure">
-                        {{if isNotEmpty $cashAtBank.previous_amount}}
-                          <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.previous_amount}}</ix:nonFraction>
-                        {{end}}
-                      </td>
+                          <td id="cash-at-bank-curr-val" class="strong figure">
+                            {{if isNotEmpty $cashAtBank.current_amount}}
+                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.current_amount}}</ix:nonFraction>
+                            {{end}}
+                          </td>
 
-                    </tr>
+                          <td id="cash-at-bank-prev-val" class="figure">
+                            {{if isNotEmpty $cashAtBank.previous_amount}}
+                                <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.previous_amount}}</ix:nonFraction>
+                            {{end}}
+                          </td>
+
+                      </tr>
                   {{end}}
 
               <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
 
                   {{if isNotEmpty ($current_net_current_assets := $currentAssets.current_total) ($previous_net_current_assets := $currentAssets.previous_total)}}
+
                       <tr class="figures">
                           <td id="current-assets-label" class="strong">Total current assets:</td>
 
@@ -1838,6 +1843,7 @@ ul.accounts-comps-ct {
               {{if $liabilities := $balanceSheet.other_liabilities_and_assets}}
 
                   {{if $prepayments := $liabilities.prepayments_and_accrued_income}}
+
                       <tr class="figures">
                           <td id="prepayments-label">Prepayments and accrued income:</td>
 
@@ -1845,13 +1851,13 @@ ul.accounts-comps-ct {
 
                           <td id="prepayments-curr-val" class="strong figure">
                               {{if isNotEmpty $prepayments.current_amount}}
-                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.current_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.current_amount}}</ix:nonFraction>
                               {{end}}
                           </td>
 
                           <td id="prepayments-prev-val" class="figure">
                               {{if isNotEmpty $prepayments.previous_amount}}
-                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.previous_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.previous_amount}}</ix:nonFraction>
                               {{end}}
                            </td>
                       </tr>
@@ -1860,6 +1866,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - CREDITORS WITHIN ONE YEAR -->
 
                   {{if $creditors_within := $liabilities.creditors_amounts_falling_due_within_one_year}}
+
                       <tr class="figures">
                           <td id="creditors-within-label">Creditors: amounts falling due within one year:</td>
 
@@ -1868,7 +1875,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
                                   {{if gt $creditors_within.current_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.current_amount}}</ix:nonFraction>
+                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.current_amount}}</ix:nonFraction>
                                   {{if gt $creditors_within.current_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1876,7 +1883,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-within-prev-val" class="figure">
                               {{if isNotEmpty $creditors_within.previous_amount}}
                                   {{if gt $creditors_within.previous_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.previous_amount}}</ix:nonFraction>
+                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.previous_amount}}</ix:nonFraction>
                                   {{if gt $creditors_within.previous_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1894,13 +1901,13 @@ ul.accounts-comps-ct {
 
                           <td id="net-current-assets-curr-val" class="strong total">
                               {{if isNotEmpty $current_net_current_assets}}
-                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$current_net_current_assets}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$current_net_current_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
 
                           <td id="net-current-assets-prev-val" class="total">
                               {{if isNotEmpty $previous_net_current_assets}}
-                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$previous_net_current_assets}}</ix:nonFraction>
+                                 <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$previous_net_current_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
                        </tr>
@@ -1909,6 +1916,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - TOTAL ASSETS LESS CURRENT LIABILITIES -->
 
                   {{if isNotEmpty ($current_total_assets := $liabilities.current_total_assets_less_current_liabilities) ($previous_total_assets := $liabilities.previous_total_assets_less_current_liabilities)}}
+
                       <tr class="figures">
                           <td id="total-assets-label">Total assets less current liabilities:</td>
 
@@ -1931,6 +1939,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - CREDITORS AFTER ONE YEAR -->
 
                   {{if $creditors_after := $liabilities.creditors_amounts_falling_due_after_more_than_one_year}}
+
                       <tr class="figures">
                           <td id="creditors-after-label">Creditors: amounts falling due after more than one year:</td>
 
@@ -1957,6 +1966,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - PROVISION FOR LIABILITIES -->
 
                   {{if $provision := $liabilities.provision_for_liabilities}}
+
                       <tr class="figures">
                           <td id="provision-for-liabilities-label">Provision for liabilities:</td>
 
@@ -1983,6 +1993,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - ACCRUALS AND DEFERRED INCOME -->
 
                   {{if $accruals := $liabilities.accruals_and_deferred_income}}
+              
                       <tr class="figures">
                           <td id="accruals-and-deferred-income-label">Accruals and deferred income:</td>
 
@@ -2001,6 +2012,7 @@ ul.accounts-comps-ct {
                                   {{if gt $accruals.previous_amount 0.0}}({{end}}
                                   <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesNotExpressedWithinCreditorsSubtotal" format="ixt2:numdotdecimal">{{$accruals.previous_amount}}</ix:nonFraction>
                                   {{if gt $accruals.previous_amount 0.0}}){{end}}
+                              {{end}}
                           </td>
                       </tr>
                   {{end}}
@@ -2085,25 +2097,25 @@ ul.accounts-comps-ct {
 
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
         {{if $postBalanceSheetEvents := .small_full_account.notes.post_balance_sheet_events}}
-          {{incValue "notes-page-count" }}
-          {{setValue "pbse-notes-id" (getValue "notes-page-count") }}
-          <div class="page">
-            <div class="header">
-              <h1 class="text--center">
-                <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
-              </h1>
+            {{incValue "notes-page-count" }}
+            {{setValue "pbse-notes-id" (getValue "notes-page-count") }}
+            <div class="page">
+                <div class="header">
+                    <h1 class="text--center">
+                      <ix:nonNumeric name="uk-bus:EntityCurrentLegalOrRegisteredName" contextRef="CY">{{$companyName}}</ix:nonNumeric>
+                    </h1>
+                  </div>
+                  <h2 class="text--center">Notes to the Financial Statements</h2>
+                  <p class="text--center">
+                    <strong>for the Period Ended {{$postBalanceSheetEvents.current_period_date_formatted}}</strong>
+                  </p>
+                  <h2>{{getValue "notes-page-count"}}. Post balance sheet events</h2>
+                  <div>
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="POST_CY" name="core:DescriptionEventAfterReportingDate">{{$postBalanceSheetEvents.post_balance_sheet_events_info}}</ix:nonNumeric>
+                    </p>
+                </div>
             </div>
-            <h2 class="text--center">Notes to the Financial Statements</h2>
-            <p class="text--center">
-              <strong>for the Period Ended {{$postBalanceSheetEvents.current_period_date_formatted}}</strong>
-            </p>
-            <h2>{{getValue "notes-page-count"}}. Post balance sheet events</h2>
-            <div>
-              <p class="text-area-display">
-                <ix:nonNumeric contextRef="POST_CY" name="core:DescriptionEventAfterReportingDate">{{$postBalanceSheetEvents.post_balance_sheet_events_info}}</ix:nonNumeric>
-              </p>
-            </div>
-          </div>
         {{- end -}}
         <!-- POST BALANCE SHEET EVENTS NOTE END -->
       </div>
