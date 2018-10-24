@@ -1,9 +1,14 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,10 +32,10 @@ public class StatementTransformerTest {
     public void testTransformerWithEmptyObject() {
         StatementEntity statementEntity = statementTransformer.transform(new Statement());
 
-        Assertions.assertNotNull(statementEntity);
-        Assertions.assertNull(statementEntity.getData().getEtag());
-        Assertions.assertNull(statementEntity.getData().getKind());
-        Assertions.assertEquals(new HashMap<>(), statementEntity.getData().getLinks());
+        assertNotNull(statementEntity);
+        assertNull(statementEntity.getData().getEtag());
+        assertNull(statementEntity.getData().getKind());
+        assertEquals(new HashMap<>(), statementEntity.getData().getLinks());
     }
 
     @Test
@@ -45,13 +50,13 @@ public class StatementTransformerTest {
 
         StatementEntity statementEntity = statementTransformer.transform(statement);
 
-        Assertions.assertNotNull(statementEntity);
-        Assertions.assertEquals("etag", statementEntity.getData().getEtag());
-        Assertions.assertEquals("kind", statementEntity.getData().getKind());
-        Assertions.assertEquals(new HashMap<>(), statementEntity.getData().getLinks());
-        Assertions.assertFalse(statementEntity.getData().getHasAgreedToLegalStatements());
-        Assertions.assertEquals("def", statementEntity.getData().getLegalStatements().get("abc"));
-        Assertions.assertEquals("jkl", statementEntity.getData().getLegalStatements().get("ghi"));
+        assertNotNull(statementEntity);
+        assertEquals("etag", statementEntity.getData().getEtag());
+        assertEquals("kind", statementEntity.getData().getKind());
+        assertEquals(new HashMap<>(), statementEntity.getData().getLinks());
+        assertFalse(statementEntity.getData().getHasAgreedToLegalStatements());
+        assertEquals("def", statementEntity.getData().getLegalStatements().get("abc"));
+        assertEquals("jkl", statementEntity.getData().getLegalStatements().get("ghi"));
     }
 
     @Test
@@ -68,19 +73,19 @@ public class StatementTransformerTest {
 
         Statement statement = statementTransformer.transform(statementEntity);
 
-        Assertions.assertNotNull(statement);
-        Assertions.assertEquals("etag", statement.getEtag());
-        Assertions.assertEquals("kind", statement.getKind());
-        Assertions.assertEquals(new HashMap<>(), statement.getLinks());
-        Assertions.assertTrue(statement.getHasAgreedToLegalStatements());
-        Assertions.assertEquals("def", statement.getLegalStatements().get("abc"));
-        Assertions.assertEquals("jkl", statement.getLegalStatements().get("ghi"));
+        assertNotNull(statement);
+        assertEquals("etag", statement.getEtag());
+        assertEquals("kind", statement.getKind());
+        assertEquals(new HashMap<>(), statement.getLinks());
+        assertTrue(statement.getHasAgreedToLegalStatements());
+        assertEquals("def", statement.getLegalStatements().get("abc"));
+        assertEquals("jkl", statement.getLegalStatements().get("ghi"));
     }
 
-    private Map<String, String> getPopulatedMapStatement(){
+    private Map<String, String> getPopulatedMapStatement() {
         Map<String, String> result = new HashMap<>();
         result.put("abc", "def");
-        result.put("ghi","jkl");
+        result.put("ghi", "jkl");
         return result;
     }
 }
