@@ -67,12 +67,12 @@ public class CurrentPeriodTransformerTest {
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
 
         assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
-        assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotal());
 
         assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
         assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
         assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
-        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotalCurrentAssets());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotal());
 
         assertEquals("kind", data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
@@ -92,7 +92,7 @@ public class CurrentPeriodTransformerTest {
         currentAssets.setStocks(CURRENT_ASSETS_VALID);
         currentAssets.setDebtors(CURRENT_ASSETS_VALID);
         currentAssets.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
-        currentAssets.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL_VALID);
+        currentAssets.setTotal(CURRENT_ASSETS_TOTAL_VALID);
 
         balanceSheet.setCurrentAssets(currentAssets);
     }
@@ -100,7 +100,7 @@ public class CurrentPeriodTransformerTest {
     private void addFixedAssetsToBalanceSheet(BalanceSheet balanceSheet) {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(TANGIBLE_VALID);
-        fixedAssets.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        fixedAssets.setTotal(FIXED_ASSETS_TOTAL_VALID);
 
         balanceSheet.setFixedAssets(fixedAssets);
     }
@@ -122,12 +122,12 @@ public class CurrentPeriodTransformerTest {
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, currentPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
 
         assertEquals(TANGIBLE_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
-        assertEquals(FIXED_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTotal());
 
         assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getStocks());
         assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getDebtors());
         assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getCashAtBankAndInHand());
-        assertEquals(CURRENT_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getTotalCurrentAssets());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getTotal());
         assertEquals("kind", currentPeriod.getKind());
         assertEquals(new HashMap<>(), currentPeriod.getLinks());
     }
@@ -148,7 +148,7 @@ public class CurrentPeriodTransformerTest {
         currentAssetsEntity.setStocks(CURRENT_ASSETS_VALID);
         currentAssetsEntity.setDebtors(CURRENT_ASSETS_VALID);
         currentAssetsEntity.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
-        currentAssetsEntity.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL_VALID);
+        currentAssetsEntity.setTotal(CURRENT_ASSETS_TOTAL_VALID);
 
         balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
     }
@@ -156,7 +156,7 @@ public class CurrentPeriodTransformerTest {
     private void addFixedAssetsToBalanceSheetEntity(BalanceSheetEntity balanceSheetEntity) {
         FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
         fixedAssetsEntity.setTangible(TANGIBLE_VALID);
-        fixedAssetsEntity.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        fixedAssetsEntity.setTotal(FIXED_ASSETS_TOTAL_VALID);
 
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
     }

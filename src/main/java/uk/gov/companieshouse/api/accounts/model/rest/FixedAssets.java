@@ -13,7 +13,7 @@ public class FixedAssets {
     private Long tangible;
 
     @JsonProperty("total")
-    private Long totalFixedAssets;
+    private Long total;
 
     public Long getTangible() {
         return tangible;
@@ -23,11 +23,11 @@ public class FixedAssets {
         this.tangible = tangible;
     }
 
-    public Long getTotalFixedAssets() {
-        return totalFixedAssets;
+    public Long getTotal() {
+        return total;
     }
 
-    public void setTotalFixedAssets(Long totalFixedAssets) {
-        this.totalFixedAssets = totalFixedAssets;
+    public void setTotal(Long total) {
+        this.total = total;
     }
 }

@@ -20,7 +20,7 @@ public class CurrentPeriodValidator extends BaseValidator {
     private static String BALANCE_SHEET_PATH = CURRENT_PERIOD_PATH + ".balance_sheet";
     private static String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static String FIXED_ASSETS_TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
-    private static String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total_current_assets";
+    private static String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod) {
 
@@ -43,7 +43,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
         Long debtors = Optional.ofNullable(currentAssets. getDebtors()).orElse(0L);
         Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
-        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotalCurrentAssets()).orElse(0L);
+        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotal()).orElse(0L);
 
         Long calculatedTotal = stocks + debtors + cashAtBankAndInHand;
 
@@ -55,7 +55,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         if (fixedAssets != null) {
 
             Long tangible = fixedAssets.getTangible();
-            Long fixedAssetsTotal = fixedAssets.getTotalFixedAssets();
+            Long fixedAssetsTotal = fixedAssets.getTotal();
 
             // Will calculate the total of all fixedAssets fields as they are added to the balance sheet
             Long calculatedTotal = tangible;
