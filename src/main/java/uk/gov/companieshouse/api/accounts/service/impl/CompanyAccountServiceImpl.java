@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
@@ -46,7 +47,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
      * {@inheritDoc}
      */
     public ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
-        Transaction transaction, String requestId)
+        Transaction transaction, HttpServletRequest request)
         throws PatchException, DataException {
 
         String id = generateID();
@@ -67,22 +68,22 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         try {
             companyAccountRepository.insert(companyAccountEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
-            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+            LOGGER.errorRequest(request, dke, debugMap);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert company account entity", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
         try {
             transactionManager
-                .updateTransaction(transaction.getId(), requestId, companyAccountLink);
+                .updateTransaction(transaction.getId(), request.getHeader("X-Request-Id"), companyAccountLink);
         } catch (ApiErrorResponseException aere) {
             PatchException patchException = new PatchException(
                 "Failed to patch transaction", aere);
-            LOGGER.errorContext(requestId, patchException, debugMap);
+            LOGGER.errorRequest(request, patchException, debugMap);
             throw patchException;
         }
 
@@ -127,7 +128,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
-    public ResponseObject<CompanyAccount> findById(String id, String requestId)
+    public ResponseObject<CompanyAccount> findById(String id, HttpServletRequest request)
         throws DataException {
 
         CompanyAccountEntity companyAccountEntity;
@@ -137,7 +138,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
             DataException dataException = new DataException("Failed to find Company Account", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 

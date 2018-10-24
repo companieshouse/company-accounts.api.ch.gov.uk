@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class CurrentPeriodService implements
     @Override
     public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
         Transaction transaction,
-        String companyAccountId, String requestId)
+        String companyAccountId, HttpServletRequest request)
         throws DataException {
 
         populateMetadata(currentPeriod, transaction, companyAccountId);
@@ -73,25 +74,25 @@ public class CurrentPeriodService implements
         try {
             currentPeriodRepository.insert(currentPeriodEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorContext(requestId, dke, debugMap);
-            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+            LOGGER.errorRequest(request, dke, debugMap);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
         smallFullService
             .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
-                currentPeriod.getLinks().get(BasicLinkType.SELF.getLink()), requestId);
+                currentPeriod.getLinks().get(BasicLinkType.SELF.getLink()), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
     public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
-        String companyAccountId, String requestId) throws DataException {
+        String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadata(rest, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
@@ -107,8 +108,8 @@ public class CurrentPeriodService implements
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException me) {
             DataException dataException = new DataException(
-                "Failed to update " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+                "Failed to update " + ResourceName.CURRENT_PERIOD.getName(), me);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
@@ -116,7 +117,7 @@ public class CurrentPeriodService implements
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> findById(String id, String requestId)
+    public ResponseObject<CurrentPeriod> findById(String id, HttpServletRequest request)
         throws DataException {
         CurrentPeriodEntity currentPeriodEntity;
         try {
@@ -125,7 +126,7 @@ public class CurrentPeriodService implements
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
             DataException dataException = new DataException("Failed to find Current period", me);
-            LOGGER.errorContext(requestId, dataException, debugMap);
+            LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
 
