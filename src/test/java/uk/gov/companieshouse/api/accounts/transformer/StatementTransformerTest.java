@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
@@ -18,8 +19,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 @TestInstance(Lifecycle.PER_CLASS)
 public class StatementTransformerTest {
 
-
-    private StatementTransformer statementTransformer = new StatementTransformer();
+    @InjectMocks
+    private StatementTransformer statementTransformer;
 
     @Test
     @DisplayName("Tests statement transformer with empty object which should result in null values")
