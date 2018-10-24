@@ -82,12 +82,4 @@ public class StatementTransformerTest {
         result.put("ghi","jkl");
         return result;
     }
-
-    private Map<String, Object> setDebugMap(String[] ... vargs) {
-        Map<String, Object> debugMap = new HashMap<>();
-        for (String[] entry : vargs){
-            debugMap.put(entry[0],entry[1]);
-        }
-        return debugMap;
-    }
 }
