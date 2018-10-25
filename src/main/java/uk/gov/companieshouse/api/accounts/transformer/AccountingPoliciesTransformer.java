@@ -10,12 +10,12 @@ import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
 public class AccountingPoliciesTransformer implements GenericTransformer<AccountingPolicies, AccountingPoliciesEntity> {
 
     @Override
-    public AccountingPoliciesEntity transform(AccountingPolicies entity) {
+    public AccountingPoliciesEntity transform(AccountingPolicies rest) {
 
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = new AccountingPoliciesDataEntity();
         AccountingPoliciesEntity accountingPoliciesEntity = new AccountingPoliciesEntity();
 
-        BeanUtils.copyProperties(entity, accountingPoliciesDataEntity);
+        BeanUtils.copyProperties(rest, accountingPoliciesDataEntity);
         accountingPoliciesEntity.setData(accountingPoliciesDataEntity);
 
         return accountingPoliciesEntity;
