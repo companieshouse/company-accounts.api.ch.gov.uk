@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ public class FilingServiceImpl implements FilingService {
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
+    private static final String DATE_FORMAT_D_MMMM_YYYY = "d MMMM yyyy";
 
     private final DocumentGeneratorCaller documentGeneratorCaller;
     private final EnvironmentReader environmentReader;
@@ -189,11 +191,14 @@ public class FilingServiceImpl implements FilingService {
         filing.setDescriptionIdentifier(accountsType.getAccountType());
         filing.setKind(accountsType.getKind());
 
-        //TODO Check if documentGeneratorResponse contains correct information: periodEndDate, descriptionValues, description (SFA-595). Doc Generator does not cater for small full yet, waiting for this change.
-        filing.setDescriptionValues(documentGeneratorResponse.getDescriptionValues());
+        //TODO Check if documentGeneratorResponse contains correct information: periodEndDate, descriptionValues (wrong format), description (SFA-595). Doc Generator does not cater for small full yet, waiting for this change.
+        LocalDate periodEndDateOnFormatted = getPeriodEndDateFormatted(documentGeneratorResponse);
+
+        //TODO: documentGeneratorResponse.descriptionValues are in the wrong format (d mmmm yyyy) for the filing Generator (yyyy-mm-dd). Check if doc gen. is going to be changed.(SFA-595). so that we don't need to create the Description values
+        filing.setDescriptionValues(createDescriptionValues(periodEndDateOnFormatted));
         filing.setDescription(documentGeneratorResponse.getDescription());
         filing.setData(
-            createFilingData(getPeriodEndDate(documentGeneratorResponse),
+            createFilingData(periodEndDateOnFormatted,
                 documentGeneratorResponse.getLinks().getLocation()));
 
         return filing;
@@ -201,35 +206,38 @@ public class FilingServiceImpl implements FilingService {
 
     /**
      * Retrieve the period end date from the document generator response, and set the date in the
-     * expected format YYYYMMDD.
+     * expected format YYYY-mm-dd.
      *
-     * @param documentGeneratorResponse
-     * @return
+     * @param documentGeneratorResponse information from the document generator call.
+     * @return period end dated formatted
      */
-    private LocalDate getPeriodEndDate(
+    private LocalDate getPeriodEndDateFormatted(
         DocumentGeneratorResponse documentGeneratorResponse) {
 
-        //TODO check the periodEndDate is being formatted to: YYYY MM DD.(SFA-595)
+        //TODO periodEndDate needs to be formatted to YYYY-MM-DD. Currently set to day month year e.g. 24 December 2018. (SFA-595)
         if (documentGeneratorResponse.getDescriptionValues().containsKey(PERIOD_END_ON)) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_FORMAT_D_MMMM_YYYY);
+
             return LocalDate
-                .parse(documentGeneratorResponse.getDescriptionValues().get(PERIOD_END_ON));
+                .parse(documentGeneratorResponse.getDescriptionValues().get(PERIOD_END_ON), dtf);
         }
         return null;
     }
 
     /**
-     * Get the description values, which currently contains the period end date. This data is
-     * required for the filing description.
+     * create description values with the period end on.This data is required for the filing
+     * description.
      *
      * @param periodEndDate - account's period end date
      * @return {@link Map<String,String>} containing period end date, to match filing model
      */
-    private Map<String, String> getDescriptionValues(LocalDate periodEndDate) {
-        //TODO remove this method if no longer needed. it was used by filing.setDescriptionValues(). (SFA-595)
-        Map<String, String> descriptionValues = new HashMap<>();
-        descriptionValues.put(PERIOD_END_ON, periodEndDate.toString());
-
-        return descriptionValues;
+    private Map<String, String> createDescriptionValues(LocalDate periodEndDate) {
+        if (periodEndDate != null) {
+            Map<String, String> descriptionValues = new HashMap<>();
+            descriptionValues.put(PERIOD_END_ON, periodEndDate.toString());
+            return descriptionValues;
+        }
+        return null;
     }
 
     /**

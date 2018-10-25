@@ -27,6 +27,8 @@ public class DocumentGeneratorCaller {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
+    private static final String MIME_TYPE = "text/html";
+
     @Value("${documentgenerator.service.host}")
     private String documentGeneratorHost;
 
@@ -82,7 +84,7 @@ public class DocumentGeneratorCaller {
         DocumentGeneratorRequest request = new DocumentGeneratorRequest();
         request.setResourceUri(accountsResourceUri);
         request.setResourceID(transactionId);
-        request.setMimeType("application/json");
+        request.setMimeType(MIME_TYPE);
         return request;
     }
 

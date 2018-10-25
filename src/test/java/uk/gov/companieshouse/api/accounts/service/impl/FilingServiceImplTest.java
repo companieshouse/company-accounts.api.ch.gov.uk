@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
@@ -10,11 +11,13 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -231,7 +234,7 @@ class FilingServiceImplTest {
 
         if (addPeridEndValueToDescriptionValues) {
             Map<String, String> descriptionValues = new HashMap<>();
-            descriptionValues.put(PERIOD_END_ON_KEY, "2018-01-01");
+            descriptionValues.put(PERIOD_END_ON_KEY, "01 January 2018");
             documentGeneratorResponse.setDescriptionValues(descriptionValues);
         }
 
@@ -239,6 +242,9 @@ class FilingServiceImplTest {
             documentGeneratorResponse
                 .setDescription("Small full accounts made up to 18 January 2018");
         }
+
+        documentGeneratorResponse.setDescriptionIdentifier("small-full-accounts");
+        documentGeneratorResponse.setSize("999999");
 
         return documentGeneratorResponse;
     }

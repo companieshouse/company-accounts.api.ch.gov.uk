@@ -131,11 +131,14 @@ public class DocumentGeneratorCallerTest {
         documentGeneratorResponse.setLinks(links);
 
         Map<String, String> descriptionValues = new HashMap<>();
-        descriptionValues.put(PERIOD_END_ON_KEY, "2018-01-01");
+        descriptionValues.put(PERIOD_END_ON_KEY, "01 January 2018");
         documentGeneratorResponse.setDescriptionValues(descriptionValues);
 
         documentGeneratorResponse
             .setDescription("Small full accounts made up to 18 January 2018");
+
+        documentGeneratorResponse.setDescriptionIdentifier("small-full-accounts");
+        documentGeneratorResponse.setSize("999999");
 
         return documentGeneratorResponse;
     }
