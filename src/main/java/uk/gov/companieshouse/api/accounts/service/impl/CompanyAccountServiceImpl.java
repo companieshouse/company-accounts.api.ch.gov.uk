@@ -69,7 +69,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
             companyAccountRepository.insert(companyAccountEntity);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorRequest(request, dke, debugMap);
-            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert company account entity", me);

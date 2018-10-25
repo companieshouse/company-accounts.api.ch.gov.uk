@@ -33,6 +33,8 @@ public class ApiResponseMapper {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             case DUPLICATE_KEY_ERROR:
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            case VALIDATION_ERROR:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
