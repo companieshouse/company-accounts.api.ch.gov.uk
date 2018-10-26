@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -150,5 +151,16 @@ public class CurrentPeriodControllerTest {
             .update(currentPeriod, bindingResult, "123456", request);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Test correct response when validator fails")
+    public void badRequestWhenValidatorFails() {
+        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseEntity<?> response = currentPeriodController.create(currentPeriod, bindingResult, "123456", request);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

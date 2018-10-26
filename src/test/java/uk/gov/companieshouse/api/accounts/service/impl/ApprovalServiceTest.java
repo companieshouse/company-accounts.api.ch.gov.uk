@@ -26,12 +26,14 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -52,6 +54,9 @@ public class ApprovalServiceTest {
 
     @Mock
     private SmallFullService smallFullService;
+
+    @Mock
+    private ApprovalValidator approvalValidator;
 
     @Mock
     private MessageDigest messageDigest;
@@ -79,6 +84,7 @@ public class ApprovalServiceTest {
     @DisplayName("Tests the successful creation of an Approval resource")
     public void canCreateAnApproval() throws DataException {
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
         ResponseObject<Approval> result = approvalService
             .create(approval, transaction, "", request);
         assertNotNull(result);
@@ -91,6 +97,7 @@ public class ApprovalServiceTest {
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(duplicateKeyException);
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
         ResponseObject response = approvalService.create(approval, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -102,11 +109,10 @@ public class ApprovalServiceTest {
     void createApprovalMongoExceptionFailure() throws DataException {
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
-        Executable executable = () -> {
-            approvalService.create(approval, transaction, "", request);
-        };
-        assertThrows(DataException.class, executable);
+        assertThrows(DataException.class,
+            () -> approvalService.create(approval, transaction, "", request));
     }
 
     @Test
@@ -125,9 +131,6 @@ public class ApprovalServiceTest {
     @DisplayName("Tests mongo exception thrown on find of an Approval resource")
     public void findApprovalMongoException() throws DataException {
         when(approvalRepository.findById("")).thenThrow(mongoException);
-        Executable executable = () -> {
-            approvalService.findById("", request);
-        };
-        assertThrows(DataException.class, executable);
+        assertThrows(DataException.class, () -> approvalService.findById("", request));
     }
 }

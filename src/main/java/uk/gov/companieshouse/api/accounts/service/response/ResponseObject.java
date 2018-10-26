@@ -20,6 +20,17 @@ public class ResponseObject<T extends RestObject> {
         this.data = data;
     }
 
+    public ResponseObject(ResponseStatus status, Errors errors) {
+        this.status = status;
+        this.errors = errors;
+    }
+
+    public ResponseObject(ResponseStatus status, T data, Errors errors) {
+        this.status = status;
+        this.data = data;
+        this.errors = errors;
+    }
+
     public ResponseStatus getStatus() {
         return status;
     }
