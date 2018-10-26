@@ -6,10 +6,13 @@ public class CurrentAssetsEntity {
 
     @Field("total")
     private Long total;
+
     @Field("stocks")
     private Long stocks;
+
     @Field("debtors")
     private Long debtors;
+
     @Field("cash_at_bank_and_in_hand")
     private Long cashAtBankAndInHand;
 

@@ -10,12 +10,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
-
-import javax.validation.Valid;
-import java.util.Optional;
 
 /**
  * Validates Current Period
@@ -37,13 +31,11 @@ public class CurrentPeriodValidator extends BaseValidator {
         Errors errors = new Errors();
 
 
-
             validateTotalFixedAssets(currentPeriod, errors);
 
             validateTotalOtherLiabilitiesOrAssets(currentPeriod, errors);
 
             validateTotalCurrentAssets(currentPeriod, errors);
-
 
 
         return errors;
@@ -92,11 +84,11 @@ public class CurrentPeriodValidator extends BaseValidator {
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
         Long creditorsDueWithinOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear()).orElse(0L);
 
-        Long totalCurrentAssets;
+        Long totalCurrentAssets = 0L;
         if (currentPeriod.getBalanceSheet().getCurrentAssets() != null) {
             totalCurrentAssets = currentPeriod.getBalanceSheet().getCurrentAssets().getTotal();
         }
-        Long calculatedTotal = /* totalCurrentAssets + */ prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
+        Long calculatedTotal =  totalCurrentAssets +  prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
         validateAggregateTotal(netCurrentAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
