@@ -1679,13 +1679,13 @@ ul.accounts-comps-ct {
 
                     <td class="strong text--right" id="called-up-share-capital-not-paid-curr" >
                       {{if isNotEmpty $calledUpShareCapitalNotPaid.current_amount}}
-                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
+                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="CY_END" unitRef="GBP">{{getMagnitudeFormatted $calledUpShareCapitalNotPaid.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
 
                     <td id="called-up-share-capital-not-paid-prev" class="text--right">
                       {{if isNotEmpty $calledUpShareCapitalNotPaid.previous_amount}}
-                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="PY_END" unitRef="GBP">{{$calledUpShareCapitalNotPaid.previous_amount}}</ix:nonFraction>
+                       <ix:nonFraction format="ixt2:numdotdecimal" decimals="0" name="core:CalledUpShareCapitalNotPaidNotExpressedAsCurrentAsset" contextRef="PY_END" unitRef="GBP">{{getMagnitudeFormatted $calledUpShareCapitalNotPaid.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                 </tr>
@@ -1704,13 +1704,13 @@ ul.accounts-comps-ct {
 
                     <td id="tangible-curr" class="strong figure">
                         {{if isNotEmpty $fixedAssets.tangible.current_amount}}
-                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.current_amount}}</ix:nonFraction>
+                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.tangible.current_amount}}</ix:nonFraction>
                         {{end}}
                     </td>
 
                     <td id="tangible-prev" class="text--right">
                         {{if isNotEmpty $fixedAssets.tangible.previous_amount}}
-                            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{$fixedAssets.tangible.previous_amount}}</ix:nonFraction>
+                            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.tangible.previous_amount}}</ix:nonFraction>
                         {{end}}
                     </td>
                   </tr>
@@ -1722,13 +1722,13 @@ ul.accounts-comps-ct {
 
                       <td id="fixed-assets-curr-total" class="strong total">
                           {{if isNotEmpty $fixedAssets.current_total}}
-                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
+                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.current_total}}</ix:nonFraction>
                           {{end}}
                       </td>
 
                       <td id="fixed-assets-prev-total" class="total">
                           {{if isNotEmpty $fixedAssets.previous_total}}
-                             <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
+                             <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.previous_total}}</ix:nonFraction>
                           {{end}}
                       </td>
                   </tr>
@@ -1752,13 +1752,13 @@ ul.accounts-comps-ct {
 
                           <td id="stocks-curr-val" class="strong figure">
                             {{if isNotEmpty $stocks.current_amount}}
-                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.current_amount}}</ix:nonFraction>
+                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
                             {{end}}
                           </td>
 
                           <td id="stocks-prev-val" class="figure">
                             {{if isNotEmpty $stocks.previous_amount}}
-                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{$stocks.previous_amount}}</ix:nonFraction>
+                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.previous_amount}}</ix:nonFraction>
                             {{end}}
                           </td>
                        </tr>
@@ -1775,13 +1775,13 @@ ul.accounts-comps-ct {
 
                           <td id="debtors-curr-val" class="strong figure">
                               {{if isNotEmpty $debtors.current_amount}}
-                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.current_amount}}</ix:nonFraction>
+                                <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtors.current_amount}}</ix:nonFraction>
                              {{end}}
                           </td>
 
                           <td id="debtors-prev-val" class="figure">
                               {{if isNotEmpty $debtors.previous_amount}}
-                                 <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtors.previous_amount}}</ix:nonFraction>
+                                 <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtors.previous_amount}}</ix:nonFraction>
                               {{end}}
                           </td>
 
@@ -1799,13 +1799,13 @@ ul.accounts-comps-ct {
 
                           <td id="cash-at-bank-curr-val" class="strong figure">
                             {{if isNotEmpty $cashAtBank.current_amount}}
-                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.current_amount}}</ix:nonFraction>
+                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.current_amount}}</ix:nonFraction>
                             {{end}}
                           </td>
 
                           <td id="cash-at-bank-prev-val" class="figure">
                             {{if isNotEmpty $cashAtBank.previous_amount}}
-                                <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{$cashAtBank.previous_amount}}</ix:nonFraction>
+                                <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.previous_amount}}</ix:nonFraction>
                             {{end}}
                           </td>
 
@@ -1823,13 +1823,13 @@ ul.accounts-comps-ct {
 
                           <td id="current-assets-curr-val" class="strong total">
                             {{if isNotEmpty $currentAssets.current_total}}
-                             <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{$currentAssets.current_total}}</ix:nonFraction>
+                             <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.current_total}}</ix:nonFraction>
                             {{end}}
                           </td>
 
                           <td id="current-assets-prev-val" class="total">
                             {{if isNotEmpty $currentAssets.previous_total}}
-                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{$currentAssets.previous_total}}</ix:nonFraction>
+                              <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.previous_total}}</ix:nonFraction>
                             {{end}}
                           </td>
                       </tr>
@@ -1851,13 +1851,13 @@ ul.accounts-comps-ct {
 
                           <td id="prepayments-curr-val" class="strong figure">
                               {{if isNotEmpty $prepayments.current_amount}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.current_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.current_amount}}</ix:nonFraction>
                               {{end}}
                           </td>
 
                           <td id="prepayments-prev-val" class="figure">
                               {{if isNotEmpty $prepayments.previous_amount}}
-                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{$prepayments.previous_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.previous_amount}}</ix:nonFraction>
                               {{end}}
                            </td>
                       </tr>
@@ -1875,7 +1875,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
                                   {{if gt $creditors_within.current_amount 0.0}}({{end}}
-                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.current_amount}}</ix:nonFraction>
+                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $creditors_within.current_amount}}</ix:nonFraction>
                                   {{if gt $creditors_within.current_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1883,7 +1883,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-within-prev-val" class="figure">
                               {{if isNotEmpty $creditors_within.previous_amount}}
                                   {{if gt $creditors_within.previous_amount 0.0}}({{end}}
-                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_within.previous_amount}}</ix:nonFraction>
+                                      <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $creditors_within.previous_amount}}</ix:nonFraction>
                                   {{if gt $creditors_within.previous_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1901,13 +1901,14 @@ ul.accounts-comps-ct {
 
                           <td id="net-current-assets-curr-val" class="strong total">
                               {{if isNotEmpty $current_net_current_assets}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$current_net_current_assets}}</ix:nonFraction>
+                              {{emitIfNegative $current_net_current_assets "("}}<ix:nonFraction {{if (lt $current_net_current_assets 0.0)}} sign="-"{{end}} contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_net_current_assets}}</ix:nonFraction>{{emitIfNegative $current_net_current_assets ")"}}
+
                               {{end}}
                           </td>
 
                           <td id="net-current-assets-prev-val" class="total">
                               {{if isNotEmpty $previous_net_current_assets}}
-                                 <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{$previous_net_current_assets}}</ix:nonFraction>
+                              {{ emitIfNegative $previous_net_current_assets "(" }}<ix:nonFraction {{if (lt $previous_net_current_assets 0.0)}} sign="-" {{end}} contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_net_current_assets}}</ix:nonFraction>{{emitIfNegative $previous_net_current_assets ")"}}
                               {{end}}
                           </td>
                        </tr>
@@ -1924,13 +1925,13 @@ ul.accounts-comps-ct {
 
                           <td id="total-assets-less-current-liabilities-curr-val" class="strong figure">
                               {{if isNotEmpty $current_total_assets}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{$current_total_assets}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
 
                           <td id="total-assets-less-current-liabilities-prev-val" class="figure">
                               {{if isNotEmpty $previous_total_assets}}
-                                   <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{$previous_total_assets}}</ix:nonFraction>
+                                   <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_total_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
                       </tr>
@@ -1948,7 +1949,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-after-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_after.current_amount}}
                                   {{if gt $creditors_after.current_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_after.current_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $creditors_after.current_amount}}</ix:nonFraction>
                                   {{if gt $creditors_after.current_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1956,7 +1957,7 @@ ul.accounts-comps-ct {
                           <td id="creditors-after-prev-val" class="figure">
                               {{if isNotEmpty $creditors_after.previous_amount}}
                                   {{if gt $creditors_after.previous_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{$creditors_after.previous_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $creditors_after.previous_amount}}</ix:nonFraction>
                                   {{if gt $creditors_after.previous_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1975,7 +1976,7 @@ ul.accounts-comps-ct {
                           <td id="provision-curr-val" class="strong figure">
                               {{if isNotEmpty $provision.current_amount}}
                                   {{if gt $provision.current_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:ProvisionsForLiabilitiesBalanceSheetSubtotal" format="ixt2:numdotdecimal">{{$provision.current_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:ProvisionsForLiabilitiesBalanceSheetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $provision.current_amount}}</ix:nonFraction>
                                   {{if gt $provision.current_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -1983,7 +1984,7 @@ ul.accounts-comps-ct {
                           <td id="provision-prev-val" class="figure">
                               {{if isNotEmpty $provision.previous_amount}}
                                   {{if gt $provision.previous_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:ProvisionsForLiabilitiesBalanceSheetSubtotal" format="ixt2:numdotdecimal">{{$provision.previous_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:ProvisionsForLiabilitiesBalanceSheetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $provision.previous_amount}}</ix:nonFraction>
                                   {{if gt $provision.previous_amount 0.0}}){{end}}
                             {{end}}
                           </td>
@@ -2002,7 +2003,7 @@ ul.accounts-comps-ct {
                           <td id="accruals-curr-val" class="strong figure">
                               {{if isNotEmpty $accruals.current_amount}}
                                   {{if gt $accruals.current_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesNotExpressedWithinCreditorsSubtotal" format="ixt2:numdotdecimal">{{$accruals.current_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesNotExpressedWithinCreditorsSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $accruals.current_amount}}</ix:nonFraction>
                                   {{if gt $accruals.current_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -2010,7 +2011,7 @@ ul.accounts-comps-ct {
                           <td id="accruals-prev-val" class="figure">
                               {{if isNotEmpty $accruals.previous_amount}}
                                   {{if gt $accruals.previous_amount 0.0}}({{end}}
-                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesNotExpressedWithinCreditorsSubtotal" format="ixt2:numdotdecimal">{{$accruals.previous_amount}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesNotExpressedWithinCreditorsSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $accruals.previous_amount}}</ix:nonFraction>
                                   {{if gt $accruals.previous_amount 0.0}}){{end}}
                               {{end}}
                           </td>
@@ -2028,13 +2029,13 @@ ul.accounts-comps-ct {
 
                           <td id="total-net-assets-curr-val" class="strong total">
                               {{if isNotEmpty $current_total_net_assets}}
-                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetAssetsLiabilities" format="ixt2:numdotdecimal">{{$current_total_net_assets}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_net_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
 
                           <td id="total-net-assets-prev-val" class="total">
                               {{if isNotEmpty $previous_total_net_assets}}
-                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetAssetsLiabilities" format="ixt2:numdotdecimal">{{$previous_total_net_assets}}</ix:nonFraction>
+                                  <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:NetAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_total_net_assets}}</ix:nonFraction>
                               {{end}}
                           </td>
                       </tr>
