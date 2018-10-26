@@ -7,7 +7,7 @@ public enum ResourceName {
     CURRENT_PERIOD("current-period"),
     PREVIOUS_PERIOD("previous-period"),
     APPROVAL("approval"),
-    ACCOUNTING_POLICIES("accounting-policies");
+    ACCOUNTING_POLICIES("accounting-policy");
 
     private String name;
 
