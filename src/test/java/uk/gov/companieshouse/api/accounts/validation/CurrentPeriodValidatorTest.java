@@ -80,7 +80,7 @@ public class CurrentPeriodValidatorTest {
         currentAssets.setStocks(null);
         currentAssets.setDebtors(null);
         currentAssets.setCashAtBankAndInHand(5L);
-        currentAssets.setTotalCurrentAssets(10L);
+        currentAssets.setTotal(10L);
 
         balanceSheet.setCurrentAssets(currentAssets);
         currentPeriod.setBalanceSheet(balanceSheet);
@@ -103,7 +103,7 @@ public class CurrentPeriodValidatorTest {
         currentAssets.setStocks(5L);
         currentAssets.setDebtors(5L);
         currentAssets.setCashAtBankAndInHand(5L);
-        currentAssets.setTotalCurrentAssets(15L);
+        currentAssets.setTotal(15L);
 
         balanceSheet.setCurrentAssets(currentAssets);
 
@@ -146,7 +146,7 @@ public class CurrentPeriodValidatorTest {
         currentAssets.setStocks(5L);
         currentAssets.setDebtors(5L);
         currentAssets.setCashAtBankAndInHand(5L);
-        currentAssets.setTotalCurrentAssets(10L);
+        currentAssets.setTotal(10L);
 
         balanceSheet.setCurrentAssets(currentAssets);
     }
