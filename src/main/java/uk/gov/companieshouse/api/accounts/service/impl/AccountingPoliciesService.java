@@ -141,17 +141,6 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.ACCOUNTING_POLICIES.getName());
     }
 
-    private Map<String, Object> getDebugMap(Transaction transaction, String companyAccountsId, String id) {
-
-        Map<String, Object> debugMap = new HashMap<>();
-
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountsId);
-        debugMap.put("id", id);
-
-        return debugMap;
-    }
-
     private String getSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"

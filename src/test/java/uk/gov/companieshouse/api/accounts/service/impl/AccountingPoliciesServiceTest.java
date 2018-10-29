@@ -28,7 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +72,7 @@ public class AccountingPoliciesServiceTest {
     private AccountingPoliciesEntity accountingPoliciesEntity;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         AccountingPoliciesDataEntity dataEntity = new AccountingPoliciesDataEntity();
 
@@ -83,7 +86,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the successful creation of an AccountingPolicies resource")
-    public void canCreateAnAccountingPolicies() throws DataException {
+    void canCreateAnAccountingPolicies() throws DataException {
 
         when(transformer.transform(accountingPolicies)).thenReturn(accountingPoliciesEntity);
 
@@ -96,7 +99,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating an AccountingPolicies resource")
-    public void createAccountingPoliciesDuplicateKey() throws DataException {
+    void createAccountingPoliciesDuplicateKey() throws DataException {
 
         doReturn(accountingPoliciesEntity).when(transformer).transform(ArgumentMatchers
                 .any(AccountingPolicies.class));
@@ -111,7 +114,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating an AccountingPolicies")
-    void createAccountingPoliciesMongoExceptionFailure() throws DataException {
+    void createAccountingPoliciesMongoExceptionFailure() {
 
         doReturn(accountingPoliciesEntity).when(transformer).transform(ArgumentMatchers
                 .any(AccountingPolicies.class));
@@ -123,7 +126,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the successful update of an AccountingPolicies resource")
-    public void canUpdateAnAccountingPolicies() throws DataException {
+    void canUpdateAnAccountingPolicies() throws DataException {
 
         when(transformer.transform(accountingPolicies)).thenReturn(accountingPoliciesEntity);
 
@@ -136,7 +139,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when updating an AccountingPolicies")
-    void updateAccountingPoliciesMongoExceptionFailure() throws DataException {
+    void updateAccountingPoliciesMongoExceptionFailure() {
 
         doReturn(accountingPoliciesEntity).when(transformer).transform(ArgumentMatchers
                 .any(AccountingPolicies.class));
@@ -148,7 +151,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests the successful find of an AccountingPolicies resource")
-    public void findAccountingPolicies() throws DataException {
+    void findAccountingPolicies() throws DataException {
 
         when(repository.findById(""))
                 .thenReturn(Optional.ofNullable(accountingPoliciesEntity));
@@ -162,7 +165,7 @@ public class AccountingPoliciesServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of an AccountingPolicies resource")
-    public void findAccountingPoliciesMongoException() throws DataException {
+    void findAccountingPoliciesMongoException() {
         when(repository.findById("")).thenThrow(mongoException);
 
         assertThrows(DataException.class, () -> service.findById("", request));
