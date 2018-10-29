@@ -15,6 +15,9 @@ public class ErrorMapper {
   @Value("${value.outside.range}")
   private String valueOutsideRange;
 
+  @Value("${max.length.exceeded}")
+  private String maxLengthExceeded;
+
     /**
      * Maps each binding result error to {@link Error} model, and adds to returned {@link Errors}
      *
@@ -46,6 +49,16 @@ public class ErrorMapper {
                         LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
                     error.addErrorValue("lower", argument[2].toString());
                     error.addErrorValue("upper", argument[1].toString());
+                    errors.addError(error);
+
+                } else if ("max.length.exceeded".equals(errorMessage)) {
+
+                    Object[] argument = fieldError.getArguments();
+
+                    Error error = new Error(maxLengthExceeded,
+                            location,
+                            LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
+                    error.addErrorValue("length", argument[1].toString());
                     errors.addError(error);
 
                 } else {
