@@ -91,7 +91,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
 
         ResponseObject<CompanyAccount> responseObject;
         try {
-            responseObject = companyAccountService.findById(companyAccountId, requestId);
+            responseObject = companyAccountService.findById(companyAccountId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

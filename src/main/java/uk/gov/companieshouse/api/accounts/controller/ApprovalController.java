@@ -72,9 +72,9 @@ public class ApprovalController {
 
         try {
             ResponseObject<Approval> responseObject = approvalService
-                .create(approval, transaction, companyAccountId, requestId);
+                .create(approval, transaction, companyAccountId, request);
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getValidationErrorData());
+                responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
@@ -92,7 +92,6 @@ public class ApprovalController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String requestId = request.getHeader(REQUEST_ID);
         String approvalId = approvalService.generateID(companyAccountId);
         ResponseObject<Approval> responseObject;
 
@@ -100,7 +99,7 @@ public class ApprovalController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = approvalService.findById(approvalId, requestId);
+            responseObject = approvalService.findById(approvalId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
