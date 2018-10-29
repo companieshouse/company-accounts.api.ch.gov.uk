@@ -24,6 +24,13 @@ import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 @TestInstance(Lifecycle.PER_CLASS)
 public class StatementTransformerTest {
 
+    private static final String ETAG = "etag";
+    private static final String KIND = "kind";
+    private static final String STATEMENT_KEY_1 = "statement1";
+    private static final String STATEMENT_KEY_2 = "statement2";
+    private static final String STATEMENT_DESCRIPTION_FOR_KEY_1 = "Statement description for key 1";
+    private static final String STATEMENT_DESCRIPTION_FOR_KEY_2 = "Statement description for key 2";
+
     @InjectMocks
     private StatementTransformer statementTransformer;
 
@@ -42,8 +49,8 @@ public class StatementTransformerTest {
     @DisplayName("Tests statement transformer with populated object and validates values returned")
     public void testRestToEntityTransformerWithPopulatedObject() {
         Statement statement = new Statement();
-        statement.setEtag("etag");
-        statement.setKind("kind");
+        statement.setEtag(ETAG);
+        statement.setKind(KIND);
         statement.setLinks(new HashMap<>());
         statement.setHasAgreedToLegalStatements(false);
         statement.setLegalStatements(getPopulatedMapStatement());
@@ -51,12 +58,15 @@ public class StatementTransformerTest {
         StatementEntity statementEntity = statementTransformer.transform(statement);
 
         assertNotNull(statementEntity);
-        assertEquals("etag", statementEntity.getData().getEtag());
-        assertEquals("kind", statementEntity.getData().getKind());
+        assertEquals(ETAG, statementEntity.getData().getEtag());
+        assertEquals(KIND, statementEntity.getData().getKind());
         assertEquals(new HashMap<>(), statementEntity.getData().getLinks());
         assertFalse(statementEntity.getData().getHasAgreedToLegalStatements());
-        assertEquals("def", statementEntity.getData().getLegalStatements().get("abc"));
-        assertEquals("jkl", statementEntity.getData().getLegalStatements().get("ghi"));
+        assertEquals(STATEMENT_DESCRIPTION_FOR_KEY_1,
+            statementEntity.getData().getLegalStatements().get(STATEMENT_KEY_1));
+
+        assertEquals(STATEMENT_DESCRIPTION_FOR_KEY_2,
+            statementEntity.getData().getLegalStatements().get(STATEMENT_KEY_2));
     }
 
     @Test
@@ -64,8 +74,8 @@ public class StatementTransformerTest {
     public void testEntityToRestTransformerWithPopulatedObject() {
         StatementEntity statementEntity = new StatementEntity();
         StatementDataEntity statementDataEntity = new StatementDataEntity();
-        statementDataEntity.setEtag("etag");
-        statementDataEntity.setKind("kind");
+        statementDataEntity.setEtag(ETAG);
+        statementDataEntity.setKind(KIND);
         statementDataEntity.setLinks(new HashMap<>());
         statementDataEntity.setHasAgreedToLegalStatements(true);
         statementDataEntity.setLegalStatements(getPopulatedMapStatement());
@@ -74,18 +84,21 @@ public class StatementTransformerTest {
         Statement statement = statementTransformer.transform(statementEntity);
 
         assertNotNull(statement);
-        assertEquals("etag", statement.getEtag());
-        assertEquals("kind", statement.getKind());
+        assertEquals(ETAG, statement.getEtag());
+        assertEquals(KIND, statement.getKind());
         assertEquals(new HashMap<>(), statement.getLinks());
         assertTrue(statement.getHasAgreedToLegalStatements());
-        assertEquals("def", statement.getLegalStatements().get("abc"));
-        assertEquals("jkl", statement.getLegalStatements().get("ghi"));
+        assertEquals(STATEMENT_DESCRIPTION_FOR_KEY_1,
+            statement.getLegalStatements().get(STATEMENT_KEY_1));
+
+        assertEquals(STATEMENT_DESCRIPTION_FOR_KEY_2,
+            statement.getLegalStatements().get(STATEMENT_KEY_2));
     }
 
     private Map<String, String> getPopulatedMapStatement() {
         Map<String, String> result = new HashMap<>();
-        result.put("abc", "def");
-        result.put("ghi", "jkl");
+        result.put(STATEMENT_KEY_1, STATEMENT_DESCRIPTION_FOR_KEY_1);
+        result.put(STATEMENT_KEY_2, STATEMENT_DESCRIPTION_FOR_KEY_2);
         return result;
     }
 }
