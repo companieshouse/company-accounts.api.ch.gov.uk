@@ -58,7 +58,7 @@ public class ErrorMapper {
                     Error error = new Error(maxLengthExceeded,
                             location,
                             LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
-                    error.addErrorValue("length", argument[1].toString());
+                    error.addErrorValue("max_length", argument[1].toString());
                     errors.addError(error);
 
                 } else {
