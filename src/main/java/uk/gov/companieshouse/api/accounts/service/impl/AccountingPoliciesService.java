@@ -129,6 +129,7 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
         }
 
         if (entity == null) {
+
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
 
@@ -150,6 +151,7 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
     }
 
     private void setLinksOnAccountingPolicies(AccountingPolicies rest, String link) {
+        
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), link);
         rest.setLinks(map);
