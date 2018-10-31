@@ -39,7 +39,8 @@ public class StatementService implements ResourceService<Statement> {
 
     private static final String PERIOD_END_ON_PLACE_HOLDER = "{period_end_on}";
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
-    private static final String DATE_FORMAT_D_MMMM_YYYY = "d MMMM yyyy";
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+        .ofPattern("d MMMM yyyy");
 
     private StatementTransformer transformer;
     private StatementRepository statementRepository;
@@ -166,7 +167,7 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Get the period end on stored from the CompanyAccount request's attribute
+     * Get the period end on stored in CompanyAccount
      *
      * @param companyAccount
      * @return period end on formatted.
@@ -178,7 +179,7 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Sets the links, the etag, kind and statements(after replacing place holder) in the rest
+     * Sets the links, the etag, kind and statements(after replacing the placeholder) in the rest
      * object.
      *
      * @param rest
@@ -226,7 +227,7 @@ public class StatementService implements ResourceService<Statement> {
                 legalStatements,
                 LEGAL_STATEMENT_SECTION_477_KEY,
                 PERIOD_END_ON_PLACE_HOLDER,
-                convertDateToString(periodEndOn, DATE_FORMAT_D_MMMM_YYYY));
+                convertDateToString(periodEndOn));
         }
 
         return legalStatements;
@@ -261,25 +262,12 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Converts the date to format passed in.
+     * Converts the date to format d MMMM yyyy: 1 January 2018.
      *
      * @param date - date to be formatted
-     * @param dateFormat - date format that the date needs to be formatted to
      * @return
      */
-    private String convertDateToString(LocalDate date, String dateFormat) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateFormat);
-        return dtf.format(date);
-    }
-
-    private Map<String, Object> getDebugMap(Transaction transaction, String companyAccountId,
-        String id) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
-        debugMap.put("id", id);
-
-        return debugMap;
+    private String convertDateToString(LocalDate date) {
+        return dateTimeFormatter.format(date);
     }
 }

@@ -6,7 +6,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
@@ -29,6 +31,13 @@ public class CurrentPeriodTransformer implements
                 BeanUtils
                     .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+            }
+
+            if (entity.getBalanceSheet().getCurrentAssets() != null) {
+                CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
+                BeanUtils
+                        .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
+                balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
             }
         }
 
@@ -53,6 +62,13 @@ public class CurrentPeriodTransformer implements
                 BeanUtils.copyProperties(
                     currentPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
                 balanceSheet.setFixedAssets(fixedAssets);
+            }
+
+            if (currentPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets() != null) {
+                CurrentAssets currentAssets  = new CurrentAssets();
+                BeanUtils.copyProperties(
+                        currentPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets(), currentAssets);
+                balanceSheet.setCurrentAssets(currentAssets);
             }
         }
 

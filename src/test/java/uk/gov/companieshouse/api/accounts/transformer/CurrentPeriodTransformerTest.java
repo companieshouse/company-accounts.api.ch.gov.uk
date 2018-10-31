@@ -12,7 +12,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
@@ -28,6 +30,8 @@ public class CurrentPeriodTransformerTest {
     private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
     private static final Long TANGIBLE_VALID = 10L;
     private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
+    private static final Long CURRENT_ASSETS_VALID = 100L;
+    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300L;
 
     private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
@@ -49,18 +53,11 @@ public class CurrentPeriodTransformerTest {
 
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID);
-        FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(TANGIBLE_VALID);
-        fixedAssets.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
 
-        balanceSheet.setFixedAssets(fixedAssets);
+        addFixedAssetsToBalanceSheet(balanceSheet);
+        addCurrentAssetsToBalanceSheet(balanceSheet);
 
-        CurrentPeriod currentPeriod = new CurrentPeriod();
-        currentPeriod.setEtag("etag");
-        currentPeriod.setKind("kind");
-        currentPeriod.setLinks(new HashMap<>());
-        currentPeriod.setBalanceSheet(balanceSheet);
-
+        CurrentPeriod currentPeriod = createCurrentPeriod(balanceSheet);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         CurrentPeriodDataEntity data = currentPeriodEntity.getData();
@@ -68,10 +65,44 @@ public class CurrentPeriodTransformerTest {
         assertNotNull(currentPeriodEntity);
         assertEquals("etag", data.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
+
         assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotalFixedAssets());
+
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotal());
+
         assertEquals("kind", data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
+    }
+
+    private CurrentPeriod createCurrentPeriod(BalanceSheet balanceSheet) {
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setEtag("etag");
+        currentPeriod.setKind("kind");
+        currentPeriod.setLinks(new HashMap<>());
+        currentPeriod.setBalanceSheet(balanceSheet);
+        return currentPeriod;
+    }
+
+    private void addCurrentAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(CURRENT_ASSETS_VALID);
+        currentAssets.setDebtors(CURRENT_ASSETS_VALID);
+        currentAssets.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
+        currentAssets.setTotal(CURRENT_ASSETS_TOTAL_VALID);
+
+        balanceSheet.setCurrentAssets(currentAssets);
+    }
+
+    private void addFixedAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(TANGIBLE_VALID);
+        fixedAssets.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+
+        balanceSheet.setFixedAssets(fixedAssets);
     }
 
     @Test
@@ -80,12 +111,28 @@ public class CurrentPeriodTransformerTest {
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
         balanceSheetEntity.setCalledUpShareCapitalNotPaid(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID);
 
-        FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
-        fixedAssetsEntity.setTangible(TANGIBLE_VALID);
-        fixedAssetsEntity.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        addFixedAssetsToBalanceSheetEntity(balanceSheetEntity);
+        addCurrentAssetsToBalanceSheetEntity(balanceSheetEntity);
 
-        balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+        CurrentPeriodEntity currentPeriodEntity = createCurrentPeriodEntity(balanceSheetEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
+        assertNotNull(currentPeriodEntity);
+        assertEquals("etag", currentPeriod.getEtag());
+        assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, currentPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
+
+        assertEquals(TANGIBLE_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
+
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getStocks());
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getCurrentAssets().getTotal());
+        assertEquals("kind", currentPeriod.getKind());
+        assertEquals(new HashMap<>(), currentPeriod.getLinks());
+    }
+
+    private CurrentPeriodEntity createCurrentPeriodEntity(BalanceSheetEntity balanceSheetEntity) {
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
         CurrentPeriodDataEntity currentPeriodDataEntity = new CurrentPeriodDataEntity();
         currentPeriodDataEntity.setEtag("etag");
@@ -93,16 +140,25 @@ public class CurrentPeriodTransformerTest {
         currentPeriodDataEntity.setLinks(new HashMap<>());
         currentPeriodDataEntity.setBalanceSheetEntity(balanceSheetEntity);
         currentPeriodEntity.setData(currentPeriodDataEntity);
+        return currentPeriodEntity;
+    }
 
-        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
+    private void addCurrentAssetsToBalanceSheetEntity(BalanceSheetEntity balanceSheetEntity) {
+        CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
+        currentAssetsEntity.setStocks(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setDebtors(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setCashAtBankAndInHand(CURRENT_ASSETS_VALID);
+        currentAssetsEntity.setTotal(CURRENT_ASSETS_TOTAL_VALID);
 
-        assertNotNull(currentPeriodEntity);
-        assertEquals("etag", currentPeriod.getEtag());
-        assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, currentPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
-        assertEquals(TANGIBLE_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTangible());
-        assertEquals(FIXED_ASSETS_TOTAL_VALID, currentPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
-        assertEquals("kind", currentPeriod.getKind());
-        assertEquals(new HashMap<>(), currentPeriod.getLinks());
+        balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
+    }
+
+    private void addFixedAssetsToBalanceSheetEntity(BalanceSheetEntity balanceSheetEntity) {
+        FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
+        fixedAssetsEntity.setTangible(TANGIBLE_VALID);
+        fixedAssetsEntity.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+
+        balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
     }
 }
 

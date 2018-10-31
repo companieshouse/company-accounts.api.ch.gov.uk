@@ -2,11 +2,13 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 
@@ -29,6 +31,14 @@ public class PreviousPeriodTransformer implements
                 BeanUtils
                     .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+            }
+
+            if (entity.getBalanceSheet().getCurrentAssets() != null) {
+                CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
+                BeanUtils
+                        .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
+                balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
+
             }
         }
 
@@ -53,6 +63,13 @@ public class PreviousPeriodTransformer implements
                 BeanUtils.copyProperties(
                         previousPeriodDataEntity.getBalanceSheetEntity().getFixedAssets(), fixedAssets);
                 balanceSheet.setFixedAssets(fixedAssets);
+            }
+
+            if (previousPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets() != null) {
+                CurrentAssets currentAssets = new CurrentAssets();
+                BeanUtils.copyProperties(
+                        previousPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets(), currentAssets);
+                balanceSheet.setCurrentAssets(currentAssets);
             }
         }
 
