@@ -39,7 +39,8 @@ public class StatementService implements ResourceService<Statement> {
 
     private static final String PERIOD_END_ON_PLACE_HOLDER = "{period_end_on}";
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
-    private static final String DATE_FORMAT_D_MMMM_YYYY = "d MMMM yyyy";
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+        .ofPattern("d MMMM yyyy");
 
     private StatementTransformer transformer;
     private StatementRepository statementRepository;
@@ -226,7 +227,7 @@ public class StatementService implements ResourceService<Statement> {
                 legalStatements,
                 LEGAL_STATEMENT_SECTION_477_KEY,
                 PERIOD_END_ON_PLACE_HOLDER,
-                convertDateToString(periodEndOn, DATE_FORMAT_D_MMMM_YYYY));
+                convertDateToString(periodEndOn));
         }
 
         return legalStatements;
@@ -261,14 +262,12 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Converts the date to format passed in.
+     * Converts the date to format d MMMM yyyy: 1 January 2018.
      *
      * @param date - date to be formatted
-     * @param dateFormat - date format that the date needs to be formatted to
      * @return
      */
-    private String convertDateToString(LocalDate date, String dateFormat) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateFormat);
-        return dtf.format(date);
+    private String convertDateToString(LocalDate date) {
+        return dateTimeFormatter.format(date);
     }
 }
