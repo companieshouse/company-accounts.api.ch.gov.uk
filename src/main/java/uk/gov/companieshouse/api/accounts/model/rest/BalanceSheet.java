@@ -21,6 +21,10 @@ public class BalanceSheet {
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
 
+    @Valid
+    @JsonProperty("current_assets")
+    private CurrentAssets currentAssets;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -35,5 +39,13 @@ public class BalanceSheet {
 
     public FixedAssets getFixedAssets() {
         return fixedAssets;
+    }
+
+    public CurrentAssets getCurrentAssets() {
+        return currentAssets;
+    }
+
+    public void setCurrentAssets(CurrentAssets currentAssets) {
+        this.currentAssets = currentAssets;
     }
 }

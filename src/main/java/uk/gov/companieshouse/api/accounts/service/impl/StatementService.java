@@ -271,15 +271,4 @@ public class StatementService implements ResourceService<Statement> {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateFormat);
         return dtf.format(date);
     }
-
-    private Map<String, Object> getDebugMap(Transaction transaction, String companyAccountId,
-        String id) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
-        debugMap.put("id", id);
-
-        return debugMap;
-    }
 }
