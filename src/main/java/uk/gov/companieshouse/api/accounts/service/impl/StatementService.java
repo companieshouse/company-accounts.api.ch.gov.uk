@@ -166,7 +166,7 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Get the period end on stored from the CompanyAccount request's attribute
+     * Get the period end on stored in CompanyAccount
      *
      * @param companyAccount
      * @return period end on formatted.
@@ -178,7 +178,7 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Sets the links, the etag, kind and statements(after replacing place holder) in the rest
+     * Sets the links, the etag, kind and statements(after replacing the placeholder) in the rest
      * object.
      *
      * @param rest
