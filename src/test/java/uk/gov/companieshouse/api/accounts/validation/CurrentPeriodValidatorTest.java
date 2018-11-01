@@ -1,10 +1,8 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
@@ -136,7 +134,7 @@ public class CurrentPeriodValidatorTest {
     private void addInvalidFixedAssetsToBalanceSheet() {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(5L);
-        fixedAssets.setTotalFixedAssets(10L);
+        fixedAssets.setTotal(10L);
 
         balanceSheet.setFixedAssets(fixedAssets);
     }

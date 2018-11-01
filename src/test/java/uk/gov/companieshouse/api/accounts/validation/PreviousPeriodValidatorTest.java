@@ -137,7 +137,7 @@ public class PreviousPeriodValidatorTest {
     private void addInvalidFixedAssetsToBalanceSheet() {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(5L);
-        fixedAssets.setTotalFixedAssets(10L);
+        fixedAssets.setTotal(10L);
 
         balanceSheet.setFixedAssets(fixedAssets);
     }
