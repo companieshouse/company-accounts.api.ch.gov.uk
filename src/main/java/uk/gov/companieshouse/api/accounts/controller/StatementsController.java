@@ -105,8 +105,5 @@ public class StatementsController {
 
             return apiResponseMapper.map(ex);
         }
-
-
-    }
-
+   }
 }
