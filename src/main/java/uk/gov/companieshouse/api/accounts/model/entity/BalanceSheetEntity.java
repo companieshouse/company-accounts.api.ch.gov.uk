@@ -12,9 +12,6 @@ public class BalanceSheetEntity {
     @Field("fixed_assets")
     private FixedAssetsEntity fixedAssets;
 
-    @Field("other_liabilities_or_assets")
-    private OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity;
-
     @Field("current_assets")
     private CurrentAssetsEntity currentAssets;
 
@@ -29,15 +26,8 @@ public class BalanceSheetEntity {
         return fixedAssets;
     }
 
-    public void setFixedAssets(FixedAssetsEntity fixedAssets) { this.fixedAssets = fixedAssets; }
-
-    public OtherLiabilitiesOrAssetsEntity getOtherLiabilitiesOrAssetsEntity() {
-        return otherLiabilitiesOrAssetsEntity;
-    }
-
-    public void setOtherLiabilitiesOrAssetsEntity(OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity) {
-        this.otherLiabilitiesOrAssetsEntity = otherLiabilitiesOrAssetsEntity;
-    }
+    public void setFixedAssets(FixedAssetsEntity fixedAssets) {
+        this.fixedAssets = fixedAssets; }
 
     public CurrentAssetsEntity getCurrentAssets() {
         return currentAssets;
@@ -45,6 +35,5 @@ public class BalanceSheetEntity {
 
     public void setCurrentAssets(CurrentAssetsEntity currentAssets) {
         this.currentAssets = currentAssets;
-
     }
 }
