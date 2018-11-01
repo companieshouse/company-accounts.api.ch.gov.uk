@@ -2,15 +2,8 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.entity.*;
+import uk.gov.companieshouse.api.accounts.model.rest.*;
 
 @Component
 public class CurrentPeriodTransformer implements
@@ -38,6 +31,13 @@ public class CurrentPeriodTransformer implements
                 BeanUtils
                         .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
                 balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
+            }
+
+            if (entity.getBalanceSheet().getCapitalAndReserves() != null) {
+                CapitalAndReservesEntity capitalAndReservesEntity = new CapitalAndReservesEntity();
+                BeanUtils
+                        .copyProperties(entity.getBalanceSheet().getCapitalAndReserves(), capitalAndReservesEntity);
+                balanceSheetEntity.setCapitalAndReservesEntity(capitalAndReservesEntity);
             }
         }
 
@@ -69,6 +69,13 @@ public class CurrentPeriodTransformer implements
                 BeanUtils.copyProperties(
                         currentPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets(), currentAssets);
                 balanceSheet.setCurrentAssets(currentAssets);
+            }
+
+            if (currentPeriodDataEntity.getBalanceSheetEntity().getCapitalAndReservesEntity() != null) {
+                CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+                BeanUtils.copyProperties(
+                        currentPeriodDataEntity.getBalanceSheetEntity().getCapitalAndReservesEntity(), capitalAndReserves);
+                balanceSheet.setCapitalAndReserves(capitalAndReserves);
             }
         }
 
