@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.fixedAssets;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
