@@ -42,7 +42,6 @@ public class PreviousPeriodTransformer implements
                 BeanUtils
                         .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
                 balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
-
             }
 
             if (entity.getBalanceSheet().getCapitalAndReserves() != null) {
@@ -50,7 +49,6 @@ public class PreviousPeriodTransformer implements
                 BeanUtils
                         .copyProperties(entity.getBalanceSheet().getCapitalAndReserves(), capitalAndReservesEntity);
                 balanceSheetEntity.setCapitalAndReservesEntity(capitalAndReservesEntity);
-
             }
         }
 
