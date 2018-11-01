@@ -15,6 +15,9 @@ public class BalanceSheetEntity {
     @Field("current_assets")
     private CurrentAssetsEntity currentAssets;
 
+    @Field("capital_and_reserves")
+    private CapitalAndReservesEntity capitalAndReservesEntity;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -35,5 +38,13 @@ public class BalanceSheetEntity {
 
     public void setCurrentAssets(CurrentAssetsEntity currentAssets) {
         this.currentAssets = currentAssets;
+    }
+
+    public CapitalAndReservesEntity getCapitalAndReservesEntity() {
+        return capitalAndReservesEntity;
+    }
+
+    public void setCapitalAndReservesEntity(CapitalAndReservesEntity capitalAndReservesEntity) {
+        this.capitalAndReservesEntity = capitalAndReservesEntity;
     }
 }
