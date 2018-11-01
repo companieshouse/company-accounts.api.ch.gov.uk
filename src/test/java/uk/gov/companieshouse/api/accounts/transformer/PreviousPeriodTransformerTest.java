@@ -83,7 +83,7 @@ public class PreviousPeriodTransformerTest {
         assertEquals(CASH_AT_BANK_AND_IN_HAND_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
         assertEquals(STOCKS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
         assertEquals(DEBTORS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
-        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotalCurrentAssets());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotal());
 
         assertEquals(CALLED_UP_SHARE_CAPITAL_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getCalledUpShareCapital());
         assertEquals(OTHER_RESERVES_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getOtherReserves());
@@ -110,14 +110,14 @@ public class PreviousPeriodTransformerTest {
         currentAssets.setCashAtBankAndInHand(CASH_AT_BANK_AND_IN_HAND_VALID);
         currentAssets.setDebtors(DEBTORS_VALID);
         currentAssets.setStocks(STOCKS_VALID);
-        currentAssets.setTotalCurrentAssets(CURRENT_ASSETS_TOTAL_VALID);
+        currentAssets.setTotal(CURRENT_ASSETS_TOTAL_VALID);
         balanceSheet.setCurrentAssets(currentAssets);
     }
 
     private void addFixedAssetsToBalanceSheet(BalanceSheet balanceSheet) {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(TANGIBLE_VALID);
-        fixedAssets.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        fixedAssets.setTotal(FIXED_ASSETS_TOTAL_VALID);
         balanceSheet.setFixedAssets(fixedAssets);
     }
 
@@ -129,7 +129,7 @@ public class PreviousPeriodTransformerTest {
 
         FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
         fixedAssetsEntity.setTangible(TANGIBLE_VALID);
-        fixedAssetsEntity.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        fixedAssetsEntity.setTotal(FIXED_ASSETS_TOTAL_VALID);
 
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
 
@@ -147,7 +147,7 @@ public class PreviousPeriodTransformerTest {
         assertEquals("etag", previousPeriod.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, previousPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
         assertEquals(TANGIBLE_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTangible());
-        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotal());
         assertEquals("kind", previousPeriod.getKind());
         assertEquals(new HashMap<>(), previousPeriod.getLinks());
     }
