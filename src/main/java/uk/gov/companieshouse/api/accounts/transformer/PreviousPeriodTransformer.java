@@ -2,8 +2,19 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.*;
-import uk.gov.companieshouse.api.accounts.model.rest.*;
+import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CurrentAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CapitalAndReservesEntity;
+
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
+
 
 @Component
 public class PreviousPeriodTransformer implements

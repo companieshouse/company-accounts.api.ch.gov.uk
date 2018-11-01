@@ -43,7 +43,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
         Long debtors = Optional.ofNullable(currentAssets. getDebtors()).orElse(0L);
         Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
-        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotal()).orElse(0L);
+        Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotalCurrentAssets()).orElse(0L);
 
         Long calculatedTotal = stocks + debtors + cashAtBankAndInHand;
 
@@ -55,7 +55,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         if (fixedAssets != null) {
 
             Long tangible = fixedAssets.getTangible();
-            Long fixedAssetsTotal = fixedAssets.getTotal();
+            Long fixedAssetsTotal = fixedAssets.getTotalFixedAssets();
 
             // Will calculate the total of all fixedAssets fields as they are added to the balance sheet
             Long calculatedTotal = tangible;

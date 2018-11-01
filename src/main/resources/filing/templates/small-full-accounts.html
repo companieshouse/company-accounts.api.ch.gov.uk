@@ -883,10 +883,10 @@ td {
 }
 
 td.figure,
-td.total,
-td.total-no-top-border,
+td.totalFixedAssets,
+td.totalFixedAssets-no-top-border,
 td.grandtotal,
-td.total-no-top-border,
+td.totalFixedAssets-no-top-border,
 td.grandtotal-no-top-border,
 th.figure {
     vertical-align: middle;
@@ -898,11 +898,11 @@ th.figure {
 td.description {
     width: 50%;
 }
-td.total {
+td.totalFixedAssets {
     border-top: black solid 1px;
     border-bottom: black solid 1px;
 }
-td.total-no-top-border {
+td.totalFixedAssets-no-top-border {
     border-bottom: black solid 1px;
 }
 td.grandtotal-no-top-border {
@@ -923,10 +923,10 @@ table.wrap td {
 
 @media print {
     td.figure,
-    td.total,
-    td.total-no-top-border,
+    td.totalFixedAssets,
+    td.totalFixedAssets-no-top-border,
     td.grandtotal,
-    td.total-no-top-border,
+    td.totalFixedAssets-no-top-border,
     td.grandtotal-no-top-border,
     th.figure {
         width: 15%;
@@ -1099,7 +1099,7 @@ ul.accounts-comps-ct {
 
 .split-equally tr td,
 .split-equally tr td.figure,
-.split-equally tr td.total {
+.split-equally tr td.totalFixedAssets {
     width: 50%;
 }
 
@@ -1716,16 +1716,16 @@ ul.accounts-comps-ct {
               </tr>
 
               <tr class = "figures">
-                <td id = "total-fixed-assets-heading" class="strong">Total fixed assets:</td>
+                <td id = "totalFixedAssets-fixed-assets-heading" class="strong">Total fixed assets:</td>
                 <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
 
-                  <td id="fixed-assets-curr-total" class="strong total">
+                  <td id="fixed-assets-curr-totalFixedAssets" class="strong totalFixedAssets">
                     {{if isNotEmpty $fixedAssets.current_total}}
                       <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.current_total}}</ix:nonFraction>
                     {{end}}
                   </td>
 
-                  <td id="fixed-assets-prev-total" class="total">
+                  <td id="fixed-assets-prev-totalFixedAssets" class="totalFixedAssets">
                     {{if isNotEmpty $fixedAssets.previous_total}}
                      <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{$fixedAssets.previous_total}}</ix:nonFraction>
                     {{end}}

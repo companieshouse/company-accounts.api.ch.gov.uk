@@ -22,8 +22,8 @@ public class CurrentAssets {
     private Long cashAtBankAndInHand;
 
     @NotNull
-    @JsonProperty("total")
-    private Long total;
+    @JsonProperty("total_current_assets")
+    private Long totalCurrentAssets;
 
     public Long getStocks() {
         return stocks;
@@ -49,11 +49,11 @@ public class CurrentAssets {
         this.cashAtBankAndInHand = cashAtBankAndInHand;
     }
 
-    public Long getTotal() {
-        return total;
+    public Long getTotalCurrentAssets() {
+        return totalCurrentAssets;
     }
 
-    public void setTotal(Long total) {
-        this.total = total;
+    public void setTotalCurrentAssets(Long totalCurrentAssets) {
+        this.totalCurrentAssets = totalCurrentAssets;
     }
 }

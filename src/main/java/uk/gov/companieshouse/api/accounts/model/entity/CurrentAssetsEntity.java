@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class CurrentAssetsEntity {
 
     @Field("total_current_assets")
-    private Long total;
+    private Long totalCurrentAssets;
 
     @Field("stocks")
     private Long stocks;
@@ -16,12 +16,12 @@ public class CurrentAssetsEntity {
     @Field("cash_at_bank_and_in_hand")
     private Long cashAtBankAndInHand;
 
-    public Long getTotal() {
-        return total;
+    public Long getTotalCurrentAssets() {
+        return totalCurrentAssets;
     }
 
-    public void setTotal(Long total) {
-        this.total = total;
+    public void setTotalCurrentAssets(Long totalCurrentAssets) {
+        this.totalCurrentAssets = totalCurrentAssets;
     }
 
     public Long getStocks() {
