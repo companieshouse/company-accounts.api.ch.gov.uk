@@ -39,7 +39,7 @@ public class StatementService implements ResourceService<Statement> {
 
     private static final String PERIOD_END_ON_PLACE_HOLDER = "{period_end_on}";
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
         .ofPattern("d MMMM yyyy");
 
     private StatementTransformer transformer;
@@ -175,7 +175,6 @@ public class StatementService implements ResourceService<Statement> {
     private LocalDate getPeriodEndOn(CompanyAccount companyAccount) {
 
         return companyAccount.getPeriodEndOn();
-
     }
 
     /**
@@ -185,6 +184,7 @@ public class StatementService implements ResourceService<Statement> {
      * @param rest
      * @param transaction
      * @param companyAccountId
+     * @param periodEndOn
      */
     private void setMetadataOnRestObject(Statement rest,
         Transaction transaction,
@@ -239,6 +239,7 @@ public class StatementService implements ResourceService<Statement> {
      *
      * @param statements
      * @param legalStatementKey
+     * @param placeHolder
      * @param placeHolderReplacement
      */
     private void updateLegalStatementByReplacingPlaceHolder(Map<String, String> statements,
@@ -262,12 +263,12 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Converts the date to format d MMMM yyyy: 1 January 2018.
+     * Converts the date to format d MMMM yyyy. E.g: 1 January 2018.
      *
      * @param date - date to be formatted
      * @return
      */
     private String convertDateToString(LocalDate date) {
-        return dateTimeFormatter.format(date);
+        return DATE_TIME_FORMATTER.format(date);
     }
 }
