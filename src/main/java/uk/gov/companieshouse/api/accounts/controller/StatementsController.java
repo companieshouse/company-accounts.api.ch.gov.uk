@@ -33,6 +33,9 @@ public class StatementsController {
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
+    private static final String TRANSACTION_ID_KEY = "transaction_id";
+    private static final String COMPANY_ACCOUNT_ID_KEY = "id";
+
     @Autowired
     private StatementService statementService;
 
@@ -55,7 +58,7 @@ public class StatementsController {
                 responseObject.getErrors());
 
         } catch (DataException ex) {
-            LOGGER.errorRequest(request, ex, getDebugMap(transaction));
+            LOGGER.errorRequest(request, ex, getDebugMap(TRANSACTION_ID_KEY, transaction.getId()));
 
             return apiResponseMapper.map(ex);
         }
@@ -77,7 +80,7 @@ public class StatementsController {
                 responseObject.getErrors());
 
         } catch (DataException ex) {
-            LOGGER.errorRequest(request, ex, getDebugMap(transaction));
+            LOGGER.errorRequest(request, ex, getDebugMap(TRANSACTION_ID_KEY, transaction.getId()));
 
             return apiResponseMapper.map(ex);
         }
@@ -96,17 +99,15 @@ public class StatementsController {
             return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", companyAccountId);
-            LOGGER.errorRequest(request, ex, debugMap);
+            LOGGER.errorRequest(request, ex, getDebugMap(COMPANY_ACCOUNT_ID_KEY, companyAccountId));
 
             return apiResponseMapper.map(ex);
         }
     }
 
-    private Map<String, Object> getDebugMap(Transaction transaction) {
+    private Map<String, Object> getDebugMap(String mapKey, String mapValue) {
         Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put(mapKey, mapValue);
 
         return debugMap;
     }
