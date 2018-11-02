@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class StatementsController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody Statement statement,
+    public ResponseEntity create(@Valid @RequestBody Statement statement,
         @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
@@ -54,16 +55,14 @@ public class StatementsController {
                 responseObject.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            LOGGER.errorRequest(request, ex, debugMap);
+            LOGGER.errorRequest(request, ex, getDebugMap(transaction));
 
             return apiResponseMapper.map(ex);
         }
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody Statement statement,
+    public ResponseEntity update(@Valid @RequestBody Statement statement,
         @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
@@ -78,13 +77,11 @@ public class StatementsController {
                 responseObject.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            LOGGER.errorRequest(request, ex, debugMap);
+            LOGGER.errorRequest(request, ex, getDebugMap(transaction));
+
             return apiResponseMapper.map(ex);
         }
     }
-
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
@@ -105,5 +102,12 @@ public class StatementsController {
 
             return apiResponseMapper.map(ex);
         }
-   }
+    }
+
+    private Map<String, Object> getDebugMap(Transaction transaction) {
+        Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+
+        return debugMap;
+    }
 }
