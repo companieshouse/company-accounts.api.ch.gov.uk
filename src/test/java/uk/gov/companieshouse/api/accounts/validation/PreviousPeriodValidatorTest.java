@@ -6,7 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.accounts.model.rest.*;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
@@ -253,7 +258,7 @@ public class PreviousPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("ERROR - Capital and Reserves - Test total shareholder funds with mismatched Shareholder funds")
+    @DisplayName("ERROR - Capital and Reserves - Test total shareholder funds not matching total net assets")
     public void validateCapitalAndReservesWithMismatchedShareholderFunds(){
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();

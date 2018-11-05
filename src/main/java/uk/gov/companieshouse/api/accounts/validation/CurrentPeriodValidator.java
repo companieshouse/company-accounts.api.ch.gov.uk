@@ -7,8 +7,12 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import uk.gov.companieshouse.api.accounts.model.rest.*;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
+
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 /**
@@ -53,26 +57,16 @@ public class CurrentPeriodValidator extends BaseValidator {
             Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
 
             Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholderFunds()).orElse(0L);
-
-            if (capitalAndReserves != null) {
-
-                totalShareholderFunds = capitalAndReserves.getTotalShareholderFunds();
-            }
-
             Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
-
             validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 
             // Total shareholder funds must equal total net assets
             Long totalNetAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
-
             if (totalNetAssets != totalShareholderFunds) {
 
                 addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
             }
-
         }
-
     }
 
     public void validateTotalCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {

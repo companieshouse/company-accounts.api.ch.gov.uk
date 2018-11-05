@@ -5,7 +5,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.accounts.model.rest.*;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
@@ -168,7 +173,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test incorrect total current assets validation")
+    @DisplayName("ERROR - Current Assets - Test incorrect total current assets validation")
     public void validateTotalCurrentAssets() {
 
         addInvalidCurrentAssetsToBalanceSheet();
@@ -185,7 +190,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test current assets validation with empty values")
+    @DisplayName("ERROR - Current Assets - Test current assets validation with empty values")
     public void validateTotalCurrentAssetsWithEmptyValues() {
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -208,7 +213,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test total current assets no error with correct values")
+    @DisplayName("SUCCESS - Current Assets - Test total current assets no error with correct values")
     public void validateTotalCurrentAssetsWithCorrectValues() {
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -229,7 +234,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test total shareholder funds with incorrect total")
+    @DisplayName("ERROR - Capital and Reserves - Test total shareholder funds with incorrect total")
     public void validateCapitalAndReservesWithIncorrectTotal(){
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
@@ -248,11 +253,10 @@ public class CurrentPeriodValidatorTest {
         assertTrue(errors.containsError(new Error("incorrect_total", TOTAL_SHAREHOLDER_FUNDS_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
-
     }
 
     @Test
-    @DisplayName("Test total shareholder funds with mismatched Shareholder funds")
+    @DisplayName("ERROR - Capital and Reserves - Test total shareholder funds Test total shareholder funds not matching total net assets")
     public void validateCapitalAndReservesWithMismatchedShareholderFunds(){
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
@@ -276,7 +280,7 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
-    @DisplayName("Test validate whole current period")
+    @DisplayName("SUCCESS - Test validate whole current period")
     public void validateCurrentPeriod() {
 
         addInvalidFixedAssetsToBalanceSheet();

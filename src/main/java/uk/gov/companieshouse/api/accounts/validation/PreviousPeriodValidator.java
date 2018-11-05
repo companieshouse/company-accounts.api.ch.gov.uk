@@ -6,7 +6,11 @@ import javax.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.rest.*;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 @Component
@@ -25,7 +29,6 @@ public class PreviousPeriodValidator extends BaseValidator {
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
     private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves.total_shareholder_funds";
 
-
     public Errors validatePreviousPeriod(@Valid PreviousPeriod previousPeriod) {
 
         Errors errors = new Errors();
@@ -33,13 +36,9 @@ public class PreviousPeriodValidator extends BaseValidator {
         if (previousPeriod.getBalanceSheet() != null) {
 
             validateTotalFixedAssets(previousPeriod, errors);
-
             validateTotalOtherLiabilitiesOrAssets(previousPeriod, errors);
-
             validateTotalCurrentAssets(previousPeriod, errors);
-
             validateTotalShareholderFunds(previousPeriod, errors);
-
         }
 
         return errors;
