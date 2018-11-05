@@ -57,7 +57,7 @@ public class CurrentPeriodControllerTest {
     private BindingResult bindingResult;
 
     @Mock
-    Errors errors;
+    private Errors errors;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -129,8 +129,12 @@ public class CurrentPeriodControllerTest {
         doReturn(responseObject).when(currentPeriodService)
             .update(currentPeriod, null, "12345", request);
 
+        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
+
         ResponseEntity response = currentPeriodController
             .update(currentPeriod, bindingResult, "12345", request);
+
+
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
