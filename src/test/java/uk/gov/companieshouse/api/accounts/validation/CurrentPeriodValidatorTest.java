@@ -5,11 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.*;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
@@ -27,6 +23,7 @@ public class CurrentPeriodValidatorTest {
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
+    private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves.total_shareholder_funds";
 
     private BalanceSheet balanceSheet;
     private CurrentPeriod currentPeriod;
@@ -56,6 +53,14 @@ public class CurrentPeriodValidatorTest {
         otherLiabilitiesOrAssets.setTotalNetAssets(1L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setCalledUpShareCapital(0L);
+        capitalAndReserves.setOtherReserves(0L);
+        capitalAndReserves.setProfitAndLoss(0L);
+        capitalAndReserves.setSharePremiumAccount(1L);
+        capitalAndReserves.setTotalShareholderFunds(1L);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(2L);
         fixedAssets.setTotal(2L);
@@ -63,7 +68,6 @@ public class CurrentPeriodValidatorTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
-
         Errors errors = validator.validateCurrentPeriod(currentPeriod);
 
         assertFalse(errors.hasErrors());
@@ -225,20 +229,76 @@ public class CurrentPeriodValidatorTest {
     }
 
     @Test
+    @DisplayName("Test total shareholder funds with incorrect total")
+    public void validateCapitalAndReservesWithIncorrectTotal(){
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setTotalNetAssets(10L);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setTotalShareholderFunds(10L);
+
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        currentPeriod.setBalanceSheet(balanceSheet);
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+
+        validator.validateTotalShareholderFunds(currentPeriod, errors);
+
+        assertTrue(errors.containsError(new Error("incorrect_total", TOTAL_SHAREHOLDER_FUNDS_PATH,
+                LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType())));
+
+    }
+
+    @Test
+    @DisplayName("Test total shareholder funds with mismatched Shareholder funds")
+    public void validateCapitalAndReservesWithMismatchedShareholderFunds(){
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setTotalNetAssets(15L);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setTotalShareholderFunds(0L);
+
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+
+        currentPeriod.setBalanceSheet(balanceSheet);
+        ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
+
+        validator.validateTotalShareholderFunds(currentPeriod,errors);
+
+        assertTrue(errors.containsError(new Error("shareholder_funds_mismatch", TOTAL_SHAREHOLDER_FUNDS_PATH,
+                LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType())));
+
+    }
+
+    @Test
     @DisplayName("Test validate whole current period")
     public void validateCurrentPeriod() {
 
         addInvalidFixedAssetsToBalanceSheet();
         addInvalidCurrentAssetsToBalanceSheet();
 
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setTotalNetAssets(15L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setTotalShareholderFunds(10L);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+
         currentPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
 
         errors = validator.validateCurrentPeriod(currentPeriod);
 
         assertTrue(errors.hasErrors());
-        assertEquals(2, errors.getErrorCount());
+        assertEquals(7, errors.getErrorCount());
     }
 
     private void addInvalidFixedAssetsToBalanceSheet() {
