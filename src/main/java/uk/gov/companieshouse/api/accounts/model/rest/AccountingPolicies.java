@@ -27,13 +27,13 @@ public class AccountingPolicies extends RestObject {
 
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("tangible_fixed_assets_deprecation_policy")
-    private String tangibleFixedAssetsDeprecationPolicy;
+    @JsonProperty("tangible_fixed_assets_depreciation_policy")
+    private String tangibleFixedAssetsDepreciationPolicy;
 
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("intangible_fixed_assets_deprecation_policy")
-    private String intangibleFixedAssetsDeprecationPolicy;
+    @JsonProperty("intangible_fixed_assets_amortisation_policy")
+    private String intangibleFixedAssetsAmortisationPolicy;
 
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
@@ -42,8 +42,8 @@ public class AccountingPolicies extends RestObject {
 
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("other_accounting_policies")
-    private String otherAccountingPolicies;
+    @JsonProperty("other_accounting_policy")
+    private String otherAccountingPolicy;
 
     public String getBasisOfMeasurementAndPreparation() {
         return basisOfMeasurementAndPreparation;
@@ -61,20 +61,20 @@ public class AccountingPolicies extends RestObject {
         this.turnoverPolicy = turnoverPolicy;
     }
 
-    public String getTangibleFixedAssetsDeprecationPolicy() {
-        return tangibleFixedAssetsDeprecationPolicy;
+    public String getTangibleFixedAssetsDepreciationPolicy() {
+        return tangibleFixedAssetsDepreciationPolicy;
     }
 
-    public void setTangibleFixedAssetsDeprecationPolicy(String tangibleFixedAssetsDeprecationPolicy) {
-        this.tangibleFixedAssetsDeprecationPolicy = tangibleFixedAssetsDeprecationPolicy;
+    public void setTangibleFixedAssetsDepreciationPolicy(String tangibleFixedAssetsDepreciationPolicy) {
+        this.tangibleFixedAssetsDepreciationPolicy = tangibleFixedAssetsDepreciationPolicy;
     }
 
-    public String getIntangibleFixedAssetsDeprecationPolicy() {
-        return intangibleFixedAssetsDeprecationPolicy;
+    public String getIntangibleFixedAssetsAmortisationPolicy() {
+        return intangibleFixedAssetsAmortisationPolicy;
     }
 
-    public void setIntangibleFixedAssetsDeprecationPolicy(String intangibleFixedAssetsDeprecationPolicy) {
-        this.intangibleFixedAssetsDeprecationPolicy = intangibleFixedAssetsDeprecationPolicy;
+    public void setIntangibleFixedAssetsAmortisationPolicy(String intangibleFixedAssetsAmortisationPolicy) {
+        this.intangibleFixedAssetsAmortisationPolicy = intangibleFixedAssetsAmortisationPolicy;
     }
 
     public String getValuationInformationAndPolicy() {
@@ -85,12 +85,12 @@ public class AccountingPolicies extends RestObject {
         this.valuationInformationAndPolicy = valuationInformationAndPolicy;
     }
 
-    public String getOtherAccountingPolicies() {
-        return otherAccountingPolicies;
+    public String getOtherAccountingPolicy() {
+        return otherAccountingPolicy;
     }
 
-    public void setOtherAccountingPolicies(String otherAccountingPolicies) {
-        this.otherAccountingPolicies = otherAccountingPolicies;
+    public void setOtherAccountingPolicy(String otherAccountingPolicy) {
+        this.otherAccountingPolicy = otherAccountingPolicy;
     }
 
     @Override
@@ -98,10 +98,11 @@ public class AccountingPolicies extends RestObject {
         return "AccountingPolicies{" +
                 "basisOfMeasurementAndPreparation='" + basisOfMeasurementAndPreparation + '\'' +
                 ", turnoverPolicy='" + turnoverPolicy + '\'' +
-                ", tangibleFixedAssetsDeprecationPolicy='" + tangibleFixedAssetsDeprecationPolicy + '\'' +
-                ", intangibleFixedAssetsDeprecationPolicy='" + intangibleFixedAssetsDeprecationPolicy + '\'' +
+                ", tangibleFixedAssetsDepreciationPolicy='" + tangibleFixedAssetsDepreciationPolicy + '\'' +
+                ", intangibleFixedAssetsAmortisationPolicy='" + intangibleFixedAssetsAmortisationPolicy
+                + '\'' +
                 ", valuationInformationAndPolicy='" + valuationInformationAndPolicy + '\'' +
-                ", otherAccountingPolicies='" + otherAccountingPolicies + '\'' +
+                ", otherAccountingPolicy='" + otherAccountingPolicy + '\'' +
                 '}';
     }
 }

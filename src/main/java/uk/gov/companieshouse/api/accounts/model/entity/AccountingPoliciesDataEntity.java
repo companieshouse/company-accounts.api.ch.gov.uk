@@ -13,17 +13,17 @@ public class AccountingPoliciesDataEntity extends BaseDataEntity {
     @Field("turnover_policy")
     private String turnoverPolicy;
 
-    @Field("tangible_fixed_assets_deprecation_policy")
-    private String tangibleFixedAssetsDeprecationPolicy;
+    @Field("tangible_fixed_assets_depreciation_policy")
+    private String tangibleFixedAssetsDepreciationPolicy;
 
-    @Field("intangible_fixed_assets_deprecation_policy")
-    private String intangibleFixedAssetsDeprecationPolicy;
+    @Field("intangible_fixed_assets_amortisation_policy")
+    private String intangibleFixedAssetsAmortisationPolicy;
 
     @Field("valuation_information_and_policy")
     private String valuationInformationAndPolicy;
 
-    @Field("other_accounting_policies")
-    private String otherAccountingPolicies;
+    @Field("other_accounting_policy")
+    private String otherAccountingPolicy;
 
     public String getBasisOfMeasurementAndPreparation() {
         return basisOfMeasurementAndPreparation;
@@ -41,20 +41,20 @@ public class AccountingPoliciesDataEntity extends BaseDataEntity {
         this.turnoverPolicy = turnoverPolicy;
     }
 
-    public String getTangibleFixedAssetsDeprecationPolicy() {
-        return tangibleFixedAssetsDeprecationPolicy;
+    public String getTangibleFixedAssetsDepreciationPolicy() {
+        return tangibleFixedAssetsDepreciationPolicy;
     }
 
-    public void setTangibleFixedAssetsDeprecationPolicy(String tangibleFixedAssetsDeprecationPolicy) {
-        this.tangibleFixedAssetsDeprecationPolicy = tangibleFixedAssetsDeprecationPolicy;
+    public void setTangibleFixedAssetsDepreciationPolicy(String tangibleFixedAssetsDepreciationPolicy) {
+        this.tangibleFixedAssetsDepreciationPolicy = tangibleFixedAssetsDepreciationPolicy;
     }
 
-    public String getIntangibleFixedAssetsDeprecationPolicy() {
-        return intangibleFixedAssetsDeprecationPolicy;
+    public String getIntangibleFixedAssetsAmortisationPolicy() {
+        return intangibleFixedAssetsAmortisationPolicy;
     }
 
-    public void setIntangibleFixedAssetsDeprecationPolicy(String intangibleFixedAssetsDeprecationPolicy) {
-        this.intangibleFixedAssetsDeprecationPolicy = intangibleFixedAssetsDeprecationPolicy;
+    public void setIntangibleFixedAssetsAmortisationPolicy(String intangibleFixedAssetsAmortisationPolicy) {
+        this.intangibleFixedAssetsAmortisationPolicy = intangibleFixedAssetsAmortisationPolicy;
     }
 
     public String getValuationInformationAndPolicy() {
@@ -65,12 +65,12 @@ public class AccountingPoliciesDataEntity extends BaseDataEntity {
         this.valuationInformationAndPolicy = valuationInformationAndPolicy;
     }
 
-    public String getOtherAccountingPolicies() {
-        return otherAccountingPolicies;
+    public String getOtherAccountingPolicy() {
+        return otherAccountingPolicy;
     }
 
-    public void setOtherAccountingPolicies(String otherAccountingPolicies) {
-        this.otherAccountingPolicies = otherAccountingPolicies;
+    public void setOtherAccountingPolicy(String otherAccountingPolicy) {
+        this.otherAccountingPolicy = otherAccountingPolicy;
     }
 
     @Override
@@ -78,10 +78,11 @@ public class AccountingPoliciesDataEntity extends BaseDataEntity {
         return "AccountingPoliciesDataEntity{" +
                 "basisOfMeasurementAndPreparation='" + basisOfMeasurementAndPreparation + '\'' +
                 ", turnoverPolicy='" + turnoverPolicy + '\'' +
-                ", tangibleFixedAssetsDeprecationPolicy='" + tangibleFixedAssetsDeprecationPolicy + '\'' +
-                ", intangibleFixedAssetsDeprecationPolicy='" + intangibleFixedAssetsDeprecationPolicy + '\'' +
+                ", tangibleFixedAssetsDepreciationPolicy='" + tangibleFixedAssetsDepreciationPolicy + '\'' +
+                ", intangibleFixedAssetsAmortisationPolicy='" + intangibleFixedAssetsAmortisationPolicy
+                + '\'' +
                 ", valuationInformationAndPolicy='" + valuationInformationAndPolicy + '\'' +
-                ", otherAccountingPolicies='" + otherAccountingPolicies + '\'' +
+                ", otherAccountingPolicy='" + otherAccountingPolicy + '\'' +
                 '}';
     }
 }
