@@ -63,7 +63,7 @@ public class CurrentPeriodValidatorTest {
         capitalAndReserves.setOtherReserves(0L);
         capitalAndReserves.setProfitAndLoss(0L);
         capitalAndReserves.setSharePremiumAccount(1L);
-        capitalAndReserves.setTotalShareholderFunds(1L);
+        capitalAndReserves.setTotalShareholdersFund(1L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -241,7 +241,7 @@ public class CurrentPeriodValidatorTest {
         otherLiabilitiesOrAssets.setTotalNetAssets(10L);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setTotalShareholderFunds(10L);
+        capitalAndReserves.setTotalShareholdersFund(10L);
 
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
@@ -263,7 +263,7 @@ public class CurrentPeriodValidatorTest {
         otherLiabilitiesOrAssets.setTotalNetAssets(15L);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setTotalShareholderFunds(0L);
+        capitalAndReserves.setTotalShareholdersFund(0L);
 
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
@@ -291,7 +291,7 @@ public class CurrentPeriodValidatorTest {
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setTotalShareholderFunds(10L);
+        capitalAndReserves.setTotalShareholdersFund(10L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         currentPeriod.setBalanceSheet(balanceSheet);

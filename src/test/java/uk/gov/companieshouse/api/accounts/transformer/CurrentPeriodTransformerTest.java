@@ -104,7 +104,7 @@ public class CurrentPeriodTransformerTest {
         assertEquals(OTHER_RESERVES_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getOtherReserves());
         assertEquals(PROFIT_AND_LOSS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getProfitAndLoss());
         assertEquals(SHARE_PREMIUM_ACCOUNT_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getSharePremiumAccount());
-        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholderFunds());
+        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholdersFund());
 
         testEntityAssertsOtherLiabilitiesOrAssetsEntity(data);
 
@@ -118,7 +118,7 @@ public class CurrentPeriodTransformerTest {
         capitalAndReserves.setOtherReserves(OTHER_RESERVES_VALID);
         capitalAndReserves.setProfitAndLoss(PROFIT_AND_LOSS_VALID);
         capitalAndReserves.setSharePremiumAccount(SHARE_PREMIUM_ACCOUNT_VALID);
-        capitalAndReserves.setTotalShareholderFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
+        capitalAndReserves.setTotalShareholdersFund(TOTAL_SHAREHOLDERS_FUNDS_VALID);
 
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
     }
@@ -188,7 +188,7 @@ public class CurrentPeriodTransformerTest {
         assertEquals(OTHER_RESERVES_VALID, currentPeriod.getBalanceSheet().getCapitalAndReserves().getOtherReserves());
         assertEquals(PROFIT_AND_LOSS_VALID, currentPeriod.getBalanceSheet().getCapitalAndReserves().getProfitAndLoss());
         assertEquals(SHARE_PREMIUM_ACCOUNT_VALID, currentPeriod.getBalanceSheet().getCapitalAndReserves().getSharePremiumAccount());
-        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, currentPeriod.getBalanceSheet().getCapitalAndReserves().getTotalShareholderFunds());
+        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, currentPeriod.getBalanceSheet().getCapitalAndReserves().getTotalShareholdersFund());
 
         testRestAssertsOtherLiabilitiesOrAssets(currentPeriod);
 
@@ -225,7 +225,7 @@ public class CurrentPeriodTransformerTest {
         capitalAndReservesEntity.setOtherReserves(OTHER_RESERVES_VALID);
         capitalAndReservesEntity.setProfitAndLoss(PROFIT_AND_LOSS_VALID);
         capitalAndReservesEntity.setSharePremiumAccount(SHARE_PREMIUM_ACCOUNT_VALID);
-        capitalAndReservesEntity.setTotalShareholderFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
+        capitalAndReservesEntity.setTotalShareholdersFund(TOTAL_SHAREHOLDERS_FUNDS_VALID);
 
         balanceSheetEntity.setCapitalAndReservesEntity(capitalAndReservesEntity);
     }

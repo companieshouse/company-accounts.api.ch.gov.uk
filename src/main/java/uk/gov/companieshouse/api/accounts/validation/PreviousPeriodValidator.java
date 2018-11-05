@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.validation;
 import java.util.Optional;
 import javax.validation.Valid;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
@@ -54,7 +53,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
             Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
 
-            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholderFunds()).orElse(0L);
+            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFund()).orElse(0L);
             Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
             validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 
