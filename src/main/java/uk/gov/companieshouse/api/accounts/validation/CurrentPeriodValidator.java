@@ -12,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
-
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 /**
@@ -47,6 +46,7 @@ public class CurrentPeriodValidator extends BaseValidator {
     }
 
     public void validateTotalShareholderFunds(CurrentPeriod currentPeriod, Errors errors) {
+
         CapitalAndReserves capitalAndReserves = currentPeriod.getBalanceSheet().getCapitalAndReserves();
 
         if (capitalAndReserves != null) {

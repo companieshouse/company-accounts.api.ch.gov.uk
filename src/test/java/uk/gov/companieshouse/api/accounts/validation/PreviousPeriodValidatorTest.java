@@ -254,7 +254,6 @@ public class PreviousPeriodValidatorTest {
         assertTrue(errors.containsError(new Error("incorrect_total", TOTAL_SHAREHOLDER_FUNDS_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
-
     }
 
     @Test
@@ -278,7 +277,6 @@ public class PreviousPeriodValidatorTest {
         assertTrue(errors.containsError(new Error("shareholder_funds_mismatch", TOTAL_SHAREHOLDER_FUNDS_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
-
     }
 
     @Test
