@@ -57,10 +57,12 @@ public class PreviousPeriodValidator extends BaseValidator {
             Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
             validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 
-            Long totalNetAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
-
+            Long totalNetAssets = 0L;
+            // Total shareholder funds must equal total net assets
+            if (previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                totalNetAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
+            }
             if (!totalNetAssets.equals(totalShareholderFunds)) {
-
                 addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
             }
         }
