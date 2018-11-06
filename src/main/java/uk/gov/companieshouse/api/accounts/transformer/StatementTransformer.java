@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 
+@Component
 public class StatementTransformer implements GenericTransformer<Statement, StatementEntity> {
 
     @Override
