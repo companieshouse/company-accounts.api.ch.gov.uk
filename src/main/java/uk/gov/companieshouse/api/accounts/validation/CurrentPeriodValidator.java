@@ -45,7 +45,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         return errors;
     }
 
-     private void validateTotalShareholderFunds(CurrentPeriod currentPeriod, Errors errors) {
+    private void validateTotalShareholderFunds(CurrentPeriod currentPeriod, Errors errors) {
 
         CapitalAndReserves capitalAndReserves = currentPeriod.getBalanceSheet().getCapitalAndReserves();
 
