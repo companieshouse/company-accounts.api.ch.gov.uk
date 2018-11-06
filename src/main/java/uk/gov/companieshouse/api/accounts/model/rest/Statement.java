@@ -1,11 +1,16 @@
 package uk.gov.companieshouse.api.accounts.model.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
+@JsonInclude(Include.NON_NULL)
 public class Statement extends RestObject {
 
+    @NotNull
     @JsonProperty("has_agreed_to_legal_statements")
     private Boolean hasAgreedToLegalStatements;
 
