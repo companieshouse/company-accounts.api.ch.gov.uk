@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.util.Optional;
 import javax.validation.Valid;
+
 import org.springframework.stereotype.Component;
 
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -30,12 +31,11 @@ public class CurrentPeriodValidator extends BaseValidator {
 
         Errors errors = new Errors();
 
+        validateTotalFixedAssets(currentPeriod, errors);
 
-            validateTotalFixedAssets(currentPeriod, errors);
+        validateTotalOtherLiabilitiesOrAssets(currentPeriod, errors);
 
-            validateTotalOtherLiabilitiesOrAssets(currentPeriod, errors);
-
-            validateTotalCurrentAssets(currentPeriod, errors);
+        validateTotalCurrentAssets(currentPeriod, errors);
 
 
         return errors;
@@ -76,9 +76,10 @@ public class CurrentPeriodValidator extends BaseValidator {
         if (currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(currentPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(currentPeriod, errors);
-            calculateOtherLiabilitiesOrAssetsTotalNetAssets(currentPeriod,errors);
+            calculateOtherLiabilitiesOrAssetsTotalNetAssets(currentPeriod, errors);
         }
     }
+
     private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
@@ -88,7 +89,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         if (currentPeriod.getBalanceSheet().getCurrentAssets() != null) {
             totalCurrentAssets = currentPeriod.getBalanceSheet().getCurrentAssets().getTotal();
         }
-        Long calculatedTotal =  totalCurrentAssets +  prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
+        Long calculatedTotal = totalCurrentAssets + prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
         validateAggregateTotal(netCurrentAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
