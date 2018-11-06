@@ -83,6 +83,7 @@ public class PreviousPeriodValidator extends BaseValidator {
     }
 
     private void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
+
         FixedAssets fixedAssets = previousPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
@@ -97,13 +98,16 @@ public class PreviousPeriodValidator extends BaseValidator {
     }
 
     private void validateTotalOtherLiabilitiesOrAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
+
         if (previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod,errors);
         }
     }
     private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(PreviousPeriod previousPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
         Long creditorsDueWithinOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear()).orElse(0L);
@@ -119,6 +123,7 @@ public class PreviousPeriodValidator extends BaseValidator {
     }
 
     private void calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(PreviousPeriod previousPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
@@ -134,6 +139,7 @@ public class PreviousPeriodValidator extends BaseValidator {
     }
 
     private void calculateOtherLiabilitiesOrAssetsTotalNetAssets(PreviousPeriod previousPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
         Long creditorsAfterOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsAfterOneYear()).orElse(0L);
