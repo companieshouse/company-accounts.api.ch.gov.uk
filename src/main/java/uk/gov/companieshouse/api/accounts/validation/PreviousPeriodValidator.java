@@ -43,7 +43,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         return errors;
     }
 
-    public void validateTotalShareholderFunds(PreviousPeriod previousPeriod, Errors errors) {
+    private void validateTotalShareholderFunds(PreviousPeriod previousPeriod, Errors errors) {
         CapitalAndReserves capitalAndReserves = previousPeriod.getBalanceSheet().getCapitalAndReserves();
 
         if (capitalAndReserves != null) {
@@ -66,7 +66,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         }
     }
 
-    public void validateTotalCurrentAssets(PreviousPeriod previousPeriod, Errors errors) {
+    private void validateTotalCurrentAssets(PreviousPeriod previousPeriod, Errors errors) {
 
         CurrentAssets currentAssets = previousPeriod.getBalanceSheet().getCurrentAssets();
         if (currentAssets != null) {
@@ -82,7 +82,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         }
     }
 
-    public void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
+    private void validateTotalFixedAssets(@Valid PreviousPeriod previousPeriod, Errors errors) {
         FixedAssets fixedAssets = previousPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
