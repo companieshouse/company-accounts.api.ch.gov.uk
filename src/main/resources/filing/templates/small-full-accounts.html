@@ -2043,6 +2043,124 @@ ul.accounts-comps-ct {
 
               {{end}}
 
+              <!-- BALANCE SHEET - CAPITAL AND RESERVES -->
+
+              {{if $capitalAndReserves := $balanceSheet.capital_and_reserves}}
+
+                  {{if $calledUpShareCapital := $capitalAndReserves.called_up_share_capital}}
+
+                  <tr class="figures">
+                      <td id="called-up-share-capital-label">Called up share capital:</td>
+
+                      <td class="figure noteIndex" id="uk-busEquityShareCapital_CY_ENDNoteIndexes"></td>
+
+                      <td id="called-up-share-capital-curr-val" class="strong figure">
+                        {{if isNotEmpty $calledUpShareCapital.current_amount}}
+                        <ix:nonFraction contextRef="ShareCapital_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $calledUpShareCapital.current_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+
+                      <td id="called-up-share-capital-prev-val" class="figure">
+                        {{if isNotEmpty $calledUpShareCapital.previous_amount}}
+                        <ix:nonFraction contextRef="ShareCapital_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $calledUpShareCapital.previous_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+                  </tr>
+
+                  {{end}}
+
+                  {{if $sharePremiumAccount := $capitalAndReserves.share_premium_account}}
+
+                  <tr class="figures">
+                      <td id="share-premium-account-label">Share premium account:</td>
+
+                      <td class="figure noteIndex" id="uk-busEquitySharePremiumAccount_CY_ENDNoteIndexes"></td>
+
+                      <td id="share-premium-account-curr-val" class="strong figure">
+                        {{if isNotEmpty $sharePremiumAccount.current_amount}}
+                        <ix:nonFraction contextRef="SharePremiumAccount_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $sharePremiumAccount.current_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+
+                      <td id="share-premium-account-prev-val" class="figure">
+                        {{if isNotEmpty $sharePremiumAccount.previous_amount}}
+                        <ix:nonFraction contextRef="SharePremiumAccount_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $sharePremiumAccount.previous_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+                  </tr>
+
+                  {{end}}
+
+                  {{if $otherReserves := $capitalAndReserves.other_reserves}}
+
+                  <tr class="figures">
+                      <td id="other-reserves-label">Other reserves:</td>
+
+                      <td class="figure noteIndex" id="uk-busEquityOtherReserves_CY_ENDNoteIndexes"></td>
+
+                      <td id="other-reserves-curr-val" class="strong figure">
+                        {{if isNotEmpty $otherReserves.current_amount}}
+                        <ix:nonFraction contextRef="OtherReserves_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.current_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+
+                      <td id="other-reserves-prev-val" class="figure">
+                        {{if isNotEmpty $otherReserves.previous_amount}}
+                        <ix:nonFraction contextref="OtherReserves_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.previous_amount}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+                  </tr>
+
+                  {{end}}
+
+                  {{if $profitAndLoss := $capitalAndReserves.profit_and_loss}}
+
+                      <tr class="figures">
+                        <td id="profit-and-loss-label">Profit and loss:</td>
+
+                        <td class="figure noteIndex" id="uk-busEquityRetainedEarningsAccumulatedLosses_CY_ENDNoteIndexes"></td>
+
+                        <td id="profit-and-loss-curr-val" class="strong figure">
+                          {{if isNotEmpty $profitAndLoss.current_amount}}
+                          <ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.current_amount}}</ix:nonFraction>
+                          {{end}}
+                        </td>
+
+                        <td id="profit-and-loss-prev-val" class="figure">
+                          {{if isNotEmpty $profitAndLoss.previous_amount}}
+                          <ix:nonFraction contextref="RetainedEarningsAccumulatedLosses_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.previous_amount}}</ix:nonFraction>
+                          {{end}}
+                        </td>
+                      </tr>
+
+                  {{end}}
+
+                  {{if isNotEmpty ($current_shareholders_fund := $capitalAndReserves.current_shareholders_fund) ($previous_shareholders_fund := $capitalAndReserves.previous_shareholders_fund)}}
+
+                  <tr class="figures">
+                      <td id="shareholders-fund-label" class="strong">Shareholders funds:</td>
+
+                      <td class="figure noteIndex" id="uk-busEquityCY_ENDNoteIndexes"></td>
+
+                      <td id="shareholders-fund-curr-val" class="strong total">
+                        {{if isNotEmpty $current_shareholders_fund}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_shareholders_fund}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+
+                      <td id="shareholders-fund-prev-val" class="total">
+                        {{if isNotEmpty $previous_shareholders_fund}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_shareholders_fund}}</ix:nonFraction>
+                        {{end}}
+                      </td>
+                  </tr>
+
+                  {{end}}
+
+              {{end}}
+
+
+
               </tbody>
           </table>
 
