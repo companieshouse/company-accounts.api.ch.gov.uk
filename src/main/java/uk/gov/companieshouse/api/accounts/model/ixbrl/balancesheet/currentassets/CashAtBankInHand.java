@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.currentAssets;
+package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.currentassets;
 
 public class CashAtBankInHand {
 

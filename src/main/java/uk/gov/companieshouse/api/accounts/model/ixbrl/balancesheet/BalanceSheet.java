@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.currentAssets.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.currentassets.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 public class BalanceSheet {

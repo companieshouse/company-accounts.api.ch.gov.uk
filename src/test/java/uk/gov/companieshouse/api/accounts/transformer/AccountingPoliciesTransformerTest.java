@@ -46,10 +46,10 @@ public class AccountingPoliciesTransformerTest {
         accountingPolicies.setKind(KIND);
         accountingPolicies.setBasisOfMeasurementAndPreparation(BASIS_OF_MEAS);
         accountingPolicies.setTurnoverPolicy(TURNOVER);
-        accountingPolicies.setTangibleFixedAssetsDeprecationPolicy(TANGIBLE);
-        accountingPolicies.setIntangibleFixedAssetsDeprecationPolicy(INTANGIBLE);
+        accountingPolicies.setTangibleFixedAssetsDepreciationPolicy(TANGIBLE);
+        accountingPolicies.setIntangibleFixedAssetsAmortisationPolicy(INTANGIBLE);
         accountingPolicies.setValuationInformationAndPolicy(VALUATION);
-        accountingPolicies.setOtherAccountingPolicies(OTHER);
+        accountingPolicies.setOtherAccountingPolicy(OTHER);
         accountingPolicies.setLinks(new HashMap<>());
 
         AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer
@@ -63,10 +63,10 @@ public class AccountingPoliciesTransformerTest {
         assertEquals(KIND, accountingPoliciesDataEntity.getKind());
         assertEquals(BASIS_OF_MEAS, accountingPoliciesDataEntity.getBasisOfMeasurementAndPreparation());
         assertEquals(TURNOVER, accountingPoliciesDataEntity.getTurnoverPolicy());
-        assertEquals(TANGIBLE, accountingPoliciesDataEntity.getTangibleFixedAssetsDeprecationPolicy());
-        assertEquals(INTANGIBLE, accountingPoliciesDataEntity.getIntangibleFixedAssetsDeprecationPolicy());
+        assertEquals(TANGIBLE, accountingPoliciesDataEntity.getTangibleFixedAssetsDepreciationPolicy());
+        assertEquals(INTANGIBLE, accountingPoliciesDataEntity.getIntangibleFixedAssetsAmortisationPolicy());
         assertEquals(VALUATION, accountingPoliciesDataEntity.getValuationInformationAndPolicy());
-        assertEquals(OTHER, accountingPoliciesDataEntity.getOtherAccountingPolicies());
+        assertEquals(OTHER, accountingPoliciesDataEntity.getOtherAccountingPolicy());
         assertEquals(new HashMap<>(), accountingPoliciesDataEntity.getLinks());
     }
 
@@ -81,10 +81,10 @@ public class AccountingPoliciesTransformerTest {
         accountingPoliciesDataEntity.setKind(KIND);
         accountingPoliciesDataEntity.setBasisOfMeasurementAndPreparation(BASIS_OF_MEAS);
         accountingPoliciesDataEntity.setTurnoverPolicy(TURNOVER);
-        accountingPoliciesDataEntity.setTangibleFixedAssetsDeprecationPolicy(TANGIBLE);
-        accountingPoliciesDataEntity.setIntangibleFixedAssetsDeprecationPolicy(INTANGIBLE);
+        accountingPoliciesDataEntity.setTangibleFixedAssetsDepreciationPolicy(TANGIBLE);
+        accountingPoliciesDataEntity.setIntangibleFixedAssetsAmortisationPolicy(INTANGIBLE);
         accountingPoliciesDataEntity.setValuationInformationAndPolicy(VALUATION);
-        accountingPoliciesDataEntity.setOtherAccountingPolicies(OTHER);
+        accountingPoliciesDataEntity.setOtherAccountingPolicy(OTHER);
         accountingPoliciesDataEntity.setLinks(new HashMap<>());
         accountingPoliciesEntity.setData(accountingPoliciesDataEntity);
 
@@ -97,10 +97,10 @@ public class AccountingPoliciesTransformerTest {
         assertEquals(KIND, accountingPolicies.getKind());
         assertEquals(BASIS_OF_MEAS, accountingPolicies.getBasisOfMeasurementAndPreparation());
         assertEquals(TURNOVER, accountingPolicies.getTurnoverPolicy());
-        assertEquals(TANGIBLE, accountingPolicies.getTangibleFixedAssetsDeprecationPolicy());
-        assertEquals(INTANGIBLE, accountingPolicies.getIntangibleFixedAssetsDeprecationPolicy());
+        assertEquals(TANGIBLE, accountingPolicies.getTangibleFixedAssetsDepreciationPolicy());
+        assertEquals(INTANGIBLE, accountingPolicies.getIntangibleFixedAssetsAmortisationPolicy());
         assertEquals(VALUATION, accountingPolicies.getValuationInformationAndPolicy());
-        assertEquals(OTHER, accountingPolicies.getOtherAccountingPolicies());
+        assertEquals(OTHER, accountingPolicies.getOtherAccountingPolicy());
         assertEquals(new HashMap<>(), accountingPolicies.getLinks());
     }
 }

@@ -62,7 +62,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             Long tangible = fixedAssets.getTangible();
             Long fixedAssetsTotal = fixedAssets.getTotal();
 
-            // Will calculate the total of all fixedAssets fields as they are added to the balance sheet
+            // Will calculate the total of all fixedassets fields as they are added to the balance sheet
             Long calculatedTotal = tangible;
 
             validateAggregateTotal(fixedAssetsTotal, calculatedTotal, FIXED_ASSETS_TOTAL_PATH, errors);
