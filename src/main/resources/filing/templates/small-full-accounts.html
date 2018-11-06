@@ -2100,13 +2100,13 @@ ul.accounts-comps-ct {
 
                       <td id="other-reserves-curr-val" class="strong figure">
                         {{if isNotEmpty $otherReserves.current_amount}}
-                        <ix:nonFraction contextRef="OtherReserves_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.current_amount}}</ix:nonFraction>
+                        {{emitIfNegative $otherReserves.current_amount "("}}<ix:nonFraction contextRef="OtherReserves_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.current_amount}}</ix:nonFraction>{{emitIfNegative $otherReserves.current_amount ")"}}
                         {{end}}
                       </td>
 
                       <td id="other-reserves-prev-val" class="figure">
                         {{if isNotEmpty $otherReserves.previous_amount}}
-                        <ix:nonFraction contextref="OtherReserves_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.previous_amount}}</ix:nonFraction>
+                        {{emitIfNegative $otherReserves.previous_amount "("}}<ix:nonFraction contextRef="OtherReserves_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherReserves.previous_amount}}</ix:nonFraction> {{emitIfNegative $otherReserves.previous_amount ")"}}
                         {{end}}
                       </td>
                   </tr>
@@ -2122,13 +2122,13 @@ ul.accounts-comps-ct {
 
                         <td id="profit-and-loss-curr-val" class="strong figure">
                           {{if isNotEmpty $profitAndLoss.current_amount}}
-                          <ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.current_amount}}</ix:nonFraction>
+                          {{emitIfNegative $profitAndLoss.current_amount "("}}<ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.current_amount}}</ix:nonFraction> {{emitIfNegative $profitAndLoss.current_amount ")"}}
                           {{end}}
                         </td>
 
                         <td id="profit-and-loss-prev-val" class="figure">
                           {{if isNotEmpty $profitAndLoss.previous_amount}}
-                          <ix:nonFraction contextref="RetainedEarningsAccumulatedLosses_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.previous_amount}}</ix:nonFraction>
+                          {{emitIfNegative $profitAndLoss.previous_amount "("}}<ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $profitAndLoss.previous_amount}}</ix:nonFraction> {{emitIfNegative $profitAndLoss.previous_amount ")"}}
                           {{end}}
                         </td>
                       </tr>
@@ -2144,13 +2144,13 @@ ul.accounts-comps-ct {
 
                       <td id="shareholders-fund-curr-val" class="strong total">
                         {{if isNotEmpty $current_shareholders_fund}}
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_shareholders_fund}}</ix:nonFraction>
+                        {{emitIfNegative $current_shareholders_fund "("}} <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_shareholders_fund}}</ix:nonFraction> {{emitIfNegative $current_shareholders_fund ")"}}
                         {{end}}
                       </td>
 
                       <td id="shareholders-fund-prev-val" class="total">
                         {{if isNotEmpty $previous_shareholders_fund}}
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_shareholders_fund}}</ix:nonFraction>
+                        {{emitIfNegative $previous_shareholders_fund "("}}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_shareholders_fund}}</ix:nonFraction>{{emitIfNegative $previous_shareholders_fund ")"}}
                         {{end}}
                       </td>
                   </tr>
