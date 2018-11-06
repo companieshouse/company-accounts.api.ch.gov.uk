@@ -59,7 +59,7 @@ public class PreviousPeriodValidator extends BaseValidator {
 
             Long totalNetAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
 
-            if (totalNetAssets != totalShareholderFunds) {
+            if (!totalNetAssets.equals(totalShareholderFunds)) {
 
                 addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
             }

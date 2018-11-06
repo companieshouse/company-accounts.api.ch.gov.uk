@@ -62,7 +62,7 @@ public class CurrentPeriodValidator extends BaseValidator {
 
             // Total shareholder funds must equal total net assets
             Long totalNetAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
-            if (totalNetAssets != totalShareholderFunds) {
+            if (!totalNetAssets.equals(totalShareholderFunds)) {
 
                 addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
             }
