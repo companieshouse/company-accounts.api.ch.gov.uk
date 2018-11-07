@@ -29,6 +29,9 @@ public class BalanceSheet {
     @JsonProperty("current_assets")
     private CurrentAssets currentAssets;
 
+    @JsonProperty("capital_and_reserves")
+    private CapitalAndReserves capitalAndReserves;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -60,5 +63,13 @@ public class BalanceSheet {
 
     public void setCurrentAssets(CurrentAssets currentAssets) {
         this.currentAssets = currentAssets;
+    }
+
+    public CapitalAndReserves getCapitalAndReserves() {
+        return capitalAndReserves;
+    }
+
+    public void setCapitalAndReserves(CapitalAndReserves capitalAndReserves) {
+        this.capitalAndReserves = capitalAndReserves;
     }
 }
