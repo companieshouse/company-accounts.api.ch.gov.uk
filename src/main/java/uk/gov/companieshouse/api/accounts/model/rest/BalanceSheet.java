@@ -21,6 +21,14 @@ public class BalanceSheet {
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
 
+    @Valid
+    @JsonProperty("other_liabilities_or_assets")
+    private OtherLiabilitiesOrAssets otherLiabilitiesOrAssets;
+
+    @Valid
+    @JsonProperty("current_assets")
+    private CurrentAssets currentAssets;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -35,5 +43,22 @@ public class BalanceSheet {
 
     public FixedAssets getFixedAssets() {
         return fixedAssets;
+    }
+
+    public OtherLiabilitiesOrAssets getOtherLiabilitiesOrAssets() {
+        return otherLiabilitiesOrAssets;
+    }
+
+    public void setOtherLiabilitiesOrAssets(
+            OtherLiabilitiesOrAssets otherLiabilitiesOrAssets) {
+        this.otherLiabilitiesOrAssets = otherLiabilitiesOrAssets;
+    }
+
+    public CurrentAssets getCurrentAssets() {
+        return currentAssets;
+    }
+
+    public void setCurrentAssets(CurrentAssets currentAssets) {
+        this.currentAssets = currentAssets;
     }
 }

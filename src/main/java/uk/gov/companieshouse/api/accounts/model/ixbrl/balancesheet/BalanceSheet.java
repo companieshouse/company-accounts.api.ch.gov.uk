@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.companieshouse.api.accounts.model.ixbrl.balancesheet.currentassets.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 
 public class BalanceSheet {
@@ -13,6 +14,8 @@ public class BalanceSheet {
     private CalledUpSharedCapitalNotPaid calledUpSharedCapitalNotPaid;
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
+    @JsonProperty("current_assets")
+    private CurrentAssets currentAssets;
 
     public String getCurrentPeriodDateFormatted() {
         return currentPeriodDateFormatted;
@@ -45,5 +48,13 @@ public class BalanceSheet {
 
     public void setFixedAssets(FixedAssets fixedAssets) {
         this.fixedAssets = fixedAssets;
+    }
+
+    public CurrentAssets getCurrentAssets() {
+        return currentAssets;
+    }
+
+    public void setCurrentAssets(CurrentAssets currentAssets) {
+        this.currentAssets = currentAssets;
     }
 }

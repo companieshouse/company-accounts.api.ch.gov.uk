@@ -6,7 +6,9 @@ public enum ResourceName {
     SMALL_FULL("small-full"),
     CURRENT_PERIOD("current-period"),
     PREVIOUS_PERIOD("previous-period"),
-    APPROVAL("approval");
+    APPROVAL("approval"),
+    ACCOUNTING_POLICIES("accounting-policy"),
+    STATEMENTS("statements");
 
     private String name;
 
