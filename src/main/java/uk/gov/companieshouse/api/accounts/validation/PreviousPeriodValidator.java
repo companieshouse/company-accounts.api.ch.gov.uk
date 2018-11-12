@@ -53,7 +53,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
             Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
 
-            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFund()).orElse(0L);
+            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
             Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
             validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 

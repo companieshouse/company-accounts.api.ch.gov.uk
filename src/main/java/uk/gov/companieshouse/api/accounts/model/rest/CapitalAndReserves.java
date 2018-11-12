@@ -30,8 +30,8 @@ public class CapitalAndReserves {
     private Long sharePremiumAccount;
 
     @NotNull
-    @JsonProperty("total_shareholders_fund")
-    private Long totalShareholdersFund;
+    @JsonProperty("total_shareholders_funds")
+    private Long totalShareholdersFunds;
 
     public Long getCalledUpShareCapital() {
         return calledUpShareCapital;
@@ -65,11 +65,11 @@ public class CapitalAndReserves {
         this.sharePremiumAccount = sharePremiumAccount;
     }
 
-    public Long getTotalShareholdersFund() {
-        return totalShareholdersFund;
+    public Long getTotalShareholdersFunds() {
+        return totalShareholdersFunds;
     }
 
-    public void setTotalShareholdersFund(Long totalShareholdersFund) {
-        this.totalShareholdersFund = totalShareholdersFund;
+    public void setTotalShareholdersFunds(Long totalShareholdersFunds) {
+        this.totalShareholdersFunds = totalShareholdersFunds;
     }
 }
