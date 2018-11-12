@@ -2,8 +2,11 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.util.Optional;
 import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
@@ -20,6 +23,9 @@ public class PreviousPeriodValidator extends BaseValidator {
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
+
+    @Value("${javax.validation.constraints.NotNull.message}")
+    private String mandatoryElementMissing;
 
     public Errors validatePreviousPeriod(@Valid PreviousPeriod previousPeriod) {
 
@@ -73,6 +79,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod,errors);
+            checkOtherLiabilitiesAreMandatory(previousPeriod, errors);
         }
     }
     private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(PreviousPeriod previousPeriod, Errors errors) {
@@ -116,5 +123,20 @@ public class PreviousPeriodValidator extends BaseValidator {
 
         Long totalNetAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalNetAssets()).orElse(0L);
         validateAggregateTotal(totalNetAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH, errors);
+    }
+
+    private void checkOtherLiabilitiesAreMandatory(PreviousPeriod previousPeriod, Errors errors) {
+        CurrentAssets currentAssets = previousPeriod.getBalanceSheet().getCurrentAssets();
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
+
+        if (currentAssets.getTotal() != null ||
+                otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
+                otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
+
+            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null ||
+                    otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+            }
+        }
     }
 }
