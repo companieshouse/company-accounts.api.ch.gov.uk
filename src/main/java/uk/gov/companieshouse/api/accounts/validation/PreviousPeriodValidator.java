@@ -18,7 +18,7 @@ public class PreviousPeriodValidator extends BaseValidator {
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
-    @Value("${mandatory_element_missing}")
+    @Value("${mandatory.element.missing}")
     private String mandatoryElementMissing;
 
     private static final String BALANCE_SHEET_PATH = "$.previous_period.balance_sheet";

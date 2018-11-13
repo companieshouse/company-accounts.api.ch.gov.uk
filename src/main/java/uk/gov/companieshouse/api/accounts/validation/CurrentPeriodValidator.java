@@ -12,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 /**
@@ -24,7 +23,7 @@ public class CurrentPeriodValidator extends BaseValidator {
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
-    @Value("${mandatory_element_missing}")
+    @Value("${mandatory.element.missing}")
     private String mandatoryElementMissing;
 
     private static final String BALANCE_SHEET_PATH = "$.current_period.balance_sheet";
