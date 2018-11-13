@@ -131,7 +131,7 @@ public class CurrentPeriodValidator extends BaseValidator {
         CurrentAssets currentAssets = currentPeriod.getBalanceSheet().getCurrentAssets();
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
 
-        if (currentAssets.getTotal() != null ||
+        if (currentAssets != null ||
                 otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
                 otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
 
