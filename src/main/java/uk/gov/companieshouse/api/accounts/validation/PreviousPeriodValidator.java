@@ -1,16 +1,15 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import java.util.Optional;
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
@@ -79,6 +78,10 @@ public class PreviousPeriodValidator extends BaseValidator {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod,errors);
+        }
+
+        if (previousPeriod.getBalanceSheet().getCurrentAssets() != null &&
+                previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
             checkOtherLiabilitiesAreMandatory(previousPeriod, errors);
         }
     }
@@ -133,9 +136,12 @@ public class PreviousPeriodValidator extends BaseValidator {
                 otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
                 otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
 
-            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null ||
-                    otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null) {
                 addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+            }
+
+            if (otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
             }
         }
     }

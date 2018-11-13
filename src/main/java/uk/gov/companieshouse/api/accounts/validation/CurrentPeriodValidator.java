@@ -81,6 +81,10 @@ public class CurrentPeriodValidator extends BaseValidator {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(currentPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(currentPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(currentPeriod,errors);
+        }
+
+        if (currentPeriod.getBalanceSheet().getCurrentAssets() != null &&
+                currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
             checkOtherLiabilitiesAreMandatory(currentPeriod, errors);
         }
     }
@@ -135,9 +139,12 @@ public class CurrentPeriodValidator extends BaseValidator {
                 otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
                 otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
 
-            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null ||
-                    otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null) {
                 addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+            }
+
+            if (otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
             }
         }
     }
