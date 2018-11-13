@@ -23,7 +23,7 @@ public class PreviousPeriodValidator extends BaseValidator {
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
 
-    @Value("${mandatory_element_missing}")
+    @Value("${mandatory.element.missing}")
     private String mandatoryElementMissing;
 
     public Errors validatePreviousPeriod(@Valid PreviousPeriod previousPeriod) {
