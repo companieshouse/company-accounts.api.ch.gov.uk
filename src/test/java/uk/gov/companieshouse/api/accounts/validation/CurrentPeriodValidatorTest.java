@@ -159,8 +159,7 @@ public class CurrentPeriodValidatorTest {
                         LocationType.JSON_PATH.getValue(),
                         ErrorType.VALIDATION.getType())));
     }
-
-
+    
     @Test
     @DisplayName("ERROR - Test validate whole current period with multiple errors")
     void validateCurrentPeriod() {

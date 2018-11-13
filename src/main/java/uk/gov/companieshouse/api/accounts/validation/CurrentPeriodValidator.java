@@ -80,6 +80,7 @@ public class CurrentPeriodValidator extends BaseValidator {
             }
         }
     }
+
     private void validateTotalCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
 
         CurrentAssets currentAssets = currentPeriod.getBalanceSheet().getCurrentAssets();
