@@ -67,10 +67,10 @@ public class PreviousPeriodValidatorTest {
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setCalledUpShareCapital(0L);
+        capitalAndReserves.setCalledUpShareCapital(1L);
         capitalAndReserves.setOtherReserves(0L);
         capitalAndReserves.setProfitAndLoss(0L);
-        capitalAndReserves.setSharePremiumAccount(1L);
+        capitalAndReserves.setSharePremiumAccount(0L);
         capitalAndReserves.setTotalShareholdersFunds(1L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 

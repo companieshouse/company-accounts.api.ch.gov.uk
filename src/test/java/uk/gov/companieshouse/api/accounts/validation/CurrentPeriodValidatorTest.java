@@ -42,7 +42,6 @@ public class CurrentPeriodValidatorTest {
         errors = new Errors();
     }
 
-
     @Test
     @DisplayName("SUCCESS - Test Balance Sheet validation with no errors")
     void validateBalanceSheet() {
@@ -66,10 +65,10 @@ public class CurrentPeriodValidatorTest {
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setCalledUpShareCapital(0L);
+        capitalAndReserves.setCalledUpShareCapital(1L);
         capitalAndReserves.setOtherReserves(0L);
         capitalAndReserves.setProfitAndLoss(0L);
-        capitalAndReserves.setSharePremiumAccount(1L);
+        capitalAndReserves.setSharePremiumAccount(0L);
         capitalAndReserves.setTotalShareholdersFunds(1L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
@@ -82,6 +81,7 @@ public class CurrentPeriodValidatorTest {
         Errors errors = validator.validateCurrentPeriod(currentPeriod);
 
         assertFalse(errors.hasErrors());
+
     }
 
     @Test
