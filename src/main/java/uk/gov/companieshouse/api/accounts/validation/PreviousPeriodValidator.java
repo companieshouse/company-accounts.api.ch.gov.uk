@@ -78,10 +78,6 @@ public class PreviousPeriodValidator extends BaseValidator {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod, errors);
-        }
-
-        if (previousPeriod.getBalanceSheet().getCurrentAssets() != null &&
-                previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
             checkOtherLiabilitiesAreMandatory(previousPeriod, errors);
         }
     }
