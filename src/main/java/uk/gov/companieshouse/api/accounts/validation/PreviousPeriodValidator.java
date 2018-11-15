@@ -77,7 +77,7 @@ public class PreviousPeriodValidator extends BaseValidator {
         if (previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
-            calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod,errors);
+            calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod, errors);
         }
 
         if (previousPeriod.getBalanceSheet().getCurrentAssets() != null &&
@@ -85,6 +85,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             checkOtherLiabilitiesAreMandatory(previousPeriod, errors);
         }
     }
+
     private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(PreviousPeriod previousPeriod, Errors errors) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
@@ -92,9 +93,9 @@ public class PreviousPeriodValidator extends BaseValidator {
 
         Long totalCurrentAssets = 0L;
         if (previousPeriod.getBalanceSheet().getCurrentAssets() != null) {
-             totalCurrentAssets = previousPeriod.getBalanceSheet().getCurrentAssets().getTotal();
+            totalCurrentAssets = previousPeriod.getBalanceSheet().getCurrentAssets().getTotal();
         }
-        Long calculatedTotal = totalCurrentAssets +  prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
+        Long calculatedTotal = totalCurrentAssets + prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
         validateAggregateTotal(netCurrentAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
