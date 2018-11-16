@@ -19,11 +19,9 @@ public class OtherLiabilitiesOrAssets {
     @JsonProperty("creditors_due_within_one_year")
     private Long creditorsDueWithinOneYear;
 
-    @NotNull
     @JsonProperty("net_current_assets")
     private Long netCurrentAssets;
 
-    @NotNull
     @JsonProperty("total_assets_less_current_liabilities")
     private Long totalAssetsLessCurrentLiabilities;
 

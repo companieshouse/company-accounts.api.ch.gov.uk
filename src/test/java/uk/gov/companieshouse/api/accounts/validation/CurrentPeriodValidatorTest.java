@@ -97,6 +97,7 @@ public class CurrentPeriodValidatorTest {
         currentPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
 
 
         Errors errors = validator.validateCurrentPeriod(currentPeriod);
@@ -159,6 +160,67 @@ public class CurrentPeriodValidatorTest {
 
         assertTrue(errors.containsError(
                 new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("ERROR - Mandatory elements missing for NetCurrentAssets and TotalAssetsLessCurrentLiabilities")
+    void validateMissingField() {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setTotal(3L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(2L);
+        fixedAssets.setTotal(2L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        currentPeriod.setBalanceSheet(balanceSheet);
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
+
+        Errors errors = validator.validateCurrentPeriod(currentPeriod);
+
+        assertTrue(errors.containsError(
+                new Error("mandatory_element_missing", OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("ERROR - Mandatory elements missing with Current Assets Null for NetCurrentAssets and TotalAssetsLessCurrentLiabilities")
+    void validateMissingFieldCurrentAssetsNull() {
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(2L);
+        fixedAssets.setTotal(2L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        currentPeriod.setBalanceSheet(balanceSheet);
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
+
+        Errors errors = validator.validateCurrentPeriod(currentPeriod);
+
+        assertTrue(errors.containsError(
+                new Error("mandatory_element_missing", OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH,
                         LocationType.JSON_PATH.getValue(),
                         ErrorType.VALIDATION.getType())));
     }
