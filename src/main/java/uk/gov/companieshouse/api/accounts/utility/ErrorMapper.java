@@ -43,7 +43,7 @@ public class ErrorMapper {
                 String location =
                     "$." + ((period + field).replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
 
-                if ("value.outside.range".equals(errorMessage) || "invalid.length"
+                if ("value.outside.range".equals(errorMessage) || "invalid.input.length"
                     .equals(errorMessage)) {
 
                     Object[] argument = fieldError.getArguments();
