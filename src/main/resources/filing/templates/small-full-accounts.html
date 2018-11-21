@@ -1838,7 +1838,7 @@ ul.accounts-comps-ct {
 
               <!-- BALANCE SHEET - LIABILITIES -->
 
-              {{if $liabilities := $balanceSheet.other_liabilities_and_assets}}
+              {{if $liabilities := $balanceSheet.other_liabilities_or_assets}}
 
                   {{if $prepayments := $liabilities.prepayments_and_accrued_income}}
 
@@ -2042,7 +2042,7 @@ ul.accounts-comps-ct {
 
               <!-- BALANCE SHEET - CAPITAL AND RESERVES -->
 
-              {{if $capitalAndReserves := $balanceSheet.capital_and_reserves}}
+              {{if $capitalAndReserves := $balanceSheet.capital_and_reserve}}
 
                   {{if $calledUpShareCapital := $capitalAndReserves.called_up_share_capital}}
 
@@ -2132,7 +2132,7 @@ ul.accounts-comps-ct {
 
                   {{end}}
 
-                  {{if isNotEmpty ($current_shareholders_fund := $capitalAndReserves.current_shareholders_fund) ($previous_shareholders_fund := $capitalAndReserves.previous_shareholders_fund)}}
+                  {{if isNotEmpty ($current_shareholders_fund := $capitalAndReserves.total_share_holders_fund.current_amount) ($previous_shareholders_fund := $capitalAndReserves.total_share_holders_fund.previous_amount)}}
 
                   <tr class="figures">
                       <td id="shareholders-fund-label" class="strong">Shareholders funds:</td>
@@ -2193,9 +2193,7 @@ ul.accounts-comps-ct {
               <p class="strong">
               This report was approved by the board of directors on
 
-                <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_accounts.approval_date}}
-
-                  .approval_date}}</ix:nonNumeric>
+                <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_accounts.approval_date}}</ix:nonNumeric>
 
               <br />
               and signed on behalf of the board by:
