@@ -162,4 +162,22 @@ public class PreviousPeriodValidator extends BaseValidator {
         Long totalNetAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalNetAssets()).orElse(0L);
         validateAggregateTotal(totalNetAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH, errors);
     }
+
+    private void checkOtherLiabilitiesAreMandatory(PreviousPeriod previousPeriod, Errors errors) {
+        CurrentAssets currentAssets = previousPeriod.getBalanceSheet().getCurrentAssets();
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
+
+        if (currentAssets != null ||
+                otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
+                otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
+
+            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+            }
+
+            if (otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
+            }
+        }
+    }
 }

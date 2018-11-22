@@ -95,6 +95,7 @@ public class CurrentPeriodValidatorTest {
         currentPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
 
         Errors errors = validator.validateCurrentPeriod(currentPeriod);
 
