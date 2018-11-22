@@ -23,6 +23,9 @@ public class CurrentPeriodValidator extends BaseValidator {
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
+    @Value("${mandatory.element.missing}")
+    private String mandatoryElementMissing;
+
     private static final String BALANCE_SHEET_PATH = "$.current_period.balance_sheet";
     private static final String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static final String FIXED_ASSETS_TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
@@ -49,27 +52,33 @@ public class CurrentPeriodValidator extends BaseValidator {
 
         CapitalAndReserves capitalAndReserves = currentPeriod.getBalanceSheet().getCapitalAndReserves();
 
+        // If any capital and reserves fields are submitted then total shareholder funds cannot be null
         if (capitalAndReserves != null) {
 
-            Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
-            Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
-            Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
-            Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
+            if (capitalAndReserves.getTotalShareholdersFunds() == null) {
+                addError(errors, mandatoryElementMissing, TOTAL_SHAREHOLDER_FUNDS_PATH);
+            } else {
 
-            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
-            Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
-            validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
+                // Validate calculated total equals total shareholders funds
+                Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
+                Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
+                Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
+                Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
+                Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
+                Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
+                validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 
-            Long totalNetAssets = 0L;
-            // Total shareholder funds must equal total net assets
-            if (currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
-                 totalNetAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
-            }
-                    if (!totalNetAssets.equals(totalShareholderFunds)) {
-                        addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
-                    }
+                Long totalNetAssets = 0L;
+                // Total shareholder funds must equal total net assets
+                if (currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                    totalNetAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
+                }
+                if (!totalNetAssets.equals(totalShareholderFunds)) {
+                    addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
+                }
             }
         }
+    }
 
     private void validateTotalCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
 
