@@ -1,7 +1,7 @@
 {{"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" | unescaped}}
 
 <html xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31" xmlns="http://www.w3.org/1999/xhtml" xmlns:core="http://xbrl.frc.org.uk/fr/2014-09-01/core" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:curr="http://xbrl.frc.org.uk/cd/2014-09-01/currencies" xmlns:countries="http://xbrl.frc.org.uk/cd/2014-09-01/countries" xmlns:uk-bus="http://xbrl.frc.org.uk/cd/2014-09-01/business" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:direp="http://xbrl.frc.org.uk/reports/2014-09-01/direp" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:iso4217="http://www.xbrl.org/2003/iso4217">
-  {{$company := .small_full_account.company}}
+  {{$company := .small_full_accounts.company}}
   {{$companyName := $company.company_name}}
   {{$companyNumber := $company.company_number}}
   <head>
@@ -1111,7 +1111,7 @@ ul.accounts-comps-ct {
   </head>
   <body xml:lang="en">
     {{doTwoPass}}
-    {{$period := .small_full_account.period}}
+    {{$period := .small_full_accounts.period}}
     <div class="accounts-body ">
       <div id="abridgedAccounts" class="wholedoc">
         {{$current_period_start_on := $period.current_period_start_on}}
@@ -1120,7 +1120,7 @@ ul.accounts-comps-ct {
         {{$previous_period_end_on := $period.previous_period_end_on}}
         <div style="display:none" id="accountsHeaderIxbrl">
 
-        {{$balanceSheet := .small_full_account.balance_sheet}}
+        {{$balanceSheet := .small_full_accounts.balance_sheet}}
 
           <ix:header>
             <ix:hidden>
@@ -1563,7 +1563,7 @@ ul.accounts-comps-ct {
                 <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
                 ({{$company.jurisdiction }})
             </h2>
-            {{$period := .small_full_account.period}}
+            {{$period := .small_full_accounts.period}}
             <h2 class="text--center margin-large" >
                 <ix:nonNumeric contextRef="CY" name="uk-bus:ReportTitle">Unaudited statutory accounts for the year ended {{$period.current_period_end_on_formatted}}</ix:nonNumeric>
             </h2>
@@ -1597,7 +1597,7 @@ ul.accounts-comps-ct {
                         </td>
                         <td></td>
                     </tr>
-                    {{if .small_full_account.notes}}
+                    {{if .small_full_accounts.notes}}
                         <tr>
                             <td class="strong">
                                 <a href="#AdditionalNotesSection">Additional notes</a>
@@ -1617,8 +1617,8 @@ ul.accounts-comps-ct {
 
         <!-- BALANCE SHEET -->
 
-        {{$currentPeriod := .small_full_account.period.current_period_start_on}}
-        {{$previousPeriod := .small_full_account.period.previous_period_start_on}}
+        {{$currentPeriod := .small_full_accounts.period.current_period_start_on}}
+        {{$previousPeriod := .small_full_accounts.period.previous_period_start_on}}
 
         <div class="page">
             <div class="header">
@@ -1838,7 +1838,7 @@ ul.accounts-comps-ct {
 
               <!-- BALANCE SHEET - LIABILITIES -->
 
-              {{if $liabilities := $balanceSheet.other_liabilities_and_assets}}
+              {{if $liabilities := $balanceSheet.other_liabilities_or_assets}}
 
                   {{if $prepayments := $liabilities.prepayments_and_accrued_income}}
 
@@ -2042,7 +2042,7 @@ ul.accounts-comps-ct {
 
               <!-- BALANCE SHEET - CAPITAL AND RESERVES -->
 
-              {{if $capitalAndReserves := $balanceSheet.capital_and_reserves}}
+              {{if $capitalAndReserves := $balanceSheet.capital_and_reserve}}
 
                   {{if $calledUpShareCapital := $capitalAndReserves.called_up_share_capital}}
 
@@ -2132,7 +2132,7 @@ ul.accounts-comps-ct {
 
                   {{end}}
 
-                  {{if isNotEmpty ($current_shareholders_fund := $capitalAndReserves.current_shareholders_fund) ($previous_shareholders_fund := $capitalAndReserves.previous_shareholders_fund)}}
+                  {{if isNotEmpty ($current_shareholders_fund := $capitalAndReserves.total_share_holders_fund.current_amount) ($previous_shareholders_fund := $capitalAndReserves.total_share_holders_fund.previous_amount)}}
 
                   <tr class="figures">
                       <td id="shareholders-fund-label" class="strong">Shareholders funds:</td>
@@ -2188,12 +2188,12 @@ ul.accounts-comps-ct {
 
           {{end}}
 
-          {{- if isNotEmpty .small_full_account.approval_date -}}
+          {{- if isNotEmpty .small_full_accounts.approval_date -}}
             <div>
               <p class="strong">
               This report was approved by the board of directors on
 
-                <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_account.approval_date}}</ix:nonNumeric>
+                <ix:nonNumeric contextRef="CY_END" name="core:DateAuthorisationFinancialStatementsForIssue" format="ixt2:datedaymonthyearen">{{.small_full_accounts.approval_date}}</ix:nonNumeric>
 
               <br />
               and signed on behalf of the board by:
@@ -2201,7 +2201,7 @@ ul.accounts-comps-ct {
               <p>
                  Name:
 
-                 <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_account.approval_name}}</ix:nonNumeric>
+                 <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_accounts.approval_name}}</ix:nonNumeric>
 
                <br />
                   Status: Director
@@ -2212,7 +2212,7 @@ ul.accounts-comps-ct {
         </div>
 
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
-        {{if $postBalanceSheetEvents := .small_full_account.notes.post_balance_sheet_events}}
+        {{if $postBalanceSheetEvents := .small_full_accounts.notes.post_balance_sheet_events}}
             {{incValue "notes-page-count" }}
             {{setValue "pbse-notes-id" (getValue "notes-page-count") }}
             <div class="page">
