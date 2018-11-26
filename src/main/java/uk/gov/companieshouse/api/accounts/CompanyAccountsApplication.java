@@ -76,6 +76,4 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
     }
-
-
 }
