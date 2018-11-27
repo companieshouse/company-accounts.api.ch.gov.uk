@@ -37,8 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${invalid.value}")
     public String invalidValue;
 
-    @ExceptionHandler(value = {Exception.class})
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleException(Exception ex) {
         HashMap<String, Object> message = new HashMap<>();
         message.put("message", ex.getMessage());
