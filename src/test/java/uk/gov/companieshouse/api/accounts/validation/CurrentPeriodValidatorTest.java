@@ -174,6 +174,7 @@ public class CurrentPeriodValidatorTest {
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
         ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
 
         errors = validator.validateCurrentPeriod(currentPeriod);
 

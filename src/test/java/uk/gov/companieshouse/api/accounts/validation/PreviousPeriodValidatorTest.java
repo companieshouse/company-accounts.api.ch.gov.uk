@@ -97,6 +97,7 @@ public class PreviousPeriodValidatorTest {
         previousPeriod.setBalanceSheet(balanceSheet);
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
         
         Errors errors =  validator.validatePreviousPeriod(previousPeriod);
 
@@ -179,6 +180,7 @@ public class PreviousPeriodValidatorTest {
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
         ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
 
         errors = validator.validatePreviousPeriod(previousPeriod);
 
