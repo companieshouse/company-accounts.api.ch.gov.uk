@@ -43,7 +43,7 @@ public class ErrorMapper {
                 String location =
                     "$." + ((period + field).replaceAll("(.)([A-Z])", "$1_$2")).toLowerCase();
 
-                if ("value.outside.range".equals(errorMessage) || "invalid.length"
+                if ("value.outside.range".equals(errorMessage) || "invalid.input.length"
                     .equals(errorMessage)) {
 
                     Object[] argument = fieldError.getArguments();
@@ -52,8 +52,8 @@ public class ErrorMapper {
                         environment.resolvePlaceholders("${" + errorMessage + "}"),
                         location,
                         LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
-                    error.addErrorValue("min", argument[2].toString());
-                    error.addErrorValue("max", argument[1].toString());
+                    error.addErrorValue("lower", argument[2].toString());
+                    error.addErrorValue("upper", argument[1].toString());
                     errors.addError(error);
 
                 } else if ("max.length.exceeded".equals(errorMessage)) {

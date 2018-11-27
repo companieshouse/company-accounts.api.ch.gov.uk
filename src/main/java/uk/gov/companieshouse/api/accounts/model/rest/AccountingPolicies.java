@@ -21,27 +21,27 @@ public class AccountingPolicies extends RestObject {
     @JsonProperty("basis_of_measurement_and_preparation")
     private String basisOfMeasurementAndPreparation;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.length")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("turnover_policy")
     private String turnoverPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.length")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("tangible_fixed_assets_depreciation_policy")
     private String tangibleFixedAssetsDepreciationPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.length")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("intangible_fixed_assets_amortisation_policy")
     private String intangibleFixedAssetsAmortisationPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.length")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("valuation_information_and_policy")
     private String valuationInformationAndPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.length")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("other_accounting_policy")
     private String otherAccountingPolicy;
