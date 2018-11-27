@@ -114,6 +114,7 @@ public class PreviousPeriodValidator extends BaseValidator {
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(previousPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(previousPeriod, errors);
+            checkOtherLiabilitiesAreMandatory(previousPeriod, errors);
         }
     }
 
