@@ -18,8 +18,7 @@ public class DebtorsTransformer  implements GenericTransformer<Debtors, DebtorsE
 
         return debtorsEntity;
     }
-
-
+    
     @Override
     public Debtors transform(DebtorsEntity entity) {
 
