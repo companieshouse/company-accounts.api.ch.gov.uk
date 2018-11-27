@@ -23,7 +23,6 @@ public class DebtorsTransformerTest {
     private static final Long TRADE_DEBTORS = 4L;
     private static final Long TOTAL = 10L;
 
-
     private DebtorsTransformer debtorsTransformer = new DebtorsTransformer();
 
     @Test
@@ -65,7 +64,6 @@ public class DebtorsTransformerTest {
         assertEquals(TRADE_DEBTORS, debtorsDataEntity.getTradeDebtors());
         assertEquals(TOTAL, debtorsDataEntity.getTotal());
         assertEquals(new HashMap<>(), debtorsDataEntity.getLinks());
-
     }
 
     @Test
@@ -98,6 +96,5 @@ public class DebtorsTransformerTest {
        assertEquals(TRADE_DEBTORS, debtors.getTradeDebtors());
        assertEquals(TOTAL, debtors.getTotal());
        assertEquals(new HashMap<>(), debtors.getLinks());
-
     }
 }
