@@ -108,7 +108,7 @@ public class PreviousPeriodTransformerTest {
         assertEquals(OTHER_RESERVES_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getOtherReserves());
         assertEquals(PROFIT_AND_LOSS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getProfitAndLoss());
         assertEquals(SHARE_PREMIUM_ACCOUNT_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getSharePremiumAccount());
-        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholderFunds());
+        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholdersFunds());
 
         assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotal());
@@ -125,7 +125,7 @@ public class PreviousPeriodTransformerTest {
         capitalAndReserves.setProfitAndLoss(PROFIT_AND_LOSS_VALID);
         capitalAndReserves.setOtherReserves(OTHER_RESERVES_VALID);
         capitalAndReserves.setCalledUpShareCapital(CALLED_UP_SHARE_CAPITAL_VALID);
-        capitalAndReserves.setTotalShareholderFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
+        capitalAndReserves.setTotalShareholdersFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
     }
 

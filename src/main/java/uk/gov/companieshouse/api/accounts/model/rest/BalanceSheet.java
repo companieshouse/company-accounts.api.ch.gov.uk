@@ -29,6 +29,7 @@ public class BalanceSheet {
     @JsonProperty("current_assets")
     private CurrentAssets currentAssets;
 
+    @Valid
     @JsonProperty("capital_and_reserves")
     private CapitalAndReserves capitalAndReserves;
 

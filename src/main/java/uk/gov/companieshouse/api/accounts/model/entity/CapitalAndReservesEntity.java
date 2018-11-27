@@ -16,8 +16,8 @@ public class CapitalAndReservesEntity {
     @Field("share_premium_account")
     private Long sharePremiumAccount;
 
-    @Field("total_shareholder_funds")
-    private Long totalShareholderFunds;
+    @Field("total_shareholders_funds")
+    private Long totalShareholdersFunds;
 
     public Long getCalledUpShareCapital() {
         return calledUpShareCapital;
@@ -51,11 +51,11 @@ public class CapitalAndReservesEntity {
         this.sharePremiumAccount = sharePremiumAccount;
     }
 
-    public Long getTotalShareholderFunds() {
-        return totalShareholderFunds;
+    public Long getTotalShareholdersFunds() {
+        return totalShareholdersFunds;
     }
 
-    public void setTotalShareholderFunds(Long totalShareholderFunds) {
-        this.totalShareholderFunds = totalShareholderFunds;
+    public void setTotalShareholdersFunds(Long totalShareholdersFunds) {
+        this.totalShareholdersFunds = totalShareholdersFunds;
     }
 }
