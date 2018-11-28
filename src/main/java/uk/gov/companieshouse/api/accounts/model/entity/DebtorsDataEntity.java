@@ -4,81 +4,33 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class DebtorsDataEntity extends BaseDataEntity {
 
-    @Field("details")
-    private String details;
+    @Field("current_period_debtors")
+    private CurrentPeriodDebtorsEntity currentPeriodDebtorsEntity;
 
-    @Field("greater_than_one_year")
-    private Long greaterThanOneYear;
+    @Field("previous_period_debtors")
+    private PreviousPeriodDebtorsEntity previousPeriodDebtorsEntity;
 
-    @Field("other_debtors")
-    private Long otherDebtors;
-
-    @Field("prepayments_and_accrued_income")
-    private Long prepaymentsAndAccruedIncome;
-
-    @Field("total")
-    private Long total;
-
-    @Field("trade_debtors")
-    private Long tradeDebtors;
-
-    public String getDetails() {
-        return details;
+    public CurrentPeriodDebtorsEntity getCurrentPeriodDebtorsEntity() {
+        return currentPeriodDebtorsEntity;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setCurrentPeriodDebtorsEntity(CurrentPeriodDebtorsEntity currentPeriodDebtorsEntity) {
+        this.currentPeriodDebtorsEntity = currentPeriodDebtorsEntity;
     }
 
-    public Long getGreaterThanOneYear() {
-        return greaterThanOneYear;
+    public PreviousPeriodDebtorsEntity getPreviousPeriodDebtorsEntity() {
+        return previousPeriodDebtorsEntity;
     }
 
-    public void setGreaterThanOneYear(Long greaterThanOneYear) {
-        this.greaterThanOneYear = greaterThanOneYear;
-    }
-
-    public Long getOtherDebtors() {
-        return otherDebtors;
-    }
-
-    public void setOtherDebtors(Long otherDebtors) {
-        this.otherDebtors = otherDebtors;
-    }
-
-    public Long getPrepaymentsAndAccruedIncome() {
-        return prepaymentsAndAccruedIncome;
-    }
-
-    public void setPrepaymentsAndAccruedIncome(Long prepaymentsAndAccruedIncome) {
-        this.prepaymentsAndAccruedIncome = prepaymentsAndAccruedIncome;
-    }
-
-    public Long getTotal() {
-        return total;
-    }
-
-    public void setTotal(Long total) {
-        this.total = total;
-    }
-
-    public Long getTradeDebtors() {
-        return tradeDebtors;
-    }
-
-    public void setTradeDebtors(Long tradeDebtors) {
-        this.tradeDebtors = tradeDebtors;
+    public void setPreviousPeriodDebtorsEntity(PreviousPeriodDebtorsEntity previousPeriodDebtorsEntity) {
+        this.previousPeriodDebtorsEntity = previousPeriodDebtorsEntity;
     }
 
     @Override
     public String toString() {
         return "DebtorsDataEntity{" +
-                "details='" + details + '\'' +
-                ", greaterThanOneYear=" + greaterThanOneYear +
-                ", otherDebtors=" + otherDebtors +
-                ", prepaymentsAndAccruedIncome=" + prepaymentsAndAccruedIncome +
-                ", total=" + total +
-                ", tradeDebtors=" + tradeDebtors +
+                "currentPeriodDebtorsEntity=" + currentPeriodDebtorsEntity +
+                ", previousPeriodDebtorsEntity=" + previousPeriodDebtorsEntity +
                 '}';
     }
 }
