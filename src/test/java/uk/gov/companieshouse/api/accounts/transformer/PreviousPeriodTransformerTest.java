@@ -15,8 +15,11 @@ import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.OtherLiabilitiesOrAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 
@@ -27,6 +30,15 @@ public class PreviousPeriodTransformerTest {
     private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
     private static final Long TANGIBLE_VALID = 10L;
     private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
+    private static final Long CASH_AT_BANK_AND_IN_HAND_VALID = 50L;
+    private static final Long STOCKS_VALID = 100L;
+    private static final Long DEBTORS_VALID = 150L;
+    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300L;
+    private static final Long CALLED_UP_SHARE_CAPITAL_VALID = 3L;
+    private static final Long OTHER_RESERVES_VALID = 6L;
+    private static final Long PROFIT_AND_LOSS_VALID = 9L;
+    private static final Long SHARE_PREMIUM_ACCOUNT_VALID = 15L;
+    private static final Long TOTAL_SHAREHOLDERS_FUNDS_VALID = 45L;
     private static final Long OTHER_LIABILITIES_OR_ASSETS_VALID = 10L;
     private static final Long OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID = 10L;
 
@@ -52,6 +64,10 @@ public class PreviousPeriodTransformerTest {
 
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID);
+
+        addFixedAssetsToBalanceSheet(balanceSheet);
+        addCurrentAssetsToBalanceSheet(balanceSheet);
+        addCapitalAndReservesToBalanceSheet(balanceSheet);
 
         PreviousPeriod previousPeriod = new PreviousPeriod();
         previousPeriod.setEtag(ETAG);
@@ -79,13 +95,54 @@ public class PreviousPeriodTransformerTest {
 
         assertNotNull(previousPeriodEntity);
         assertEquals(ETAG, data.getEtag());
-        assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
+
+        assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID,
+            data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
+
+        assertEquals(CASH_AT_BANK_AND_IN_HAND_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(STOCKS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
+        assertEquals(DEBTORS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotal());
+
+        assertEquals(CALLED_UP_SHARE_CAPITAL_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getCalledUpShareCapital());
+        assertEquals(OTHER_RESERVES_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getOtherReserves());
+        assertEquals(PROFIT_AND_LOSS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getProfitAndLoss());
+        assertEquals(SHARE_PREMIUM_ACCOUNT_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getSharePremiumAccount());
+        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholdersFunds());
+
         assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotal());
 
         testEntityAssertsOtherLiabilitiesOrAssetsEntity(data);
+
         assertEquals(KIND, data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
+    }
+
+    private void addCapitalAndReservesToBalanceSheet(BalanceSheet balanceSheet) {
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setSharePremiumAccount(SHARE_PREMIUM_ACCOUNT_VALID);
+        capitalAndReserves.setProfitAndLoss(PROFIT_AND_LOSS_VALID);
+        capitalAndReserves.setOtherReserves(OTHER_RESERVES_VALID);
+        capitalAndReserves.setCalledUpShareCapital(CALLED_UP_SHARE_CAPITAL_VALID);
+        capitalAndReserves.setTotalShareholdersFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+    }
+
+    private void addCurrentAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setCashAtBankAndInHand(CASH_AT_BANK_AND_IN_HAND_VALID);
+        currentAssets.setDebtors(DEBTORS_VALID);
+        currentAssets.setStocks(STOCKS_VALID);
+        currentAssets.setTotal(CURRENT_ASSETS_TOTAL_VALID);
+        balanceSheet.setCurrentAssets(currentAssets);
+    }
+
+    private void addFixedAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(TANGIBLE_VALID);
+        fixedAssets.setTotal(FIXED_ASSETS_TOTAL_VALID);
+        balanceSheet.setFixedAssets(fixedAssets);
     }
 
     @Test
@@ -122,7 +179,7 @@ public class PreviousPeriodTransformerTest {
         assertEquals("etag", previousPeriod.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, previousPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
         assertEquals(TANGIBLE_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTangible());
-
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotal());
         assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotal());
 
         testRestAssertsOtherLiabilitiesOrAssets(previousPeriod);

@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.api.accounts.model.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OtherLiabilitiesOrAssets {
 
     private static final int MAX_RANGE = 99999999;
@@ -17,11 +19,9 @@ public class OtherLiabilitiesOrAssets {
     @JsonProperty("creditors_due_within_one_year")
     private Long creditorsDueWithinOneYear;
 
-    @NotNull
     @JsonProperty("net_current_assets")
     private Long netCurrentAssets;
 
-    @NotNull
     @JsonProperty("total_assets_less_current_liabilities")
     private Long totalAssetsLessCurrentLiabilities;
 

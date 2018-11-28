@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 public class AccountingPolicies extends RestObject {
 
     private static final int MAX_FIELD_LENGTH = 20000;
+    private static final int MIN_FIELD_LENGTH = 1;
 
     @NotBlank
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
@@ -20,27 +21,27 @@ public class AccountingPolicies extends RestObject {
     @JsonProperty("basis_of_measurement_and_preparation")
     private String basisOfMeasurementAndPreparation;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("turnover_policy")
     private String turnoverPolicy;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("tangible_fixed_assets_depreciation_policy")
     private String tangibleFixedAssetsDepreciationPolicy;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("intangible_fixed_assets_amortisation_policy")
     private String intangibleFixedAssetsAmortisationPolicy;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("valuation_information_and_policy")
     private String valuationInformationAndPolicy;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("other_accounting_policy")
     private String otherAccountingPolicy;

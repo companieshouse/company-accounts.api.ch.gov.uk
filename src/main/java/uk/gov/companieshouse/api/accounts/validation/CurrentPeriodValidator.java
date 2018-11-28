@@ -1,21 +1,28 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-
 import java.util.Optional;
 import javax.validation.Valid;
-import org.springframework.stereotype.Component;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 
 /**
  * Validates Current Period
  */
 @Component
 public class CurrentPeriodValidator extends BaseValidator {
+
+    @Value("${shareholders.mismatch}")
+    private String shareholderFundsMismatch;
+
+    @Value("${mandatory.element.missing}")
+    private String mandatoryElementMissing;
 
     private static final String BALANCE_SHEET_PATH = "$.current_period.balance_sheet";
     private static final String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
@@ -25,23 +32,54 @@ public class CurrentPeriodValidator extends BaseValidator {
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
     private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
+    private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves.total_shareholders_funds";
+
 
     public Errors validateCurrentPeriod(@Valid CurrentPeriod currentPeriod) {
 
         Errors errors = new Errors();
 
-
-            validateTotalFixedAssets(currentPeriod, errors);
-
-            validateTotalOtherLiabilitiesOrAssets(currentPeriod, errors);
-
-            validateTotalCurrentAssets(currentPeriod, errors);
-
+        validateTotalFixedAssets(currentPeriod, errors);
+        validateTotalCurrentAssets(currentPeriod, errors);
+        validateTotalOtherLiabilitiesOrAssets(currentPeriod, errors);
+        validateTotalShareholderFunds(currentPeriod, errors);
 
         return errors;
     }
 
-    public void validateTotalCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
+    private void validateTotalShareholderFunds(CurrentPeriod currentPeriod, Errors errors) {
+
+        CapitalAndReserves capitalAndReserves = currentPeriod.getBalanceSheet().getCapitalAndReserves();
+
+        // If any capital and reserves fields are submitted then total shareholder funds cannot be null
+        if (capitalAndReserves != null) {
+
+            if (capitalAndReserves.getTotalShareholdersFunds() == null) {
+                addError(errors, mandatoryElementMissing, TOTAL_SHAREHOLDER_FUNDS_PATH);
+            } else {
+
+                // Validate calculated total equals total shareholders funds
+                Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
+                Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
+                Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
+                Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
+                Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
+                Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
+                validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
+
+                Long totalNetAssets = 0L;
+                // Total shareholder funds must equal total net assets
+                if (currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                    totalNetAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
+                }
+                if (!totalNetAssets.equals(totalShareholderFunds)) {
+                    addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
+                }
+            }
+        }
+    }
+
+    private void validateTotalCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
 
         CurrentAssets currentAssets = currentPeriod.getBalanceSheet().getCurrentAssets();
 
@@ -58,7 +96,8 @@ public class CurrentPeriodValidator extends BaseValidator {
         }
     }
 
-    public void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod, Errors errors) {
+    private void validateTotalFixedAssets(@Valid CurrentPeriod currentPeriod, Errors errors) {
+
         FixedAssets fixedAssets = currentPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
@@ -73,13 +112,18 @@ public class CurrentPeriodValidator extends BaseValidator {
     }
 
     private void validateTotalOtherLiabilitiesOrAssets(@Valid CurrentPeriod currentPeriod, Errors errors) {
+
         if (currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(currentPeriod, errors);
             calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(currentPeriod, errors);
-            calculateOtherLiabilitiesOrAssetsTotalNetAssets(currentPeriod,errors);
+            calculateOtherLiabilitiesOrAssetsTotalNetAssets(currentPeriod, errors);
+            checkOtherLiabilitiesAreMandatory(currentPeriod, errors);
         }
     }
+
     private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(CurrentPeriod currentPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
         Long creditorsDueWithinOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear()).orElse(0L);
@@ -88,13 +132,14 @@ public class CurrentPeriodValidator extends BaseValidator {
         if (currentPeriod.getBalanceSheet().getCurrentAssets() != null) {
             totalCurrentAssets = currentPeriod.getBalanceSheet().getCurrentAssets().getTotal();
         }
-        Long calculatedTotal =  totalCurrentAssets +  prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
+        Long calculatedTotal = totalCurrentAssets + prepaymentsAndAccruedIncome - creditorsDueWithinOneYear;
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
         validateAggregateTotal(netCurrentAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
     }
 
     private void calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(CurrentPeriod currentPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
@@ -110,6 +155,7 @@ public class CurrentPeriodValidator extends BaseValidator {
     }
 
     private void calculateOtherLiabilitiesOrAssetsTotalNetAssets(CurrentPeriod currentPeriod, Errors errors) {
+
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
         Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
         Long creditorsAfterOneYear = Optional.ofNullable(otherLiabilitiesOrAssets.getCreditorsAfterOneYear()).orElse(0L);
@@ -120,5 +166,23 @@ public class CurrentPeriodValidator extends BaseValidator {
 
         Long totalNetAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalNetAssets()).orElse(0L);
         validateAggregateTotal(totalNetAssets, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH, errors);
+    }
+
+    private void checkOtherLiabilitiesAreMandatory(CurrentPeriod currentPeriod, Errors errors) {
+        CurrentAssets currentAssets = currentPeriod.getBalanceSheet().getCurrentAssets();
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = currentPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets();
+
+        if (currentAssets != null ||
+                otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
+                otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
+
+            if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+            }
+
+            if (otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
+                addError(errors, mandatoryElementMissing, OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
+            }
+        }
     }
 }
