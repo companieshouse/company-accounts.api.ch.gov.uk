@@ -52,7 +52,6 @@ public class DebtorsTransformerTest {
 
         Debtors debtors = new Debtors();
         CurrentPeriodDebtors currentPeriodDebtors = new CurrentPeriodDebtors();
-        PreviousPeriodDebtors previousPeriodDebtors = new PreviousPeriodDebtors();
 
         debtors.setEtag(ETAG);
         debtors.setKind(KIND);
