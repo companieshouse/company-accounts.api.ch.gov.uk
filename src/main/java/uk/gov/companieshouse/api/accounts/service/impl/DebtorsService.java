@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -21,6 +22,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -42,22 +44,33 @@ public class DebtorsService implements ResourceService<Debtors> {
 
     private KeyIdGenerator keyIdGenerator;
 
+    private DebtorsValidator debtorsValidator;
+
     @Autowired
     public DebtorsService(DebtorsRepository repository,
                           DebtorsTransformer transformer,
                           SmallFullService smallFullService,
-                          KeyIdGenerator keyIdGenerator) {
+                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
+        this.debtorsValidator = debtorsValidator;
     }
 
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
                                           String companyAccountsId, HttpServletRequest request)
             throws DataException {
+
+        Errors errors = debtorsValidator.validateDebtors(rest, transaction);
+        if (errors.hasErrors()) {
+            DataException dataException = new DataException(
+                    "Failed to validate " + ResourceName.APPROVAL.getName());
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
