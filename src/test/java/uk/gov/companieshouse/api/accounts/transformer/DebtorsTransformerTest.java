@@ -120,7 +120,6 @@ public class DebtorsTransformerTest {
         assertEquals(PREPAYMENTS_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getPrepaymentsAndAccruedIncome());
         assertEquals(TRADE_DEBTORS_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getTradeDebtors());
         assertEquals(TOTAL_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getTotal());
-
     }
 
     @Test
@@ -171,6 +170,5 @@ public class DebtorsTransformerTest {
         assertEquals(PREPAYMENTS_PREVIOUS, debtors.getPreviousPeriodDebtors().getPrepaymentsAndAccruedIncome());
         assertEquals(TRADE_DEBTORS_PREVIOUS, debtors.getPreviousPeriodDebtors().getTradeDebtors());
         assertEquals(TOTAL_PREVIOUS, debtors.getPreviousPeriodDebtors().getTotal());
-
     }
 }
