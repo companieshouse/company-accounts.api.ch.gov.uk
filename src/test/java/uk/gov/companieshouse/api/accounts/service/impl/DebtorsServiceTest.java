@@ -27,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 
@@ -94,7 +97,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the duplicate key when creating an Debtors resource")
+    @DisplayName("Tests the duplicate key when creating a Debtors resource")
     void createDebtorsDuplicateKey() throws DataException {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
@@ -109,7 +112,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the mongo exception when creating an AccountingPolicies")
+    @DisplayName("Tests the mongo exception when creating Debtors")
     void createDebtorsMongoExceptionFailure() {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
