@@ -2,7 +2,11 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.rest.*;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 import javax.validation.Valid;
