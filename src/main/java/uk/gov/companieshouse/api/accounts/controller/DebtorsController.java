@@ -41,9 +41,7 @@ public class DebtorsController {
     private ErrorMapper errorMapper;
 
     private static final String TRANSACTION_ID = "transaction_id";
-
     private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-
     private static final String MESSAGE = "message";
 
     @PostMapping

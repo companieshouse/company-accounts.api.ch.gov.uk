@@ -35,11 +35,8 @@ public class DebtorsService implements ResourceService<Debtors> {
             .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private DebtorsRepository repository;
-
     private DebtorsTransformer transformer;
-
     private SmallFullService smallFullService;
-
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
