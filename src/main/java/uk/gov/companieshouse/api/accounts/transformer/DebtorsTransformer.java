@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.DebtorsEntity;
@@ -8,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDebtorsEnti
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriodDebtors;
 import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriodDebtors;
-
+@Component
 public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEntity> {
 
     @Override
