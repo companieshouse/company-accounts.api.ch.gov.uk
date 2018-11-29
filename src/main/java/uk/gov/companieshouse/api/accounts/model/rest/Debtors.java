@@ -6,69 +6,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Debtors extends RestObject {
 
-    @JsonProperty("details")
-    private String details;
+    @JsonProperty("current_period_debtors")
+    private CurrentPeriodDebtors currentPeriodDebtors;
 
-    @JsonProperty("greater_than_one_year")
-    private Long greaterThanOneYear;
+    @JsonProperty("previous_period_debtors")
+    private PreviousPeriodDebtors previousPeriodDebtors;
 
-    @JsonProperty("other_debtors")
-    private Long otherDebtors;
-
-    @JsonProperty("prepayments_and_accrued_income")
-    private Long prepaymentsAndAccruedIncome;
-
-    @JsonProperty("total")
-    private Long total;
-
-    @JsonProperty("trade_debtors")
-    private Long tradeDebtors;
-
-    public String getDetails() {
-        return details;
+    public CurrentPeriodDebtors getCurrentPeriodDebtors() {
+        return currentPeriodDebtors;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setCurrentPeriodDebtors(CurrentPeriodDebtors currentPeriodDebtors) {
+        this.currentPeriodDebtors = currentPeriodDebtors;
     }
 
-    public Long getGreaterThanOneYear() {
-        return greaterThanOneYear;
+    public PreviousPeriodDebtors getPreviousPeriodDebtors() {
+        return previousPeriodDebtors;
     }
 
-    public void setGreaterThanOneYear(Long greaterThanOneYear) {
-        this.greaterThanOneYear = greaterThanOneYear;
-    }
-
-    public Long getOtherDebtors() {
-        return otherDebtors;
-    }
-
-    public void setOtherDebtors(Long otherDebtors) {
-        this.otherDebtors = otherDebtors;
-    }
-
-    public Long getPrepaymentsAndAccruedIncome() {
-        return prepaymentsAndAccruedIncome;
-    }
-
-    public void setPrepaymentsAndAccruedIncome(Long prepaymentsAndAccruedIncome) {
-        this.prepaymentsAndAccruedIncome = prepaymentsAndAccruedIncome;
-    }
-
-    public Long getTotal() {
-        return total;
-    }
-
-    public void setTotal(Long total) {
-        this.total = total;
-    }
-
-    public Long getTradeDebtors() {
-        return tradeDebtors;
-    }
-
-    public void setTradeDebtors(Long tradeDebtors) {
-        this.tradeDebtors = tradeDebtors;
+    public void setPreviousPeriodDebtors(PreviousPeriodDebtors previousPeriodDebtors) {
+        this.previousPeriodDebtors = previousPeriodDebtors;
     }
 }
