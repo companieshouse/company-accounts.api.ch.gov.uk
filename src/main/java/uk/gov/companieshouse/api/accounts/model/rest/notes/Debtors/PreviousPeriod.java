@@ -1,22 +1,24 @@
-package uk.gov.companieshouse.api.accounts.model.entity;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PreviousPeriodDebtorsEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PreviousPeriod {
 
-    @Field("greater_than_one_year")
+    @JsonProperty("greater_than_one_year")
     private Long greaterThanOneYear;
 
-    @Field("other_debtors")
+    @JsonProperty("other_debtors")
     private Long otherDebtors;
 
-    @Field("prepayments_and_accrued_income")
+    @JsonProperty("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
-    @Field("total")
+    @JsonProperty("total")
     private Long total;
 
-    @Field("trade_debtors")
+    @JsonProperty("trade_debtors")
     private Long tradeDebtors;
 
     public Long getGreaterThanOneYear() {
