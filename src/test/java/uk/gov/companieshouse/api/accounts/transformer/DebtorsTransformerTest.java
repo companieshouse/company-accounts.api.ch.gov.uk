@@ -2,13 +2,13 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.DebtorsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriodDebtors;
-import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriodDebtors;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
 
 import java.util.HashMap;
 
@@ -51,25 +51,25 @@ public class DebtorsTransformerTest {
     public void testTransformerWithEmptyPreviousPeriod() {
 
         Debtors debtors = new Debtors();
-        CurrentPeriodDebtors currentPeriodDebtors = new CurrentPeriodDebtors();
+        CurrentPeriod currentPeriod = new CurrentPeriod();
 
         debtors.setEtag(ETAG);
         debtors.setKind(KIND);
         debtors.setLinks(new HashMap<>());
 
-        currentPeriodDebtors.setDetails(DETAILS);
-        currentPeriodDebtors.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
-        currentPeriodDebtors.setOtherDebtors(OTHER_DEBTORS);
-        currentPeriodDebtors.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
-        currentPeriodDebtors.setTradeDebtors(TRADE_DEBTORS);
-        currentPeriodDebtors.setTotal(TOTAL);
+        currentPeriod.setDetails(DETAILS);
+        currentPeriod.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
+        currentPeriod.setOtherDebtors(OTHER_DEBTORS);
+        currentPeriod.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
+        currentPeriod.setTradeDebtors(TRADE_DEBTORS);
+        currentPeriod.setTotal(TOTAL);
 
-        debtors.setCurrentPeriodDebtors(currentPeriodDebtors);
+        debtors.setCurrentPeriod(currentPeriod);
 
         DebtorsEntity debtorsEntity = debtorsTransformer.transform(debtors);
 
         assertNotNull(debtorsEntity);
-        assertNull(debtorsEntity.getData().getPreviousPeriodDebtorsEntity());
+        assertNull(debtorsEntity.getData().getPreviousPeriodEntity());
         assertEquals(new HashMap<>(), debtorsEntity.getData().getLinks());
     }
 
@@ -78,28 +78,28 @@ public class DebtorsTransformerTest {
     public void testRestToEntityTransformerWithPopulatedObject() {
 
         Debtors debtors = new Debtors();
-        CurrentPeriodDebtors currentPeriodDebtors = new CurrentPeriodDebtors();
-        PreviousPeriodDebtors previousPeriodDebtors = new PreviousPeriodDebtors();
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        PreviousPeriod previousPeriod = new PreviousPeriod();
 
         debtors.setEtag(ETAG);
         debtors.setKind(KIND);
         debtors.setLinks(new HashMap<>());
 
-        currentPeriodDebtors.setDetails(DETAILS);
-        currentPeriodDebtors.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
-        currentPeriodDebtors.setOtherDebtors(OTHER_DEBTORS);
-        currentPeriodDebtors.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
-        currentPeriodDebtors.setTradeDebtors(TRADE_DEBTORS);
-        currentPeriodDebtors.setTotal(TOTAL);
+        currentPeriod.setDetails(DETAILS);
+        currentPeriod.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
+        currentPeriod.setOtherDebtors(OTHER_DEBTORS);
+        currentPeriod.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
+        currentPeriod.setTradeDebtors(TRADE_DEBTORS);
+        currentPeriod.setTotal(TOTAL);
 
-        previousPeriodDebtors.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR_PREVIOUS);
-        previousPeriodDebtors.setOtherDebtors(OTHER_DEBTORS_PREVIOUS);
-        previousPeriodDebtors.setPrepaymentsAndAccruedIncome(PREPAYMENTS_PREVIOUS);
-        previousPeriodDebtors.setTradeDebtors(TRADE_DEBTORS_PREVIOUS);
-        previousPeriodDebtors.setTotal(TOTAL_PREVIOUS);
+        previousPeriod.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR_PREVIOUS);
+        previousPeriod.setOtherDebtors(OTHER_DEBTORS_PREVIOUS);
+        previousPeriod.setPrepaymentsAndAccruedIncome(PREPAYMENTS_PREVIOUS);
+        previousPeriod.setTradeDebtors(TRADE_DEBTORS_PREVIOUS);
+        previousPeriod.setTotal(TOTAL_PREVIOUS);
 
-        debtors.setCurrentPeriodDebtors(currentPeriodDebtors);
-        debtors.setPreviousPeriodDebtors(previousPeriodDebtors);
+        debtors.setCurrentPeriod(currentPeriod);
+        debtors.setPreviousPeriod(previousPeriod);
 
         DebtorsEntity debtorsEntity = debtorsTransformer.transform(debtors);
         DebtorsDataEntity debtorsDataEntity = debtorsEntity.getData();
@@ -108,19 +108,18 @@ public class DebtorsTransformerTest {
         assertEquals(KIND, debtorsDataEntity.getKind());
         assertEquals(new HashMap<>(), debtorsDataEntity.getLinks());
 
-        assertEquals(DETAILS, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getDetails());
-        assertEquals(GREATER_THAT_ONE_YEAR, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getGreaterThanOneYear());
-        assertEquals(OTHER_DEBTORS, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getOtherDebtors());
-        assertEquals(PREPAYMENTS, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getPrepaymentsAndAccruedIncome());
-        assertEquals(TRADE_DEBTORS, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getTradeDebtors());
-        assertEquals(TOTAL, debtorsDataEntity.getCurrentPeriodDebtorsEntity().getTotal());
+        assertEquals(DETAILS, debtorsDataEntity.getCurrentPeriodEntity().getDetails());
+        assertEquals(GREATER_THAT_ONE_YEAR, debtorsDataEntity.getCurrentPeriodEntity().getGreaterThanOneYear());
+        assertEquals(OTHER_DEBTORS, debtorsDataEntity.getCurrentPeriodEntity().getOtherDebtors());
+        assertEquals(PREPAYMENTS, debtorsDataEntity.getCurrentPeriodEntity().getPrepaymentsAndAccruedIncome());
+        assertEquals(TRADE_DEBTORS, debtorsDataEntity.getCurrentPeriodEntity().getTradeDebtors());
+        assertEquals(TOTAL, debtorsDataEntity.getCurrentPeriodEntity().getTotal());
 
-        assertEquals(GREATER_THAT_ONE_YEAR_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getGreaterThanOneYear());
-        assertEquals(OTHER_DEBTORS_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getOtherDebtors());
-        assertEquals(PREPAYMENTS_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getPrepaymentsAndAccruedIncome());
-        assertEquals(TRADE_DEBTORS_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getTradeDebtors());
-        assertEquals(TOTAL_PREVIOUS, debtorsDataEntity.getPreviousPeriodDebtorsEntity().getTotal());
-
+        assertEquals(GREATER_THAT_ONE_YEAR_PREVIOUS, debtorsDataEntity.getPreviousPeriodEntity().getGreaterThanOneYear());
+        assertEquals(OTHER_DEBTORS_PREVIOUS, debtorsDataEntity.getPreviousPeriodEntity().getOtherDebtors());
+        assertEquals(PREPAYMENTS_PREVIOUS, debtorsDataEntity.getPreviousPeriodEntity().getPrepaymentsAndAccruedIncome());
+        assertEquals(TRADE_DEBTORS_PREVIOUS, debtorsDataEntity.getPreviousPeriodEntity().getTradeDebtors());
+        assertEquals(TOTAL_PREVIOUS, debtorsDataEntity.getPreviousPeriodEntity().getTotal());
     }
 
     @Test
@@ -129,28 +128,28 @@ public class DebtorsTransformerTest {
 
         DebtorsEntity debtorsEntity = new DebtorsEntity();
         DebtorsDataEntity debtorsDataEntity = new DebtorsDataEntity();
-        CurrentPeriodDebtorsEntity currentPeriodDebtorsEntity = new CurrentPeriodDebtorsEntity();
-        PreviousPeriodDebtorsEntity previousPeriodDebtorsEntity = new PreviousPeriodDebtorsEntity();
+        CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
+        PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
 
         debtorsDataEntity.setEtag(ETAG);
         debtorsDataEntity.setKind(KIND);
         debtorsDataEntity.setLinks(new HashMap<>());
 
-        currentPeriodDebtorsEntity.setDetails(DETAILS);
-        currentPeriodDebtorsEntity.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
-        currentPeriodDebtorsEntity.setOtherDebtors(OTHER_DEBTORS);
-        currentPeriodDebtorsEntity.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
-        currentPeriodDebtorsEntity.setTradeDebtors(TRADE_DEBTORS);
-        currentPeriodDebtorsEntity.setTotal(TOTAL);
+        currentPeriodEntity.setDetails(DETAILS);
+        currentPeriodEntity.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR);
+        currentPeriodEntity.setOtherDebtors(OTHER_DEBTORS);
+        currentPeriodEntity.setPrepaymentsAndAccruedIncome(PREPAYMENTS);
+        currentPeriodEntity.setTradeDebtors(TRADE_DEBTORS);
+        currentPeriodEntity.setTotal(TOTAL);
 
-        previousPeriodDebtorsEntity.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR_PREVIOUS);
-        previousPeriodDebtorsEntity.setOtherDebtors(OTHER_DEBTORS_PREVIOUS);
-        previousPeriodDebtorsEntity.setPrepaymentsAndAccruedIncome(PREPAYMENTS_PREVIOUS);
-        previousPeriodDebtorsEntity.setTradeDebtors(TRADE_DEBTORS_PREVIOUS);
-        previousPeriodDebtorsEntity.setTotal(TOTAL_PREVIOUS);
+        previousPeriodEntity.setGreaterThanOneYear(GREATER_THAT_ONE_YEAR_PREVIOUS);
+        previousPeriodEntity.setOtherDebtors(OTHER_DEBTORS_PREVIOUS);
+        previousPeriodEntity.setPrepaymentsAndAccruedIncome(PREPAYMENTS_PREVIOUS);
+        previousPeriodEntity.setTradeDebtors(TRADE_DEBTORS_PREVIOUS);
+        previousPeriodEntity.setTotal(TOTAL_PREVIOUS);
 
-        debtorsDataEntity.setPreviousPeriodDebtorsEntity(previousPeriodDebtorsEntity);
-        debtorsDataEntity.setCurrentPeriodDebtorsEntity(currentPeriodDebtorsEntity);
+        debtorsDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
+        debtorsDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         debtorsEntity.setData(debtorsDataEntity);
         Debtors debtors = debtorsTransformer.transform(debtorsEntity);
 
@@ -159,17 +158,17 @@ public class DebtorsTransformerTest {
         assertEquals(ETAG, debtors.getEtag());
         assertEquals(new HashMap<>(), debtors.getLinks());
 
-        assertEquals(DETAILS, debtors.getCurrentPeriodDebtors().getDetails());
-        assertEquals(GREATER_THAT_ONE_YEAR, debtors.getCurrentPeriodDebtors().getGreaterThanOneYear());
-        assertEquals(OTHER_DEBTORS, debtors.getCurrentPeriodDebtors().getOtherDebtors());
-        assertEquals(PREPAYMENTS, debtors.getCurrentPeriodDebtors().getPrepaymentsAndAccruedIncome());
-        assertEquals(TRADE_DEBTORS, debtors.getCurrentPeriodDebtors().getTradeDebtors());
-        assertEquals(TOTAL, debtors.getCurrentPeriodDebtors().getTotal());
+        assertEquals(DETAILS, debtors.getCurrentPeriod().getDetails());
+        assertEquals(GREATER_THAT_ONE_YEAR, debtors.getCurrentPeriod().getGreaterThanOneYear());
+        assertEquals(OTHER_DEBTORS, debtors.getCurrentPeriod().getOtherDebtors());
+        assertEquals(PREPAYMENTS, debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome());
+        assertEquals(TRADE_DEBTORS, debtors.getCurrentPeriod().getTradeDebtors());
+        assertEquals(TOTAL, debtors.getCurrentPeriod().getTotal());
 
-        assertEquals(GREATER_THAT_ONE_YEAR_PREVIOUS, debtors.getPreviousPeriodDebtors().getGreaterThanOneYear());
-        assertEquals(OTHER_DEBTORS_PREVIOUS, debtors.getPreviousPeriodDebtors().getOtherDebtors());
-        assertEquals(PREPAYMENTS_PREVIOUS, debtors.getPreviousPeriodDebtors().getPrepaymentsAndAccruedIncome());
-        assertEquals(TRADE_DEBTORS_PREVIOUS, debtors.getPreviousPeriodDebtors().getTradeDebtors());
-        assertEquals(TOTAL_PREVIOUS, debtors.getPreviousPeriodDebtors().getTotal());
+        assertEquals(GREATER_THAT_ONE_YEAR_PREVIOUS, debtors.getPreviousPeriod().getGreaterThanOneYear());
+        assertEquals(OTHER_DEBTORS_PREVIOUS, debtors.getPreviousPeriod().getOtherDebtors());
+        assertEquals(PREPAYMENTS_PREVIOUS, debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome());
+        assertEquals(TRADE_DEBTORS_PREVIOUS, debtors.getPreviousPeriod().getTradeDebtors());
+        assertEquals(TOTAL_PREVIOUS, debtors.getPreviousPeriod().getTotal());
     }
 }

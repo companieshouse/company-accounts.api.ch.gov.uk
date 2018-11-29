@@ -1,25 +1,27 @@
-package uk.gov.companieshouse.api.accounts.model.entity;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CurrentPeriodDebtorsEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CurrentPeriod {
 
-    @Field("details")
+    @JsonProperty("details")
     private String details;
 
-    @Field("greater_than_one_year")
+    @JsonProperty("greater_than_one_year")
     private Long greaterThanOneYear;
 
-    @Field("other_debtors")
+    @JsonProperty("other_debtors")
     private Long otherDebtors;
 
-    @Field("prepayments_and_accrued_income")
+    @JsonProperty("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
-    @Field("total")
+    @JsonProperty("total")
     private Long total;
 
-    @Field("trade_debtors")
+    @JsonProperty("trade_debtors")
     private Long tradeDebtors;
 
     public String getDetails() {
@@ -68,17 +70,5 @@ public class CurrentPeriodDebtorsEntity {
 
     public void setTradeDebtors(Long tradeDebtors) {
         this.tradeDebtors = tradeDebtors;
-    }
-
-    @Override
-    public String toString() {
-        return "CurrentPeriodDebtorsEntity{" +
-                "details='" + details + '\'' +
-                ", greaterThanOneYear=" + greaterThanOneYear +
-                ", otherDebtors=" + otherDebtors +
-                ", prepaymentsAndAccruedIncome=" + prepaymentsAndAccruedIncome +
-                ", total=" + total +
-                ", tradeDebtors=" + tradeDebtors +
-                '}';
     }
 }

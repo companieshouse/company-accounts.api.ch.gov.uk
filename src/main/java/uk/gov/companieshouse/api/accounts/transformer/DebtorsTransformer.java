@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.DebtorsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriodDebtors;
-import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriodDebtors;
+
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
 
 @Component
 public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEntity> {
@@ -20,17 +21,17 @@ public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEn
         DebtorsEntity debtorsEntity = new DebtorsEntity();
 
         BeanUtils.copyProperties(rest, debtorsDataEntity);
-        if (rest.getCurrentPeriodDebtors() != null) {
-            CurrentPeriodDebtorsEntity currentPeriodDebtorsEntity = new CurrentPeriodDebtorsEntity();
-            BeanUtils.copyProperties(rest.getCurrentPeriodDebtors(), currentPeriodDebtorsEntity);
-            debtorsDataEntity.setCurrentPeriodDebtorsEntity(currentPeriodDebtorsEntity);
+        if (rest.getCurrentPeriod() != null) {
+            CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
+            BeanUtils.copyProperties(rest.getCurrentPeriod(), currentPeriodEntity);
+            debtorsDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
         BeanUtils.copyProperties(rest, debtorsDataEntity);
-        if (rest.getPreviousPeriodDebtors() != null) {
-            PreviousPeriodDebtorsEntity previousPeriodDebtorsEntity = new PreviousPeriodDebtorsEntity();
-            BeanUtils.copyProperties(rest.getPreviousPeriodDebtors(), previousPeriodDebtorsEntity);
-            debtorsDataEntity.setPreviousPeriodDebtorsEntity(previousPeriodDebtorsEntity);
+        if (rest.getPreviousPeriod() != null) {
+            PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
+            BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);
+            debtorsDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
         }
 
         debtorsEntity.setData(debtorsDataEntity);
@@ -46,16 +47,16 @@ public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEn
 
         BeanUtils.copyProperties(debtorsDataEntity, debtors);
 
-        if (debtorsDataEntity.getCurrentPeriodDebtorsEntity() != null) {
-            CurrentPeriodDebtors currentPeriodDebtors = new CurrentPeriodDebtors();
-            BeanUtils.copyProperties(debtorsDataEntity.getCurrentPeriodDebtorsEntity(), currentPeriodDebtors);
-            debtors.setCurrentPeriodDebtors(currentPeriodDebtors);
+        if (debtorsDataEntity.getCurrentPeriodEntity() != null) {
+            CurrentPeriod currentPeriod = new CurrentPeriod();
+            BeanUtils.copyProperties(debtorsDataEntity.getCurrentPeriodEntity(), currentPeriod);
+            debtors.setCurrentPeriod(currentPeriod);
         }
 
-        if (debtorsDataEntity.getPreviousPeriodDebtorsEntity() != null) {
-            PreviousPeriodDebtors previousPeriodDebtors = new PreviousPeriodDebtors();
-            BeanUtils.copyProperties(debtorsDataEntity.getPreviousPeriodDebtorsEntity(), previousPeriodDebtors);
-            debtors.setPreviousPeriodDebtors(previousPeriodDebtors);
+        if (debtorsDataEntity.getPreviousPeriodEntity() != null) {
+            PreviousPeriod previousPeriod = new PreviousPeriod();
+            BeanUtils.copyProperties(debtorsDataEntity.getPreviousPeriodEntity(), previousPeriod);
+            debtors.setPreviousPeriod(previousPeriod);
         }
         return debtors;
     }
