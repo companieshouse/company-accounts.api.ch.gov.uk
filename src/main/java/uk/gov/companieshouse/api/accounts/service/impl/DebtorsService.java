@@ -85,8 +85,21 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-        return null;
+    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
+        setMetadataOnRestObject(rest, transaction, companyAccountsId);
+
+        DebtorsEntity entity = transformer.transform(rest);
+        entity.setId(generateID(companyAccountsId));
+
+        try {
+            repository.save(entity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountsId, entity.getId()));
+
+            throw dataException;
+        }
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
