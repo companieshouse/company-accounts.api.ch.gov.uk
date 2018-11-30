@@ -26,10 +26,8 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                             Object handler) {
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestMethod = request.getMethod();
 
@@ -38,9 +36,7 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
                         .equals(transaction.getStatus()))) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
-            debugMap
-                    .put("message",
-                            "OpenTransactionInterceptor error: no open transaction available");
+            debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");
 
             LOGGER.errorRequest(request, null, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
