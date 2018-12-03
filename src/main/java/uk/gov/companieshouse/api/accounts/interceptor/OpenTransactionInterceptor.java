@@ -22,7 +22,7 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * Pre handle method to validate the request before it reaches the controller by checking if
-     * transaction's status is open.
+     * the request is a GET request and if the transaction's status is open.
      */
     @Override
     @SuppressWarnings("unchecked")
