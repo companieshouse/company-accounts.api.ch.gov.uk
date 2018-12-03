@@ -18,7 +18,7 @@ import java.util.Map;
 public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory
-      .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     /**
      * Pre handle method to validate the request before it reaches the controller by checking if
