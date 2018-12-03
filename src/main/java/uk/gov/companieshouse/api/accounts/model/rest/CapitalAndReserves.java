@@ -31,6 +31,7 @@ public class CapitalAndReserves {
     @JsonProperty("share_premium_account")
     private Long sharePremiumAccount;
 
+    @NotNull
     @JsonProperty("total_shareholders_funds")
     private Long totalShareholdersFunds;
 
