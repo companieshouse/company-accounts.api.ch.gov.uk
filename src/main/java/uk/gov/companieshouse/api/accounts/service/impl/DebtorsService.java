@@ -12,9 +12,10 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
+
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -37,11 +38,8 @@ public class DebtorsService implements ResourceService<Debtors> {
             .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private DebtorsRepository repository;
-
     private DebtorsTransformer transformer;
-
     private SmallFullService smallFullService;
-
     private KeyIdGenerator keyIdGenerator;
 
     private DebtorsValidator debtorsValidator;

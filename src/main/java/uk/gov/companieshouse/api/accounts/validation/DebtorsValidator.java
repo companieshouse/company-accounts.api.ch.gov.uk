@@ -1,13 +1,12 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
-import uk.gov.companieshouse.api.accounts.model.rest.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-
-import java.util.Optional;
 
 @Component
 public class DebtorsValidator extends BaseValidator {
@@ -20,15 +19,42 @@ public class DebtorsValidator extends BaseValidator {
         Errors errors = new Errors();
 
         if (debtors != null) {
-            isMultipleYearFiler(transaction);
-            validateTotalFieldNotNullWhenRequired(debtors, errors);
-            validateTotalIsCorrect(debtors, errors);
+
+            validateCurrentPeriodDebtors(errors, debtors);
+           // validatePreviousPeriodDebtors();
+
+
+//            isMultipleYearFiler(transaction);
+//            validateTotalFieldNotNullWhenRequired(debtors, errors);
+//            validateTotalIsCorrect(debtors, errors);
 
         }
 
 
         return errors;
     }
+
+    private void validateCurrentPeriodDebtors(Errors errors, Debtors debtors) {
+    }
+
+    // Current Period
+
+    // Correct Totals
+    // Total provided
+
+
+    //Previous Period
+    // is Multiple Year Filer?
+    // Correct totals
+    //Total Provided
+
+
+
+
+
+
+
+
 
 
     private static boolean isMultipleYearFiler(Transaction transaction) {
@@ -52,7 +78,7 @@ public class DebtorsValidator extends BaseValidator {
 
     // Total mandatory if other fields entered
     private void validateTotalFieldNotNullWhenRequired(Debtors debtors, Errors errors) {
-        if (debtors.getTradeDebtors() != null || debtors.getPrepaymentsAndAccruedIncome() != null ||
+        if (debtors.getCurrentPeriod() != null || debtors.getPrepaymentsAndAccruedIncome() != null ||
                 debtors.getOtherDebtors() != null || debtors.getGreaterThanOneYear() != null || !debtors.getDetails().isEmpty()) {
             if (debtors.getTotal() == null) {
                 addError(errors, "invalid_note", TOTAL_PATH);

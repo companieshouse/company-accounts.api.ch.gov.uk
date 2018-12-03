@@ -1,43 +1,25 @@
-package uk.gov.companieshouse.api.accounts.model.rest;
+package uk.gov.companieshouse.api.accounts.model.entity.notes.debtors;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.Range;
-import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
-import uk.gov.companieshouse.charset.CharSet;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.validation.constraints.Size;
+public class CurrentPeriodEntity {
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Debtors extends RestObject {
-
-    private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MAX_RANGE = 99999999;
-    private static final int MIN_RANGE = 0;
-
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("details")
+    @Field("details")
     private String details;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("greater_than_one_year")
+    @Field("greater_than_one_year")
     private Long greaterThanOneYear;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("other_debtors")
+    @Field("other_debtors")
     private Long otherDebtors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("prepayments_and_accrued_income")
+    @Field("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("total")
+    @Field("total")
     private Long total;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("trade_debtors")
+    @Field("trade_debtors")
     private Long tradeDebtors;
 
     public String getDetails() {
@@ -86,5 +68,17 @@ public class Debtors extends RestObject {
 
     public void setTradeDebtors(Long tradeDebtors) {
         this.tradeDebtors = tradeDebtors;
+    }
+
+    @Override
+    public String toString() {
+        return "CurrentPeriodEntity{" +
+                "details='" + details + '\'' +
+                ", greaterThanOneYear=" + greaterThanOneYear +
+                ", otherDebtors=" + otherDebtors +
+                ", prepaymentsAndAccruedIncome=" + prepaymentsAndAccruedIncome +
+                ", total=" + total +
+                ", tradeDebtors=" + tradeDebtors +
+                '}';
     }
 }

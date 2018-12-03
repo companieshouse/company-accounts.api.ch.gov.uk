@@ -1,6 +1,7 @@
-package uk.gov.companieshouse.api.accounts.model.entity;
+package uk.gov.companieshouse.api.accounts.model.entity.notes.debtors;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 
 @Document(collection = "notes")
 public class DebtorsEntity extends BaseEntity {
