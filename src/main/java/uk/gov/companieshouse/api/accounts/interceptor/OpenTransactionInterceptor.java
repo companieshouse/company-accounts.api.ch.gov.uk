@@ -21,8 +21,8 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     /**
-     * Pre handle method to validate the request before it reaches the controller by checking if
-     * the request is a GET request and if the transaction's status is open.
+     * Pre handle method to validate the request before it reaches the controller by checking if the
+     * request is a GET request and if the transaction's status is open.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -33,7 +33,7 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
         if (transaction == null ||
             (!requestMethod.equals("GET") && !TransactionStatus.OPEN.getStatus()
-              .equals(transaction.getStatus()))) {
+                .equals(transaction.getStatus()))) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");
