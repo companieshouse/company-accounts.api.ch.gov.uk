@@ -85,14 +85,14 @@ public class DebtorsService implements ResourceService<Debtors> {
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
 
-            DataException dataException = new DataException("Failed to insert " + ResourceName.ACCOUNTING_POLICIES.getName(), e);
+            DataException dataException = new DataException("Failed to insert " + ResourceName.DEBTORS.getName(), e);
             LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             throw dataException;
         }
 
         smallFullService
-                .addLink(companyAccountsId, SmallFullLinkType.ACCOUNTING_POLICY_NOTE,
+                .addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
                         getSelfLinkFromDebtors(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
