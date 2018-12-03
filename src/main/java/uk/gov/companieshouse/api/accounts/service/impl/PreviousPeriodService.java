@@ -17,6 +17,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -24,6 +25,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -37,6 +39,8 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
 
     private PreviousPeriodTransformer previousPeriodTransformer;
 
+    private PreviousPeriodValidator previousPeriodValidator;
+
     private SmallFullService smallFullService;
 
     private KeyIdGenerator keyIdGenerator;
@@ -45,17 +49,32 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     public PreviousPeriodService(
         PreviousPeriodRepository previousPeriodRepository,
         PreviousPeriodTransformer previousPeriodTransformer,
+        PreviousPeriodValidator previousPeriodValidator,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
         this.previousPeriodRepository = previousPeriodRepository;
         this.previousPeriodTransformer = previousPeriodTransformer;
+        this.previousPeriodValidator = previousPeriodValidator;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
     public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod,
-        Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+        Transaction transaction, String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
+
+        if (errors.hasErrors()) {
+            DataException dataException = new DataException(
+                "Failed to validate " + ResourceName.PREVIOUS_PERIOD.getName());
+            LOGGER.errorRequest(request, dataException, debugMap);
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(previousPeriod, selfLink);
@@ -63,10 +82,6 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
         PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer
             .transform(previousPeriod);
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
 
         String id = generateID(companyAccountId);
         previousPeriodEntity.setId(id);
@@ -91,7 +106,9 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<PreviousPeriod> findById(String id, HttpServletRequest request)
+        throws DataException {
+
         PreviousPeriodEntity previousPeriodEntity;
         try {
             previousPeriodEntity = previousPeriodRepository.findById(id).orElse(null);
@@ -113,20 +130,30 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
+        String id = generateID(companyAccountId);
+
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put("transaction_id", transaction.getId());
+        debugMap.put("company_accounts_id", companyAccountId);
+        debugMap.put("id", id);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(rest);
+
+        if (errors.hasErrors()) {
+            DataException dataException = new DataException(
+                "Failed to validate " + ResourceName.PREVIOUS_PERIOD.getName());
+            LOGGER.errorRequest(request, dataException, debugMap);
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         populateMetadata(rest, transaction, companyAccountId);
         PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(rest);
-        String id = generateID(companyAccountId);
         previousPeriodEntity.setId(id);
 
         try {
             previousPeriodRepository.save(previousPeriodEntity);
         } catch (MongoException me) {
-            DataException dataException = new DataException("Failed to update " + ResourceName.PREVIOUS_PERIOD.getName(), me);
-
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            debugMap.put("company_accounts_id", companyAccountId);
-            debugMap.put("id", id);
+            DataException dataException = new DataException(
+                "Failed to update " + ResourceName.PREVIOUS_PERIOD.getName(), me);
             LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
@@ -140,29 +167,20 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return buildSelfLink(transaction, companyAccountId);
+        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+            + ResourceName.PREVIOUS_PERIOD.getName();
     }
 
     private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
-            String companyAccountId) {
+        String companyAccountId) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
 
         previousPeriod.setLinks(map);
         previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
-    }
-
-    private String buildSelfLink(Transaction transaction, String companyAccountId) {
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(transaction.getLinks().get(TransactionLinkType.SELF.getLink())).append("/")
-            .append(ResourceName.COMPANY_ACCOUNT.getName()).append("/")
-            .append(companyAccountId).append("/")
-            .append(ResourceName.SMALL_FULL.getName()).append("/")
-            .append(ResourceName.PREVIOUS_PERIOD.getName());
-
-        return builder.toString();
     }
 
     private void initLinks(PreviousPeriod previousPeriod, String link) {

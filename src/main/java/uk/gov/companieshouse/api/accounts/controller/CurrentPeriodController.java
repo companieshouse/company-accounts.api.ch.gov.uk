@@ -29,7 +29,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.LogHelper;
@@ -42,9 +41,6 @@ public class CurrentPeriodController {
 
     @Autowired
     private CurrentPeriodService currentPeriodService;
-
-    @Autowired
-    private CurrentPeriodValidator currentPeriodValidator;
 
     @Autowired
     private ErrorMapper errorMapper;
@@ -60,18 +56,11 @@ public class CurrentPeriodController {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
-        if (errors.hasErrors()) {
-
-            LOGGER.error(
-                "Current period validation failure");
-            logValidationFailureError(request, errors);
-
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
+            if (errors.hasErrors()) {
+                LOGGER.error("Current period validation failure");
+                logValidationFailureError(request, errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
         }
 
         Transaction transaction = (Transaction) request
@@ -85,7 +74,6 @@ public class CurrentPeriodController {
             responseEntity = apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
@@ -109,17 +97,16 @@ public class CurrentPeriodController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+            if (errors.hasErrors()) {
+                LOGGER.error("Current period validation failure");
+                logValidationFailureError(request, errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
         }
 
-        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
-        if (errors.hasErrors()) {
-            LOGGER.info("Current period validation failure");
-            logValidationFailureError(request, errors);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity;
 
@@ -142,6 +129,7 @@ public class CurrentPeriodController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
+
         LogHelper.createNewLogContext(request);
 
         Transaction transaction = (Transaction) request
