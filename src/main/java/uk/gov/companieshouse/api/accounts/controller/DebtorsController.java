@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -83,6 +84,36 @@ public class DebtorsController {
             debugMap.put(MESSAGE, "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
+        }
+
+        return responseEntity;
+    }
+
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+                              HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String accountingPoliciesId = debtorsService.generateID(companyAccountId);
+
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<Debtors> response = debtorsService
+                    .findById(accountingPoliciesId, request);
+
+            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put(TRANSACTION_ID, transaction.getId());
+            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+            debugMap.put(MESSAGE, "Failed to retrieve debtors resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            responseEntity = apiResponseMapper.map(de);
         }
 
         return responseEntity;

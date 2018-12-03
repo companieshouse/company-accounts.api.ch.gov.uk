@@ -69,6 +69,8 @@ public class DebtorsControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
+    private static final String DEBTORS_ID = "debtorsId";
+
     @Test
     @DisplayName("SUCCESS- Debtors resource created")
     void createDebtorsResource() throws DataException {
@@ -130,6 +132,52 @@ public class DebtorsControllerTest {
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Get debtors - success")
+    void getDebtorsSuccess() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+        when(debtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+                debtors);
+        when(debtorsService.findById(DEBTORS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+                .body(responseObject.getData());
+        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
+                .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                controller.get(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
+        assertEquals(debtors, responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Get debtors - data exception thrown")
+    void getDebtorsDataException() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+        when(debtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        DataException dataException = new DataException("");
+        when(debtorsService.findById(DEBTORS_ID, request))
+                .thenThrow(dataException);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
     }
 
     @Test
