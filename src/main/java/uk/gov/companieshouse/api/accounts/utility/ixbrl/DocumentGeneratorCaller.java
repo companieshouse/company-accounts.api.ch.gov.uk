@@ -48,17 +48,22 @@ public class DocumentGeneratorCaller {
         DocumentGeneratorResponse documentGeneratorResponse = null;
 
         try {
+
             DocumentGeneratorRequest request =
                 createDocumentGeneratorRequest(transactionId, accountsResourceUri);
 
+            LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
             ResponseEntity<DocumentGeneratorResponse> response =
                 restTemplate.postForEntity(
                     getDocumentGeneratorURL(),
                     request,
                     DocumentGeneratorResponse.class);
 
+            LOGGER.info("DocumentGeneratorCaller: Document generator call was successful");
+
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                 documentGeneratorResponse = response.getBody();
+
             } else {
                 final Map<String, Object> debugMap = new HashMap<>();
                 debugMap.put("transaction id", transactionId);

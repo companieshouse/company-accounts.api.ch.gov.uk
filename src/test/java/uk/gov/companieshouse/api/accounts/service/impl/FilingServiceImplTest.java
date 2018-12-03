@@ -234,7 +234,7 @@ class FilingServiceImplTest {
 
         if (addPeridEndValueToDescriptionValues) {
             Map<String, String> descriptionValues = new HashMap<>();
-            descriptionValues.put(PERIOD_END_ON_KEY, "01 January 2018");
+            descriptionValues.put(PERIOD_END_ON_KEY, "2018-01-01");
             documentGeneratorResponse.setDescriptionValues(descriptionValues);
         }
 
