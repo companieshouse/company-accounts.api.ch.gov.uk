@@ -27,12 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -121,5 +118,30 @@ public class DebtorsServiceTest {
 
         assertThrows(DataException.class,
                 () -> service.create(debtors, transaction, "", request));
+    }
+
+    @Test
+    @DisplayName("Tests the successful update of an Debtors resource")
+    void canUpdateADebtors() throws DataException {
+
+        when(transformer.transform(debtors)).thenReturn(debtorsEntity);
+
+        ResponseObject<Debtors> result = service.update(debtors, transaction,
+                "", request);
+
+        assertNotNull(result);
+        assertEquals(debtors, result.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the mongo exception when updating an Debtors")
+    void updateDebtorsMongoExceptionFailure() {
+
+        doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
+                .any(Debtors.class));
+        when(repository.save(debtorsEntity)).thenThrow(mongoException);
+
+        assertThrows(DataException.class,
+                () -> service.update(debtors, transaction, "", request));
     }
 }
