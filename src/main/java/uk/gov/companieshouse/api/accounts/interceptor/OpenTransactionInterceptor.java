@@ -18,7 +18,7 @@ import java.util.Map;
 public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+      .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     /**
      * Pre handle method to validate the request before it reaches the controller by checking if
@@ -32,8 +32,8 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
         String requestMethod = request.getMethod();
 
         if (transaction == null ||
-                (!requestMethod.equals("GET") && !TransactionStatus.OPEN.getStatus()
-                        .equals(transaction.getStatus()))) {
+            (!requestMethod.equals("GET") && !TransactionStatus.OPEN.getStatus()
+              .equals(transaction.getStatus()))) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");
