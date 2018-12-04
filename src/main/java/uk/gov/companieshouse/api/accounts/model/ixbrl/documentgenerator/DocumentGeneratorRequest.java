@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
-
 public class DocumentGeneratorRequest {
 
     @JsonProperty("resource_uri")
