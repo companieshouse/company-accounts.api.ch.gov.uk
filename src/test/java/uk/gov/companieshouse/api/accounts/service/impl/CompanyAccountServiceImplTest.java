@@ -23,6 +23,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -67,14 +68,28 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private TransactionManager transactionManagerMock;
 
+    private static final String SELF_LINK = "self";
+    private static final String TRANSACTION_LINK = "transaction";
+
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
     void createAccountWithSuccess() throws DataException, PatchException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
-        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), request);
+        CompanyAccount companyAccount = new CompanyAccount();
+
+        ResponseObject response = companyAccountService.create(companyAccount, createDummyTransaction(TransactionStatus.OPEN), request);
+
         assertNotNull(response);
         assertNotNull(response.getData());
+
+        ArgumentCaptor<CompanyAccount> companyAccountArgument = ArgumentCaptor.forClass(CompanyAccount.class);
+        verify(companyAccountTransformer).transform(companyAccountArgument.capture());
+        
+        assertNotNull(companyAccountArgument.getValue().getLinks().get(SELF_LINK));
+        assertNotNull(companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
+        assertEquals("/transactions/id", companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
+
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
