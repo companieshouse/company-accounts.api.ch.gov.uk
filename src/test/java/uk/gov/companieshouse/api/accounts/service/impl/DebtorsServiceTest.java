@@ -26,6 +26,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
@@ -143,5 +144,45 @@ public class DebtorsServiceTest {
 
         assertThrows(DataException.class,
                 () -> service.update(debtors, transaction, "", request));
+    }
+
+    @Test
+    @DisplayName("Tests the successful find of an Debtors resource")
+    void findDebtors() throws DataException {
+
+        when(repository.findById(""))
+                .thenReturn(Optional.ofNullable(debtorsEntity));
+        when(transformer.transform(debtorsEntity)).thenReturn(debtors);
+
+        ResponseObject<Debtors> result = service.findById("", request);
+
+        assertNotNull(result);
+        assertEquals(debtors, result.getData());
+    }
+
+    @Test
+    @DisplayName("Tests Debtors response not found")
+    void findDebtorsResponseNotFound() throws DataException {
+        debtorsEntity = null;
+        when(repository.findById(""))
+                .thenReturn(Optional.ofNullable(debtorsEntity));
+
+        ResponseObject<Debtors> result = service.findById("", request);
+
+        assertNotNull(result);
+        assertEquals(responseStatusNotFound(), result.getStatus());
+    }
+
+    @Test
+    @DisplayName("Tests mongo exception thrown on find of an Debtors resource")
+    void findDebtorsMongoException() {
+        when(repository.findById("")).thenThrow(mongoException);
+
+        assertThrows(DataException.class, () -> service.findById("", request));
+    }
+
+    private ResponseStatus responseStatusNotFound() {
+        ResponseObject responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        return responseObject.getStatus();
     }
 }
