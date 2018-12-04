@@ -247,7 +247,7 @@ public class FilingServiceImpl implements FilingService {
      * Checks if the document generator response contains the ixbrl location.
      *
      * @param response Contains the document generator response.
-     * @return true when ixbrl location is not null or blank.
+     * @return true when ixbrl location is not null nor blank.
      */
     private boolean isIxbrlInDocGeneratorResponse(DocumentGeneratorResponse response) {
 
@@ -267,7 +267,7 @@ public class FilingServiceImpl implements FilingService {
      * Checks if the document generator response contains account's description.
      *
      * @param response Contains the document generator response.
-     * @return true when the description not null or blank.
+     * @return true when the description not null nor blank.
      */
     private boolean isDescriptionInDocGeneratorResponse(DocumentGeneratorResponse response) {
 
@@ -287,8 +287,8 @@ public class FilingServiceImpl implements FilingService {
      * values.
      *
      * @param response Contains the document generator response.
-     * @return true when the description values contains the period_end_on key and its value is null
-     * or blank.
+     * @return true when the description values contains the period_end_on key; and its value is not
+     * null nor blank.
      */
     private boolean isPeriodEndOnInDocGeneratorResponse(DocumentGeneratorResponse response) {
 
