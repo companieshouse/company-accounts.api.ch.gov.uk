@@ -70,6 +70,7 @@ public class CompanyAccountServiceImplTest {
 
     private static final String SELF_LINK = "self";
     private static final String TRANSACTION_LINK = "transaction";
+    private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
@@ -88,7 +89,7 @@ public class CompanyAccountServiceImplTest {
         
         assertNotNull(companyAccountArgument.getValue().getLinks().get(SELF_LINK));
         assertNotNull(companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
-        assertEquals("/transactions/id", companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
+        assertEquals(MOCK_TRANSACTION_SELF_LINK, companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
 
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
@@ -160,7 +161,7 @@ public class CompanyAccountServiceImplTest {
      */
     private Map<String, String> createLinksMap() {
         Map<String, String> links = new HashMap<>();
-        links.put(CompanyAccountLinkType.SELF.getLink(), "selfLinkTest");
+        links.put(CompanyAccountLinkType.SELF.getLink(), MOCK_TRANSACTION_SELF_LINK);
         return links;
     }
 }
