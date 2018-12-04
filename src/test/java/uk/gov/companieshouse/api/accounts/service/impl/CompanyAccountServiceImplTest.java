@@ -47,6 +47,10 @@ import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountServiceImplTest {
 
+    private static final String SELF_LINK = "self";
+    private static final String TRANSACTION_LINK = "transaction";
+    private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
+
     @InjectMocks
     private CompanyAccountServiceImpl companyAccountService;
 
@@ -68,10 +72,6 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private TransactionManager transactionManagerMock;
 
-    private static final String SELF_LINK = "self";
-    private static final String TRANSACTION_LINK = "transaction";
-    private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
-
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
     void createAccountWithSuccess() throws DataException, PatchException {
@@ -86,7 +86,7 @@ public class CompanyAccountServiceImplTest {
 
         ArgumentCaptor<CompanyAccount> companyAccountArgument = ArgumentCaptor.forClass(CompanyAccount.class);
         verify(companyAccountTransformer).transform(companyAccountArgument.capture());
-        
+
         assertNotNull(companyAccountArgument.getValue().getLinks().get(SELF_LINK));
         assertNotNull(companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
         assertEquals(MOCK_TRANSACTION_SELF_LINK, companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));

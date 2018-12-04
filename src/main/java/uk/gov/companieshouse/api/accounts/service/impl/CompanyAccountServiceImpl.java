@@ -38,6 +38,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String TRANSACTION_PATH = "/transactions";
+
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
