@@ -32,7 +32,6 @@ public class CurrentPeriod {
     @JsonProperty("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("total")
     private Long total;
 
