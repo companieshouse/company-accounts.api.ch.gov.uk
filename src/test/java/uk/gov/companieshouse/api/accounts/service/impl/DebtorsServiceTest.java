@@ -88,7 +88,7 @@ public class DebtorsServiceTest {
         when(transformer.transform(debtors)).thenReturn(debtorsEntity);
 
         ResponseObject<Debtors> result = service.create(debtors, transaction,
-                "", request);
+            "", request);
 
         assertNotNull(result);
         assertEquals(debtors, result.getData());
@@ -99,7 +99,7 @@ public class DebtorsServiceTest {
     void createDebtorsDuplicateKey() throws DataException {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
-                .any(Debtors.class));
+            .any(Debtors.class));
         when(repository.insert(debtorsEntity)).thenThrow(duplicateKeyException);
 
         ResponseObject response = service.create(debtors, transaction, "", request);
@@ -114,11 +114,11 @@ public class DebtorsServiceTest {
     void createDebtorsMongoExceptionFailure() {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
-                .any(Debtors.class));
+            .any(Debtors.class));
         when(repository.insert(debtorsEntity)).thenThrow(mongoException);
 
         assertThrows(DataException.class,
-                () -> service.create(debtors, transaction, "", request));
+            () -> service.create(debtors, transaction, "", request));
     }
 
     @Test

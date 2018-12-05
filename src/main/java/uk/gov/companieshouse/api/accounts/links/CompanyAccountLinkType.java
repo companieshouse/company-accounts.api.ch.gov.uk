@@ -3,7 +3,8 @@ package uk.gov.companieshouse.api.accounts.links;
 public enum CompanyAccountLinkType implements LinkType {
 
     SELF("self"),
-    SMALL_FULL("small_full_accounts");
+    SMALL_FULL("small_full_accounts"),
+    TRANSACTION("transaction");
 
     private String link;
 

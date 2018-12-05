@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,18 +32,14 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DebtorsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String TRANSACTION_ID = "transaction_id";
+    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
+    private static final String MESSAGE = "message";
 
     @Autowired
     private DebtorsService debtorsService;
@@ -47,10 +49,6 @@ public class DebtorsController {
 
     @Autowired
     private ErrorMapper errorMapper;
-
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Debtors debtors,
@@ -65,16 +63,16 @@ public class DebtorsController {
         }
 
         Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                    .create(debtors, transaction, companyAccountId, request);
+                .create(debtors, transaction, companyAccountId, request);
 
             responseEntity = apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
+                .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 

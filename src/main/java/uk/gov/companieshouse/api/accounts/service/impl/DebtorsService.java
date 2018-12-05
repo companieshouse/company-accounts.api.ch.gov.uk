@@ -32,7 +32,7 @@ import java.util.Map;
 public class DebtorsService implements ResourceService<Debtors> {
 
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private DebtorsRepository repository;
     private DebtorsTransformer transformer;
@@ -54,7 +54,7 @@ public class DebtorsService implements ResourceService<Debtors> {
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
                                           String companyAccountsId, HttpServletRequest request)
-            throws DataException {
+        throws DataException {
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
@@ -78,8 +78,8 @@ public class DebtorsService implements ResourceService<Debtors> {
         }
 
         smallFullService
-                .addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
-                        getSelfLinkFromDebtors(entity), request);
+            .addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
+                getSelfLinkFromDebtorsEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -129,29 +129,29 @@ public class DebtorsService implements ResourceService<Debtors> {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
     }
 
-    private String getSelfLink(Transaction transaction, String companyAccountId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
-                + ResourceName.DEBTORS.getName();
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+            + ResourceName.DEBTORS.getName();
     }
 
-    public String getSelfLinkFromDebtors(DebtorsEntity entity) {
+    public String getSelfLinkFromDebtorsEntity(DebtorsEntity entity) {
 
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private void setLinksOnDebtors(Debtors rest, String link) {
+    private Map<String, String> createSelfLink(Transaction transaction,  String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
-        rest.setLinks(map);
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
+        return map;
     }
 
     private void setMetadataOnRestObject(Debtors rest, Transaction transaction, String companyAccountsId) {
 
-        setLinksOnDebtors(rest, getSelfLink(transaction, companyAccountsId));
+        rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DEBTORS_NOTE.getValue());
     }

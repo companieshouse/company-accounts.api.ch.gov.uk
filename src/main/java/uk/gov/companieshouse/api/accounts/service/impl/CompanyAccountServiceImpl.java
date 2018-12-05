@@ -36,6 +36,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+
     @Autowired
     private TransactionManager transactionManager;
     @Autowired
@@ -54,7 +55,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         String companyAccountLink = createSelfLink(transaction, id);
         companyAccount.setKind(Kind.COMPANY_ACCOUNTS.getValue());
         addEtag(companyAccount);
-        addLinks(companyAccount, companyAccountLink);
+        addLinks(companyAccount, companyAccountLink, transaction);
 
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer
             .transform(companyAccount);
@@ -102,9 +103,10 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         companyAccountRepository.save(companyAccountEntity);
     }
 
-    private void addLinks(CompanyAccount companyAccount, String companyAccountLink) {
+    private void addLinks(CompanyAccount companyAccount, String companyAccountLink, Transaction transaction) {
         Map<String, String> map = new HashMap<>();
         map.put(CompanyAccountLinkType.SELF.getLink(), companyAccountLink);
+        map.put(CompanyAccountLinkType.TRANSACTION.getLink(), getTransactionSelfLink(transaction));
         companyAccount.setLinks(map);
     }
 
