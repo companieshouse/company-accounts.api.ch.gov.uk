@@ -33,6 +33,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class DebtorsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String TRANSACTION_ID = "transaction_id";
+    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
+    private static final String MESSAGE = "message";
 
     @Autowired
     private DebtorsService debtorsService;
@@ -42,10 +45,6 @@ public class DebtorsController {
 
     @Autowired
     private ErrorMapper errorMapper;
-
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Debtors debtors,
@@ -60,16 +59,16 @@ public class DebtorsController {
         }
 
         Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                    .create(debtors, transaction, companyAccountId, request);
+                .create(debtors, transaction, companyAccountId, request);
 
             responseEntity = apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
+                .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
