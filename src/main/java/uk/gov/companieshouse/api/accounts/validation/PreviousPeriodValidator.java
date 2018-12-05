@@ -1,16 +1,16 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import java.util.Optional;
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
@@ -52,26 +52,22 @@ public class PreviousPeriodValidator extends BaseValidator {
         // If any capital and reserves fields are submitted then total shareholder funds cannot be null
         if (capitalAndReserves != null) {
 
-            if (capitalAndReserves.getTotalShareholdersFunds() == null) {
-                addError(errors, mandatoryElementMissing, TOTAL_SHAREHOLDER_FUNDS_PATH);
-            } else {
-                // Validate calculated total equals total shareholders funds
-                Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
-                Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
-                Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
-                Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
-                Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
-                Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
-                validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
+            // Validate calculated total equals total shareholders funds
+            Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
+            Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
+            Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
+            Long profitAndLoss = Optional.ofNullable(capitalAndReserves.getProfitAndLoss()).orElse(0L);
+            Long totalShareholderFunds = Optional.ofNullable(capitalAndReserves.getTotalShareholdersFunds()).orElse(0L);
+            Long calculatedTotal = calledUpShareCapital + otherReserves + sharePremiumAccount + profitAndLoss;
+            validateAggregateTotal(totalShareholderFunds, calculatedTotal, TOTAL_SHAREHOLDER_FUNDS_PATH, errors);
 
-                Long totalNetAssets = 0L;
-                // Total shareholder funds must equal total net assets
-                if (previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
-                    totalNetAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
-                }
-                if (!totalNetAssets.equals(totalShareholderFunds)) {
-                    addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
-                }
+            Long totalNetAssets = 0L;
+            // Total shareholder funds must equal total net assets
+            if (previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
+                totalNetAssets = previousPeriod.getBalanceSheet().getOtherLiabilitiesOrAssets().getTotalNetAssets();
+            }
+            if (!totalNetAssets.equals(totalShareholderFunds)) {
+                addError(errors, shareholderFundsMismatch, TOTAL_SHAREHOLDER_FUNDS_PATH);
             }
         }
     }
