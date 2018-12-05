@@ -112,16 +112,16 @@ public class DebtorsService implements ResourceService<Debtors> {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private void setLinksOnDebtors(Debtors rest, String link) {
+    private Map<String, String> createSelfLink(Transaction transaction,  String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
-        rest.setLinks(map);
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
+        return map;
     }
 
     private void setMetadataOnRestObject(Debtors rest, Transaction transaction, String companyAccountsId) {
 
-        setLinksOnDebtors(rest, generateSelfLink(transaction, companyAccountsId));
+        rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DEBTORS_NOTE.getValue());
     }
