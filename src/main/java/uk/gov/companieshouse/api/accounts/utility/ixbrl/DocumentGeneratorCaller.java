@@ -53,16 +53,16 @@ public class DocumentGeneratorCaller {
                 createDocumentGeneratorRequest(transactionId, accountsResourceUri);
 
             LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
+
             ResponseEntity<DocumentGeneratorResponse> response =
                 restTemplate.postForEntity(
                     getDocumentGeneratorURL(),
                     request,
                     DocumentGeneratorResponse.class);
 
-            LOGGER.info("DocumentGeneratorCaller: Document generator call was successful");
-
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                 documentGeneratorResponse = response.getBody();
+                LOGGER.info("DocumentGeneratorCaller: Document generator call was successful");
 
             } else {
                 final Map<String, Object> debugMap = new HashMap<>();
@@ -84,12 +84,21 @@ public class DocumentGeneratorCaller {
         return documentGeneratorResponse;
     }
 
+    /**
+     * Create Document Generator Request object with the needed information to call the document
+     * generator
+     *
+     * @param transactionId - transaction id.
+     * @param accountsResourceUri - the accounts self link.
+     * @return
+     */
     private DocumentGeneratorRequest createDocumentGeneratorRequest(String transactionId,
         String accountsResourceUri) {
         DocumentGeneratorRequest request = new DocumentGeneratorRequest();
         request.setResourceUri(accountsResourceUri);
         request.setResourceID(transactionId);
         request.setMimeType(MIME_TYPE);
+
         return request;
     }
 

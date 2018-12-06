@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.AccountsType;
@@ -18,11 +16,11 @@ import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
+import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -34,9 +32,6 @@ public class FilingServiceImpl implements FilingService {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String LOG_MESSAGE_KEY = "message";
-    private static final String LOG_DOC_GENERATOR_RESPONSE_INVALID_MESSAGE_KEY =
-        "FilingServiceImpl: Document generator response invalid";
-
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
@@ -45,12 +40,16 @@ public class FilingServiceImpl implements FilingService {
 
     private final DocumentGeneratorCaller documentGeneratorCaller;
     private final EnvironmentReader environmentReader;
+    private final DocumentGeneratorResponseValidator documentGeneratorResponseValidator;
 
     @Autowired
     public FilingServiceImpl(DocumentGeneratorCaller documentGeneratorCaller,
-        EnvironmentReader environmentReader) {
+        EnvironmentReader environmentReader,
+        DocumentGeneratorResponseValidator documentGeneratorResponseValidator) {
+
         this.documentGeneratorCaller = documentGeneratorCaller;
         this.environmentReader = environmentReader;
+        this.documentGeneratorResponseValidator = documentGeneratorResponseValidator;
     }
 
     /**
@@ -116,12 +115,11 @@ public class FilingServiceImpl implements FilingService {
     private DocumentGeneratorResponse getDocumentGeneratorResponse(Transaction transaction,
         CompanyAccount companyAccount) {
 
-        String companyAccountsURI = companyAccount.getLinks()
-            .get(CompanyAccountLinkType.SELF.getLink());
+        String companyAccountsURI =
+            companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
 
-        DocumentGeneratorResponse documentGeneratorResponse =
-            documentGeneratorCaller
-                .callDocumentGeneratorService(transaction.getId(), companyAccountsURI);
+        DocumentGeneratorResponse documentGeneratorResponse = documentGeneratorCaller
+            .callDocumentGeneratorService(transaction.getId(), companyAccountsURI);
 
         if (documentGeneratorResponse != null) {
             return documentGeneratorResponse;
@@ -130,7 +128,7 @@ public class FilingServiceImpl implements FilingService {
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("company_account_self_link", companyAccountsURI);
         logMap.put("transaction_id", transaction.getId());
-        logMap.put(LOG_MESSAGE_KEY, "Document Generator caller has failed. Response is null");
+        logMap.put(LOG_MESSAGE_KEY, "Document generator response call has returned null");
 
         LOGGER.error("FilingServiceImpl: Document Generator call failed", logMap);
 
@@ -218,105 +216,13 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Check if the document generator response contains the information needed to build the filing
-     * model: Description, period end on (within description values) and the ixbrl location are
-     * needed.
+     * Call document generator response to validate response. It needs to contain: Description,
+     * period end on (within description values) and the ixbrl location are needed.
      *
-     * @param response Contains the document generator response.
+     * @param response document generator response.
      * @return true if the response contains all the needed information.
      */
     private boolean isDocumentGeneratorResponseValid(DocumentGeneratorResponse response) {
-        boolean isDocGeneratorResponseValid = true;
-
-        if (!isPeriodEndOnInDocGeneratorResponse(response)) {
-            isDocGeneratorResponseValid = false;
-        }
-
-        if (!isDescriptionInDocGeneratorResponse(response)) {
-            isDocGeneratorResponseValid = false;
-        }
-
-        if (!isIxbrlInDocGeneratorResponse(response)) {
-            isDocGeneratorResponseValid = false;
-        }
-
-        return isDocGeneratorResponseValid;
-    }
-
-    /**
-     * Checks if the document generator response contains the ixbrl location.
-     *
-     * @param response Contains the document generator response.
-     * @return true when ixbrl location is not null nor blank.
-     */
-    private boolean isIxbrlInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
-        if (StringUtils.isBlank(getIxbrlLocationFromDocGeneratorResponse(response))) {
-            Map<String, Object> logMap = new HashMap<>();
-            logMap.put(LOG_MESSAGE_KEY,
-                "The Ixbrl location has not been set in Document Generator Response");
-
-            LOGGER.error(LOG_DOC_GENERATOR_RESPONSE_INVALID_MESSAGE_KEY, logMap);
-
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks if the document generator response contains account's description.
-     *
-     * @param response Contains the document generator response.
-     * @return true when the description not null nor blank.
-     */
-    private boolean isDescriptionInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
-        if (StringUtils.isBlank(response.getDescription())) {
-            Map<String, Object> logMap = new HashMap<>();
-            logMap.put(LOG_MESSAGE_KEY,
-                "The description has not been in the Document Generator Response");
-            LOGGER.error(LOG_DOC_GENERATOR_RESPONSE_INVALID_MESSAGE_KEY, logMap);
-
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks the document generator response contains the period end on within the description
-     * values.
-     *
-     * @param response Contains the document generator response.
-     * @return true when the description values contains the period_end_on key; and its value is not
-     * null nor blank.
-     */
-    private boolean isPeriodEndOnInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
-        if (response.getDescriptionValues() == null ||
-            !response.getDescriptionValues().containsKey(PERIOD_END_ON) ||
-            StringUtils.isBlank(response.getDescriptionValues().get(PERIOD_END_ON))) {
-
-            Map<String, Object> logMap = new HashMap<>();
-            logMap.put(LOG_MESSAGE_KEY,
-                "Period end on has not been set within the description_values in the Document Generator Response");
-
-            LOGGER.error(LOG_DOC_GENERATOR_RESPONSE_INVALID_MESSAGE_KEY, logMap);
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the ixbrl location stored in the document generator response values.
-     *
-     * @param response Contains the document generator response.
-     * @return the location or null if ixbrl location has not been set.
-     */
-    private String getIxbrlLocationFromDocGeneratorResponse(DocumentGeneratorResponse response) {
-        return Optional.of(response)
-            .map(DocumentGeneratorResponse::getLinks)
-            .map(Links::getLocation)
-            .orElse(null);
+        return documentGeneratorResponseValidator.isDocumentGeneratorResponseValid(response);
     }
 }

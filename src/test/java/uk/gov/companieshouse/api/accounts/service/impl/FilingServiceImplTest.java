@@ -33,6 +33,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
+import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +46,6 @@ class FilingServiceImplTest {
     private static final String SMALL_FULL_ID = "smallFullId";
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
-
     private static final String ACCOUNTS_SELF_REF =
         "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
 
@@ -63,13 +63,16 @@ class FilingServiceImplTest {
     private DocumentGeneratorCaller documentGeneratorCallerMock;
     @Mock
     private EnvironmentReader environmentReaderMock;
+    @Mock
+    private DocumentGeneratorResponseValidator docGeneratorResponseValidatorMock;
 
     @BeforeEach
     void setUpBeforeEach() {
         transaction = createTransaction();
         companyAccount = createAccount();
 
-        filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock);
+        filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock,
+            docGeneratorResponseValidatorMock);
     }
 
     @Test
@@ -81,6 +84,10 @@ class FilingServiceImplTest {
             .when(documentGeneratorCallerMock)
             .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
 
+        doReturn(true)
+            .when(docGeneratorResponseValidatorMock)
+            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+
         doReturn(false).when(environmentReaderMock)
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
@@ -90,7 +97,7 @@ class FilingServiceImplTest {
         verifyDocumentGeneratorCallerMock();
         verify(environmentReaderMock, times(1))
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
-
+        verifyDocumentGeneratorResponseValidatorMock();
         verifyFilingData(filing);
     }
 
@@ -104,45 +111,8 @@ class FilingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Tests the filing not generated when ixbrl link is not set in document generator response")
-    void shouldNotGenerateFilingAsIxbrlLocationNotSet() {
-
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addDescriptionToDocGenerator(documentGeneratorResponse, ACCOUNT_DESCRIPTION);
-        addDescriptionValuesToDocGenerator(documentGeneratorResponse, PERIOD_END_ON_KEY,
-            PERIOD_END_ON_VALUE);
-
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
-
-        verifyDocumentGeneratorCallerMock();
-        assertNull(filing);
-    }
-
-    @Test
-    @DisplayName("Tests the filing not generated when ixbrl link value is null in document generator response")
-    void shouldNotGenerateFilingAsIxbrlLocationIsNull() {
-
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(documentGeneratorResponse, null);
-        addDescriptionToDocGenerator(documentGeneratorResponse, ACCOUNT_DESCRIPTION);
-        addDescriptionValuesToDocGenerator(documentGeneratorResponse, PERIOD_END_ON_KEY,
-            PERIOD_END_ON_VALUE);
-
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
-
-        verifyDocumentGeneratorCallerMock();
-        assertNull(filing);
-    }
-
-    @Test
     @DisplayName("Tests the filing not generated when document generator response fails")
-    void shouldNotGenerateFilingAsDocumentGeneratorResposeIsNull() {
+    void shouldNotGenerateFilingAsDocumentGeneratorResponseIsNull() {
 
         doReturn(null).when(documentGeneratorCallerMock)
             .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
@@ -154,74 +124,23 @@ class FilingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Tests the filing not generated when description is not set in document generator response")
-    void shouldNotGenerateFilingAsDescriptionNotSetInDocGeneratorResponse() {
-
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(documentGeneratorResponse, IXBRL_LOCATION);
-        addDescriptionValuesToDocGenerator(documentGeneratorResponse, PERIOD_END_ON_KEY,
-            PERIOD_END_ON_VALUE);
-
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
-
-        verifyDocumentGeneratorCallerMock();
-        assertNull(filing);
-    }
-
-    @Test
-    @DisplayName("Tests the filing not generated when period end on is not set in document generator response")
-    void shouldNotGenerateFilingAsPeriodEndOnNotSetInDocGeneratorResponse() {
-
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(documentGeneratorResponse, IXBRL_LOCATION);
-        addDescriptionToDocGenerator(documentGeneratorResponse, ACCOUNT_DESCRIPTION);
-
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
-
-        verifyDocumentGeneratorCallerMock();
-        assertNull(filing);
-    }
-
-    @Test
-    @DisplayName("Tests the filing not generated when period end on is null in document generator response")
-    void shouldNotGenerateFilingAsPeriodEndOnValueIsNullInDocGeneratorResponse() {
-
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(documentGeneratorResponse, IXBRL_LOCATION);
-        addDescriptionToDocGenerator(documentGeneratorResponse, ACCOUNT_DESCRIPTION);
-        addDescriptionValuesToDocGenerator(documentGeneratorResponse, PERIOD_END_ON_KEY, null);
-
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
-
-        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
-
-        verifyDocumentGeneratorCallerMock();
-        assertNull(filing);
-    }
-
-    @Test
-    @DisplayName("Tests the filing not generated when period end key does not exist document generator response")
+    @DisplayName("Tests the filing not generated when document generator response validation fails")
     void shouldNotGenerateFilingAsPeriodEndOnKeyIsNotInDocGeneratorResponse() {
 
-        documentGeneratorResponse = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(documentGeneratorResponse, IXBRL_LOCATION);
-        addDescriptionToDocGenerator(documentGeneratorResponse, ACCOUNT_DESCRIPTION);
-        addDescriptionValuesToDocGenerator(documentGeneratorResponse, "wrong_period_end_on",
-            PERIOD_END_ON_VALUE);
+        documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
+        doReturn(documentGeneratorResponse)
+            .when(documentGeneratorCallerMock)
             .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+
+        doReturn(false)
+            .when(docGeneratorResponseValidatorMock)
+            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyDocumentGeneratorCallerMock();
+        verifyDocumentGeneratorResponseValidatorMock();
         assertNull(filing);
     }
 
@@ -257,6 +176,11 @@ class FilingServiceImplTest {
     private void verifyDocumentGeneratorCallerMock() {
         verify(documentGeneratorCallerMock, times(1))
             .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+    }
+
+    private void verifyDocumentGeneratorResponseValidatorMock() {
+        verify(docGeneratorResponseValidatorMock, times(1))
+            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
     }
 
     /**
@@ -298,9 +222,6 @@ class FilingServiceImplTest {
 
     /**
      * Create an transaction object.
-     *
-     * @return
-     * @throws ParseException
      */
     private Transaction createTransaction() {
         Transaction transactionObject = new Transaction();
@@ -316,66 +237,42 @@ class FilingServiceImplTest {
      */
     private DocumentGeneratorResponse createDocumentGeneratorResponse() {
 
-        DocumentGeneratorResponse response = createBasicDocumentGeneratorResponse();
-        addIxbrlLinkToDocGenerator(response, IXBRL_LOCATION);
-        addDescriptionToDocGenerator(response, ACCOUNT_DESCRIPTION);
-        addDescriptionValuesToDocGenerator(response, PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE);
-
-        return response;
-    }
-
-    /**
-     * Create a basic Document Generator Response with information that will not be used by the
-     * filing generator but it is populated by the doc. generator.
-     *
-     * @return
-     */
-    private DocumentGeneratorResponse createBasicDocumentGeneratorResponse() {
-
         DocumentGeneratorResponse response = new DocumentGeneratorResponse();
+
         response.setDescriptionIdentifier("small-full-accounts");
         response.setSize("999999");
+        response.setLinks(createIxbrlLink(IXBRL_LOCATION));
+        response.setDescription(ACCOUNT_DESCRIPTION);
+        response
+            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
         return response;
     }
 
     /**
-     * Add the Ixbrl location to the Document Generator Response parameter.
+     * Create links object containing the ixbrl location.
      *
-     * @param response Contains the document generator response.
-     * @param ixbrlLocation
+     * @param ixbrlLocation Ixbrl location to be set in the links
+     * @return
      */
-    private void addIxbrlLinkToDocGenerator(DocumentGeneratorResponse response,
-        String ixbrlLocation) {
+    private Links createIxbrlLink(String ixbrlLocation) {
 
         Links links = new Links();
         links.setLocation(ixbrlLocation);
-        response.setLinks(links);
+        return links;
     }
 
     /**
-     * Add the description to location to the Document Generator Response parameter.
+     * Create the description values map with the key and value passed in
      *
-     * @param response
-     * @param description
-     */
-    private void addDescriptionToDocGenerator(DocumentGeneratorResponse response,
-        String description) {
-        response.setDescription(description);
-    }
-
-    /**
-     * Add the the key and the value to the description values within the Document Generator
-     * Response parameter.
-     *
-     * @param response
+     * @param keyId key name to use it in the map
+     * @param keyValue key value to use in the map
      * @return
      */
-    private void addDescriptionValuesToDocGenerator(DocumentGeneratorResponse response,
-        String keyId, String keyValue) {
+    private Map<String, String> createDescriptionValues(String keyId, String keyValue) {
 
         Map<String, String> descriptionValues = new HashMap<>();
         descriptionValues.put(keyId, keyValue);
-        response.setDescriptionValues(descriptionValues);
+        return descriptionValues;
     }
 }
