@@ -16,10 +16,8 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 /**
- * Class to call the document generator to obtain the ixbrl location. Since the functionality has
- * not been implemented yet, (STORY SFA-595), it returns an empty string.
- *
- * This class will change to call the new end point and it will return the s3 ixbrl location.
+ * Class to call the Document Generator to get the information needed by the Filing Generator to
+ * build the filing object: the ixbrl location, period end on and description.
  */
 @Component
 public class DocumentGeneratorCaller {

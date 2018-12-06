@@ -28,7 +28,7 @@ public class DocumentGeneratorResponseValidator {
      * model: Description, period end on (within description values) and the ixbrl location are
      * needed.
      *
-     * @param response Contains the document generator response.
+     * @param response - document generator response.
      * @return true if the response contains all the needed information.
      */
     public boolean isDocumentGeneratorResponseValid(DocumentGeneratorResponse response) {
@@ -56,7 +56,7 @@ public class DocumentGeneratorResponseValidator {
     /**
      * Checks if the document generator response contains the ixbrl location.
      *
-     * @param response Contains the document generator response.
+     * @param response - document generator response.
      * @return true when ixbrl location is not null nor blank.
      */
     private boolean isIxbrlInDocGeneratorResponse(DocumentGeneratorResponse response) {
@@ -76,7 +76,7 @@ public class DocumentGeneratorResponseValidator {
     /**
      * Checks if the document generator response contains account's description.
      *
-     * @param response Contains the document generator response.
+     * @param response - document generator response.
      * @return true when the description not null nor blank.
      */
     private boolean isDescriptionInDocGeneratorResponse(DocumentGeneratorResponse response) {
@@ -96,7 +96,7 @@ public class DocumentGeneratorResponseValidator {
      * Checks the document generator response contains the period end on within the description
      * values.
      *
-     /Users/mcabrerahernandez/Documents/GITHUB/GitHub Commands.md     * @param response Contains the document generator response.
+     * @param response - document generator response.
      * @return true when the description values contains the period_end_on key; and its value is not
      * null nor blank.
      */
