@@ -1,6 +1,16 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,17 +32,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -90,7 +89,7 @@ public class DebtorsServiceTest {
         when(transformer.transform(debtors)).thenReturn(debtorsEntity);
 
         ResponseObject<Debtors> result = service.create(debtors, transaction,
-                "", request);
+            "", request);
 
         assertNotNull(result);
         assertEquals(debtors, result.getData());
@@ -101,7 +100,7 @@ public class DebtorsServiceTest {
     void createDebtorsDuplicateKey() throws DataException {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
-                .any(Debtors.class));
+            .any(Debtors.class));
         when(repository.insert(debtorsEntity)).thenThrow(duplicateKeyException);
 
         ResponseObject response = service.create(debtors, transaction, "", request);
@@ -116,10 +115,10 @@ public class DebtorsServiceTest {
     void createDebtorsMongoExceptionFailure() {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
-                .any(Debtors.class));
+            .any(Debtors.class));
         when(repository.insert(debtorsEntity)).thenThrow(mongoException);
 
         assertThrows(DataException.class,
-                () -> service.create(debtors, transaction, "", request));
+            () -> service.create(debtors, transaction, "", request));
     }
 }

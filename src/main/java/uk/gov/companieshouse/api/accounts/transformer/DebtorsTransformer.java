@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;

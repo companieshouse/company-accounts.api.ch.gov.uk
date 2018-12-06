@@ -23,6 +23,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,6 +46,10 @@ import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CompanyAccountServiceImplTest {
+
+    private static final String SELF_LINK = "self";
+    private static final String TRANSACTION_LINK = "transaction";
+    private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
 
     @InjectMocks
     private CompanyAccountServiceImpl companyAccountService;
@@ -72,9 +77,20 @@ public class CompanyAccountServiceImplTest {
     void createAccountWithSuccess() throws DataException, PatchException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
-        ResponseObject response = companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), request);
+        CompanyAccount companyAccount = new CompanyAccount();
+
+        ResponseObject response = companyAccountService.create(companyAccount, createDummyTransaction(TransactionStatus.OPEN), request);
+
         assertNotNull(response);
         assertNotNull(response.getData());
+
+        ArgumentCaptor<CompanyAccount> companyAccountArgument = ArgumentCaptor.forClass(CompanyAccount.class);
+        verify(companyAccountTransformer).transform(companyAccountArgument.capture());
+
+        assertNotNull(companyAccountArgument.getValue().getLinks().get(SELF_LINK));
+        assertNotNull(companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
+        assertEquals(MOCK_TRANSACTION_SELF_LINK, companyAccountArgument.getValue().getLinks().get(TRANSACTION_LINK));
+
         verify(companyAccountRepository).insert(companyAccountEntityMock);
     }
 
@@ -145,7 +161,7 @@ public class CompanyAccountServiceImplTest {
      */
     private Map<String, String> createLinksMap() {
         Map<String, String> links = new HashMap<>();
-        links.put(CompanyAccountLinkType.SELF.getLink(), "selfLinkTest");
+        links.put(CompanyAccountLinkType.SELF.getLink(), MOCK_TRANSACTION_SELF_LINK);
         return links;
     }
 }

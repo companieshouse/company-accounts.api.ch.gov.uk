@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,13 +26,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-
-import javax.servlet.http.HttpServletRequest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,7 +58,7 @@ public class DebtorsControllerTest {
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Test
-    @DisplayName("SUCCESS- Debtors resource created")
+    @DisplayName("Debtors resource created successfully")
     void createDebtorsResource() throws DataException {
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -67,17 +66,17 @@ public class DebtorsControllerTest {
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-                debtors);
+            debtors);
         when(debtorsService.create(debtors, transaction, COMPANY_ACCOUNTS_ID, request))
-                .thenReturn(responseObject);
+            .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseObject.getData());
+            .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
-                .thenReturn(responseEntity);
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -85,7 +84,7 @@ public class DebtorsControllerTest {
     }
 
     @Test
-    @DisplayName("Create debtors - data exception thrown")
+    @DisplayName("Create debtors has failed - data exception thrown")
     void createDebtorsDataException() throws DataException {
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -93,14 +92,14 @@ public class DebtorsControllerTest {
 
         DataException dataException = new DataException("");
         when(debtorsService.create(debtors, transaction, COMPANY_ACCOUNTS_ID, request))
-                .thenThrow(dataException);
+            .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.map(dataException))
-                .thenReturn(responseEntity);
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -115,7 +114,7 @@ public class DebtorsControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-                controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            controller.create(debtors, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
