@@ -85,7 +85,7 @@ class FilingServiceImplTest {
 
         doReturn(documentGeneratorResponse)
             .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
         doReturn(true)
             .when(docGeneratorResponseValidatorMock)
@@ -121,7 +121,7 @@ class FilingServiceImplTest {
     void shouldNotGenerateFilingAsDocumentGeneratorResponseIsNull() {
 
         doReturn(null).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
@@ -137,7 +137,7 @@ class FilingServiceImplTest {
 
         doReturn(documentGeneratorResponse)
             .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
         doReturn(false)
             .when(docGeneratorResponseValidatorMock)
@@ -181,7 +181,7 @@ class FilingServiceImplTest {
 
     private void verifyDocumentGeneratorCallerMock() {
         verify(documentGeneratorCallerMock, times(1))
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_SELF_REF);
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
     }
 
     private void verifyDocumentGeneratorResponseValidatorMock() {

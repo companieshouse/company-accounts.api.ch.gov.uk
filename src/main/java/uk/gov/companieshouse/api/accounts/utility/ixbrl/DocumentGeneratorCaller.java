@@ -40,22 +40,18 @@ public class DocumentGeneratorCaller {
         this.restTemplate = restTemplate;
     }
 
-    public DocumentGeneratorResponse callDocumentGeneratorService(String transactionId,
-        String accountsResourceUri) {
+    public DocumentGeneratorResponse callDocumentGeneratorService(String accountsResourceUri) {
 
         DocumentGeneratorResponse documentGeneratorResponse = null;
 
         try {
-
-            DocumentGeneratorRequest request =
-                createDocumentGeneratorRequest(transactionId, accountsResourceUri);
 
             LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
 
             ResponseEntity<DocumentGeneratorResponse> response =
                 restTemplate.postForEntity(
                     getDocumentGeneratorURL(),
-                    request,
+                    createDocumentGeneratorRequest(accountsResourceUri),
                     DocumentGeneratorResponse.class);
 
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
@@ -64,7 +60,6 @@ public class DocumentGeneratorCaller {
 
             } else {
                 final Map<String, Object> debugMap = new HashMap<>();
-                debugMap.put("transaction id", transactionId);
                 debugMap.put("accounts id", accountsResourceUri);
                 LOGGER.error("DocumentGeneratorCaller: wrong code returned from Document Generator",
                     debugMap);
@@ -72,7 +67,6 @@ public class DocumentGeneratorCaller {
 
         } catch (RestClientException e) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction id", transactionId);
             debugMap.put("accounts id", accountsResourceUri);
             LOGGER.error(
                 "DocumentGeneratorCaller: Exception occurred when calling the Document Generator",
@@ -86,15 +80,12 @@ public class DocumentGeneratorCaller {
      * Create Document Generator Request object with the needed information to call the document
      * generator
      *
-     * @param transactionId - transaction id.
      * @param accountsResourceUri - the accounts self link.
      * @return
      */
-    private DocumentGeneratorRequest createDocumentGeneratorRequest(String transactionId,
-        String accountsResourceUri) {
+    private DocumentGeneratorRequest createDocumentGeneratorRequest(String accountsResourceUri) {
         DocumentGeneratorRequest request = new DocumentGeneratorRequest();
         request.setResourceUri(accountsResourceUri);
-        request.setResourceID(transactionId);
         request.setMimeType(MIME_TYPE);
 
         return request;

@@ -96,7 +96,7 @@ public class FilingServiceImpl implements FilingService {
         AccountsType accountsType) {
 
         DocumentGeneratorResponse documentGeneratorResponse =
-            getDocumentGeneratorResponse(transaction, companyAccount);
+            getDocumentGeneratorResponse(companyAccount);
 
         if (documentGeneratorResponse != null &&
             isDocumentGeneratorResponseValid(documentGeneratorResponse) &&
@@ -114,14 +114,13 @@ public class FilingServiceImpl implements FilingService {
      *
      * @return The location where the service has stored the generated ixbrl.
      */
-    private DocumentGeneratorResponse getDocumentGeneratorResponse(Transaction transaction,
-        CompanyAccount companyAccount) {
+    private DocumentGeneratorResponse getDocumentGeneratorResponse(CompanyAccount companyAccount) {
 
         String companyAccountsURI =
             companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
 
         DocumentGeneratorResponse documentGeneratorResponse = documentGeneratorCaller
-            .callDocumentGeneratorService(transaction.getId(), companyAccountsURI);
+            .callDocumentGeneratorService(companyAccountsURI);
 
         if (documentGeneratorResponse != null) {
             return documentGeneratorResponse;
@@ -129,7 +128,6 @@ public class FilingServiceImpl implements FilingService {
 
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("company_account_self_link", companyAccountsURI);
-        logMap.put("transaction_id", transaction.getId());
         logMap.put(LOG_MESSAGE_KEY, "Document generator response call has returned null");
 
         LOGGER.error("FilingServiceImpl: Document Generator call failed", logMap);

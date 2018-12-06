@@ -59,7 +59,7 @@ public class DocumentGeneratorCallerTest {
                 eq(DocumentGeneratorResponse.class));
 
         DocumentGeneratorResponse response = documentGeneratorCaller
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+            .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
 
         verifyRestTemplateMockNumOfCalls();
         assertNotNull(response);
@@ -74,7 +74,7 @@ public class DocumentGeneratorCallerTest {
                 eq(DocumentGeneratorResponse.class));
 
         DocumentGeneratorResponse response = documentGeneratorCaller
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+            .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
 
         verifyRestTemplateMockNumOfCalls();
         assertNull(response);
@@ -89,7 +89,7 @@ public class DocumentGeneratorCallerTest {
             .thenThrow(RestClientException.class);
 
         DocumentGeneratorResponse response = documentGeneratorCaller
-            .callDocumentGeneratorService(TRANSACTION_ID, ACCOUNTS_RESOURCE_URI);
+            .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
 
         verifyRestTemplateMockNumOfCalls();
         assertNull(response);

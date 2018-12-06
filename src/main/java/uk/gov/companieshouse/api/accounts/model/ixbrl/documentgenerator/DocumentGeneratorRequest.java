@@ -8,9 +8,6 @@ public class DocumentGeneratorRequest {
     @JsonProperty("resource_uri")
     private String resourceUri;
 
-    @JsonProperty("resource_id")
-    private String resourceID;
-
     @JsonProperty("mime_type")
     private String mimeType;
 
@@ -23,14 +20,6 @@ public class DocumentGeneratorRequest {
 
     public void setResourceUri(String resourceUri) {
         this.resourceUri = resourceUri;
-    }
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
     }
 
     public String getMimeType() {
