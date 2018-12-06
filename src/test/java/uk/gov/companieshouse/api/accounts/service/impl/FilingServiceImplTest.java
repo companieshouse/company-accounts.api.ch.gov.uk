@@ -21,6 +21,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
@@ -65,6 +66,8 @@ class FilingServiceImplTest {
     private EnvironmentReader environmentReaderMock;
     @Mock
     private DocumentGeneratorResponseValidator docGeneratorResponseValidatorMock;
+    @Mock
+    private AccountsDatesHelper accountsDatesHelperMock;
 
     @BeforeEach
     void setUpBeforeEach() {
@@ -72,7 +75,7 @@ class FilingServiceImplTest {
         companyAccount = createAccount();
 
         filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock,
-            docGeneratorResponseValidatorMock);
+            docGeneratorResponseValidatorMock, accountsDatesHelperMock);
     }
 
     @Test
@@ -90,6 +93,9 @@ class FilingServiceImplTest {
 
         doReturn(false).when(environmentReaderMock)
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
+        doReturn(getLocalDate())
+            .when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
 
         Filing filing = filingService
             .generateAccountFiling(transaction, companyAccount);
@@ -195,7 +201,7 @@ class FilingServiceImplTest {
         account.setEtag("etagForTesting");
         account.setKind(ACCOUNTS_LINKS_RELATIONSHIP);
         account.setLinks(createAccountEntityLinks());
-        account.setPeriodEndOn(LocalDate.of(2018, 1, 1));
+        account.setPeriodEndOn(getLocalDate());
 
         return account;
     }
@@ -274,5 +280,9 @@ class FilingServiceImplTest {
         Map<String, String> descriptionValues = new HashMap<>();
         descriptionValues.put(keyId, keyValue);
         return descriptionValues;
+    }
+
+    private LocalDate getLocalDate() {
+        return LocalDate.of(2018, 1, 1);
     }
 }

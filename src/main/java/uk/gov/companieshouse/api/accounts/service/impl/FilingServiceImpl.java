@@ -2,13 +2,13 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
@@ -25,6 +25,7 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+
 @Service
 public class FilingServiceImpl implements FilingService {
 
@@ -35,21 +36,22 @@ public class FilingServiceImpl implements FilingService {
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String LINK_RELATIONSHIP = "accounts";
     private static final String PERIOD_END_ON = "period_end_on";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-        .ofPattern("yyyy-MM-dd");
 
     private final DocumentGeneratorCaller documentGeneratorCaller;
     private final EnvironmentReader environmentReader;
     private final DocumentGeneratorResponseValidator documentGeneratorResponseValidator;
+    private final AccountsDatesHelper accountsDatesHelper;
 
     @Autowired
     public FilingServiceImpl(DocumentGeneratorCaller documentGeneratorCaller,
         EnvironmentReader environmentReader,
-        DocumentGeneratorResponseValidator documentGeneratorResponseValidator) {
+        DocumentGeneratorResponseValidator documentGeneratorResponseValidator,
+        AccountsDatesHelper accountsDatesHelper) {
 
         this.documentGeneratorCaller = documentGeneratorCaller;
         this.environmentReader = environmentReader;
         this.documentGeneratorResponseValidator = documentGeneratorResponseValidator;
+        this.accountsDatesHelper = accountsDatesHelper;
     }
 
     /**
@@ -177,14 +179,13 @@ public class FilingServiceImpl implements FilingService {
      * Retrieve the period end date from the document generator response, and set the date in the
      * expected format YYYY-mm-dd.
      *
-     * @param documentGeneratorResponse information from the document generator call.
+     * @param response information from the document generator call.
      * @return period end dated formatted
      */
-    private LocalDate getPeriodEndDateFormatted(
-        DocumentGeneratorResponse documentGeneratorResponse) {
+    private LocalDate getPeriodEndDateFormatted(DocumentGeneratorResponse response) {
 
-        return LocalDate.parse(documentGeneratorResponse.getDescriptionValues().get(PERIOD_END_ON),
-            DATE_TIME_FORMATTER);
+        return accountsDatesHelper
+            .convertStringToDate(response.getDescriptionValues().get(PERIOD_END_ON));
     }
 
     /**
