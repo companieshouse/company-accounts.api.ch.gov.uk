@@ -142,7 +142,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private Map<String, String> createSelfLink(Transaction transaction,  String companyAccountsId) {
+    private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));

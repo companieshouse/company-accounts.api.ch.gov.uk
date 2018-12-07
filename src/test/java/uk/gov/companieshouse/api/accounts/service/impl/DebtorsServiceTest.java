@@ -131,7 +131,7 @@ public class DebtorsServiceTest {
         when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
 
         ResponseObject<Debtors> result = service.update(mockDebtors, mockTransaction,
-                "", mockRequest);
+            "", mockRequest);
 
         assertNotNull(result);
         assertEquals(mockDebtors, result.getData());
@@ -142,11 +142,11 @@ public class DebtorsServiceTest {
     void updateDebtorsMongoExceptionFailure() {
 
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
-                .any(Debtors.class));
+            .any(Debtors.class));
         when(mockRepository.save(debtorsEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
-                () -> service.update(mockDebtors, mockTransaction, "", mockRequest));
+            () -> service.update(mockDebtors, mockTransaction, "", mockRequest));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class DebtorsServiceTest {
     void findDebtors() throws DataException {
 
         when(mockRepository.findById(""))
-                .thenReturn(Optional.ofNullable(debtorsEntity));
+            .thenReturn(Optional.ofNullable(debtorsEntity));
         when(mockTransformer.transform(debtorsEntity)).thenReturn(mockDebtors);
 
         ResponseObject<Debtors> result = service.findById("", mockRequest);
@@ -168,7 +168,7 @@ public class DebtorsServiceTest {
     void findDebtorsResponseNotFound() throws DataException {
         debtorsEntity = null;
         when(mockRepository.findById(""))
-                .thenReturn(Optional.ofNullable(debtorsEntity));
+            .thenReturn(Optional.ofNullable(debtorsEntity));
 
         ResponseObject<Debtors> result = service.findById("", mockRequest);
 

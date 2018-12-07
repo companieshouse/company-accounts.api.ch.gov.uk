@@ -26,7 +26,9 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +78,7 @@ public class DebtorsControllerTest {
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-                mockDebtors);
+            mockDebtors);
         when(mockDebtorsService.create(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
             .thenReturn(responseObject);
 
@@ -138,17 +140,17 @@ public class DebtorsControllerTest {
         when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
-                mockDebtors);
+            mockDebtors);
         when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
-                .thenReturn(responseObject);
+            .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
-                .body(responseObject.getData());
+            .body(responseObject.getData());
         when(mockApiResponseMapper.mapGetResponse(responseObject.getData(), mockRequest))
-                .thenReturn(responseEntity);
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -164,7 +166,7 @@ public class DebtorsControllerTest {
 
         DataException dataException = new DataException("");
         when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
-                .thenThrow(dataException);
+            .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
@@ -185,7 +187,7 @@ public class DebtorsControllerTest {
         when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn(null);
 
         ResponseEntity responseEntity =
-                controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -203,7 +205,7 @@ public class DebtorsControllerTest {
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-                controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -220,16 +222,16 @@ public class DebtorsControllerTest {
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
-                mockDebtors);
+            mockDebtors);
         when(mockDebtorsService.update(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-                .thenReturn(responseObject);
+            .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
-                .thenReturn(responseEntity);
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -247,13 +249,13 @@ public class DebtorsControllerTest {
 
         DataException dataException = new DataException("");
         when(mockDebtorsService.update(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-                .thenThrow(dataException);
+            .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

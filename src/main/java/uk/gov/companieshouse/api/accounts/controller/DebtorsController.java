@@ -1,11 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +25,13 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,7 +93,7 @@ public class DebtorsController {
                               HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String accountingPoliciesId = debtorsService.generateID(companyAccountId);
 
@@ -100,7 +101,7 @@ public class DebtorsController {
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                    .findById(accountingPoliciesId, request);
+                .findById(accountingPoliciesId, request);
 
             responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
 
@@ -137,10 +138,10 @@ public class DebtorsController {
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                    .update(debtors, transaction, companyAccountId, request);
+                .update(debtors, transaction, companyAccountId, request);
 
             return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
+                .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
