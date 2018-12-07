@@ -26,12 +26,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -53,6 +55,9 @@ public class DebtorsServiceTest {
     private DebtorsRepository repository;
 
     @Mock
+    private DebtorsValidator debtorsValidator;
+
+    @Mock
     private SmallFullService smallFullService;
 
     @Mock
@@ -63,6 +68,9 @@ public class DebtorsServiceTest {
 
     @Mock
     private KeyIdGenerator keyIdGenerator;
+
+    @Mock
+    private Errors errors;
 
     @InjectMocks
     private DebtorsService service;
@@ -86,7 +94,10 @@ public class DebtorsServiceTest {
     @DisplayName("Tests the successful creation of a debtors resource")
     void canCreateDebtors() throws DataException {
 
+        errors = new Errors();
+
         when(transformer.transform(debtors)).thenReturn(debtorsEntity);
+        when(debtorsValidator.validateDebtors(debtors,transaction)).thenReturn(errors);
 
         ResponseObject<Debtors> result = service.create(debtors, transaction,
             "", request);
@@ -101,6 +112,7 @@ public class DebtorsServiceTest {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
             .any(Debtors.class));
+        when(debtorsValidator.validateDebtors(debtors,transaction)).thenReturn(errors);
         when(repository.insert(debtorsEntity)).thenThrow(duplicateKeyException);
 
         ResponseObject response = service.create(debtors, transaction, "", request);
@@ -116,6 +128,7 @@ public class DebtorsServiceTest {
 
         doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
             .any(Debtors.class));
+        when(debtorsValidator.validateDebtors(debtors,transaction)).thenReturn(errors);
         when(repository.insert(debtorsEntity)).thenThrow(mongoException);
 
         assertThrows(DataException.class,

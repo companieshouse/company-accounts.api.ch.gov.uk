@@ -1,6 +1,9 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -9,13 +12,13 @@ import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.RestException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
-
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -27,10 +30,6 @@ import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
 
@@ -41,7 +40,6 @@ public class DebtorsService implements ResourceService<Debtors> {
     private DebtorsTransformer transformer;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
-
     private DebtorsValidator debtorsValidator;
 
     @Autowired
@@ -60,9 +58,16 @@ public class DebtorsService implements ResourceService<Debtors> {
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
                                           String companyAccountsId, HttpServletRequest request)
-        throws DataException {
+        throws DataException, RestException {
 
-        Errors errors = debtorsValidator.validateDebtors(rest, transaction);
+        Errors errors;
+
+        try {
+            errors = debtorsValidator.validateDebtors(rest, transaction);
+        } catch (RestException restException) {
+            throw restException;
+        }
+
         if (errors.hasErrors()) {
             DataException dataException = new DataException(
                     "Failed to validate " + ResourceName.APPROVAL.getName());

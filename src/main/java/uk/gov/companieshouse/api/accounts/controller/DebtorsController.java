@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.RestException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
@@ -79,6 +80,16 @@ public class DebtorsController {
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         }
+         catch (RestException re) {
+
+             final Map<String, Object> debugMap = new HashMap<>();
+             debugMap.put(TRANSACTION_ID, transaction.getId());
+             debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+             debugMap.put(MESSAGE, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
+             LOGGER.errorRequest(request, re, debugMap);
+             responseEntity = apiResponseMapper.map(re);
+
+         }
 
         return responseEntity;
     }
