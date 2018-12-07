@@ -28,7 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -37,31 +40,31 @@ import static org.mockito.Mockito.when;
 public class DebtorsServiceTest {
 
     @Mock
-    private DebtorsTransformer transformer;
+    private DebtorsTransformer mockTransformer;
 
     @Mock
-    private Debtors debtors;
+    private Debtors mockDebtors;
 
     @Mock
-    private HttpServletRequest request;
+    private HttpServletRequest mockRequest;
 
     @Mock
-    private Transaction transaction;
+    private Transaction mockTransaction;
 
     @Mock
-    private DebtorsRepository repository;
+    private DebtorsRepository mockRepository;
 
     @Mock
-    private SmallFullService smallFullService;
+    private SmallFullService mockSmallFullService;
 
     @Mock
-    private DuplicateKeyException duplicateKeyException;
+    private DuplicateKeyException mockDuplicateKeyException;
 
     @Mock
-    private MongoException mongoException;
+    private MongoException mockMongoException;
 
     @Mock
-    private KeyIdGenerator keyIdGenerator;
+    private KeyIdGenerator mockKeyIdGenerator;
 
     @InjectMocks
     private DebtorsService service;
@@ -85,24 +88,24 @@ public class DebtorsServiceTest {
     @DisplayName("Tests the successful creation of a debtors resource")
     void canCreateDebtors() throws DataException {
 
-        when(transformer.transform(debtors)).thenReturn(debtorsEntity);
+        when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
 
-        ResponseObject<Debtors> result = service.create(debtors, transaction,
-            "", request);
+        ResponseObject<Debtors> result = service.create(mockDebtors, mockTransaction,
+            "", mockRequest);
 
         assertNotNull(result);
-        assertEquals(debtors, result.getData());
+        assertEquals(mockDebtors, result.getData());
     }
 
     @Test
     @DisplayName("Tests the duplicate key when creating a Debtors resource")
     void createDebtorsDuplicateKey() throws DataException {
 
-        doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
+        doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));
-        when(repository.insert(debtorsEntity)).thenThrow(duplicateKeyException);
+        when(mockRepository.insert(debtorsEntity)).thenThrow(mockDuplicateKeyException);
 
-        ResponseObject response = service.create(debtors, transaction, "", request);
+        ResponseObject response = service.create(mockDebtors, mockTransaction, "", mockRequest);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -113,61 +116,61 @@ public class DebtorsServiceTest {
     @DisplayName("Tests the mongo exception when creating Debtors")
     void createDebtorsMongoExceptionFailure() {
 
-        doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
+        doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));
-        when(repository.insert(debtorsEntity)).thenThrow(mongoException);
+        when(mockRepository.insert(debtorsEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
-            () -> service.create(debtors, transaction, "", request));
+            () -> service.create(mockDebtors, mockTransaction, "", mockRequest));
     }
 
     @Test
     @DisplayName("Tests the successful update of an Debtors resource")
     void canUpdateADebtors() throws DataException {
 
-        when(transformer.transform(debtors)).thenReturn(debtorsEntity);
+        when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
 
-        ResponseObject<Debtors> result = service.update(debtors, transaction,
-                "", request);
+        ResponseObject<Debtors> result = service.update(mockDebtors, mockTransaction,
+                "", mockRequest);
 
         assertNotNull(result);
-        assertEquals(debtors, result.getData());
+        assertEquals(mockDebtors, result.getData());
     }
 
     @Test
     @DisplayName("Tests the mongo exception when updating an Debtors")
     void updateDebtorsMongoExceptionFailure() {
 
-        doReturn(debtorsEntity).when(transformer).transform(ArgumentMatchers
+        doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Debtors.class));
-        when(repository.save(debtorsEntity)).thenThrow(mongoException);
+        when(mockRepository.save(debtorsEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
-                () -> service.update(debtors, transaction, "", request));
+                () -> service.update(mockDebtors, mockTransaction, "", mockRequest));
     }
 
     @Test
     @DisplayName("Tests the successful find of an Debtors resource")
     void findDebtors() throws DataException {
 
-        when(repository.findById(""))
+        when(mockRepository.findById(""))
                 .thenReturn(Optional.ofNullable(debtorsEntity));
-        when(transformer.transform(debtorsEntity)).thenReturn(debtors);
+        when(mockTransformer.transform(debtorsEntity)).thenReturn(mockDebtors);
 
-        ResponseObject<Debtors> result = service.findById("", request);
+        ResponseObject<Debtors> result = service.findById("", mockRequest);
 
         assertNotNull(result);
-        assertEquals(debtors, result.getData());
+        assertEquals(mockDebtors, result.getData());
     }
 
     @Test
     @DisplayName("Tests Debtors response not found")
     void findDebtorsResponseNotFound() throws DataException {
         debtorsEntity = null;
-        when(repository.findById(""))
+        when(mockRepository.findById(""))
                 .thenReturn(Optional.ofNullable(debtorsEntity));
 
-        ResponseObject<Debtors> result = service.findById("", request);
+        ResponseObject<Debtors> result = service.findById("", mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -176,9 +179,9 @@ public class DebtorsServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of an Debtors resource")
     void findDebtorsMongoException() {
-        when(repository.findById("")).thenThrow(mongoException);
+        when(mockRepository.findById("")).thenThrow(mockMongoException);
 
-        assertThrows(DataException.class, () -> service.findById("", request));
+        assertThrows(DataException.class, () -> service.findById("", mockRequest));
     }
 
     private ResponseStatus responseStatusNotFound() {

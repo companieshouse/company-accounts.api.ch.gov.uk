@@ -135,13 +135,11 @@ public class DebtorsController {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Debtors> response = debtorsService
                     .update(debtors, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
+            return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -150,9 +148,7 @@ public class DebtorsController {
             debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
             debugMap.put(MESSAGE, "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            return apiResponseMapper.map(ex);
         }
-
-        return responseEntity;
     }
 }
