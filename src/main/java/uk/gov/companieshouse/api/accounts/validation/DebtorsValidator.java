@@ -43,7 +43,8 @@ public class DebtorsValidator extends BaseValidator {
         this.environmentReader = environmentReader;
         this.restTemplate = restTemplate;
     }
-    
+
+
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) {
 
         Errors errors = new Errors();
@@ -87,23 +88,25 @@ public class DebtorsValidator extends BaseValidator {
 
     private void validateRequiredCurrentPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
-        if (debtors.getCurrentPeriod().getTradeDebtors() != null ||
+        if ((debtors.getCurrentPeriod().getTradeDebtors() != null ||
             debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
             debtors.getCurrentPeriod().getOtherDebtors() != null ||
-            debtors.getCurrentPeriod().getGreaterThanOneYear() != null || !debtors.getCurrentPeriod().getDetails().isEmpty()
-
-            && debtors.getCurrentPeriod().getTotal() == null) {
+            debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
+            !debtors.getCurrentPeriod().getDetails().isEmpty()) &&
+            debtors.getCurrentPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, CURRENT_TOTAL_PATH);
         }
     }
+
 
     private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
             debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null ||
             debtors.getPreviousPeriod().getOtherDebtors() != null ||
-            debtors.getPreviousPeriod().getGreaterThanOneYear() != null) && debtors.getPreviousPeriod().getTotal() == null) {
+            debtors.getPreviousPeriod().getGreaterThanOneYear() != null) &&
+            debtors.getPreviousPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, PREVIOUS_TOTAL_PATH);
         }
@@ -142,6 +145,7 @@ public class DebtorsValidator extends BaseValidator {
 
         }
     }
+
 
     public boolean isMultipleYearFiler(Transaction transaction) {
 

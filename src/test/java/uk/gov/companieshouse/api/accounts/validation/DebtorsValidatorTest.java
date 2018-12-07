@@ -40,9 +40,6 @@ public class DebtorsValidatorTest {
     private static String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
     private static String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
-    private static String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
-    private static String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
-    private static String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
     private Debtors debtors;
     private Errors errors;
@@ -211,7 +208,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests Rest exception is thrown when company-profile not found")
-    public void testRestExceptionThrownWhenApiCallFails() throws RestException {
+    public void testRestExceptionThrownWhenApiCallFails() {
 
         addValidCurrentDebtors();
 
