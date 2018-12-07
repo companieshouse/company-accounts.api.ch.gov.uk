@@ -70,7 +70,7 @@ public class DebtorsService implements ResourceService<Debtors> {
 
         if (errors.hasErrors()) {
             DataException dataException = new DataException(
-                    "Failed to validate " + ResourceName.APPROVAL.getName());
+                "Failed to validate " + ResourceName.APPROVAL.getName());
 
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -131,7 +131,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private Map<String, String> createSelfLink(Transaction transaction,  String companyAccountsId) {
+    private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));

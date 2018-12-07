@@ -44,7 +44,6 @@ public class DebtorsValidator extends BaseValidator {
         this.restTemplate = restTemplate;
     }
 
-
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) {
 
         Errors errors = new Errors();
@@ -125,7 +124,6 @@ public class DebtorsValidator extends BaseValidator {
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
 
             validateAggregateTotal(total, sum, CURRENT_TOTAL_PATH, errors);
-
         }
     }
 
@@ -142,10 +140,8 @@ public class DebtorsValidator extends BaseValidator {
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
 
             validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
-
         }
     }
-
 
     public boolean isMultipleYearFiler(Transaction transaction) {
 

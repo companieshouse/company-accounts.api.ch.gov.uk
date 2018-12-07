@@ -11,22 +11,22 @@ public class PreviousPeriod {
     private static final int MAX_RANGE = 99999999;
     private static final int MIN_RANGE = 0;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("greater_than_one_year")
     private Long greaterThanOneYear;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("other_debtors")
     private Long otherDebtors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
     @JsonProperty("total")
     private Long total;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("trade_debtors")
     private Long tradeDebtors;
 

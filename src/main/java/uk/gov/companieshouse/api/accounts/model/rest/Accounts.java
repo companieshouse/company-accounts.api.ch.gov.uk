@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Accounts {
 
     @JsonProperty("last_accounts")
-   private Object lastAccounts;
+    private Object lastAccounts;
 
     public Object getLastAccounts() {
         return lastAccounts;

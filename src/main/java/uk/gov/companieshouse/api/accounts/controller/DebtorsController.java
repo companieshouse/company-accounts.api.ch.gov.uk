@@ -79,17 +79,15 @@ public class DebtorsController {
             debugMap.put(MESSAGE, "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
+        } catch (RestException re) {
+
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put(TRANSACTION_ID, transaction.getId());
+            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+            debugMap.put(MESSAGE, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
+            LOGGER.errorRequest(request, re, debugMap);
+            responseEntity = apiResponseMapper.map(re);
         }
-         catch (RestException re) {
-
-             final Map<String, Object> debugMap = new HashMap<>();
-             debugMap.put(TRANSACTION_ID, transaction.getId());
-             debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-             debugMap.put(MESSAGE, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
-             LOGGER.errorRequest(request, re, debugMap);
-             responseEntity = apiResponseMapper.map(re);
-
-         }
 
         return responseEntity;
     }
