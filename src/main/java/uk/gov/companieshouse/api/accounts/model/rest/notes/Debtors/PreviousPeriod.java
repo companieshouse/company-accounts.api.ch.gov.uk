@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.Range;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PreviousPeriod {
 
-    private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MAX_RANGE = 99999999;
     private static final int MIN_RANGE = 0;
 
