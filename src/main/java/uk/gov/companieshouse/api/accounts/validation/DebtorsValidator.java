@@ -35,8 +35,8 @@ public class DebtorsValidator extends BaseValidator {
 
     private static final String COMPANY_PROFILE_URL = "CHS_COMPANY_PROFILE_API_LOCAL_URL";
 
-    EnvironmentReader environmentReader;
-    RestTemplate restTemplate;
+    private EnvironmentReader environmentReader;
+    private RestTemplate restTemplate;
 
     @Autowired
     public DebtorsValidator(EnvironmentReader environmentReader, RestTemplate restTemplate) {
