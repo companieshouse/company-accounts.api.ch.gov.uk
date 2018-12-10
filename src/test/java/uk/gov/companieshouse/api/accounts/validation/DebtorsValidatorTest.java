@@ -46,7 +46,7 @@ public class DebtorsValidatorTest {
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    public static final long INVALID_TOTAL = 20L;
+    public static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
     private Errors errors;
@@ -100,7 +100,7 @@ public class DebtorsValidatorTest {
         previousDebtors.setPrepaymentsAndAccruedIncome(4L);
         previousDebtors.setGreaterThanOneYear(6L);
         previousDebtors.setOtherDebtors(8L);
-        previousDebtors.setTotal(INVALID_TOTAL);
+        previousDebtors.setTotal(20L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
@@ -270,7 +270,7 @@ public class DebtorsValidatorTest {
     }
 
     private CompanyProfile addMultipleYearFilingCompany() {
-        
+
         CompanyProfile companyProfile = new CompanyProfile();
         Accounts companyProfileAccounts = new Accounts();
         companyProfileAccounts.setLastAccounts("lastAccounts");
