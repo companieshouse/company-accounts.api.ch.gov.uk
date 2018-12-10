@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPer
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
+
 @Component
 public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEntity> {
 
