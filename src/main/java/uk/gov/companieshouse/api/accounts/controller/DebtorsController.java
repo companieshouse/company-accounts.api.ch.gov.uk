@@ -73,14 +73,12 @@ public class DebtorsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction);
-            debugMap.put(MESSAGE, "Failed to create debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         } catch (RestException re) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction);
-            debugMap.put(MESSAGE, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
             LOGGER.errorRequest(request, re, debugMap);
             responseEntity = apiResponseMapper.map(re);
         }
@@ -88,10 +86,11 @@ public class DebtorsController {
         return responseEntity;
     }
 
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction) {
+    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+        debugMap.put(MESSAGE, s);
         return debugMap;
     }
 
