@@ -227,20 +227,6 @@ public class DebtorsValidatorTest {
         assertThrows(RestException.class, executable);
     }
 
-
-    private void addValidCurrentDebtors() {
-
-        CurrentPeriod currentDebtors = new CurrentPeriod();
-        currentDebtors.setTradeDebtors(1L);
-        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
-        currentDebtors.setGreaterThanOneYear(3L);
-        currentDebtors.setOtherDebtors(4L);
-        currentDebtors.setTotal(10L);
-        currentDebtors.setDetails("details");
-
-        debtors.setCurrentPeriod(currentDebtors);
-    }
-
     @Test
     @DisplayName("Tests current period incorrect total throws error")
     void testIncorrectCurrentTotal() {
@@ -284,11 +270,26 @@ public class DebtorsValidatorTest {
     }
 
     private CompanyProfile addMultipleYearFilingCompany() {
+        
         CompanyProfile companyProfile = new CompanyProfile();
         Accounts companyProfileAccounts = new Accounts();
         companyProfileAccounts.setLastAccounts("lastAccounts");
         companyProfile.setAccounts(companyProfileAccounts);
         return companyProfile;
     }
+
+    private void addValidCurrentDebtors() {
+
+        CurrentPeriod currentDebtors = new CurrentPeriod();
+        currentDebtors.setTradeDebtors(1L);
+        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
+        currentDebtors.setGreaterThanOneYear(3L);
+        currentDebtors.setOtherDebtors(4L);
+        currentDebtors.setTotal(10L);
+        currentDebtors.setDetails("details");
+
+        debtors.setCurrentPeriod(currentDebtors);
+    }
+
 }
 
