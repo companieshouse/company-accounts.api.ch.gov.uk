@@ -34,30 +34,37 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DebtorsValidatorTest {
 
-    private static String DEBTORS_PATH = "$.debtors";
-    private static String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
+    private static final String DEBTORS_PATH = "$.debtors";
+    private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
 
-    private static String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
-    private static String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
+    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
+    private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
+    private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
+    private static final String TEST_URL = "http://test-url";
+    private static final String COMPANY_NUMBER = "12345";
+    private static final String INVALID_NOTE_VALUE = "invalid_note";
+    private static final String INVALID_NOTE_NAME = "invalidNote";
+    private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
+    private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
+    public static final long INVALID_TOTAL = 20L;
 
     private Debtors debtors;
     private Errors errors;
 
     @Mock
-    private Transaction transaction;
+    private Transaction mockTransaction;
 
     @Mock
-    private RestTemplate restTemplate;
+    private RestTemplate mockRestTemplate;
 
     @Mock
-    private CompanyProfile companyProfile;
+    private CompanyProfile mockCompanyProfile;
 
     @Mock
-    private EnvironmentReader environmentReader;
+    private EnvironmentReader mockEnvironmentReader;
 
     @Mock
-    private RestClientException restClientException;
+    private RestClientException mockRestClientException;
 
     private DebtorsValidator validator;
 
@@ -65,7 +72,7 @@ public class DebtorsValidatorTest {
     void setup() {
         debtors = new Debtors();
         errors = new Errors();
-        validator = new DebtorsValidator(environmentReader, restTemplate);
+        validator = new DebtorsValidator(mockEnvironmentReader, mockRestTemplate);
     }
 
     @Test
@@ -74,7 +81,7 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        errors = validator.validateDebtors(debtors, transaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertFalse(errors.hasErrors());
 
@@ -82,7 +89,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation passes on valid multiple year debtors resource")
-    void testSuccessfulMultipleYearDebtorsNote() throws Throwable {
+    void testSuccessfulMultipleYearDebtorsNote() {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -93,16 +100,16 @@ public class DebtorsValidatorTest {
         previousDebtors.setPrepaymentsAndAccruedIncome(4L);
         previousDebtors.setGreaterThanOneYear(6L);
         previousDebtors.setOtherDebtors(8L);
-        previousDebtors.setTotal(20L);
+        previousDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(transaction.getCompanyNumber()).thenReturn("12345");
-        when(environmentReader.getMandatoryString(any())).thenReturn("http://test-url");
-        when(restTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
+        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
 
-        validator.isMultipleYearFiler(transaction);
-        errors = validator.validateDebtors(debtors, transaction);
+        validator.isMultipleYearFiler(mockTransaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertFalse(errors.hasErrors());
 
@@ -110,7 +117,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on single year filer filing previous period")
-    void tesInvalidMultipleYearDebtorsNote() throws Throwable {
+    void tesInvalidMultipleYearDebtorsNote() {
 
         CompanyProfile companyProfile = new CompanyProfile();
 
@@ -118,18 +125,18 @@ public class DebtorsValidatorTest {
 
         PreviousPeriod previousDebtors = new PreviousPeriod();
         previousDebtors.setTradeDebtors(2L);
-        previousDebtors.setTotal(20L);
+        previousDebtors.setTotal(2L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(transaction.getCompanyNumber()).thenReturn("12345");
-        when(environmentReader.getMandatoryString(any())).thenReturn("http://test-url");
-        when(restTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
+        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
 
         ReflectionTestUtils.setField(validator, "inconsistentData", "inconsistent_data");
 
-        validator.isMultipleYearFiler(transaction);
-        errors = validator.validateDebtors(debtors, transaction);
+        validator.isMultipleYearFiler(mockTransaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.hasErrors());
 
@@ -147,7 +154,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period incorrect total")
-    void testIncorrectPreviousDebtorsTotal() throws Throwable {
+    void testIncorrectPreviousDebtorsTotal() {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -155,21 +162,21 @@ public class DebtorsValidatorTest {
 
         PreviousPeriod previousDebtors = new PreviousPeriod();
         previousDebtors.setTradeDebtors(2L);
-        previousDebtors.setTotal(20L);
+        previousDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(transaction.getCompanyNumber()).thenReturn("12345");
-        when(environmentReader.getMandatoryString(any())).thenReturn("http://test-url");
-        when(restTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
+        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
 
-        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
 
-        validator.isMultipleYearFiler(transaction);
-        errors = validator.validateDebtors(debtors, transaction);
+        validator.isMultipleYearFiler(mockTransaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.containsError(
-            new Error("incorrect_total", PREVIOUS_TOTAL_PATH,
+            new Error(INCORRECT_TOTAL_VALUE, PREVIOUS_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
@@ -177,7 +184,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period missing total")
-    void testMissingPreviousDebtorsTotal() throws Throwable {
+    void testMissingPreviousDebtorsTotal() {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -188,19 +195,19 @@ public class DebtorsValidatorTest {
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(transaction.getCompanyNumber()).thenReturn("12345");
-        when(environmentReader.getMandatoryString(any())).thenReturn("http://test-url");
-        when(restTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
+        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
 
-        ReflectionTestUtils.setField(validator, "invalidNote", "invalid_note");
+        ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
-        validator.isMultipleYearFiler(transaction);
-        errors = validator.validateDebtors(debtors, transaction);
+        validator.isMultipleYearFiler(mockTransaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
-        Mockito.verify(restTemplate, Mockito.atLeastOnce()).getForObject(anyString(), any(Class.class));
+        Mockito.verify(mockRestTemplate, Mockito.atLeastOnce()).getForObject(anyString(), any(Class.class));
 
         assertTrue(errors.containsError(
-            new Error("invalid_note", PREVIOUS_TOTAL_PATH,
+            new Error(INVALID_NOTE_VALUE, PREVIOUS_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
@@ -212,10 +219,10 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        when(restTemplate.getForObject(anyString(), any(Class.class))).thenThrow(restClientException);
+        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenThrow(mockRestClientException);
 
         Executable executable = () -> {
-            validator.isMultipleYearFiler(transaction);
+            validator.isMultipleYearFiler(mockTransaction);
         };
         assertThrows(RestException.class, executable);
     }
@@ -243,15 +250,15 @@ public class DebtorsValidatorTest {
         currentDebtors.setPrepaymentsAndAccruedIncome(2L);
         currentDebtors.setGreaterThanOneYear(3L);
         currentDebtors.setOtherDebtors(4L);
-        currentDebtors.setTotal(100L);
+        currentDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setCurrentPeriod(currentDebtors);
-        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
 
-        errors = validator.validateDebtors(debtors, transaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.containsError(
-            new Error("incorrect_total", CURRENT_TOTAL_PATH,
+            new Error(INCORRECT_TOTAL_VALUE, CURRENT_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
     }
@@ -264,14 +271,14 @@ public class DebtorsValidatorTest {
         currentDebtors.setTradeDebtors(1L);
 
         debtors.setCurrentPeriod(currentDebtors);
-        ReflectionTestUtils.setField(validator, "invalidNote", "invalid_note");
+        ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
-        errors = validator.validateDebtors(debtors, transaction);
+        errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.hasErrors());
 
         assertTrue(errors.containsError(
-            new Error("invalid_note", CURRENT_TOTAL_PATH,
+            new Error(INVALID_NOTE_VALUE, CURRENT_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
     }
