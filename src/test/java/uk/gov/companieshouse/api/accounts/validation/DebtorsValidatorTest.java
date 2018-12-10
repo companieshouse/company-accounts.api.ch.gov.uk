@@ -70,7 +70,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation passes on valid single year debtors resource")
-    public void testSuccessfulSingleYearDebtorsNote() {
+    void testSuccessfulSingleYearDebtorsNote() {
 
         addValidCurrentDebtors();
 
@@ -82,7 +82,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation passes on valid multiple year debtors resource")
-    public void testSuccessfulMultipleYearDebtorsNote() throws Throwable {
+    void testSuccessfulMultipleYearDebtorsNote() throws Throwable {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -110,7 +110,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on single year filer filing previous period")
-    public void tesInvalidMultipleYearDebtorsNote() throws Throwable {
+    void tesInvalidMultipleYearDebtorsNote() throws Throwable {
 
         CompanyProfile companyProfile = new CompanyProfile();
 
@@ -147,7 +147,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period incorrect total")
-    public void testIncorrectPreviousDebtorsTotal() throws Throwable {
+    void testIncorrectPreviousDebtorsTotal() throws Throwable {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -177,7 +177,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period missing total")
-    public void testMissingPreviousDebtorsTotal() throws Throwable {
+    void testMissingPreviousDebtorsTotal() throws Throwable {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -208,7 +208,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests Rest exception is thrown when company-profile not found")
-    public void testRestExceptionThrownWhenApiCallFails() {
+    void testRestExceptionThrownWhenApiCallFails() {
 
         addValidCurrentDebtors();
 
@@ -236,7 +236,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests current period incorrect total throws error")
-    public void testIncorrectCurrentTotal() {
+    void testIncorrectCurrentTotal() {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
         currentDebtors.setTradeDebtors(1L);
@@ -258,7 +258,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests current period missing total throws error")
-    public void testMissingCurrentTotal() {
+    void testMissingCurrentTotal() {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
         currentDebtors.setTradeDebtors(1L);
