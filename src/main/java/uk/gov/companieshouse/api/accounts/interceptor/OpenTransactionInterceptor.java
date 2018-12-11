@@ -39,7 +39,7 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
             debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");
 
             LOGGER.errorRequest(request, null, debugMap);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
 
