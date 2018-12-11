@@ -61,7 +61,7 @@ class DocumentGeneratorCallerTest {
     @DisplayName("Document Generator Caller generates the DocumentGeneratorResponse successfully. Correct status code returned")
     void shouldGenerateDocumentGeneratorResponseCallDocumentGeneratorIsSuccessful() {
 
-        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+        mockTransactionServiceProperties(API_KEY_VALUE);
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.CREATED))
             .when(restTemplateMock)
@@ -81,7 +81,7 @@ class DocumentGeneratorCallerTest {
     @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Wrong status code returned")
     void shouldNotGenerateDocumentGeneratorResponseCallDocumentGeneratorIsUnsuccessful() {
 
-        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+        mockTransactionServiceProperties(API_KEY_VALUE);
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR))
             .when(restTemplateMock)
@@ -101,7 +101,7 @@ class DocumentGeneratorCallerTest {
     @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. An exception is thrown")
     void shouldNotGenerateDocumentGeneratorResponseDocumentGeneratorThrowsException() {
 
-        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+        mockTransactionServiceProperties(API_KEY_VALUE);
 
         when(restTemplateMock
             .exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
@@ -119,9 +119,13 @@ class DocumentGeneratorCallerTest {
     @DisplayName("Document Generator Caller fails when api key has not been set. Exception thrown")
     void shouldGenerateDocumentGeneratorThrowAnExceptionAsApiKeyNotSet() {
 
-        when(transactionServicePropertiesMock.getApiKey()).thenReturn("");
+        mockTransactionServiceProperties("");
         assertThrows(IllegalArgumentException.class,
             () -> documentGeneratorCaller.callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI));
+    }
+
+    private void mockTransactionServiceProperties(String apiKeyValue) {
+        when(transactionServicePropertiesMock.getApiKey()).thenReturn(apiKeyValue);
     }
 
     /**
