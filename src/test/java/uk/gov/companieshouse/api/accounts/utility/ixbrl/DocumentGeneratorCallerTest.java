@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.utility.ixbrl;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,17 +21,19 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorRequest;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
+import uk.gov.companieshouse.api.accounts.transaction.TransactionServiceProperties;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class DocumentGeneratorCallerTest {
+class DocumentGeneratorCallerTest {
 
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
     private static final String ACCOUNTS_ID = "1234561";
@@ -39,23 +42,32 @@ public class DocumentGeneratorCallerTest {
 
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String PERIOD_END_ON_KEY = "period_end_on";
+    private static final String API_KEY_VALUE = "apiKeyValueForTesting";
 
     private DocumentGeneratorCaller documentGeneratorCaller;
 
     @Mock
     private RestTemplate restTemplateMock;
+    @Mock
+    private TransactionServiceProperties transactionServicePropertiesMock;
 
     @BeforeEach
     void setUpBeforeEach() {
-        documentGeneratorCaller = new DocumentGeneratorCaller(restTemplateMock);
+        documentGeneratorCaller = new DocumentGeneratorCaller(restTemplateMock,
+            transactionServicePropertiesMock);
     }
 
     @Test
-    @DisplayName("Document Generator Caller generates the DocumentGeneratorResponse successfully. Document Generator call returned correct status code")
+    @DisplayName("Document Generator Caller generates the DocumentGeneratorResponse successfully. Correct status code returned")
     void shouldGenerateDocumentGeneratorResponseCallDocumentGeneratorIsSuccessful() {
+
+        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.CREATED))
             .when(restTemplateMock)
-            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+            .exchange(anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
 
         DocumentGeneratorResponse response = documentGeneratorCaller
@@ -66,11 +78,16 @@ public class DocumentGeneratorCallerTest {
     }
 
     @Test
-    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Document Generator call returned wrong status code")
+    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Wrong status code returned")
     void shouldNotGenerateDocumentGeneratorResponseCallDocumentGeneratorIsUnsuccessful() {
+
+        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR))
             .when(restTemplateMock)
-            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+            .exchange(anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
 
         DocumentGeneratorResponse response = documentGeneratorCaller
@@ -81,11 +98,14 @@ public class DocumentGeneratorCallerTest {
     }
 
     @Test
-    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Document Generator throws an exception")
+    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. An exception is thrown")
     void shouldNotGenerateDocumentGeneratorResponseDocumentGeneratorThrowsException() {
 
-        when(restTemplateMock.postForEntity(anyString(), any(DocumentGeneratorRequest.class),
-            eq(DocumentGeneratorResponse.class)))
+        when(transactionServicePropertiesMock.getApiKey()).thenReturn(API_KEY_VALUE);
+
+        when(restTemplateMock
+            .exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
+                eq(DocumentGeneratorResponse.class)))
             .thenThrow(RestClientException.class);
 
         DocumentGeneratorResponse response = documentGeneratorCaller
@@ -95,12 +115,23 @@ public class DocumentGeneratorCallerTest {
         assertNull(response);
     }
 
+    @Test
+    @DisplayName("Document Generator Caller fails when api key has not been set. Exception thrown")
+    void shouldGenerateDocumentGeneratorThrowAnExceptionAsApiKeyNotSet() {
+
+        when(transactionServicePropertiesMock.getApiKey()).thenReturn("");
+        assertThrows(IllegalArgumentException.class,
+            () -> documentGeneratorCaller.callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI));
+    }
+
     /**
      * Verifies number of calls to the postForEntity.
      */
     private void verifyRestTemplateMockNumOfCalls() {
         verify(restTemplateMock, times(1))
-            .postForEntity(anyString(), any(DocumentGeneratorRequest.class),
+            .exchange(anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
     }
 
@@ -120,8 +151,6 @@ public class DocumentGeneratorCallerTest {
 
     /**
      * Create a Document Generator Response with all needed information to generate the filing.
-     *
-     * @return
      */
     private DocumentGeneratorResponse createDocumentGeneratorResponse() {
         DocumentGeneratorResponse documentGeneratorResponse = new DocumentGeneratorResponse();

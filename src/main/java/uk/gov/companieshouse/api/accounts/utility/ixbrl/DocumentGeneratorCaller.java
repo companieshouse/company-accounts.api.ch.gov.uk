@@ -4,14 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorRequest;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
+import uk.gov.companieshouse.api.accounts.transaction.TransactionServiceProperties;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -26,6 +31,7 @@ public class DocumentGeneratorCaller {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String MIME_TYPE = "text/html";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Value("${documentgenerator.service.host}")
     private String documentGeneratorHost;
@@ -34,10 +40,13 @@ public class DocumentGeneratorCaller {
     private String documentGeneratorEndPoint;
 
     private RestTemplate restTemplate;
+    private TransactionServiceProperties transactionServiceProperties;
 
     @Autowired
-    public DocumentGeneratorCaller(RestTemplate restTemplate) {
+    DocumentGeneratorCaller(RestTemplate restTemplate,
+        TransactionServiceProperties transactionServiceProperties) {
         this.restTemplate = restTemplate;
+        this.transactionServiceProperties = transactionServiceProperties;
     }
 
     public DocumentGeneratorResponse callDocumentGeneratorService(String accountsResourceUri) {
@@ -49,9 +58,10 @@ public class DocumentGeneratorCaller {
             LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
 
             ResponseEntity<DocumentGeneratorResponse> response =
-                restTemplate.postForEntity(
+                restTemplate.exchange(
                     getDocumentGeneratorURL(),
-                    createDocumentGeneratorRequest(accountsResourceUri),
+                    HttpMethod.POST,
+                    createHttpEntity(accountsResourceUri),
                     DocumentGeneratorResponse.class);
 
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
@@ -93,5 +103,45 @@ public class DocumentGeneratorCaller {
 
     private String getDocumentGeneratorURL() {
         return documentGeneratorHost + documentGeneratorEndPoint;
+    }
+
+    /**
+     * Create httpEntity object containing the needed information to call the document generator:
+     * Authorization header and DocumentGeneratorRequest.
+     *
+     * @param accountsResourceUri - the accounts self link.
+     * @return {@link HttpEntity}
+     */
+    private HttpEntity createHttpEntity(String accountsResourceUri) {
+
+        MultiValueMap<String, String> headers = createHeaders();
+        DocumentGeneratorRequest request = createDocumentGeneratorRequest(accountsResourceUri);
+
+        return new HttpEntity<>(request, headers);
+    }
+
+    /**
+     * Add the authorization header that will be used to call the document generator.
+     *
+     * @return {@link MultiValueMap}
+     */
+    private MultiValueMap<String, String> createHeaders() {
+        MultiValueMap<String, String> headers = new HttpHeaders();
+        headers.set(AUTHORIZATION_HEADER, getApiKey());
+        return headers;
+    }
+
+    /**
+     * Gets the api key from the properties file.
+     *
+     * @return Returns the api key if set, otherwise throw an exception
+     */
+    private String getApiKey() {
+        String apiKey = transactionServiceProperties.getApiKey();
+        if (apiKey.isEmpty()) {
+            throw new IllegalArgumentException(
+                "DocumentGeneratorCaller: API Key property has not been set");
+        }
+        return apiKey;
     }
 }
