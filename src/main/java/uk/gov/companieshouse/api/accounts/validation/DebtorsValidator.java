@@ -25,7 +25,6 @@ public class DebtorsValidator extends BaseValidator {
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";

@@ -46,7 +46,7 @@ public class DebtorsValidatorTest {
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    public static final long INVALID_TOTAL = 200L;
+    private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
     private Errors errors;
@@ -56,9 +56,6 @@ public class DebtorsValidatorTest {
 
     @Mock
     private RestTemplate mockRestTemplate;
-
-    @Mock
-    private CompanyProfile mockCompanyProfile;
 
     @Mock
     private EnvironmentReader mockEnvironmentReader;
