@@ -22,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
@@ -65,8 +64,7 @@ class DocumentGeneratorCallerTest {
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.CREATED))
             .when(restTemplateMock)
-            .exchange(anyString(),
-                any(HttpMethod.class),
+            .postForEntity(anyString(),
                 any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
 
@@ -85,8 +83,7 @@ class DocumentGeneratorCallerTest {
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR))
             .when(restTemplateMock)
-            .exchange(anyString(),
-                any(HttpMethod.class),
+            .postForEntity(anyString(),
                 any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
 
@@ -98,14 +95,13 @@ class DocumentGeneratorCallerTest {
     }
 
     @Test
-    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. An exception is thrown")
+    @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. An RestClientException is thrown")
     void shouldNotGenerateDocumentGeneratorResponseDocumentGeneratorThrowsException() {
 
         mockTransactionServiceProperties(API_KEY_VALUE);
 
         when(restTemplateMock
-            .exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
-                eq(DocumentGeneratorResponse.class)))
+            .postForEntity(anyString(), any(HttpEntity.class), eq(DocumentGeneratorResponse.class)))
             .thenThrow(RestClientException.class);
 
         DocumentGeneratorResponse response = documentGeneratorCaller
@@ -116,7 +112,7 @@ class DocumentGeneratorCallerTest {
     }
 
     @Test
-    @DisplayName("Document Generator Caller fails when api key has not been set. Exception thrown")
+    @DisplayName("Document Generator Caller fails when api key has not been set. IllegalArgumentException thrown")
     void shouldGenerateDocumentGeneratorThrowAnExceptionAsApiKeyNotSet() {
 
         mockTransactionServiceProperties("");
@@ -133,8 +129,7 @@ class DocumentGeneratorCallerTest {
      */
     private void verifyRestTemplateMockNumOfCalls() {
         verify(restTemplateMock, times(1))
-            .exchange(anyString(),
-                any(HttpMethod.class),
+            .postForEntity(anyString(),
                 any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
     }

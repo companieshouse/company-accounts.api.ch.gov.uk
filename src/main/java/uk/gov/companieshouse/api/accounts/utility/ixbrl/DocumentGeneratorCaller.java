@@ -58,9 +58,8 @@ public class DocumentGeneratorCaller {
             LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
 
             ResponseEntity<DocumentGeneratorResponse> response =
-                restTemplate.exchange(
+                restTemplate.postForEntity(
                     getDocumentGeneratorURL(),
-                    HttpMethod.POST,
                     createHttpEntity(accountsResourceUri),
                     DocumentGeneratorResponse.class);
 
