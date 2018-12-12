@@ -139,6 +139,11 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
     }
 
     @Override
+    public ResponseObject<AccountingPolicies> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public String generateID(String companyAccountId) {
 
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.ACCOUNTING_POLICIES.getName());

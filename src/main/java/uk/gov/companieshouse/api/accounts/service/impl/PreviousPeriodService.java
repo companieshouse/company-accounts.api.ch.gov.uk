@@ -110,6 +110,11 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
     }
 
+    @Override
+    public ResponseObject<PreviousPeriod> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
     public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 

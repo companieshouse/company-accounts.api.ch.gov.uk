@@ -125,6 +125,11 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
+    public ResponseObject<Debtors> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
     }
