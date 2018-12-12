@@ -59,9 +59,7 @@ public class DebtorsService implements ResourceService<Debtors> {
                                           String companyAccountsId, HttpServletRequest request)
         throws DataException {
 
-        Errors errors;
-
-        errors = debtorsValidator.validateDebtors(rest, transaction);
+        Errors errors = debtorsValidator.validateDebtors(rest, transaction);
 
         if (errors.hasErrors()) {
 

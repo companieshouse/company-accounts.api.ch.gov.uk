@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
@@ -12,14 +11,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.api.accounts.exception.RestException;
 import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
@@ -105,7 +102,6 @@ public class DebtorsValidatorTest {
         when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
         when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
 
-        validator.isMultipleYearFiler(mockTransaction);
         errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertFalse(errors.hasErrors());
@@ -132,7 +128,6 @@ public class DebtorsValidatorTest {
 
         ReflectionTestUtils.setField(validator, "inconsistentData", "inconsistent_data");
 
-        validator.isMultipleYearFiler(mockTransaction);
         errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.hasErrors());
@@ -169,7 +164,6 @@ public class DebtorsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
 
-        validator.isMultipleYearFiler(mockTransaction);
         errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.containsError(
@@ -198,7 +192,6 @@ public class DebtorsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
-        validator.isMultipleYearFiler(mockTransaction);
         errors = validator.validateDebtors(debtors, mockTransaction);
 
         Mockito.verify(mockRestTemplate, Mockito.atLeastOnce()).getForObject(anyString(), any(Class.class));
@@ -208,20 +201,6 @@ public class DebtorsValidatorTest {
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
-    }
-
-    @Test
-    @DisplayName("Tests Rest exception is thrown when company-profile not found")
-    void testRestExceptionThrownWhenApiCallFails() {
-
-        addValidCurrentDebtors();
-
-        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenThrow(mockRestClientException);
-
-        Executable executable = () -> {
-            validator.isMultipleYearFiler(mockTransaction);
-        };
-        assertThrows(RestException.class, executable);
     }
 
     @Test
