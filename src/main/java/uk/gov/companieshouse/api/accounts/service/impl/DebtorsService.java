@@ -126,7 +126,8 @@ public class DebtorsService implements ResourceService<Debtors> {
 
     @Override
     public ResponseObject<Debtors> deleteById(String id, HttpServletRequest request) throws DataException {
-        return null;
+        repository.deleteById(id);
+        return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
     @Override

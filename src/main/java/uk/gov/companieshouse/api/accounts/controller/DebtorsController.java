@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,13 +96,13 @@ public class DebtorsController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String accountingPoliciesId = debtorsService.generateID(companyAccountId);
+        String debtorsId = debtorsService.generateID(companyAccountId);
 
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                .findById(accountingPoliciesId, request);
+                .findById(debtorsId, request);
 
             responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
 
@@ -150,6 +151,29 @@ public class DebtorsController {
             debugMap.put(MESSAGE, "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
+                                               HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String debtorsId = debtorsService.generateID(companyAccountsId);
+
+        try {
+            ResponseObject<Debtors> responseObject = debtorsService.deleteById(debtorsId, request);
+
+            return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
+        } catch (DataException de) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put(TRANSACTION_ID, transaction.getId());
+            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountsId);
+            debugMap.put(MESSAGE, "Failed to delete debtors resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
         }
     }
 }
