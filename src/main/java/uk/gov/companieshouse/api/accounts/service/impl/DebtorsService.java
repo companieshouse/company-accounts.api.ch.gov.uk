@@ -104,13 +104,43 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-        return null;
+    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
+        setMetadataOnRestObject(rest, transaction, companyAccountsId);
+
+        DebtorsEntity entity = transformer.transform(rest);
+        entity.setId(generateID(companyAccountsId));
+
+        try {
+            repository.save(entity);
+        } catch (MongoException me) {
+            DataException dataException = new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountsId, entity.getId()));
+
+            throw dataException;
+        }
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
     public ResponseObject<Debtors> findById(String id, HttpServletRequest request) throws DataException {
-        return null;
+        DebtorsEntity entity;
+
+        try {
+            entity = repository.findById(id).orElse(null);
+        } catch (MongoException e) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find Debtors", e);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
+
+        if (entity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(entity));
     }
 
     @Override

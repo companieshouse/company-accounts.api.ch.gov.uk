@@ -11,14 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.RestException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
@@ -86,6 +90,71 @@ public class DebtorsController {
         return responseEntity;
     }
 
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+                              HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String accountingPoliciesId = debtorsService.generateID(companyAccountId);
+
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<Debtors> response = debtorsService
+                .findById(accountingPoliciesId, request);
+
+            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put(TRANSACTION_ID, transaction.getId());
+            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+            debugMap.put(MESSAGE, "Failed to retrieve debtors resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            responseEntity = apiResponseMapper.map(de);
+        }
+
+        return responseEntity;
+    }
+
+    @PutMapping
+    public ResponseEntity update(@RequestBody @Valid Debtors debtors,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+        if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+            ResponseObject<Debtors> response = debtorsService
+                .update(debtors, transaction, companyAccountId, request);
+
+            return apiResponseMapper
+                .map(response.getStatus(), response.getData(), response.getErrors());
+
+        } catch (DataException ex) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put(TRANSACTION_ID, transaction.getId());
+            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+            debugMap.put(MESSAGE, "Failed to update debtors resource");
+            LOGGER.errorRequest(request, ex, debugMap);
+            return apiResponseMapper.map(ex);
+        }
+    }
+
     private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
@@ -93,5 +162,4 @@ public class DebtorsController {
         debugMap.put(MESSAGE, s);
         return debugMap;
     }
-
 }
