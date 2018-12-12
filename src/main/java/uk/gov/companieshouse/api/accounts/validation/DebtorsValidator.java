@@ -31,7 +31,6 @@ public class DebtorsValidator extends BaseValidator {
     private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
-
     private static final String COMPANY_PROFILE_URL = "CHS_COMPANY_PROFILE_API_LOCAL_URL";
 
     private EnvironmentReader environmentReader;
