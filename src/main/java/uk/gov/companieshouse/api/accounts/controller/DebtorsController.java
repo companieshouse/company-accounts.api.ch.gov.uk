@@ -82,7 +82,7 @@ public class DebtorsController {
             responseEntity = apiResponseMapper.map(ex);
         } catch (RestException re) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to get company profile in validation for company" + transaction.getCompanyNumber());
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to get company profile in validation for company " + transaction.getCompanyNumber());
             LOGGER.errorRequest(request, re, debugMap);
             responseEntity = apiResponseMapper.map(re);
         }
