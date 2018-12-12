@@ -12,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.RestException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
@@ -58,19 +57,13 @@ public class DebtorsService implements ResourceService<Debtors> {
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
                                           String companyAccountsId, HttpServletRequest request)
-        throws DataException, RestException {
+        throws DataException {
 
         Errors errors;
 
-        try {
-            errors = debtorsValidator.validateDebtors(rest, transaction);
-        } catch (RestException restException) {
-            throw restException;
-        }
+        errors = debtorsValidator.validateDebtors(rest, transaction);
 
         if (errors.hasErrors()) {
-            DataException dataException = new DataException(
-                "Failed to validate " + ResourceName.APPROVAL.getName());
 
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }

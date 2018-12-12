@@ -59,7 +59,10 @@ public class DebtorsValidator extends BaseValidator {
 
                     validatePreviousPeriodDebtors(errors, debtors);
 
-                } else validateInconsistentPeriodFiling(debtors, errors);
+                } else {
+
+                    validateInconsistentPeriodFiling(debtors, errors);
+                }
             }
 
         }
@@ -182,5 +185,3 @@ public class DebtorsValidator extends BaseValidator {
         }
     }
 }
-
-
