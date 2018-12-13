@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -19,6 +20,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEnti
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -32,26 +34,31 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String TRANSACTION_ID = "transaction_id";
+    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
+    private static final String COMPANY_NUMBER = "company_number";
+    private static final String MESSAGE = "message";
 
     private DebtorsRepository repository;
     private DebtorsTransformer transformer;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
     private DebtorsValidator debtorsValidator;
+    private CompanyService companyService;
 
     @Autowired
     public DebtorsService(DebtorsRepository repository,
                           DebtorsTransformer transformer,
                           SmallFullService smallFullService,
-                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator) {
+                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator, CompanyService companyService) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
         this.debtorsValidator = debtorsValidator;
+        this.companyService = companyService;
     }
 
     @Override

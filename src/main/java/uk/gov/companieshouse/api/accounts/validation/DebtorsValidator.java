@@ -5,14 +5,13 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.api.accounts.exception.RestException;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 
 @Component
 public class DebtorsValidator extends BaseValidator {
@@ -32,18 +31,10 @@ public class DebtorsValidator extends BaseValidator {
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
-    private static final String COMPANY_PROFILE_URL = "CHS_COMPANY_PROFILE_API_LOCAL_URL";
-
-    private EnvironmentReader environmentReader;
-    private RestTemplate restTemplate;
-
     @Autowired
-    public DebtorsValidator(EnvironmentReader environmentReader, RestTemplate restTemplate) {
-        this.environmentReader = environmentReader;
-        this.restTemplate = restTemplate;
-    }
+    private CompanyService companyService;
 
-    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) {
+    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
@@ -97,7 +88,6 @@ public class DebtorsValidator extends BaseValidator {
         }
     }
 
-
     private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
@@ -142,21 +132,16 @@ public class DebtorsValidator extends BaseValidator {
         }
     }
 
-    private boolean isMultipleYearFiler(Transaction transaction) {
+    private boolean isMultipleYearFiler(Transaction transaction) throws DataException {
 
-        String companyProfileUrl = environmentReader.getMandatoryString(COMPANY_PROFILE_URL);
-
-        String uri = companyProfileUrl + "/company/" + transaction.getCompanyNumber();
-
-        CompanyProfile companyProfile;
 
         try {
-            companyProfile = restTemplate.getForObject(uri, CompanyProfile.class);
+            CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
+            return (companyProfile != null && companyProfile.getAccounts() != null && companyProfile.getAccounts().getLastAccounts() != null);
 
-            return (companyProfile != null && companyProfile.getAccounts() != null &&
-                companyProfile.getAccounts().getLastAccounts() != null);
-        } catch (RestClientException re) {
-            throw new RestException("Failed to get company profile for " + transaction.getCompanyNumber() + " for validation", re);
+        } catch (
+            ServiceException e) {
+            throw new DataException(e.getMessage(), e);
         }
     }
 
