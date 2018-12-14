@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.accounts.api.ApiClientService;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
@@ -32,14 +32,12 @@ public class DebtorsValidatorTest {
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
     private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
-    private static final String TEST_URL = "http://test-url";
     private static final String COMPANY_NUMBER = "12345";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
     private static final String INVALID_NOTE_NAME = "invalidNote";
@@ -57,7 +55,7 @@ public class DebtorsValidatorTest {
     private Transaction mockTransaction;
 
     @Mock
-    private ApiClientService mockApiClientService;
+    private ServiceException mockServiceException;
 
     private DebtorsValidator validator;
 
@@ -243,6 +241,22 @@ public class DebtorsValidatorTest {
                 ErrorType.VALIDATION.getType())));
     }
 
+    @Test
+    @DisplayName("Tests data exception thrown when company profile api call fails")
+    void testDataExceptionThrown() throws DataException, ServiceException {
+
+        addValidCurrentDebtors();
+
+        PreviousPeriod previousDebtors = new PreviousPeriod();
+        previousDebtors.setTradeDebtors(2L);
+        debtors.setPreviousPeriod(previousDebtors);
+
+        when(mockCompanyService.getCompanyProfile(null)).thenThrow(mockServiceException);
+
+        assertThrows(DataException.class,
+            () -> validator.validateDebtors(debtors, mockTransaction));
+    }
+
     private void addValidCurrentDebtors() {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
@@ -275,6 +289,5 @@ public class DebtorsValidatorTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         return companyProfileApi;
     }
-
 }
 
