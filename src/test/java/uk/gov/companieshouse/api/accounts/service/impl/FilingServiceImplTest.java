@@ -4,6 +4,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -147,6 +148,22 @@ class FilingServiceImplTest {
 
         verifyDocumentGeneratorCallerMock();
         verifyDocumentGeneratorResponseValidatorMock();
+        assertNull(filing);
+    }
+
+    @Test
+    @DisplayName("Tests the filing not generated when document generator call throws an exception")
+    void shouldNotGenerateFilingAsDocumentGeneratorCallThrowsAnException() {
+
+        documentGeneratorResponse = createDocumentGeneratorResponse();
+
+        doThrow(IllegalArgumentException.class)
+            .when(documentGeneratorCallerMock)
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
+
+        verifyDocumentGeneratorCallerMock();
         assertNull(filing);
     }
 

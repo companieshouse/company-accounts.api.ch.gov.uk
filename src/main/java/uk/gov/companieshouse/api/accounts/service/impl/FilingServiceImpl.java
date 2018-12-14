@@ -116,23 +116,30 @@ public class FilingServiceImpl implements FilingService {
      */
     private DocumentGeneratorResponse getDocumentGeneratorResponse(CompanyAccount companyAccount) {
 
+        Map<String, Object> logMap = new HashMap<>();
+
         String companyAccountsURI =
             companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
 
-        DocumentGeneratorResponse documentGeneratorResponse = documentGeneratorCaller
-            .callDocumentGeneratorService(companyAccountsURI);
+        try {
+            DocumentGeneratorResponse documentGeneratorResponse = documentGeneratorCaller
+                .callDocumentGeneratorService(companyAccountsURI);
 
-        if (documentGeneratorResponse != null) {
-            return documentGeneratorResponse;
+            if (documentGeneratorResponse != null) {
+                return documentGeneratorResponse;
+            }
+            logMap.put("company_account_self_link", companyAccountsURI);
+            logMap.put(LOG_MESSAGE_KEY, "Document generator response call has returned null");
+            LOGGER.error("FilingServiceImpl: Document Generator call failed", logMap);
+
+            return null;
+
+        } catch (IllegalArgumentException e) {
+            logMap.put(LOG_MESSAGE_KEY, "Document Generator has thrown an Illegal exception");
+            LOGGER.error("FilingServiceImpl: Document Generator call failed", e, logMap);
+
+            return null;
         }
-
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put("company_account_self_link", companyAccountsURI);
-        logMap.put(LOG_MESSAGE_KEY, "Document generator response call has returned null");
-
-        LOGGER.error("FilingServiceImpl: Document Generator call failed", logMap);
-
-        return null;
     }
 
     /**
