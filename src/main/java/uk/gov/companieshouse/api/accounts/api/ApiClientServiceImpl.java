@@ -36,7 +36,7 @@ public class ApiClientServiceImpl implements ApiClientService {
      *
      * @param httpClient
      */
-    private static void setRequestId(HttpClient httpClient) {
+    private void setRequestId(HttpClient httpClient) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder
             .currentRequestAttributes();
         HttpServletRequest request = attr.getRequest();
@@ -59,7 +59,7 @@ public class ApiClientServiceImpl implements ApiClientService {
      *
      * @return
      */
-    private static String generateRequestId() {
+    private String generateRequestId() {
         return UUID.randomUUID().toString().substring(0, 20);
     }
 }
