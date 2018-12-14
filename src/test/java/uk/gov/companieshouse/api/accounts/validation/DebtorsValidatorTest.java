@@ -15,8 +15,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.api.ApiClientService;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
@@ -64,7 +62,6 @@ public class DebtorsValidatorTest {
     private DebtorsValidator validator;
 
     @BeforeEach
-
     void setup() {
         debtors = new Debtors();
         errors = new Errors();
@@ -87,8 +84,6 @@ public class DebtorsValidatorTest {
     @DisplayName("Tests the validation passes on valid multiple year debtors resource")
     void testSuccessfulMultipleYearDebtorsNote() throws DataException, ServiceException {
 
-        CompanyProfile companyProfile = addMultipleYearFilingCompany();
-
         addValidCurrentDebtors();
 
         PreviousPeriod previousDebtors = new PreviousPeriod();
@@ -110,8 +105,6 @@ public class DebtorsValidatorTest {
     @Test
     @DisplayName("Tests the validation fails on single year filer filing previous period")
     void tesInvalidMultipleYearDebtorsNote() throws DataException, ServiceException {
-
-        CompanyProfile companyProfile = new CompanyProfile();
 
         addValidCurrentDebtors();
 
@@ -160,8 +153,6 @@ public class DebtorsValidatorTest {
     @DisplayName("Tests the validation fails on previous period incorrect total")
     void testIncorrectPreviousDebtorsTotal() throws DataException, ServiceException {
 
-        CompanyProfile companyProfile = addMultipleYearFilingCompany();
-
         addValidCurrentDebtors();
 
         PreviousPeriod previousDebtors = new PreviousPeriod();
@@ -197,7 +188,6 @@ public class DebtorsValidatorTest {
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(createCompanyProfileMultipleYearFiler());
 
-
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction);
@@ -205,7 +195,7 @@ public class DebtorsValidatorTest {
         assertTrue(errors.hasErrors());
 
         assertTrue(errors.containsError(
-            new Error(INVALID_NOTE_VALUE,PREVIOUS_TOTAL_PATH,
+            new Error(INVALID_NOTE_VALUE, PREVIOUS_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
@@ -253,15 +243,6 @@ public class DebtorsValidatorTest {
                 ErrorType.VALIDATION.getType())));
     }
 
-    private CompanyProfile addMultipleYearFilingCompany() {
-
-        CompanyProfile companyProfile = new CompanyProfile();
-        Accounts companyProfileAccounts = new Accounts();
-        companyProfileAccounts.setLastAccounts("lastAccounts");
-        companyProfile.setAccounts(companyProfileAccounts);
-        return companyProfile;
-    }
-
     private void addValidCurrentDebtors() {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
@@ -278,7 +259,7 @@ public class DebtorsValidatorTest {
     private CompanyProfileApi createCompanyProfileMultipleYearFiler() {
 
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-CompanyAccountApi companyAccountApi = new CompanyAccountApi();
+        CompanyAccountApi companyAccountApi = new CompanyAccountApi();
 
         LastAccountsApi lastAccountsApi = new LastAccountsApi();
 
