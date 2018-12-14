@@ -83,15 +83,6 @@ public class DebtorsController {
         return responseEntity;
     }
 
-
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, s);
-        return debugMap;
-    }
-
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
@@ -111,10 +102,7 @@ public class DebtorsController {
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to retrieve debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to retrieve debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             responseEntity = apiResponseMapper.map(de);
         }
@@ -148,12 +136,17 @@ public class DebtorsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to update debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
+    }
+
+    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put(TRANSACTION_ID, transaction.getId());
+        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+        debugMap.put(MESSAGE, s);
+        return debugMap;
     }
 }

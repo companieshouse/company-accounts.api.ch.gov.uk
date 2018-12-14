@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.companieshouse</groupId>
   <artifactId>company-accounts.api.ch.gov.uk</artifactId>
-  <version>unversioned</version>
+  <version>1b08798</version>
   <packaging>jar</packaging>
   <name>company-accounts-api</name>
   <description>Company accounts API to handle company accounts data</description>
@@ -35,7 +35,7 @@
     <spring-test.version>5.0.8.RELEASE</spring-test.version>
     <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
     <sdk-manager-java.version>1.1.0-rc2</sdk-manager-java.version>
-    <api-sdk-java.version>3.0.0-rc1</api-sdk-java.version>
+    <api-sdk-java.version>3.13.0</api-sdk-java.version>
     <gson.version>2.8.0</gson.version>
 
     <!-- Maven and Surefire plugins -->
@@ -187,7 +187,7 @@
     <dependency>
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>api-sdk-java</artifactId>
-      <version>${api-sdk-java-version}}</version>
+      <version>${api-sdk-java.version}</version>
     </dependency>
   </dependencies>
 

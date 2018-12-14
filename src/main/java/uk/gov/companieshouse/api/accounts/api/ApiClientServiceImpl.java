@@ -15,7 +15,6 @@ import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 public class ApiClientServiceImpl implements ApiClientService {
 
     private static final EnvironmentReader READER = new EnvironmentReaderImpl();
-
     private static final String chsApiKey = READER.getMandatoryString("CHS_API_KEY");
     private static final String apiUrl = READER.getMandatoryString("API_URL");
     private static final String X_REQUEST_ID_HEADER = "x-request-id";
@@ -24,18 +23,17 @@ public class ApiClientServiceImpl implements ApiClientService {
     public ApiClient getApiClient() {
 
         HttpClient httpClient = new ApiKeyHttpClient(chsApiKey);
-
         setRequestId(httpClient);
 
         ApiClient apiClient = new ApiClient(httpClient);
-
         apiClient.setBasePath(apiUrl);
 
         return apiClient;
     }
 
     /**
-     *  Set request ID using httpclient
+     * Set request ID using httpclient
+     *
      * @param httpClient
      */
     private static void setRequestId(HttpClient httpClient) {
@@ -58,11 +56,10 @@ public class ApiClientServiceImpl implements ApiClientService {
 
     /**
      * Generate a universally unique identifier
+     *
      * @return
      */
     private static String generateRequestId() {
-        return UUID.randomUUID().toString().substring(0,20);
+        return UUID.randomUUID().toString().substring(0, 20);
     }
-
-
 }
