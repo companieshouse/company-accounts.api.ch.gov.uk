@@ -2,8 +2,6 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,11 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.accounts.api.ApiClientService;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.Accounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
@@ -24,8 +22,11 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
+import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,6 +38,9 @@ public class DebtorsValidatorTest {
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
+    private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
+    private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
+    private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
     private static final String TEST_URL = "http://test-url";
     private static final String COMPANY_NUMBER = "12345";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
@@ -49,29 +53,27 @@ public class DebtorsValidatorTest {
     private Errors errors;
 
     @Mock
+    private CompanyService mockCompanyService;
+
+    @Mock
     private Transaction mockTransaction;
 
     @Mock
-    private RestTemplate mockRestTemplate;
-
-    @Mock
-    private EnvironmentReader mockEnvironmentReader;
-
-    @Mock
-    private RestClientException mockRestClientException;
+    private ApiClientService mockApiClientService;
 
     private DebtorsValidator validator;
 
     @BeforeEach
+
     void setup() {
         debtors = new Debtors();
         errors = new Errors();
-        validator = new DebtorsValidator(mockEnvironmentReader, mockRestTemplate);
+        validator = new DebtorsValidator(mockCompanyService);
     }
 
     @Test
     @DisplayName("Tests the validation passes on valid single year debtors resource")
-    void testSuccessfulSingleYearDebtorsNote() {
+    void testSuccessfulSingleYearDebtorsNote() throws DataException {
 
         addValidCurrentDebtors();
 
@@ -83,7 +85,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation passes on valid multiple year debtors resource")
-    void testSuccessfulMultipleYearDebtorsNote() {
+    void testSuccessfulMultipleYearDebtorsNote() throws DataException, ServiceException {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -97,10 +99,7 @@ public class DebtorsValidatorTest {
         previousDebtors.setTotal(20L);
 
         debtors.setPreviousPeriod(previousDebtors);
-
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
-        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileMultipleYearFiler());
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
@@ -110,7 +109,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on single year filer filing previous period")
-    void tesInvalidMultipleYearDebtorsNote() {
+    void tesInvalidMultipleYearDebtorsNote() throws DataException, ServiceException {
 
         CompanyProfile companyProfile = new CompanyProfile();
 
@@ -118,13 +117,14 @@ public class DebtorsValidatorTest {
 
         PreviousPeriod previousDebtors = new PreviousPeriod();
         previousDebtors.setTradeDebtors(2L);
-        previousDebtors.setTotal(2L);
+        previousDebtors.setPrepaymentsAndAccruedIncome(4L);
+        previousDebtors.setGreaterThanOneYear(6L);
+        previousDebtors.setOtherDebtors(8L);
+        previousDebtors.setTotal(20L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
-        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileSingleYearFiler());
 
         ReflectionTestUtils.setField(validator, "inconsistentData", "inconsistent_data");
 
@@ -134,6 +134,18 @@ public class DebtorsValidatorTest {
 
         assertTrue(errors.containsError(
             new Error("inconsistent_data", PREVIOUS_TRADE_DEBTORS,
+                LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(
+            new Error("inconsistent_data", PREVIOUS_PREPAYMENTS,
+                LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(
+            new Error("inconsistent_data", PREVIOUS_GREATER_THAN_ONE_YEAR,
+                LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(
+            new Error("inconsistent_data", PREVIOUS_OTHER_DEBTORS,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
@@ -146,7 +158,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period incorrect total")
-    void testIncorrectPreviousDebtorsTotal() {
+    void testIncorrectPreviousDebtorsTotal() throws DataException, ServiceException {
 
         CompanyProfile companyProfile = addMultipleYearFilingCompany();
 
@@ -158,11 +170,9 @@ public class DebtorsValidatorTest {
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
-        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileMultipleYearFiler());
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
@@ -175,9 +185,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests the validation fails on previous period missing total")
-    void testMissingPreviousDebtorsTotal() {
-
-        CompanyProfile companyProfile = addMultipleYearFilingCompany();
+    void testMissingPreviousDebtorsTotal() throws DataException, ServiceException {
 
         addValidCurrentDebtors();
 
@@ -187,17 +195,17 @@ public class DebtorsValidatorTest {
         debtors.setPreviousPeriod(previousDebtors);
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockEnvironmentReader.getMandatoryString(any())).thenReturn(TEST_URL);
-        when(mockRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(companyProfile);
+        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(createCompanyProfileMultipleYearFiler());
+
 
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
-        Mockito.verify(mockRestTemplate, Mockito.atLeastOnce()).getForObject(anyString(), any(Class.class));
+        assertTrue(errors.hasErrors());
 
         assertTrue(errors.containsError(
-            new Error(INVALID_NOTE_VALUE, PREVIOUS_TOTAL_PATH,
+            new Error(INVALID_NOTE_VALUE,PREVIOUS_TOTAL_PATH,
                 LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType())));
 
@@ -205,7 +213,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests current period incorrect total throws error")
-    void testIncorrectCurrentTotal() {
+    void testIncorrectCurrentTotal() throws DataException {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
         currentDebtors.setTradeDebtors(1L);
@@ -227,7 +235,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests current period missing total throws error")
-    void testMissingCurrentTotal() {
+    void testMissingCurrentTotal() throws DataException {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
         currentDebtors.setTradeDebtors(1L);
@@ -265,6 +273,26 @@ public class DebtorsValidatorTest {
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
+    }
+
+    private CompanyProfileApi createCompanyProfileMultipleYearFiler() {
+
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+CompanyAccountApi companyAccountApi = new CompanyAccountApi();
+
+        LastAccountsApi lastAccountsApi = new LastAccountsApi();
+
+        lastAccountsApi.setType("lastaccounts");
+        companyAccountApi.setLastAccounts(lastAccountsApi);
+        companyProfileApi.setAccounts(companyAccountApi);
+
+        return companyProfileApi;
+    }
+
+    private CompanyProfileApi createCompanyProfileSingleYearFiler() {
+
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        return companyProfileApi;
     }
 
 }

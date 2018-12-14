@@ -127,7 +127,7 @@ public class DebtorsServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating Debtors")
-    void createDebtorsMongoExceptionFailure() {
+    void createDebtorsMongoExceptionFailure() throws DataException {
 
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));

@@ -31,8 +31,12 @@ public class DebtorsValidator extends BaseValidator {
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
-    @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    public DebtorsValidator(CompanyService companyService) {
+        this.companyService = companyService;
+    }
 
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) throws DataException {
 
@@ -133,7 +137,6 @@ public class DebtorsValidator extends BaseValidator {
     }
 
     private boolean isMultipleYearFiler(Transaction transaction) throws DataException {
-
 
         try {
             CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
