@@ -164,9 +164,9 @@ public class DebtorsController {
         String debtorsId = debtorsService.generateID(companyAccountsId);
 
         try {
-            ResponseObject<Debtors> responseObject = debtorsService.deleteById(debtorsId, request);
+            ResponseObject<Debtors> response = debtorsService.deleteById(debtorsId, request);
 
-            return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put(TRANSACTION_ID, transaction.getId());
