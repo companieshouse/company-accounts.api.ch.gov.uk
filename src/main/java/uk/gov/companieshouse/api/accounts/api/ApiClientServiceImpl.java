@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.api;
 
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -9,15 +10,22 @@ import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.http.ApiKeyHttpClient;
 import uk.gov.companieshouse.api.http.HttpClient;
 import uk.gov.companieshouse.environment.EnvironmentReader;
-import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 @Component
 public class ApiClientServiceImpl implements ApiClientService {
 
-    private static final EnvironmentReader READER = new EnvironmentReaderImpl();
-    private static final String chsApiKey = READER.getMandatoryString("CHS_API_KEY");
-    private static final String apiUrl = READER.getMandatoryString("API_URL");
     private static final String X_REQUEST_ID_HEADER = "x-request-id";
+    private final String chsApiKey;
+    private final String apiUrl;
+    private final EnvironmentReader environmentReader;
+
+    @Autowired
+    public ApiClientServiceImpl(EnvironmentReader environmentReader) {
+        this.environmentReader = environmentReader;
+
+        chsApiKey = environmentReader.getMandatoryString("CHS_API_KEY");
+        apiUrl = environmentReader.getMandatoryString("API_URL");
+    }
 
     @Override
     public ApiClient getApiClient() {
