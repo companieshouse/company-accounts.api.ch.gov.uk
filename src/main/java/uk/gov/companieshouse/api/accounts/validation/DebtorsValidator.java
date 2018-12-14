@@ -27,9 +27,11 @@ public class DebtorsValidator extends BaseValidator {
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
-    private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
+    private static final String PREVIOUS_PREPAYMENTS =
+        DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
-    private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
+    private static final String PREVIOUS_GREATER_THAN_ONE_YEAR =
+        DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
     private CompanyService companyService;
 
@@ -38,7 +40,8 @@ public class DebtorsValidator extends BaseValidator {
         this.companyService = companyService;
     }
 
-    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) throws DataException {
+    public Errors validateDebtors(@Valid Debtors debtors,
+                                  Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
@@ -55,11 +58,12 @@ public class DebtorsValidator extends BaseValidator {
 
                     validatePreviousPeriodDebtors(errors, debtors);
 
-                } else validateInconsistentPeriodFiling(debtors, errors);
+                } else {
+                    validateInconsistentPeriodFiling(debtors, errors);
+                }
             }
 
-        }
-        return errors;
+        } return errors;
     }
 
     private void validatePreviousPeriodDebtors(Errors errors, Debtors debtors) {
@@ -107,10 +111,14 @@ public class DebtorsValidator extends BaseValidator {
     private void validateCurrentPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getCurrentPeriod().getTotal() != null) {
-            Long traderDebtors = Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments = Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
-            Long otherDebtors = Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear = Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
+            Long traderDebtors =
+                Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
+            Long prepayments =
+                Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
+                        .orElse(0L); Long otherDebtors =
+                Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
+            Long moreThanOneYear =
+                Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getCurrentPeriod().getTotal();
 
@@ -123,10 +131,14 @@ public class DebtorsValidator extends BaseValidator {
     private void validatePreviousPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getPreviousPeriod().getTotal() != null) {
-            Long traderDebtors = Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments = Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
-            Long otherDebtors = Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear = Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
+            Long traderDebtors =
+                Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
+            Long prepayments =
+                Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
+            Long otherDebtors =
+                Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
+            Long moreThanOneYear =
+                Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getPreviousPeriod().getTotal();
 
@@ -139,11 +151,12 @@ public class DebtorsValidator extends BaseValidator {
     private boolean isMultipleYearFiler(Transaction transaction) throws DataException {
 
         try {
-            CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
-            return (companyProfile != null && companyProfile.getAccounts() != null && companyProfile.getAccounts().getLastAccounts() != null);
+            CompanyProfileApi companyProfile =
+                companyService.getCompanyProfile(transaction.getCompanyNumber());
+            return (companyProfile != null && companyProfile.getAccounts() != null &&
+                companyProfile.getAccounts().getLastAccounts() != null);
 
-        } catch (
-            ServiceException e) {
+        } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);
         }
     }
