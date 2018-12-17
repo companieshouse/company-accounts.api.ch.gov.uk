@@ -5,14 +5,13 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.companieshouse.api.accounts.exception.RestException;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyProfile;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 
 @Component
 public class DebtorsValidator extends BaseValidator {
@@ -32,18 +31,15 @@ public class DebtorsValidator extends BaseValidator {
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
-    private static final String COMPANY_PROFILE_URL = "CHS_COMPANY_PROFILE_API_LOCAL_URL";
-
-    private EnvironmentReader environmentReader;
-    private RestTemplate restTemplate;
+    private CompanyService companyService;
 
     @Autowired
-    public DebtorsValidator(EnvironmentReader environmentReader, RestTemplate restTemplate) {
-        this.environmentReader = environmentReader;
-        this.restTemplate = restTemplate;
+    public DebtorsValidator(CompanyService companyService) {
+        this.companyService = companyService;
     }
 
-    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction) {
+    public Errors validateDebtors(@Valid Debtors debtors,
+                                  Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
@@ -60,11 +56,12 @@ public class DebtorsValidator extends BaseValidator {
 
                     validatePreviousPeriodDebtors(errors, debtors);
 
-                } else validateInconsistentPeriodFiling(debtors, errors);
+                } else {
+                    validateInconsistentPeriodFiling(debtors, errors);
+                }
             }
 
-        }
-        return errors;
+        } return errors;
     }
 
     private void validatePreviousPeriodDebtors(Errors errors, Debtors debtors) {
@@ -97,7 +94,6 @@ public class DebtorsValidator extends BaseValidator {
         }
     }
 
-
     private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
@@ -113,10 +109,14 @@ public class DebtorsValidator extends BaseValidator {
     private void validateCurrentPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getCurrentPeriod().getTotal() != null) {
-            Long traderDebtors = Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments = Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
-            Long otherDebtors = Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear = Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
+            Long traderDebtors =
+                Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
+            Long prepayments =
+                Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
+                        .orElse(0L); Long otherDebtors =
+                Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
+            Long moreThanOneYear =
+                Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getCurrentPeriod().getTotal();
 
@@ -129,10 +129,14 @@ public class DebtorsValidator extends BaseValidator {
     private void validatePreviousPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getPreviousPeriod().getTotal() != null) {
-            Long traderDebtors = Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments = Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
-            Long otherDebtors = Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear = Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
+            Long traderDebtors =
+                Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
+            Long prepayments =
+                Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
+            Long otherDebtors =
+                Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
+            Long moreThanOneYear =
+                Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getPreviousPeriod().getTotal();
 
@@ -142,21 +146,16 @@ public class DebtorsValidator extends BaseValidator {
         }
     }
 
-    private boolean isMultipleYearFiler(Transaction transaction) {
-
-        String companyProfileUrl = environmentReader.getMandatoryString(COMPANY_PROFILE_URL);
-
-        String uri = companyProfileUrl + "/company/" + transaction.getCompanyNumber();
-
-        CompanyProfile companyProfile;
+    private boolean isMultipleYearFiler(Transaction transaction) throws DataException {
 
         try {
-            companyProfile = restTemplate.getForObject(uri, CompanyProfile.class);
-
+            CompanyProfileApi companyProfile =
+                companyService.getCompanyProfile(transaction.getCompanyNumber());
             return (companyProfile != null && companyProfile.getAccounts() != null &&
                 companyProfile.getAccounts().getLastAccounts() != null);
-        } catch (RestClientException re) {
-            throw new RestException("Failed to get company profile for " + transaction.getCompanyNumber() + " for validation", re);
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
         }
     }
 
