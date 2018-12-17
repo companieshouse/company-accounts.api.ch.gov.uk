@@ -85,13 +85,8 @@ public class DebtorsValidatorTest {
     void testSuccessfulMultipleYearDebtorsNote() throws DataException, ServiceException {
 
         addValidCurrentDebtors();
+        addValidPreviousDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
-        previousDebtors.setPrepaymentsAndAccruedIncome(4L);
-        previousDebtors.setGreaterThanOneYear(6L); previousDebtors.setOtherDebtors(8L);
-        previousDebtors.setTotal(20L);
-
-        debtors.setPreviousPeriod(previousDebtors);
         when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
             .thenReturn(createCompanyProfileMultipleYearFiler());
 
@@ -106,13 +101,7 @@ public class DebtorsValidatorTest {
     void tesInvalidMultipleYearDebtorsNote() throws DataException, ServiceException {
 
         addValidCurrentDebtors();
-
-        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
-        previousDebtors.setPrepaymentsAndAccruedIncome(4L);
-        previousDebtors.setGreaterThanOneYear(6L); previousDebtors.setOtherDebtors(8L);
-        previousDebtors.setTotal(20L);
-
-        debtors.setPreviousPeriod(previousDebtors);
+        addValidPreviousDebtors();
 
         when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
             .thenReturn(createCompanyProfileSingleYearFiler());
@@ -261,5 +250,16 @@ public class DebtorsValidatorTest {
     private Error createError(String error, String path) {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
             ErrorType.VALIDATION.getType());
+    }
+
+    private void addValidPreviousDebtors() {
+        PreviousPeriod previousDebtors = new PreviousPeriod();
+        previousDebtors.setTradeDebtors(2L);
+        previousDebtors.setPrepaymentsAndAccruedIncome(4L);
+        previousDebtors.setGreaterThanOneYear(6L);
+        previousDebtors.setOtherDebtors(8L);
+        previousDebtors.setTotal(20L);
+
+        debtors.setPreviousPeriod(previousDebtors);
     }
 }
