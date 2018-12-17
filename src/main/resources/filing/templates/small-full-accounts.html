@@ -2211,6 +2211,85 @@ ul.accounts-comps-ct {
           <p class="text--center">The notes form part of these financial statements</p>
         </div>
 
+        <!-- ACCOUNTING POLICIES START -->
+        {{if $accountingPolicies := .small_full_accounts.accounting_policies}}
+
+        <div class="page">
+          <div class="header">
+            <h1 class="text--center">
+              <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+            </h1>
+          </div>
+
+          <h2 class="text--center">Notes to the Financial Statements</h2>
+          <p class="text--center">
+            <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+          </p>
+
+          <ul>
+            <li>
+              <h2>1. Accounting policies </h2>
+
+              {{if $basisOfMeasurementAndPreparation := $accountingPolicies.basis_of_measurement_and_preparation}}
+              <p class="strong">Basis of measurement and preparation</p>
+              <div class="text-area-display" id="basis-of-measurement-and-preparation-text-note">
+                <p class="text-area-display">
+                  <ix:nonnumeric contextref="CY" name="core:GeneralDescriptionBasisMeasurementUsedInPreparingFinancialStatements">{{$basisOfMeasurementAndPreparation}}</ix:nonnumeric>
+                </p>
+              </div>
+              {{end}}
+
+              {{if $turnoverPolicy := $accountingPolicies.turnover_policy}}
+              <p class="strong">Turnover policy</p>
+              <div class="text-area-display" id="turnover-policy-free-text-note">
+                <p class="text-area-display">
+                  <ix:nonnumeric contextref="CY" name="core:RevenueRecognitionPolicy">{{$turnoverPolicy}}</ix:nonnumeric>
+                </p>
+              </div>
+              {{end}}
+
+              {{if $tangibleFixedAssetsDepreciationPolicy := $accountingPolicies.tangible_fixed_assets_depreciation_policy}}
+              <p class="strong">Tangible fixed assets depreciation policy</p>
+              <div class="text-area-display" id="tangible-fixed-assets-depreciation-policy-free-text-note">
+                <p class="text-area-display">
+                  <ix:nonnumeric contextref="CY" name="core:PropertyPlantEquipmentPolicy">{{$tangibleFixedAssetsDepreciationPolicy}}</ix:nonnumeric>
+                </p>
+              </div>
+              {{end}}
+
+              {{if $intangibleFixedAssetsAmortisationPolicy := $accountingPolicies.intangible_fixed_assets_amortisation_policy}}
+              <p class="strong">Intangible fixed assets amortisation policy</p>
+              <div class="text-area-display" id="intangible-fixed-assets-amortisation-policy-free-text-note">
+                <p class="text-area-display">
+                  <ix:nonnumeric contextref="CY" name="core:IntangibleAssetsPolicy">{{$intangibleFixedAssetsAmortisationPolicy}}</ix:nonnumeric>
+                </p>
+              </div>
+              {{end}}
+
+              {{if $valuationInformationPolicy := $accountingPolicies.valuation_information_and_policy}}
+              <p class="strong">Valuation information and policy</p>
+              <div class="text-area-display" id="valuation-information-and-policy-free-text-note">
+                <p class="text-area-display">
+                  <ix:nonnumeric contextref="CY" name="core:ValuationFinancialInstrumentsPolicy">{{$valuationInformationPolicy}}</ix:nonnumeric>
+                </p>
+              </div>
+              {{end}}
+
+              {{if $otherAccountingPolicy := $accountingPolicies.other_accounting_policy}}
+              <p class="strong">Other accounting policies</p>
+              <div class="text-area-display" id="other-accounting-policies-free-text-note">{{$otherAccountingPolicy}}</div>
+              {{end}}
+
+            </li>
+          </ul>
+
+          <div id="AdditionalNotesSection" class="section-marker"></div>
+
+        </div>
+
+        {{end}}
+        <!-- ACCOUNTING POLICIES END -->
+
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
         {{if $postBalanceSheetEvents := .small_full_accounts.notes.post_balance_sheet_events}}
             {{incValue "notes-page-count" }}
