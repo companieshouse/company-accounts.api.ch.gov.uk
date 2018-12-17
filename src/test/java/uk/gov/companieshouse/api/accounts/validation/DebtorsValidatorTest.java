@@ -43,6 +43,9 @@ public class DebtorsValidatorTest {
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
+    private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
+    private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
+
     private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
@@ -61,8 +64,7 @@ public class DebtorsValidatorTest {
 
     @BeforeEach
     void setup() {
-        debtors = new Debtors();
-        errors = new Errors();
+        debtors = new Debtors(); errors = new Errors();
         validator = new DebtorsValidator(mockCompanyService);
     }
 
@@ -84,15 +86,14 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod();
-        previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
         previousDebtors.setPrepaymentsAndAccruedIncome(4L);
-        previousDebtors.setGreaterThanOneYear(6L);
-        previousDebtors.setOtherDebtors(8L);
+        previousDebtors.setGreaterThanOneYear(6L); previousDebtors.setOtherDebtors(8L);
         previousDebtors.setTotal(20L);
 
         debtors.setPreviousPeriod(previousDebtors);
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
+            .thenReturn(createCompanyProfileMultipleYearFiler());
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
@@ -106,45 +107,35 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod();
-        previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
         previousDebtors.setPrepaymentsAndAccruedIncome(4L);
-        previousDebtors.setGreaterThanOneYear(6L);
-        previousDebtors.setOtherDebtors(8L);
+        previousDebtors.setGreaterThanOneYear(6L); previousDebtors.setOtherDebtors(8L);
         previousDebtors.setTotal(20L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileSingleYearFiler());
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
+            .thenReturn(createCompanyProfileSingleYearFiler());
 
-        ReflectionTestUtils.setField(validator, "inconsistentData", "inconsistent_data");
+        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
         assertTrue(errors.hasErrors());
 
-        assertTrue(errors.containsError(
-            new Error("inconsistent_data", PREVIOUS_TRADE_DEBTORS,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-        assertTrue(errors.containsError(
-            new Error("inconsistent_data", PREVIOUS_PREPAYMENTS,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-        assertTrue(errors.containsError(
-            new Error("inconsistent_data", PREVIOUS_GREATER_THAN_ONE_YEAR,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-        assertTrue(errors.containsError(
-            new Error("inconsistent_data", PREVIOUS_OTHER_DEBTORS,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+        assertTrue(
+            errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_TRADE_DEBTORS)));
 
-        assertTrue(errors.containsError(
-            new Error("inconsistent_data", PREVIOUS_TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+            PREVIOUS_PREPAYMENTS)));
 
+        assertTrue(errors
+            .containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_GREATER_THAN_ONE_YEAR)));
+
+        assertTrue(
+            errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_OTHER_DEBTORS)));
+
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_TOTAL_PATH)));
     }
 
     @Test
@@ -153,23 +144,19 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod();
-        previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
         previousDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setPreviousPeriod(previousDebtors);
 
-        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
 
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber())).thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
+            .thenReturn(createCompanyProfileMultipleYearFiler());
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
-        assertTrue(errors.containsError(
-            new Error(INCORRECT_TOTAL_VALUE, PREVIOUS_TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE, PREVIOUS_TOTAL_PATH)));
     }
 
     @Test
@@ -178,13 +165,13 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod();
-        previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
+            .thenReturn(createCompanyProfileMultipleYearFiler());
 
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
 
@@ -192,41 +179,30 @@ public class DebtorsValidatorTest {
 
         assertTrue(errors.hasErrors());
 
-        assertTrue(errors.containsError(
-            new Error(INVALID_NOTE_VALUE, PREVIOUS_TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
-
+        assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE, PREVIOUS_TOTAL_PATH)));
     }
 
     @Test
     @DisplayName("Tests current period incorrect total throws error")
     void testIncorrectCurrentTotal() throws DataException {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod();
-        currentDebtors.setTradeDebtors(1L);
-        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
-        currentDebtors.setGreaterThanOneYear(3L);
-        currentDebtors.setOtherDebtors(4L);
-        currentDebtors.setTotal(INVALID_TOTAL);
+        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
+        currentDebtors.setPrepaymentsAndAccruedIncome(2L); currentDebtors.setGreaterThanOneYear(3L);
+        currentDebtors.setOtherDebtors(4L); currentDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction);
 
-        assertTrue(errors.containsError(
-            new Error(INCORRECT_TOTAL_VALUE, CURRENT_TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE, CURRENT_TOTAL_PATH)));
     }
 
     @Test
     @DisplayName("Tests current period missing total throws error")
     void testMissingCurrentTotal() throws DataException {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod();
-        currentDebtors.setTradeDebtors(1L);
+        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
@@ -235,10 +211,7 @@ public class DebtorsValidatorTest {
 
         assertTrue(errors.hasErrors());
 
-        assertTrue(errors.containsError(
-            new Error(INVALID_NOTE_VALUE, CURRENT_TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+        assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE, CURRENT_TOTAL_PATH)));
     }
 
     @Test
@@ -247,8 +220,7 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod();
-        previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
         debtors.setPreviousPeriod(previousDebtors);
 
         when(mockCompanyService.getCompanyProfile(null)).thenThrow(mockServiceException);
@@ -259,12 +231,9 @@ public class DebtorsValidatorTest {
 
     private void addValidCurrentDebtors() {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod();
-        currentDebtors.setTradeDebtors(1L);
-        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
-        currentDebtors.setGreaterThanOneYear(3L);
-        currentDebtors.setOtherDebtors(4L);
-        currentDebtors.setTotal(10L);
+        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
+        currentDebtors.setPrepaymentsAndAccruedIncome(2L); currentDebtors.setGreaterThanOneYear(3L);
+        currentDebtors.setOtherDebtors(4L); currentDebtors.setTotal(10L);
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
@@ -276,8 +245,8 @@ public class DebtorsValidatorTest {
         CompanyAccountApi companyAccountApi = new CompanyAccountApi();
 
         LastAccountsApi lastAccountsApi = new LastAccountsApi();
-
         lastAccountsApi.setType("lastaccounts");
+
         companyAccountApi.setLastAccounts(lastAccountsApi);
         companyProfileApi.setAccounts(companyAccountApi);
 
@@ -286,8 +255,11 @@ public class DebtorsValidatorTest {
 
     private CompanyProfileApi createCompanyProfileSingleYearFiler() {
 
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        return companyProfileApi;
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi(); return companyProfileApi;
+    }
+
+    private Error createError(String error, String path) {
+        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+            ErrorType.VALIDATION.getType());
     }
 }
-
