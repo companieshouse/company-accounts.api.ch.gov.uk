@@ -64,7 +64,8 @@ public class DebtorsValidatorTest {
 
     @BeforeEach
     void setup() {
-        debtors = new Debtors(); errors = new Errors();
+        debtors = new Debtors();
+        errors = new Errors();
         validator = new DebtorsValidator(mockCompanyService);
     }
 
@@ -115,8 +116,8 @@ public class DebtorsValidatorTest {
         assertTrue(
             errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_TRADE_DEBTORS)));
 
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-            PREVIOUS_PREPAYMENTS)));
+        assertTrue(
+            errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_PREPAYMENTS)));
 
         assertTrue(errors
             .containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_GREATER_THAN_ONE_YEAR)));
@@ -133,7 +134,8 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod();
+        previousDebtors.setTradeDebtors(2L);
         previousDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setPreviousPeriod(previousDebtors);
@@ -154,7 +156,8 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod();
+        previousDebtors.setTradeDebtors(2L);
 
         debtors.setPreviousPeriod(previousDebtors);
 
@@ -175,9 +178,12 @@ public class DebtorsValidatorTest {
     @DisplayName("Tests current period incorrect total throws error")
     void testIncorrectCurrentTotal() throws DataException {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
-        currentDebtors.setPrepaymentsAndAccruedIncome(2L); currentDebtors.setGreaterThanOneYear(3L);
-        currentDebtors.setOtherDebtors(4L); currentDebtors.setTotal(INVALID_TOTAL);
+        CurrentPeriod currentDebtors = new CurrentPeriod();
+        currentDebtors.setTradeDebtors(1L);
+        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
+        currentDebtors.setGreaterThanOneYear(3L);
+        currentDebtors.setOtherDebtors(4L);
+        currentDebtors.setTotal(INVALID_TOTAL);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
@@ -191,7 +197,8 @@ public class DebtorsValidatorTest {
     @DisplayName("Tests current period missing total throws error")
     void testMissingCurrentTotal() throws DataException {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
+        CurrentPeriod currentDebtors = new CurrentPeriod();
+        currentDebtors.setTradeDebtors(1L);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
@@ -209,7 +216,8 @@ public class DebtorsValidatorTest {
 
         addValidCurrentDebtors();
 
-        PreviousPeriod previousDebtors = new PreviousPeriod(); previousDebtors.setTradeDebtors(2L);
+        PreviousPeriod previousDebtors = new PreviousPeriod();
+        previousDebtors.setTradeDebtors(2L);
         debtors.setPreviousPeriod(previousDebtors);
 
         when(mockCompanyService.getCompanyProfile(null)).thenThrow(mockServiceException);
@@ -220,9 +228,12 @@ public class DebtorsValidatorTest {
 
     private void addValidCurrentDebtors() {
 
-        CurrentPeriod currentDebtors = new CurrentPeriod(); currentDebtors.setTradeDebtors(1L);
-        currentDebtors.setPrepaymentsAndAccruedIncome(2L); currentDebtors.setGreaterThanOneYear(3L);
-        currentDebtors.setOtherDebtors(4L); currentDebtors.setTotal(10L);
+        CurrentPeriod currentDebtors = new CurrentPeriod();
+        currentDebtors.setTradeDebtors(1L);
+        currentDebtors.setPrepaymentsAndAccruedIncome(2L);
+        currentDebtors.setGreaterThanOneYear(3L);
+        currentDebtors.setOtherDebtors(4L);
+        currentDebtors.setTotal(10L);
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
@@ -244,7 +255,8 @@ public class DebtorsValidatorTest {
 
     private CompanyProfileApi createCompanyProfileSingleYearFiler() {
 
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi(); return companyProfileApi;
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        return companyProfileApi;
     }
 
     private Error createError(String error, String path) {

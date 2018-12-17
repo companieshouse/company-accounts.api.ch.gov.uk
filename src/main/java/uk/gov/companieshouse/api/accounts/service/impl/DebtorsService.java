@@ -20,7 +20,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEnti
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -35,30 +34,24 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class DebtorsService implements ResourceService<Debtors> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String COMPANY_NUMBER = "company_number";
-    private static final String MESSAGE = "message";
 
     private DebtorsRepository repository;
     private DebtorsTransformer transformer;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
     private DebtorsValidator debtorsValidator;
-    private CompanyService companyService;
 
     @Autowired
     public DebtorsService(DebtorsRepository repository,
                           DebtorsTransformer transformer,
                           SmallFullService smallFullService,
-                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator, CompanyService companyService) {
+                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
         this.debtorsValidator = debtorsValidator;
-        this.companyService = companyService;
     }
 
     @Override
