@@ -10,9 +10,8 @@ public interface FilingService {
      * Generate a filing with the ixbrl location that is generated for transaction and accounts id.
      *
      * @param transaction - Transaction information
-     * @param companyAccountEntity - Company Account information
+     * @param companyAccount - Company Account information
      * @return {@link Filing}
      */
-    Filing generateAccountFiling(Transaction transaction,
-        CompanyAccount companyAccount);
+    Filing generateAccountFiling(Transaction transaction, CompanyAccount companyAccount);
 }
