@@ -69,7 +69,7 @@ public class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests default response")
     void canMapDefaultResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.NOT_FOUND, restObject, errors);
+        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.FOUND, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());

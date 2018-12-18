@@ -125,10 +125,19 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> deleteById(String id, HttpServletRequest request) {
+    public ResponseObject<Debtors> deleteById(String id, HttpServletRequest request) throws DataException {
         if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return new ResponseObject<>(ResponseStatus.UPDATED);
+            try {
+                repository.deleteById(id);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } catch (MongoException me) {
+                final Map<String, Object> debugMap = new HashMap<>();
+                debugMap.put("id", id);
+                DataException dataException = new DataException("Failed to delete Debtors", me);
+                LOGGER.errorRequest(request, dataException, debugMap);
+
+                throw dataException;
+            }
         }
         return new ResponseObject<>(ResponseStatus.NOT_FOUND);
     }
