@@ -1561,7 +1561,7 @@ ul.accounts-comps-ct {
             <h2 class="center margin-large">Company Registration Number:
                 <br />
                 <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
-                ({{$company.jurisdiction }})
+                ({{getJurisdiction $companyNumber}})
             </h2>
             {{$period := .small_full_accounts.period}}
             <h2 class="text--center margin-large" >
