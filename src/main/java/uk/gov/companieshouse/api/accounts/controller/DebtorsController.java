@@ -78,10 +78,8 @@ public class DebtorsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to create debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         }
@@ -108,10 +106,8 @@ public class DebtorsController {
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to retrieve debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to retrieve debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             responseEntity = apiResponseMapper.map(de);
         }
@@ -145,10 +141,8 @@ public class DebtorsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to update debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
@@ -168,12 +162,18 @@ public class DebtorsController {
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountsId);
-            debugMap.put(MESSAGE, "Failed to delete debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
+                "Failed to delete debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
         }
+    }
+
+    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String message) {
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put(TRANSACTION_ID, transaction.getId());
+        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+        debugMap.put(MESSAGE, message);
+        return debugMap;
     }
 }
