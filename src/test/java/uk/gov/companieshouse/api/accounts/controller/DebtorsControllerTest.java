@@ -261,4 +261,48 @@ public class DebtorsControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
     }
+
+    @Test
+    @DisplayName("Delete debtors - success")
+    void deleteDebtorsSuccess() throws DataException {
+
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+            mockDebtors);
+        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+            .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+            .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+            controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Delete debtors - data exception thrown")
+    void deleteDebtorsDataException() throws DataException {
+
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        DataException dataException = new DataException("");
+        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+            .thenThrow(dataException);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
 }
