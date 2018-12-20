@@ -57,6 +57,7 @@ public class DebtorsValidator extends BaseValidator {
                     validatePreviousPeriodDebtors(errors, debtors);
 
                 } else {
+
                     validateInconsistentPeriodFiling(debtors, errors);
                 }
             }
@@ -152,7 +153,8 @@ public class DebtorsValidator extends BaseValidator {
             CompanyProfileApi companyProfile =
                 companyService.getCompanyProfile(transaction.getCompanyNumber());
             return (companyProfile != null && companyProfile.getAccounts() != null &&
-                companyProfile.getAccounts().getLastAccounts() != null);
+                companyProfile.getAccounts().getLastAccounts() != null &&
+                companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
 
         } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);
