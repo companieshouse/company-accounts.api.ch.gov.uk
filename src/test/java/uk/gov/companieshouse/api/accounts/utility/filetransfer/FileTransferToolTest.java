@@ -74,7 +74,6 @@ class FileTransferToolTest {
         verify(httpURLConnectionMock, times(1)).getInputStream();
     }
 
-
     @Test
     @DisplayName("File is not downloaded as open connection throw exception")
     void shouldFailToDownloadFileAsOpenConnectionThrowException() throws IOException {
@@ -136,5 +135,4 @@ class FileTransferToolTest {
     private void verifyHttpURLConnectionMockCalls() throws IOException {
         verify(httpURLConnectionMock, times(1)).getResponseCode();
     }
-
 }

@@ -26,7 +26,9 @@ public class FileTransferTool {
     }
 
     /**
-     * It will download a file from a public location using a httpUrlConnection
+     * It will download a file from a public location using a httpUrlConnection. The
+     * httpUrlConnection will use proxy settings if they have been set in the environment
+     * variables.
      *
      * @param fileLocation - Contains the public location of the file.
      * @return {@link String} containing the downloaded file.
@@ -63,7 +65,7 @@ public class FileTransferTool {
     }
 
     /**
-     * Downloads the file form public location when the correct http code is returned.
+     * Downloads the file from a public location when the correct http code is returned.
      *
      * @param httpURLConnection
      * @return {@link String} containing the downloaded file.
