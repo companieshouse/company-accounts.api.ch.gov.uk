@@ -12,6 +12,7 @@ public enum SmallFullLinkType implements LinkType {
     INTANGIBLE_ASSETS_NOTE("intangible_assets_note"),
     PAYMENT("payment"),
     PREVIOUS_PERIOD("previous_period"),
+    STATEMENTS("statements"),
     STOCKS_NOTE("stocks_note"),
     TANGIBLE_ASSETS_NOTE("tangible_assets_note");
 

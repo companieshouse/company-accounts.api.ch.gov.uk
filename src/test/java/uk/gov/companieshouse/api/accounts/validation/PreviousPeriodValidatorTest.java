@@ -1,49 +1,244 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 public class PreviousPeriodValidatorTest {
 
     private static final String PREVIOUS_PERIOD_PATH = "$.previous_period";
     private static final String BALANCE_SHEET_PATH = PREVIOUS_PERIOD_PATH + ".balance_sheet";
-    private static final String TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
+    private static final String FIXED_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
+    private static final String OTHER_LIABILITIES_OR_ASSETS_PATH = BALANCE_SHEET_PATH + ".other_liabilities_or_assets";
+    private static final String OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".net_current_assets";
+    private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
+    private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
+    private static final String CURRENT_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".current_assets.total";
+    private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves.total_shareholders_funds";
 
-    private static final long TANGIBLE = 5;
-    private static final long TOTAL_FIXED_ASSETS = 10;
+    private BalanceSheet balanceSheet;
+    private PreviousPeriod previousPeriod;
+    private Errors errors;
 
     PreviousPeriodValidator validator = new PreviousPeriodValidator();
 
-    PreviousPeriod previousPeriod = new PreviousPeriod();
-    BalanceSheet balanceSheet = new BalanceSheet();
-    Errors errors = new Errors();
+    @BeforeEach
+    void setup() {
+
+        previousPeriod = new PreviousPeriod();
+        balanceSheet = new BalanceSheet();
+        errors = new Errors();
+    }
 
     @Test
-    @DisplayName("Test total fixed assets validation")
-    public void validateTotalFixedAssets() {
+    @DisplayName("SUCCESS - Test Balance Sheet validation with no errors")
+    void validateBalanceSheet() {
+
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(1L);
+        currentAssets.setDebtors(1L);
+        currentAssets.setCashAtBankAndInHand(1L);
+        currentAssets.setTotal(3L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(5L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(2L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setCalledUpShareCapital(1L);
+        capitalAndReserves.setOtherReserves(0L);
+        capitalAndReserves.setProfitAndLoss(0L);
+        capitalAndReserves.setSharePremiumAccount(0L);
+        capitalAndReserves.setTotalShareholdersFunds(1L);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(TANGIBLE);
-        fixedAssets.setTotalFixedAssets(TOTAL_FIXED_ASSETS);
+        fixedAssets.setTangible(2L);
+        fixedAssets.setTotal(2L);
         balanceSheet.setFixedAssets(fixedAssets);
+
+        previousPeriod.setBalanceSheet(balanceSheet);
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with net current assets error")
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsNetCurrentAssetsError() {
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        previousPeriod.setBalanceSheet(balanceSheet);
+
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
+        
+        Errors errors =  validator.validatePreviousPeriod(previousPeriod);
+
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with total assets less current liabilities error")
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilitiesError() {
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(2L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(3L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(2L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        addInvalidFixedAssetsToBalanceSheet();
+        previousPeriod.setBalanceSheet(balanceSheet);
+
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod);
+
+        assertTrue(errors.containsError(
+
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with total net assets error")
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalNetAssetsError() {
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(2L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(2L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(2L);
+        fixedAssets.setTotal(2L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
         previousPeriod.setBalanceSheet(balanceSheet);
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
-        validator.validateTotalFixedAssets(previousPeriod, errors);
+        Errors errors = validator.validatePreviousPeriod(previousPeriod);
 
         assertTrue(errors.containsError(
-            new Error("incorrect_total", TOTAL_PATH,
-                LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType())));
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
 
+    @Test
+    @DisplayName("Test validate whole previous period with multiple errors")
+    void validatePreviousPeriod() {
+
+        addInvalidFixedAssetsToBalanceSheet();
+        addInvalidCurrentAssetsToBalanceSheet();
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setTotalNetAssets(15L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setTotalShareholdersFunds(10L);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+
+        previousPeriod.setBalanceSheet(balanceSheet);
+
+        ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
+        ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
+        ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
+
+        errors = validator.validatePreviousPeriod(previousPeriod);
+
+        assertTrue(errors.hasErrors());
+
+        // Fixed assets error
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", FIXED_ASSETS_TOTAL_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        // Current assets error
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", CURRENT_ASSETS_TOTAL_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        // Other liabilities errors
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        assertTrue(errors.containsError(
+                new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        // Capital and reserves errors
+        assertTrue(errors.containsError(new Error("shareholder_funds_mismatch", TOTAL_SHAREHOLDER_FUNDS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+
+        assertTrue(errors.containsError(new Error("incorrect_total", TOTAL_SHAREHOLDER_FUNDS_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    private void addInvalidFixedAssetsToBalanceSheet() {
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(5L);
+        fixedAssets.setTotal(10L);
+
+        balanceSheet.setFixedAssets(fixedAssets);
+    }
+
+    private void addInvalidCurrentAssetsToBalanceSheet() {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(5L);
+        currentAssets.setDebtors(5L);
+        currentAssets.setCashAtBankAndInHand(5L);
+        currentAssets.setTotal(10L);
+
+        balanceSheet.setCurrentAssets(currentAssets);
     }
 }

@@ -1,12 +1,5 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,6 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -37,20 +38,36 @@ public class OpenTransactionInterceptorTest {
 
         when(httpServletRequestMock.getAttribute(anyString()))
             .thenReturn(createDummyTransaction(true));
+        when(httpServletRequestMock.getMethod()).thenReturn("POST");
 
         assertTrue(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
-    @DisplayName("Tests the interceptor failure when transaction is closed")
+    @DisplayName("Tests the interceptor failure when transaction is closed and not a GET")
     void testPreHandleWithClosedTransaction() {
 
         when(httpServletRequestMock.getAttribute(anyString()))
             .thenReturn(createDummyTransaction(false));
 
+        when(httpServletRequestMock.getMethod()).thenReturn("POST");
+
         assertFalse(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+    }
+
+    @Test
+    @DisplayName("Tests the interceptor with a GET request when transaction is closed")
+    void testPreHandleWithGetClosedTransaction() {
+
+        when(httpServletRequestMock.getAttribute(anyString()))
+                .thenReturn(createDummyTransaction(false));
+
+        when(httpServletRequestMock.getMethod()).thenReturn("GET");
+
+        assertTrue(transactionInterceptor
+                .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test

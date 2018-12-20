@@ -76,7 +76,7 @@ public class SmallFullService implements
             smallFullRepository.insert(baseEntity);
         } catch (DuplicateKeyException dke) {
             LOGGER.errorRequest(request, dke, debugMap);
-            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR, null);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException me) {
             DataException dataException = new DataException(
                 "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);

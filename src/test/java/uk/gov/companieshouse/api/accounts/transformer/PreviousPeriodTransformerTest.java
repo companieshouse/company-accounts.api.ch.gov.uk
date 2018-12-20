@@ -12,9 +12,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.BalanceSheetEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.FixedAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.OtherLiabilitiesOrAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
+
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +30,17 @@ public class PreviousPeriodTransformerTest {
     private static final Long CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID = 5L;
     private static final Long TANGIBLE_VALID = 10L;
     private static final Long FIXED_ASSETS_TOTAL_VALID = 10L;
+    private static final Long CASH_AT_BANK_AND_IN_HAND_VALID = 50L;
+    private static final Long STOCKS_VALID = 100L;
+    private static final Long DEBTORS_VALID = 150L;
+    private static final Long CURRENT_ASSETS_TOTAL_VALID = 300L;
+    private static final Long CALLED_UP_SHARE_CAPITAL_VALID = 3L;
+    private static final Long OTHER_RESERVES_VALID = 6L;
+    private static final Long PROFIT_AND_LOSS_VALID = 9L;
+    private static final Long SHARE_PREMIUM_ACCOUNT_VALID = 15L;
+    private static final Long TOTAL_SHAREHOLDERS_FUNDS_VALID = 45L;
+    private static final Long OTHER_LIABILITIES_OR_ASSETS_VALID = 10L;
+    private static final Long OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID = 10L;
 
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
@@ -48,10 +65,27 @@ public class PreviousPeriodTransformerTest {
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID);
 
+        addFixedAssetsToBalanceSheet(balanceSheet);
+        addCurrentAssetsToBalanceSheet(balanceSheet);
+        addCapitalAndReservesToBalanceSheet(balanceSheet);
+
         PreviousPeriod previousPeriod = new PreviousPeriod();
         previousPeriod.setEtag(ETAG);
         previousPeriod.setKind(KIND);
         previousPeriod.setLinks(new HashMap<>());
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(TANGIBLE_VALID);
+        fixedAssets.setTotal(FIXED_ASSETS_TOTAL_VALID);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets =  new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
         previousPeriod.setBalanceSheet(balanceSheet);
 
         PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer
@@ -61,10 +95,54 @@ public class PreviousPeriodTransformerTest {
 
         assertNotNull(previousPeriodEntity);
         assertEquals(ETAG, data.getEtag());
+
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID,
             data.getBalanceSheetEntity().getCalledUpShareCapitalNotPaid());
+
+        assertEquals(CASH_AT_BANK_AND_IN_HAND_VALID, data.getBalanceSheetEntity().getCurrentAssets().getCashAtBankAndInHand());
+        assertEquals(STOCKS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getStocks());
+        assertEquals(DEBTORS_VALID, data.getBalanceSheetEntity().getCurrentAssets().getDebtors());
+        assertEquals(CURRENT_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getCurrentAssets().getTotal());
+
+        assertEquals(CALLED_UP_SHARE_CAPITAL_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getCalledUpShareCapital());
+        assertEquals(OTHER_RESERVES_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getOtherReserves());
+        assertEquals(PROFIT_AND_LOSS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getProfitAndLoss());
+        assertEquals(SHARE_PREMIUM_ACCOUNT_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getSharePremiumAccount());
+        assertEquals(TOTAL_SHAREHOLDERS_FUNDS_VALID, data.getBalanceSheetEntity().getCapitalAndReservesEntity().getTotalShareholdersFunds());
+
+        assertEquals(TANGIBLE_VALID, data.getBalanceSheetEntity().getFixedAssets().getTangible());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, data.getBalanceSheetEntity().getFixedAssets().getTotal());
+
+        testEntityAssertsOtherLiabilitiesOrAssetsEntity(data);
+
         assertEquals(KIND, data.getKind());
         assertEquals(new HashMap<>(), data.getLinks());
+    }
+
+    private void addCapitalAndReservesToBalanceSheet(BalanceSheet balanceSheet) {
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setSharePremiumAccount(SHARE_PREMIUM_ACCOUNT_VALID);
+        capitalAndReserves.setProfitAndLoss(PROFIT_AND_LOSS_VALID);
+        capitalAndReserves.setOtherReserves(OTHER_RESERVES_VALID);
+        capitalAndReserves.setCalledUpShareCapital(CALLED_UP_SHARE_CAPITAL_VALID);
+        capitalAndReserves.setTotalShareholdersFunds(TOTAL_SHAREHOLDERS_FUNDS_VALID);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+    }
+
+    private void addCurrentAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setCashAtBankAndInHand(CASH_AT_BANK_AND_IN_HAND_VALID);
+        currentAssets.setDebtors(DEBTORS_VALID);
+        currentAssets.setStocks(STOCKS_VALID);
+        currentAssets.setTotal(CURRENT_ASSETS_TOTAL_VALID);
+        balanceSheet.setCurrentAssets(currentAssets);
+    }
+
+    private void addFixedAssetsToBalanceSheet(BalanceSheet balanceSheet) {
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(TANGIBLE_VALID);
+        fixedAssets.setTotal(FIXED_ASSETS_TOTAL_VALID);
+        balanceSheet.setFixedAssets(fixedAssets);
     }
 
     @Test
@@ -75,9 +153,17 @@ public class PreviousPeriodTransformerTest {
 
         FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
         fixedAssetsEntity.setTangible(TANGIBLE_VALID);
-        fixedAssetsEntity.setTotalFixedAssets(FIXED_ASSETS_TOTAL_VALID);
+        fixedAssetsEntity.setTotal(FIXED_ASSETS_TOTAL_VALID);
 
         balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
+
+        OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity =  new OtherLiabilitiesOrAssetsEntity();
+        otherLiabilitiesOrAssetsEntity.setCreditorsDueWithinOneYear(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssetsEntity.setNetCurrentAssets(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssetsEntity.setPrepaymentsAndAccruedIncome(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssetsEntity.setProvisionForLiabilities(OTHER_LIABILITIES_OR_ASSETS_VALID);
+        otherLiabilitiesOrAssetsEntity.setTotalAssetsLessCurrentLiabilities(OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID);
+        balanceSheetEntity.setOtherLiabilitiesOrAssetsEntity(otherLiabilitiesOrAssetsEntity);
 
         PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
         PreviousPeriodDataEntity previousPeriodDataEntity = new PreviousPeriodDataEntity();
@@ -93,8 +179,30 @@ public class PreviousPeriodTransformerTest {
         assertEquals("etag", previousPeriod.getEtag());
         assertEquals(CALLED_UP_SHARE_CAPITAL_NOT_PAID_VALID, previousPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid());
         assertEquals(TANGIBLE_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTangible());
-        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotalFixedAssets());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotal());
+        assertEquals(FIXED_ASSETS_TOTAL_VALID, previousPeriod.getBalanceSheet().getFixedAssets().getTotal());
+
+        testRestAssertsOtherLiabilitiesOrAssets(previousPeriod);
+
         assertEquals("kind", previousPeriod.getKind());
         assertEquals(new HashMap<>(), previousPeriod.getLinks());
+    }
+
+    private void testEntityAssertsOtherLiabilitiesOrAssetsEntity(PreviousPeriodDataEntity data) {
+        OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity = data.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity();
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssetsEntity.getCreditorsDueWithinOneYear());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssetsEntity.getNetCurrentAssets());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssetsEntity.getPrepaymentsAndAccruedIncome());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssetsEntity.getProvisionForLiabilities());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID, otherLiabilitiesOrAssetsEntity.getTotalAssetsLessCurrentLiabilities());
+    }
+
+    private void testRestAssertsOtherLiabilitiesOrAssets(PreviousPeriod data) {
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = data.getBalanceSheet().getOtherLiabilitiesOrAssets();
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssets.getNetCurrentAssets());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_VALID, otherLiabilitiesOrAssets.getProvisionForLiabilities());
+        assertEquals(OTHER_LIABILITIES_OR_ASSETS_TOTAL_VALID, otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities());
     }
 }

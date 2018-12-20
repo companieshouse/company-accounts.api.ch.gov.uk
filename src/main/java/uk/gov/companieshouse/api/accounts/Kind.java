@@ -12,6 +12,7 @@ public enum Kind {
     CREDITORS_DUE_WITHIN_ONE_YEAR_NOTE("small-full-accounts#creditors-due-within-one-year-note"),
     DEBTORS_NOTE("small-full-accounts#debtors-note"),
     INTANGIBLE_ASSETS_NOTE("small-full-accounts#intangible-assets-note"),
+    SMALL_FULL_STATEMENT("small-full-accounts#statements"),
     STOCKS_NOTE("small-full-accounts#stocks-note"),
     TANGIBLE_ASSETS_NOTE("small-full-accounts#tangible-assets-note");
 

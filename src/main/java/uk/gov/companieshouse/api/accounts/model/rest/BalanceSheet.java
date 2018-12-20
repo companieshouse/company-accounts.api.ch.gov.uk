@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
 public class BalanceSheet {
@@ -21,6 +22,19 @@ public class BalanceSheet {
     @JsonProperty("fixed_assets")
     private FixedAssets fixedAssets;
 
+    @Valid
+    @JsonProperty("other_liabilities_or_assets")
+    private OtherLiabilitiesOrAssets otherLiabilitiesOrAssets;
+
+    @Valid
+    @JsonProperty("current_assets")
+    private CurrentAssets currentAssets;
+
+    @Valid
+    @NotNull
+    @JsonProperty("capital_and_reserves")
+    private CapitalAndReserves capitalAndReserves;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -35,5 +49,30 @@ public class BalanceSheet {
 
     public FixedAssets getFixedAssets() {
         return fixedAssets;
+    }
+
+    public OtherLiabilitiesOrAssets getOtherLiabilitiesOrAssets() {
+        return otherLiabilitiesOrAssets;
+    }
+
+    public void setOtherLiabilitiesOrAssets(
+            OtherLiabilitiesOrAssets otherLiabilitiesOrAssets) {
+        this.otherLiabilitiesOrAssets = otherLiabilitiesOrAssets;
+    }
+
+    public CurrentAssets getCurrentAssets() {
+        return currentAssets;
+    }
+
+    public void setCurrentAssets(CurrentAssets currentAssets) {
+        this.currentAssets = currentAssets;
+    }
+
+    public CapitalAndReserves getCapitalAndReserves() {
+        return capitalAndReserves;
+    }
+
+    public void setCapitalAndReserves(CapitalAndReserves capitalAndReserves) {
+        this.capitalAndReserves = capitalAndReserves;
     }
 }
