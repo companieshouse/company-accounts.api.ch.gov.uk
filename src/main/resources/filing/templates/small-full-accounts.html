@@ -1597,13 +1597,15 @@ ul.accounts-comps-ct {
                         </td>
                         <td></td>
                     </tr>
-                    {{if .small_full_accounts.notes}}
+                    {{if .small_full_accounts.additional_notes}}
                         <tr>
                             <td class="strong">
                                 <a href="#AdditionalNotesSection">Additional notes</a>
                             </td>
                             <td></td>
                         </tr>
+                    {{end}}
+                    {{if .small_full_accounts.balance_sheet_notes}}
                         <tr>
                             <td class="strong">
                                 <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
@@ -2211,8 +2213,11 @@ ul.accounts-comps-ct {
           <p class="text--center">The notes form part of these financial statements</p>
         </div>
 
+        <!-- ADDITIONAL NOTES START -->
+        {{if $additionalNotes := .small_full_accounts.additional_notes}}
+
         <!-- ACCOUNTING POLICIES START -->
-        {{if $accountingPolicies := .small_full_accounts.accounting_policies}}
+        {{if $accountingPolicies := $additionalNotes.accounting_policies}}
 
         <div class="page">
           <div class="header">
@@ -2289,6 +2294,9 @@ ul.accounts-comps-ct {
 
         {{end}}
         <!-- ACCOUNTING POLICIES END -->
+
+        {{end}}
+        <!-- NOTES END -->
 
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
         {{if $postBalanceSheetEvents := .small_full_accounts.notes.post_balance_sheet_events}}
