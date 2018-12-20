@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,13 +31,6 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,14 +76,10 @@ public class DebtorsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to create debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         }
-
         return responseEntity;
     }
 
@@ -107,10 +102,7 @@ public class DebtorsController {
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to retrieve debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to retrieve debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             responseEntity = apiResponseMapper.map(de);
         }
@@ -144,12 +136,17 @@ public class DebtorsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to update debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
+    }
+
+    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
+        final Map<String, Object> debugMap = new HashMap<>();
+        debugMap.put(TRANSACTION_ID, transaction.getId());
+        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
+        debugMap.put(MESSAGE, s);
+        return debugMap;
     }
 }
