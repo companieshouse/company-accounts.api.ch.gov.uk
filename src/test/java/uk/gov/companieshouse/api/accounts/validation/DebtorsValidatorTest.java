@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -245,7 +246,7 @@ public class DebtorsValidatorTest {
         CompanyAccountApi companyAccountApi = new CompanyAccountApi();
 
         LastAccountsApi lastAccountsApi = new LastAccountsApi();
-        lastAccountsApi.setType("lastaccounts");
+        lastAccountsApi.setPeriodStartOn(LocalDate.now());
 
         companyAccountApi.setLastAccounts(lastAccountsApi);
         companyProfileApi.setAccounts(companyAccountApi);
