@@ -2,14 +2,17 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.Valid;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Debtors extends RestObject {
 
+    @Valid
     @JsonProperty("current_period")
     private CurrentPeriod currentPeriod;
 
+    @Valid
     @JsonProperty("previous_period")
     private PreviousPeriod previousPeriod;
 
