@@ -13,8 +13,8 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 @Component
 public class HttpURLConnectionHandlerImpl implements HttpURLConnectionHandler {
 
-    private static final String PROXY_ADDRESSS_ENV_VAR = "HTTP_URL_CONNECTION_HTTP_PROXY_ADDR";
-    private static final String PROXY_PORT_ENV_VAR = "HTTP_URL_CONNECTION_HTTP_PROXY_PORT";
+    private static final String PROXY_ADDRESS_ENV_VAR = "HTTP_URL_CONNECTION_PROXY_ADDR";
+    private static final String PROXY_PORT_ENV_VAR = "HTTP_URL_CONNECTION_PROXY_PORT";
     private final String connectionHandlerProxyAddress;
     private final Integer connectionHandlerProxyPort;
     private final EnvironmentReader environmentReader;
@@ -24,7 +24,7 @@ public class HttpURLConnectionHandlerImpl implements HttpURLConnectionHandler {
 
         this.environmentReader = environmentReader;
 
-        connectionHandlerProxyAddress = environmentReader.getOptionalString(PROXY_ADDRESSS_ENV_VAR);
+        connectionHandlerProxyAddress = environmentReader.getOptionalString(PROXY_ADDRESS_ENV_VAR);
         connectionHandlerProxyPort = environmentReader.getOptionalInteger(PROXY_PORT_ENV_VAR);
     }
 
