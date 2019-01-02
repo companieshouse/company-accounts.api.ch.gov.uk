@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
@@ -33,15 +34,17 @@ class TnepValidationServiceImplTest {
     private static final String VALIDATION_STATUS_OK = "OK";
 
     @Mock
-    RestTemplate restTemplate;
+    private RestTemplate restTemplateMock;
     @Mock
-    EnvironmentReader environmentReader;
+    private EnvironmentReader environmentReaderMock;
 
     private TnepValidationServiceImpl tnepValidationService;
 
     @BeforeEach
     void setup() {
-        tnepValidationService = new TnepValidationServiceImpl(restTemplate, environmentReader);
+        tnepValidationService = new TnepValidationServiceImpl(
+            restTemplateMock,
+            environmentReaderMock);
     }
 
     @Test
@@ -53,7 +56,7 @@ class TnepValidationServiceImplTest {
 
         mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
             .thenReturn(results);
 
         assertTrue(validateIxbrl());
@@ -68,7 +71,7 @@ class TnepValidationServiceImplTest {
 
         mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
             .thenReturn(results);
 
         assertFalse(validateIxbrl());
@@ -79,7 +82,7 @@ class TnepValidationServiceImplTest {
 
         mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
             .thenReturn(null);
 
         assertFalse(validateIxbrl());
@@ -90,7 +93,7 @@ class TnepValidationServiceImplTest {
 
         mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
             .thenThrow(new RestClientException(VALIDATION_STATUS_UNIT_TEST_FAILURE));
 
         assertFalse(validateIxbrl());
@@ -105,7 +108,7 @@ class TnepValidationServiceImplTest {
 
     private void mockEnvironmentReaderGetMandatoryString(String returnedMandatoryValue) {
 
-        when(environmentReader.getMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI))
+        when(environmentReaderMock.getMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI))
             .thenReturn(returnedMandatoryValue);
     }
 
