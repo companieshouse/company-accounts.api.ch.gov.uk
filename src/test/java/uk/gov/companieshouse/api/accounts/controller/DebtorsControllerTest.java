@@ -198,9 +198,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - has binding errors")
     void updateDebtorsBindingErrors() {
 
-        when(mockRequest.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(mockSmallFull);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        setupTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(true);
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
@@ -216,9 +214,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - success")
     void updateAccountingPoliciesSuccess() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        setupTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -242,9 +238,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - data exception thrown")
     void updateAccountingPoliciesDataException() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        setupTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         DataException dataException = new DataException("");
@@ -266,7 +260,7 @@ public class DebtorsControllerTest {
     @DisplayName("Delete debtors - success")
     void deleteDebtorsSuccess() throws DataException {
 
-        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        setupTransactionAndLinks();
         when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -290,7 +284,7 @@ public class DebtorsControllerTest {
     @DisplayName("Delete debtors - data exception thrown")
     void deleteDebtorsDataException() throws DataException {
 
-        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
         when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
         DataException dataException = new DataException("");
@@ -304,5 +298,11 @@ public class DebtorsControllerTest {
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    private void setupTransactionAndLinks() {
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
+        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
+        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
     }
 }

@@ -151,6 +151,8 @@ public class DebtorsController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                                HttpServletRequest request) {
 
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -158,6 +160,10 @@ public class DebtorsController {
 
         try {
             ResponseObject<Debtors> response = debtorsService.deleteById(debtorsId, request);
+
+            if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) != null) {
+                smallFull.getLinks().remove(SmallFullLinkType.DEBTORS_NOTE.getLink());
+            }
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
