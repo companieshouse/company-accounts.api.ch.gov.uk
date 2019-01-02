@@ -1,11 +1,15 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -14,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -21,40 +26,45 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private DebtorsRepository repository;
     private DebtorsTransformer transformer;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
+    private DebtorsValidator debtorsValidator;
 
     @Autowired
     public DebtorsService(DebtorsRepository repository,
                           DebtorsTransformer transformer,
                           SmallFullService smallFullService,
-                          KeyIdGenerator keyIdGenerator) {
+                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
+        this.debtorsValidator = debtorsValidator;
     }
 
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
                                           String companyAccountsId, HttpServletRequest request)
         throws DataException {
+
+        Errors errors = debtorsValidator.validateDebtors(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
