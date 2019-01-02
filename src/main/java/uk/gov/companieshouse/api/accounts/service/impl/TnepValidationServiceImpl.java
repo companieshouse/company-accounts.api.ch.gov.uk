@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -32,11 +30,12 @@ public class TnepValidationServiceImpl implements TnepValidationService {
     private RestTemplate restTemplate;
 
     private EnvironmentReader environmentReader;
-    
+
     @Autowired
-    public TnepValidationServiceImpl(RestTemplate restTemplate, EnvironmentReader environmentReader) {
-    	this.restTemplate = restTemplate;
-    	this.environmentReader = environmentReader;
+    public TnepValidationServiceImpl(RestTemplate restTemplate,
+        EnvironmentReader environmentReader) {
+        this.restTemplate = restTemplate;
+        this.environmentReader = environmentReader;
     }
 
     /**
@@ -170,8 +169,8 @@ public class TnepValidationServiceImpl implements TnepValidationService {
          * Constructs a new {@link FileMessageResource}.
          *
          * @param byteArray A byte array containing data from a {@link MimeMessage}.
-         * @param filename  The filename to be associated with the {@link MimeMessage} in the form
-         *                  data.
+         * @param filename The filename to be associated with the {@link MimeMessage} in the form
+         * data.
          */
         public FileMessageResource(final byte[] byteArray, final String filename) {
             super(byteArray);
