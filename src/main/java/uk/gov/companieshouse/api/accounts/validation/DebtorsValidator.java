@@ -139,15 +139,13 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
             Long traderDebtors =
                 Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
             Long prepayments =
-                Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
-                        .orElse(0L);
+                Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
             Long otherDebtors =
                 Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
             Long moreThanOneYear =
                 Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getCurrentPeriod().getTotal();
-
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
 
             validateAggregateTotal(total, sum, CURRENT_TOTAL_PATH, errors);
@@ -160,15 +158,13 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
             Long traderDebtors =
                 Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
             Long prepayments =
-                Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome())
-                        .orElse(0L);
+                Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome()).orElse(0L);
             Long otherDebtors =
                 Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
             Long moreThanOneYear =
                 Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getPreviousPeriod().getTotal();
-
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
 
             validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
