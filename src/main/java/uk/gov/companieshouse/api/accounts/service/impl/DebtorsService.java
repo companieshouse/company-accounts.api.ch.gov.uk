@@ -42,10 +42,9 @@ public class DebtorsService implements ResourceService<Debtors> {
     private DebtorsValidator debtorsValidator;
 
     @Autowired
-    public DebtorsService(DebtorsRepository repository,
-                          DebtorsTransformer transformer,
-                          SmallFullService smallFullService,
-                          KeyIdGenerator keyIdGenerator, DebtorsValidator debtorsValidator) {
+    public DebtorsService(DebtorsRepository repository, DebtorsTransformer transformer,
+                          SmallFullService smallFullService, KeyIdGenerator keyIdGenerator,
+                          DebtorsValidator debtorsValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
@@ -56,10 +55,11 @@ public class DebtorsService implements ResourceService<Debtors> {
 
     @Override
     public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
-                                          String companyAccountsId, HttpServletRequest request)
-        throws DataException {
+                                          String companyAccountsId,
+                                          HttpServletRequest request) throws DataException {
 
-        Errors errors = debtorsValidator.validateDebtors(rest, transaction, companyAccountsId, request);
+        Errors errors =
+            debtorsValidator.validateDebtors(rest, transaction, companyAccountsId, request);
 
         if (errors.hasErrors()) {
 
@@ -76,26 +76,30 @@ public class DebtorsService implements ResourceService<Debtors> {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
 
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountsId, entity.getId()));
+            LOGGER.errorRequest(request, e,
+                getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
 
-            DataException dataException = new DataException("Failed to insert " + ResourceName.DEBTORS.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountsId, entity.getId()));
+            DataException dataException =
+                new DataException("Failed to insert " + ResourceName.DEBTORS.getName(), e);
+            LOGGER.errorRequest(request, dataException,
+                getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             throw dataException;
         }
 
-        smallFullService
-            .addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
-                getSelfLinkFromDebtorsEntity(entity), request);
+        smallFullService.addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
+            getSelfLinkFromDebtorsEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction,
+                                          String companyAccountsId,
+                                          HttpServletRequest request) throws DataException {
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
         DebtorsEntity entity = transformer.transform(rest);
@@ -104,8 +108,10 @@ public class DebtorsService implements ResourceService<Debtors> {
         try {
             repository.save(entity);
         } catch (MongoException me) {
-            DataException dataException = new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountsId, entity.getId()));
+            DataException dataException =
+                new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
+            LOGGER.errorRequest(request, dataException,
+                getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             throw dataException;
         }
@@ -113,7 +119,8 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Debtors> findById(String id,
+                                            HttpServletRequest request) throws DataException {
         DebtorsEntity entity;
 
         try {
@@ -141,10 +148,9 @@ public class DebtorsService implements ResourceService<Debtors> {
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
-            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
-            + ResourceName.DEBTORS.getName();
+        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/" +
+            ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/" +
+            ResourceName.SMALL_FULL.getName() + "/" + ResourceName.DEBTORS.getName();
     }
 
     public String getSelfLinkFromDebtorsEntity(DebtorsEntity entity) {
@@ -159,7 +165,8 @@ public class DebtorsService implements ResourceService<Debtors> {
         return map;
     }
 
-    private void setMetadataOnRestObject(Debtors rest, Transaction transaction, String companyAccountsId) {
+    private void setMetadataOnRestObject(Debtors rest, Transaction transaction,
+                                         String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
