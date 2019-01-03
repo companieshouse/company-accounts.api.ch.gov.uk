@@ -41,10 +41,10 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
     private static final String PREVIOUS_PREPAYMENTS =
-        DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
+            DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR =
-        DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
+            DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
     private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
@@ -110,11 +110,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     private void validateRequiredCurrentPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getCurrentPeriod().getTradeDebtors() != null ||
-            debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
-            debtors.getCurrentPeriod().getOtherDebtors() != null ||
-            debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
-            !debtors.getCurrentPeriod().getDetails().isEmpty()) &&
-            debtors.getCurrentPeriod().getTotal() == null) {
+                debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
+                debtors.getCurrentPeriod().getOtherDebtors() != null ||
+                debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
+                !debtors.getCurrentPeriod().getDetails().isEmpty()) &&
+                debtors.getCurrentPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, CURRENT_TOTAL_PATH);
         }
@@ -123,10 +123,10 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
-            debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null ||
-            debtors.getPreviousPeriod().getOtherDebtors() != null ||
-            debtors.getPreviousPeriod().getGreaterThanOneYear() != null) &&
-            debtors.getPreviousPeriod().getTotal() == null) {
+                debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null ||
+                debtors.getPreviousPeriod().getOtherDebtors() != null ||
+                debtors.getPreviousPeriod().getGreaterThanOneYear() != null) &&
+                debtors.getPreviousPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, PREVIOUS_TOTAL_PATH);
         }
@@ -136,14 +136,14 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         if (debtors.getCurrentPeriod().getTotal() != null) {
             Long traderDebtors =
-                Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
+                    Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
             Long prepayments =
-                Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
-                        .orElse(0L);
+                    Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
+                            .orElse(0L);
             Long otherDebtors =
-                Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
+                    Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
             Long moreThanOneYear =
-                Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
+                    Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getCurrentPeriod().getTotal();
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
@@ -156,14 +156,14 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         if (debtors.getPreviousPeriod().getTotal() != null) {
             Long traderDebtors =
-                Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
+                    Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
             Long prepayments =
-                Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome())
-                        .orElse(0L);
+                    Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome())
+                            .orElse(0L);
             Long otherDebtors =
-                Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
+                    Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
             Long moreThanOneYear =
-                Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
+                    Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getPreviousPeriod().getTotal();
             Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
@@ -176,10 +176,10 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         try {
             CompanyProfileApi companyProfile =
-                companyService.getCompanyProfile(transaction.getCompanyNumber());
+                    companyService.getCompanyProfile(transaction.getCompanyNumber());
             return (companyProfile != null && companyProfile.getAccounts() != null &&
-                companyProfile.getAccounts().getLastAccounts() != null &&
-                companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
+                    companyProfile.getAccounts().getLastAccounts() != null &&
+                    companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
 
         } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);
@@ -224,47 +224,57 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     }
 
     private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request,
-                                             String CompanyAccountsId,
+                                             String companyAccountsId,
                                              Debtors debtors) throws DataException {
 
         ResponseObject<PreviousPeriod> previousPeriodResponseObject =
-            getPreviousPeriodResponseObject(request, CompanyAccountsId);
+                getPreviousPeriodResponseObject(request, companyAccountsId);
 
-        // if note is null and balance sheet value isn't add error
-        if (isDebtorsNotePreviousTotalNull(debtors) &&
-            (!isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject))) {
+        checkIfPreviousNoteIsNullAndBalanceNot(errors, debtors, previousPeriodResponseObject);
+        checkIsPrevousBalanceNullAndNoteNot(errors, debtors, previousPeriodResponseObject);
+        checkIfPreviousBalanceAndNoteValuesAreEqual(errors, debtors, previousPeriodResponseObject);
+    }
 
-            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        }
-
-        // if balance sheet value is null and note value isn't add error
-        if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-            (!isDebtorsNotePreviousTotalNull(debtors))) {
-
-            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        }
-
-        // if neither are null and values do not match add error
+    private void checkIfPreviousBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
+                                                             ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
         if (!isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-            (!isDebtorsNotePreviousTotalNull(debtors))
+                (!isDebtorsNotePreviousTotalNull(debtors))
 
-            && (!debtors.getPreviousPeriod().getTotal().equals(
-            previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                        .getDebtors()))) {
+                && (!debtors.getPreviousPeriod().getTotal().equals(
+                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                        .getDebtors()))) {
+
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
+        }
+    }
+
+    private void checkIsPrevousBalanceNullAndNoteNot(Errors errors, Debtors debtors,
+                                                     ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
+        if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
+                (!isDebtorsNotePreviousTotalNull(debtors))) {
+
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfPreviousNoteIsNullAndBalanceNot(Errors errors, Debtors debtors,
+                                                        ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
+        if (isDebtorsNotePreviousTotalNull(debtors) &&
+                (!isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject))) {
 
             addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
         }
     }
 
     private ResponseObject<PreviousPeriod> getPreviousPeriodResponseObject(
-        HttpServletRequest request, String CompanyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(CompanyAccountsId);
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
         ResponseObject<PreviousPeriod> previousPeriodResponseObject;
 
         try {
             previousPeriodResponseObject =
-                previousPeriodService.findById(previousPeriodId, request);
+                    previousPeriodService.findById(previousPeriodId, request);
         } catch (MongoException e) {
 
             throw new DataException(e.getMessage(), e);
@@ -277,30 +287,40 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                                             String companyAccountsId) throws DataException {
 
         ResponseObject<CurrentPeriod> currentPeriodResponseObject =
-            getCurrentPeriodResponseObject(request, companyAccountsId);
+                getCurrentPeriodResponseObject(request, companyAccountsId);
 
-        // if note is null and balance sheet isn't null add error
-       if (isDebtorsNoteCurrentTotalNull(debtors) &&
-            currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                       .getDebtors() != null) {
+        checkIfCurrentNoteIsNullAndBalanceSheetNot(errors, debtors, currentPeriodResponseObject);
+        checkIfCurrentBalanceSheetIsNullAndNoteNot(errors, debtors, currentPeriodResponseObject);
+        checkIfCurrentBalanceAndNoteValuesAreEqual(errors, debtors, currentPeriodResponseObject);
+    }
 
-            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
-        }
-
-        // if balance sheet value is null and note value isn't add error
-        if (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject) &&
-            (!isDebtorsNoteCurrentTotalNull(debtors))) {
-
-            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
-        }
-
-        // if neither are null and values don't match add error
+    private void checkIfCurrentBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
+                                                            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
         if (!(isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject)) &&
-            (!isDebtorsNoteCurrentTotalNull(debtors))
+                (!isDebtorsNoteCurrentTotalNull(debtors))
 
-            && (debtors.getCurrentPeriod().getTotal() !=
-            currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                       .getDebtors())) {
+                && (debtors.getCurrentPeriod().getTotal() !=
+                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                        .getDebtors())) {
+
+            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentBalanceSheetIsNullAndNoteNot(Errors errors, Debtors debtors,
+                                                            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
+        if (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject) &&
+                (!isDebtorsNoteCurrentTotalNull(debtors))) {
+
+            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentNoteIsNullAndBalanceSheetNot(Errors errors, Debtors debtors,
+                                                            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
+        if (isDebtorsNoteCurrentTotalNull(debtors) &&
+                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                        .getDebtors() != null) {
 
             addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
         }
@@ -327,28 +347,28 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     }
 
     private boolean isCurrentPeriodBalanceSheetDebtorsNull(
-        ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
+            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
 
         return currentPeriodResponseObject.getData() == null ||
-            currentPeriodResponseObject.getData().getBalanceSheet() == null ||
-            currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
-            currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                       .getDebtors() == null;
+                currentPeriodResponseObject.getData().getBalanceSheet() == null ||
+                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
+                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                        .getDebtors() == null;
     }
 
     private boolean isPreviousPeriodBalanceSheetDebtorsNull(
-        ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
+            ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
 
         return previousPeriodResponseObject.getData() == null ||
-            previousPeriodResponseObject.getData().getBalanceSheet() == null ||
-            previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
-            previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                        .getDebtors() == null;
+                previousPeriodResponseObject.getData().getBalanceSheet() == null ||
+                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
+                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                        .getDebtors() == null;
     }
 
     private boolean isDebtorsNotePreviousTotalNull(Debtors debtors) {
 
         return debtors.getPreviousPeriod() == null ||
-            debtors.getPreviousPeriod().getTotal() == null;
+                debtors.getPreviousPeriod().getTotal() == null;
     }
 }

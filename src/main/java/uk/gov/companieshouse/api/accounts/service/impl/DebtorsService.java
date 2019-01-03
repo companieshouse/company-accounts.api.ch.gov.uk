@@ -59,7 +59,7 @@ public class DebtorsService implements ResourceService<Debtors> {
                                           HttpServletRequest request) throws DataException {
 
         Errors errors =
-            debtorsValidator.validateDebtors(rest, transaction, companyAccountsId, request);
+                debtorsValidator.validateDebtors(rest, transaction, companyAccountsId, request);
 
         if (errors.hasErrors()) {
 
@@ -77,21 +77,21 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (DuplicateKeyException e) {
 
             LOGGER.errorRequest(request, e,
-                getDebugMap(transaction, companyAccountsId, entity.getId()));
+                    getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
 
             DataException dataException =
-                new DataException("Failed to insert " + ResourceName.DEBTORS.getName(), e);
+                    new DataException("Failed to insert " + ResourceName.DEBTORS.getName(), e);
             LOGGER.errorRequest(request, dataException,
-                getDebugMap(transaction, companyAccountsId, entity.getId()));
+                    getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             throw dataException;
         }
 
         smallFullService.addLink(companyAccountsId, SmallFullLinkType.DEBTORS_NOTE,
-            getSelfLinkFromDebtorsEntity(entity), request);
+                getSelfLinkFromDebtorsEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -109,9 +109,9 @@ public class DebtorsService implements ResourceService<Debtors> {
             repository.save(entity);
         } catch (MongoException me) {
             DataException dataException =
-                new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
+                    new DataException("Failed to update" + ResourceName.DEBTORS.getName(), me);
             LOGGER.errorRequest(request, dataException,
-                getDebugMap(transaction, companyAccountsId, entity.getId()));
+                    getDebugMap(transaction, companyAccountsId, entity.getId()));
 
             throw dataException;
         }
@@ -149,8 +149,8 @@ public class DebtorsService implements ResourceService<Debtors> {
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/" +
-            ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/" +
-            ResourceName.SMALL_FULL.getName() + "/" + ResourceName.DEBTORS.getName();
+                ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/" +
+                ResourceName.SMALL_FULL.getName() + "/" + ResourceName.DEBTORS.getName();
     }
 
     public String getSelfLinkFromDebtorsEntity(DebtorsEntity entity) {
