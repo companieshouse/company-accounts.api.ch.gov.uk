@@ -288,15 +288,15 @@ public class DebtorsValidatorTest {
     @DisplayName("Tests current period missing total throws error")
     void testMissingCurrentTotal() throws DataException {
 
+        CurrentPeriod currentDebtors = new CurrentPeriod();
+        currentDebtors.setTradeDebtors(1L);
+
         when(mockCurrentPeriodService.generateID(companyAccountsId)).thenReturn(companyAccountsId);
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(companyAccountsId, mockRequest);
 
         when(mockPreviousPeriodService.generateID(companyAccountsId)).thenReturn(companyAccountsId);
         doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(companyAccountsId,
             mockRequest);
-
-        CurrentPeriod currentDebtors = new CurrentPeriod();
-        currentDebtors.setTradeDebtors(1L);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
@@ -599,11 +599,6 @@ public class DebtorsValidatorTest {
         return previousPeriodResponseObject;
     }
 
-
-    // test successfull cross validation
-    // test nll balance sheet and note value
-    // test balance sheet value and null note
-    // test mismatched values
     private void addValidCurrentDebtors() {
 
         CurrentPeriod currentDebtors = new CurrentPeriod();
@@ -632,8 +627,6 @@ public class DebtorsValidatorTest {
         return companyProfileApi;
     }
 
-
-
     private CompanyProfileApi createCompanyProfileSingleYearFiler() {
 
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
@@ -655,50 +648,4 @@ public class DebtorsValidatorTest {
 
         debtors.setPreviousPeriod(previousDebtors);
     }
-
-    private uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod  createCurrentPeriodWithDifferentValue(){
-        uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriod = new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
-        BalanceSheet balanceSheet = new BalanceSheet();
-        CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setDebtors(4L);
-        balanceSheet.setCurrentAssets(currentAssets);
-        currentPeriod.setBalanceSheet(balanceSheet);
-
-        return currentPeriod;
-    }
-
-    private uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod createValidCurrentPeriodWithDifferentValue(){
-        uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriod = new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
-        BalanceSheet balanceSheet = new BalanceSheet();
-        CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setDebtors(1L);
-        balanceSheet.setCurrentAssets(currentAssets);
-        currentPeriod.setBalanceSheet(balanceSheet);
-
-        return currentPeriod;
-    }
-
-    private uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod createPreviousPeriodWithDifferentValue(){
-        uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriod =
-            new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
-        BalanceSheet balanceSheet = new BalanceSheet();
-        CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setDebtors(4L);
-        balanceSheet.setCurrentAssets(currentAssets);
-        previousPeriod.setBalanceSheet(balanceSheet);
-
-        return previousPeriod;
-    }
-
-    private uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod createValidPreviousPeriod(){
-        uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriod =
-            new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
-        BalanceSheet balanceSheet = new BalanceSheet();
-        CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setDebtors(1L);
-        balanceSheet.setCurrentAssets(currentAssets);
-        previousPeriod.setBalanceSheet(balanceSheet);
-
-        return previousPeriod;
-}
 }
