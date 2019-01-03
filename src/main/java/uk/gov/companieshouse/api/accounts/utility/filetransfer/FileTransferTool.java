@@ -31,9 +31,11 @@ public class FileTransferTool {
      * variables.
      *
      * @param fileLocation - Contains the public location of the file.
-     * @return {@link String} containing the downloaded file.
+     * @return {@link String} containing the downloaded file. Return null if file not downloaded.
      */
     public String downloadFileFromPublicLocation(String fileLocation) {
+
+        LOGGER.info("FileTransferTool: Start process to download file from location");
 
         String downloadedFile = null;
 
@@ -41,8 +43,9 @@ public class FileTransferTool {
 
         if (httpURLConnection != null) {
             downloadedFile = downloadFileUsingHttpUrlConnection(httpURLConnection);
-            httpURLConnection.disconnect();
         }
+
+        LOGGER.info("FileTransferTool: Process to download file has finished");
 
         return downloadedFile;
     }
@@ -52,6 +55,9 @@ public class FileTransferTool {
         try {
             HttpURLConnection httpConn = httpURLConnectionHandler.openConnection(fileLocation);
             httpConn.setRequestMethod("GET");
+
+            LOGGER.info(
+                "FileTransferTool: openAndSetHttpUrlConnection has successfully set a HttpURLConnection");
 
             return httpConn;
         } catch (IOException ex) {
@@ -81,6 +87,8 @@ public class FileTransferTool {
 
                 try (InputStream response = httpURLConnection.getInputStream()) {
                     downloadedFile = new String(IOUtils.toByteArray(response));
+                    LOGGER.info(
+                        "FileTransferTool: downloadFileUsingHttpUrlConnection has successfully download the file's content");
                 }
 
             } else {
@@ -94,6 +102,8 @@ public class FileTransferTool {
             logError(ex,
                 "FileTransfer: Exception thrown when downloading file",
                 "Fail to download file as exception thrown when getting the response code or downloading the file");
+        } finally {
+            httpURLConnection.disconnect();
         }
 
         return downloadedFile;
