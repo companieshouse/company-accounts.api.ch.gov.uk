@@ -198,7 +198,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - has binding errors")
     void updateDebtorsBindingErrors() {
 
-        setupTransactionAndLinks();
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(true);
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
@@ -214,7 +214,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - success")
     void updateAccountingPoliciesSuccess() throws DataException {
 
-        setupTransactionAndLinks();
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -238,7 +238,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - data exception thrown")
     void updateAccountingPoliciesDataException() throws DataException {
 
-        setupTransactionAndLinks();
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         DataException dataException = new DataException("");
@@ -260,7 +260,7 @@ public class DebtorsControllerTest {
     @DisplayName("Delete debtors - success")
     void deleteDebtorsSuccess() throws DataException {
 
-        setupTransactionAndLinks();
+        mockTransactionAndLinks();
         when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -300,7 +300,7 @@ public class DebtorsControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
-    private void setupTransactionAndLinks() {
+    private void mockTransactionAndLinks() {
         when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
         when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
         when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
