@@ -319,7 +319,7 @@ public class DebtorsValidatorTest {
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
             COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
+        doReturn(generateNPreviousNullDebtorsBalanceSheetResponse()).when(mockPreviousPeriodService).findById(
             COMPANY_ACCOUNTS_ID,
             mockRequest);
 
@@ -328,9 +328,6 @@ public class DebtorsValidatorTest {
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,mockRequest);
 
@@ -365,8 +362,7 @@ public class DebtorsValidatorTest {
 
     @Test
     @DisplayName("Tests data exception thrown when current period api call fails")
-    void testDataExceptionThrownWhenRetrievingCurrentPeriod() throws DataException,
-        ServiceException {
+    void testDataExceptionThrownWhenRetrievingCurrentPeriod() throws DataException {
 
         addValidCurrentDebtors();;
 
@@ -407,14 +403,11 @@ public class DebtorsValidatorTest {
         when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
             .thenReturn(createCompanyProfileMultipleYearFiler());
 
-
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,mockRequest);
 
@@ -448,14 +441,11 @@ public class DebtorsValidatorTest {
         when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
             .thenReturn(createCompanyProfileMultipleYearFiler());
 
-
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,mockRequest);
 
@@ -489,23 +479,9 @@ public class DebtorsValidatorTest {
         when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
             .thenReturn(createCompanyProfileMultipleYearFiler());
 
-
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
-
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,mockRequest);
 
-        assertFalse(errors.containsError(createError(
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE, CURRENT_TOTAL_PATH)));
-
-        assertFalse(errors.containsError(createError(
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE, PREVIOUS_TOTAL_PATH)));
-
+        assertFalse(errors.hasErrors());
     }
 
     @Test
@@ -528,8 +504,6 @@ public class DebtorsValidatorTest {
 
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,mockRequest);
 
