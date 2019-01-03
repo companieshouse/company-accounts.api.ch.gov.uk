@@ -214,11 +214,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
      */
 
     @Override
-    public Errors crossValidate(Errors errors, HttpServletRequest request, String CompanyAccountsId,
+    public Errors crossValidate(Errors errors, HttpServletRequest request, String companyAccountsId,
                                 Debtors debtors) throws DataException {
 
-        crossValidateCurrentPeriod(errors, request, debtors, CompanyAccountsId);
-        crossValidatePreviousPeriod(errors, request, CompanyAccountsId, debtors);
+        crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
+        crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
 
         return errors;
     }
@@ -248,35 +248,29 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
 
         // if balance sheet value is null and note value isn't add error
-        if (previousPeriodResponseObject.getData() == null &&
-            !isDebtorsNotePreviousTotalNull(debtors)) {
+        if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
+            (!isDebtorsNotePreviousTotalNull(debtors))) {
 
             addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        } else {
-            if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-                (!isDebtorsNotePreviousTotalNull(debtors))) {
+        }
 
-                addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-            }
+        // if neither are null and values do not match add error
+        if (!isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
+            (!isDebtorsNotePreviousTotalNull(debtors))
 
-            // if neither are null and values do not match add error
-            if (!isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-                (!isDebtorsNotePreviousTotalNull(debtors))
+            && (!debtors.getPreviousPeriod().getTotal().equals(
+            previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                                        .getDebtors()))) {
 
-                && (!debtors.getPreviousPeriod().getTotal().equals(
-                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                                            .getDebtors()))) {
-
-                addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-            }
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
         }
     }
 
     private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request,
                                             Debtors debtors,
-                                            String CompanyAccountsId) throws DataException {
+                                            String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(CompanyAccountsId);
+        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
 
         // get current period object
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
@@ -290,7 +284,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
 
         // if note is null and balance sheet isn't null add error
-        if ((debtors.getCurrentPeriod() == null || debtors.getCurrentPeriod().getTotal() == null) &&
+       if (isDebtorsNoteCurrentTotalNull(debtors) &&
             currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
                                        .getDebtors() != null) {
 
