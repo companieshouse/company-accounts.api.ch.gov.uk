@@ -57,14 +57,13 @@ public class DebtorsValidatorTest {
     private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
     private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
     private static final String COMPANY_ACCOUNTS_ID ="123abc";
-
-    private static final long INVALID_TOTAL = 200L;
-    public static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
-    public static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
         "value_not_equal_to_current_period_on_balance_sheet";
-    public static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
-    public static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
         "value_not_equal_to_previous_period_on_balance_sheet";
+    private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
     private Errors errors;
