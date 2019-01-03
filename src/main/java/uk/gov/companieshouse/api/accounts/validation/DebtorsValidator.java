@@ -227,18 +227,8 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                                              String CompanyAccountsId,
                                              Debtors debtors) throws DataException {
 
-        String previousPeriodId = previousPeriodService.generateID(CompanyAccountsId);
-
-        // get previous period object
-        ResponseObject<PreviousPeriod> previousPeriodResponseObject;
-
-        try {
-            previousPeriodResponseObject =
-                previousPeriodService.findById(previousPeriodId, request);
-        } catch (MongoException e) {
-
-            throw new DataException(e.getMessage(), e);
-        }
+        ResponseObject<PreviousPeriod> previousPeriodResponseObject =
+            getPreviousPeriodResponseObject(request, CompanyAccountsId);
 
         // if note is null and balance sheet value isn't add error
         if (isDebtorsNotePreviousTotalNull(debtors) &&
@@ -266,22 +256,28 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request,
-                                            Debtors debtors,
-                                            String companyAccountsId) throws DataException {
+    private ResponseObject<PreviousPeriod> getPreviousPeriodResponseObject(
+        HttpServletRequest request, String CompanyAccountsId) throws DataException {
+        String previousPeriodId = previousPeriodService.generateID(CompanyAccountsId);
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
-        // get current period object
-        ResponseObject<CurrentPeriod> currentPeriodResponseObject;
+        ResponseObject<PreviousPeriod> previousPeriodResponseObject;
 
         try {
-
-            currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+            previousPeriodResponseObject =
+                previousPeriodService.findById(previousPeriodId, request);
         } catch (MongoException e) {
 
             throw new DataException(e.getMessage(), e);
         }
+        return previousPeriodResponseObject;
+    }
+
+    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request,
+                                            Debtors debtors,
+                                            String companyAccountsId) throws DataException {
+
+        ResponseObject<CurrentPeriod> currentPeriodResponseObject =
+            getCurrentPeriodResponseObject(request, companyAccountsId);
 
         // if note is null and balance sheet isn't null add error
        if (isDebtorsNoteCurrentTotalNull(debtors) &&
@@ -308,6 +304,22 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
         }
+    }
+
+    private ResponseObject<CurrentPeriod> getCurrentPeriodResponseObject(HttpServletRequest request,
+                                                                         String companyAccountsId) throws DataException {
+        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
+
+        ResponseObject<CurrentPeriod> currentPeriodResponseObject;
+
+        try {
+
+            currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        } catch (MongoException e) {
+
+            throw new DataException(e.getMessage(), e);
+        }
+        return currentPeriodResponseObject;
     }
 
     private boolean isDebtorsNoteCurrentTotalNull(Debtors debtors) {
