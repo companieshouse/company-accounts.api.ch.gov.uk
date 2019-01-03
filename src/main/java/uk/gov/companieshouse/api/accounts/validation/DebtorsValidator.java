@@ -66,7 +66,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         Errors errors = new Errors();
 
         crossValidate(errors, request, companyAccountsId, debtors);
-        crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
 
         if (debtors != null) {
 
