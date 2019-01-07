@@ -35,6 +35,8 @@ public class ApiResponseMapper {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             case VALIDATION_ERROR:
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+            case NOT_FOUND:
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

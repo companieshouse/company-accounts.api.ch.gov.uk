@@ -198,9 +198,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - has binding errors")
     void updateDebtorsBindingErrors() {
 
-        when(mockRequest.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(mockSmallFull);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(true);
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
@@ -216,9 +214,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - success")
     void updateAccountingPoliciesSuccess() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -242,9 +238,7 @@ public class DebtorsControllerTest {
     @DisplayName("Update debtors - data exception thrown")
     void updateAccountingPoliciesDataException() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         DataException dataException = new DataException("");
@@ -260,5 +254,55 @@ public class DebtorsControllerTest {
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Delete debtors - success")
+    void deleteDebtorsSuccess() throws DataException {
+
+        mockTransactionAndLinks();
+        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+            mockDebtors);
+        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+            .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+            .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+            controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Delete debtors - data exception thrown")
+    void deleteDebtorsDataException() throws DataException {
+
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
+        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+
+        DataException dataException = new DataException("");
+        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+            .thenThrow(dataException);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    private void mockTransactionAndLinks() {
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
+        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
+        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
     }
 }
