@@ -2238,7 +2238,7 @@ ul.accounts-comps-ct {
 
               <ul>
                 <li>
-                  <h2>{- getValue "notes-page-count"}}. Accounting policies </h2>
+                  <h2>{{- getValue "notes-page-count"}}. Accounting policies </h2>
 
                   {{if $basisOfMeasurementAndPreparation := $accountingPolicies.basis_of_measurement_and_preparation}}
                   <p class="strong">Basis of measurement and preparation</p>
@@ -2342,11 +2342,11 @@ ul.accounts-comps-ct {
                 <tr>
                   <th class="table-heading"></th>
                   {{if $debtorsNote.total.current_amount}}
-                  <th class="table-heading" id="debtors-note-current-£">£</th>
+                  <th class="table-heading" id="debtors-note-current-currency">£</th>
                   {{end}}
 
                   {{if $debtorsNote.total.previous_amount}}
-                  <th class="table-heading" id="debtors-note-previous-£">£</th>
+                  <th class="table-heading" id="debtors-note-previous-currency">£</th>
                   {{end}}
                 </tr>
 
