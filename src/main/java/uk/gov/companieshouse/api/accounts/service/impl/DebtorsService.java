@@ -1,11 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -29,6 +24,12 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
@@ -139,7 +140,26 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public String generateID (String companyAccountId) {
+    public ResponseObject<Debtors> deleteById(String id, HttpServletRequest request) throws DataException {
+        try {
+            if (repository.existsById(id)) {
+                repository.deleteById(id);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to delete Debtors", me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
+    }
+
+    @Override
+    public String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
     }
 

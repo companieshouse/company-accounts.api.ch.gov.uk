@@ -1,17 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +24,21 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -197,6 +201,37 @@ public class DebtorsServiceTest {
         when(mockRepository.findById("")).thenThrow(mockMongoException);
 
         assertThrows(DataException.class, () -> service.findById("", mockRequest));
+    }
+
+    @Test
+    @DisplayName("Test the successful delete of a Debtors resource")
+    void deleteDebtors() throws DataException {
+        when(mockRepository.existsById("")).thenReturn(true);
+        doNothing().when(mockRepository).deleteById("");
+
+        ResponseObject<Debtors> responseObject = service.deleteById("", mockRequest);
+
+        assertNotNull(responseObject);
+        assertEquals(responseObject.getStatus(), ResponseStatus.UPDATED);
+    }
+
+    @Test
+    @DisplayName("Test attempt to delete empty resource produces not found response")
+    void deleteEmptyDebtors() throws DataException {
+        when(mockRepository.existsById("")).thenReturn(false);
+        ResponseObject<Debtors> responseObject = service.deleteById("", mockRequest);
+
+        assertNotNull(responseObject);
+        assertEquals(responseObject.getStatus(), ResponseStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("Tests mongo exception thrown on deletion of a Debtors resource")
+    void deleteDebtorsMongoException() {
+        when(mockRepository.existsById("")).thenReturn(true);
+        doThrow(mockMongoException).when(mockRepository).deleteById("");
+
+        assertThrows(DataException.class, () -> service.deleteById("", mockRequest));
     }
 
     private ResponseStatus responseStatusNotFound() {

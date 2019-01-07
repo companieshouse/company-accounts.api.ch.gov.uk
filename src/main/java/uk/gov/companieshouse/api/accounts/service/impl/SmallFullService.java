@@ -119,6 +119,11 @@ public class SmallFullService implements
     }
 
     @Override
+    public ResponseObject<SmallFull> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public void addLink(String id, SmallFullLinkType linkType, String link, HttpServletRequest request)
         throws DataException {
         String smallFullId = generateID(id);

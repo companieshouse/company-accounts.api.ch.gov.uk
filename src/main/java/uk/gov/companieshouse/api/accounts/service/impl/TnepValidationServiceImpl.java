@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -27,16 +25,17 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
     private static final String IXBRL_VALIDATOR_URI = "IXBRL_VALIDATOR_URI";
 
-    private static final Logger LOG = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private RestTemplate restTemplate;
-
     private EnvironmentReader environmentReader;
-    
+
     @Autowired
-    public TnepValidationServiceImpl(RestTemplate restTemplate, EnvironmentReader environmentReader) {
-    	this.restTemplate = restTemplate;
-    	this.environmentReader = environmentReader;
+    public TnepValidationServiceImpl(RestTemplate restTemplate,
+        EnvironmentReader environmentReader) {
+
+        this.restTemplate = restTemplate;
+        this.environmentReader = environmentReader;
     }
 
     /**
@@ -48,63 +47,49 @@ public class TnepValidationServiceImpl implements TnepValidationService {
     public boolean validate(String ixbrl, String location) {
 
         try {
-            //Connect to the TNEP validator via http POST using multipart file upload
-            LinkedMultiValueMap<String, Object> map = createFileMessageResource(ixbrl, location);
+            Results results = validatIxbrlAgainstTnep(ixbrl, location);
 
-            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = setHttpHeaders(map);
+            if (hasPassedTnepValidation(results)) {
+                addToLog(false, null, results, location,
+                    "Ixbrl is valid. It has passed the TNEP validation");
 
-            Results results = postForValidation(requestEntity);
+                return true;
 
-            return logValidationResponse(location, results);
+            } else {
+                addToLog(true, null, results, location,
+                    "Ixbrl is invalid. It has failed the TNEP validation");
+
+                return false;
+            }
 
         } catch (Exception e) {
+            addToLog(true, e, null, location,
+                "Exception has been thrown when calling TNEP validator. Unable to validate Ixbrl");
 
-            return logErroredValidation(location, e);
+            return false;
         }
     }
 
     /**
-     * Log the response of the validation - Successful or failed
+     * Call TNEP validator service, via http POST using multipart file upload, to check if ixbrl is
+     * valid.
      *
-     * @return boolean
+     * @param ixbrl - ixbrl content to be validated.
+     * @param location - ixbrl location, public location.
+     * @return {@link Results} with the information from calling the Tnep service.
+     * @throws URISyntaxException
      */
-    private boolean logValidationResponse(String location, Results results) {
-        if (results != null && "OK".equalsIgnoreCase(results.getValidationStatus())) {
+    private Results validatIxbrlAgainstTnep(String ixbrl, String location)
+        throws URISyntaxException {
 
-            return logSuccessfulValidation(location, results);
+        LinkedMultiValueMap<String, Object> map = createFileMessageResource(ixbrl, location);
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = setHttpHeaders(map);
 
-        } else {
-
-            return logFailedValidation(location, results);
-        }
+        return postForValidation(requestEntity);
     }
 
-    /**
-     * Log any error caught whilst validating
-     *
-     * @return boolean
-     */
-    private boolean logErroredValidation(String location, Exception e) {
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put("error", "Unable to validate ixbrl");
-        logMap.put("location", location);
-        LOG.error(e, logMap);
-
-        return false;
-    }
-
-    private boolean logFailedValidation(String location, Results results) {
-        Map<String, Object> logMap = generateLogMap(location, results);
-        LOG.error("Ixbrl validation failed", logMap);
-
-        return false;
-    }
-
-    private boolean logSuccessfulValidation(String location, Results results) {
-        Map<String, Object> logMap = generateLogMap(location, results);
-        LOG.debug("Ixbrl validation succeeded", logMap);
-
-        return true;
+    private boolean hasPassedTnepValidation(Results results) {
+        return results != null && "OK".equalsIgnoreCase(results.getValidationStatus());
     }
 
     /**
@@ -117,6 +102,24 @@ public class TnepValidationServiceImpl implements TnepValidationService {
 
         return restTemplate
             .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
+    }
+
+    private void addToLog(boolean hasValidationFailed, Exception e, Results results,
+        String location, String message) {
+
+        Map<String, Object> logMap = new HashMap<>();
+        logMap.put("message", message);
+        logMap.put("location", location);
+
+        if (results != null) {
+            logMap.put("results", results);
+        }
+
+        if (hasValidationFailed) {
+            LOGGER.error("TnepValidationServiceImpl: validation has failed", e, logMap);
+        } else {
+            LOGGER.debug("TnepValidationServiceImpl: validation has passed", logMap);
+        }
     }
 
     /**
@@ -151,14 +154,6 @@ public class TnepValidationServiceImpl implements TnepValidationService {
         return environmentReader.getMandatoryString(IXBRL_VALIDATOR_URI);
     }
 
-    private Map<String, Object> generateLogMap(String location, Results results) {
-        Map<String, Object> logMap = new HashMap<>();
-        logMap.put("location", location);
-        logMap.put("results", results);
-
-        return logMap;
-    }
-
     private class FileMessageResource extends ByteArrayResource {
 
         /**
@@ -170,8 +165,8 @@ public class TnepValidationServiceImpl implements TnepValidationService {
          * Constructs a new {@link FileMessageResource}.
          *
          * @param byteArray A byte array containing data from a {@link MimeMessage}.
-         * @param filename  The filename to be associated with the {@link MimeMessage} in the form
-         *                  data.
+         * @param filename The filename to be associated with the {@link MimeMessage} in the form
+         * data.
          */
         public FileMessageResource(final byte[] byteArray, final String filename) {
             super(byteArray);

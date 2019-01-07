@@ -138,6 +138,11 @@ public class CurrentPeriodService implements
     }
 
     @Override
+    public ResponseObject<CurrentPeriod> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }

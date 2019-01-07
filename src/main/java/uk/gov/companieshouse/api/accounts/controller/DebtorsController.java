@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,7 +77,8 @@ public class DebtorsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to create debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to create debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             responseEntity = apiResponseMapper.map(ex);
         }
@@ -90,19 +92,20 @@ public class DebtorsController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String accountingPoliciesId = debtorsService.generateID(companyAccountId);
+        String debtorsId = debtorsService.generateID(companyAccountId);
 
         ResponseEntity responseEntity;
 
         try {
             ResponseObject<Debtors> response = debtorsService
-                .findById(accountingPoliciesId, request);
+                .findById(debtorsId, request);
 
             responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to retrieve debtors resource");
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to retrieve debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             responseEntity = apiResponseMapper.map(de);
         }
@@ -136,17 +139,46 @@ public class DebtorsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction, "Failed to update debtors resource");
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to update debtors resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
     }
 
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String s) {
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
+                                               HttpServletRequest request) {
+
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String debtorsId = debtorsService.generateID(companyAccountsId);
+
+        try {
+            ResponseObject<Debtors> response = debtorsService.deleteById(debtorsId, request);
+
+            if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) != null) {
+                smallFull.getLinks().remove(SmallFullLinkType.DEBTORS_NOTE.getLink());
+            }
+
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+        } catch (DataException de) {
+            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
+                "Failed to delete debtors resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
+        }
+    }
+
+    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String message) {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, s);
+        debugMap.put(MESSAGE, message);
         return debugMap;
     }
 }
