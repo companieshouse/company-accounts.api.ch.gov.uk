@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,9 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Document
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
+import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -47,6 +49,7 @@ class FilingServiceImplTest {
     private static final String ACCOUNTS_ID = "1234561";
     private static final String SMALL_FULL_ID = "smallFullId";
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
+    private static final String IXBRL_DATA = getIxbrlContent();
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
     private static final String ACCOUNTS_SELF_REF =
         "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
@@ -69,14 +72,39 @@ class FilingServiceImplTest {
     private DocumentGeneratorResponseValidator docGeneratorResponseValidatorMock;
     @Mock
     private AccountsDatesHelper accountsDatesHelperMock;
+    @Mock
+    private FileTransferTool fileTransferToolMock;
+    @Mock
+    private TnepValidationService tnepValidationServiceMock;
+
+    private static String getIxbrlContent() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<html xmlns:ixt2=\"http://www.xbrl.org/inlineXBRL/transformation/2011-07-31\">\n"
+            + "  <head>\n"
+            + "    <meta content=\"application/xhtml+xml; charset=UTF-8\" http-equiv=\"content-type\" />\n"
+            + "    <title>\n"
+            + "            TEST COMPANY\n"
+            + "        </title>\n"
+            + "  <body xml:lang=\"en\">\n"
+            + "    <div class=\"accounts-body \">\n"
+            + "      <div id=\"your-account-type\" class=\"wholedoc\">\n"
+            + "      </div>\n"
+            + "    </div>\n"
+            + "   </body>\n"
+            + "</html>\n";
+    }
 
     @BeforeEach
     void setUpBeforeEach() {
         transaction = createTransaction();
         companyAccount = createAccount();
 
-        filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock,
-            docGeneratorResponseValidatorMock, accountsDatesHelperMock);
+        filingService = new FilingServiceImpl(documentGeneratorCallerMock,
+            environmentReaderMock,
+            docGeneratorResponseValidatorMock,
+            accountsDatesHelperMock,
+            fileTransferToolMock,
+            tnepValidationServiceMock);
     }
 
     @Test
@@ -95,16 +123,18 @@ class FilingServiceImplTest {
         doReturn(false).when(environmentReaderMock)
             .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
+        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION))
+            .thenReturn(IXBRL_DATA);
+
+        when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(true);
+
         doReturn(getLocalDate())
             .when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
 
         Filing filing = filingService
             .generateAccountFiling(transaction, companyAccount);
 
-        verifyDocumentGeneratorCallerMock();
-        verify(environmentReaderMock, times(1))
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
-        verifyDocumentGeneratorResponseValidatorMock();
+        verifyAllMockCalls();
         verifyFilingData(filing);
     }
 
@@ -167,6 +197,69 @@ class FilingServiceImplTest {
         assertNull(filing);
     }
 
+    @Test
+    @DisplayName("Tests the filing not generated when file transfer tool call fails to download ixbrl")
+    void shouldNotGenerateFilingAsFileTransferToolCallFailsToDownloadIxbrl() {
+        documentGeneratorResponse = createDocumentGeneratorResponse();
+
+        doReturn(documentGeneratorResponse)
+            .when(documentGeneratorCallerMock)
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+
+        doReturn(true)
+            .when(docGeneratorResponseValidatorMock)
+            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+
+        doReturn(false).when(environmentReaderMock)
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+
+        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION))
+            .thenReturn(null);
+
+        Filing filing = filingService
+            .generateAccountFiling(transaction, companyAccount);
+
+        verifyDocumentGeneratorCallerMock();
+        verifyEnviromentReaderMockForDisableIxbrlVariable();
+        verifyDocumentGeneratorResponseValidatorMock();
+        verifyfileTransferToolMock();
+
+        assertNull(filing);
+    }
+
+    @Test
+    @DisplayName("Tests the filing not generated when tnep validation has failed. Ixbrl is invalid")
+    void shouldNotGenerateFilingAsTnepValidationHasFailed() {
+        documentGeneratorResponse = createDocumentGeneratorResponse();
+
+        doReturn(documentGeneratorResponse)
+            .when(documentGeneratorCallerMock)
+            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+
+        doReturn(true)
+            .when(docGeneratorResponseValidatorMock)
+            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+
+        when(environmentReaderMock.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR))
+            .thenReturn(false);
+
+        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION))
+            .thenReturn(IXBRL_DATA);
+
+        when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(false);
+
+        Filing filing = filingService
+            .generateAccountFiling(transaction, companyAccount);
+
+        verifyDocumentGeneratorCallerMock();
+        verifyEnviromentReaderMockForDisableIxbrlVariable();
+        verifyDocumentGeneratorResponseValidatorMock();
+        verifyfileTransferToolMock();
+        verifyTnepValidationServiceMock();
+
+        assertNull(filing);
+    }
+
     /**
      * Verify small full data the data within the filing object is correct
      *
@@ -196,6 +289,15 @@ class FilingServiceImplTest {
         assertEquals(IXBRL_LOCATION, link.getHref());
     }
 
+    private void verifyAllMockCalls() {
+        verifyDocumentGeneratorCallerMock();
+        verifyEnviromentReaderMockForDisableIxbrlVariable();
+        verifyDocumentGeneratorResponseValidatorMock();
+        verifyfileTransferToolMock();
+        verifyTnepValidationServiceMock();
+        verifyAccountsDatesHelperMock();
+    }
+
     private void verifyDocumentGeneratorCallerMock() {
         verify(documentGeneratorCallerMock, times(1))
             .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
@@ -206,11 +308,27 @@ class FilingServiceImplTest {
             .isDocumentGeneratorResponseValid(documentGeneratorResponse);
     }
 
+    private void verifyEnviromentReaderMockForDisableIxbrlVariable() {
+        verify(environmentReaderMock, times(1))
+            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+    }
+
+    private void verifyfileTransferToolMock() {
+        verify(fileTransferToolMock, times(1))
+            .downloadFileFromPublicLocation(IXBRL_LOCATION);
+    }
+
+    private void verifyTnepValidationServiceMock() {
+        verify(tnepValidationServiceMock, times(1)).validate(IXBRL_DATA, IXBRL_LOCATION);
+    }
+
+    private void verifyAccountsDatesHelperMock() {
+        verify(accountsDatesHelperMock, times(1))
+            .convertStringToDate(PERIOD_END_ON_VALUE);
+    }
+
     /**
      * Builds Account Entity object.
-     *
-     * @return
-     * @throws ParseException
      */
     private CompanyAccount createAccount() {
         CompanyAccount account = new CompanyAccount();
@@ -225,8 +343,6 @@ class FilingServiceImplTest {
 
     /**
      * Creates the links for the accounts data.
-     *
-     * @return
      */
     private Map<String, String> createAccountEntityLinks() {
         Map<String, String> dataLinks = new HashMap<>();
@@ -255,8 +371,6 @@ class FilingServiceImplTest {
 
     /**
      * Create a Document Generator Response with all needed information to generate the filing.
-     *
-     * @return
      */
     private DocumentGeneratorResponse createDocumentGeneratorResponse() {
 
