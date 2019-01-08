@@ -2,11 +2,10 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
-
-import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CurrentPeriod {
@@ -20,22 +19,22 @@ public class CurrentPeriod {
     @JsonProperty("details")
     private String details;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("greater_than_one_year")
     private Long greaterThanOneYear;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("other_debtors")
     private Long otherDebtors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("prepayments_and_accrued_income")
     private Long prepaymentsAndAccruedIncome;
 
     @JsonProperty("total")
     private Long total;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("trade_debtors")
     private Long tradeDebtors;
 
