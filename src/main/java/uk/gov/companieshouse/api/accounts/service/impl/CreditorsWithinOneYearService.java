@@ -124,7 +124,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
             + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName();
     }
 
