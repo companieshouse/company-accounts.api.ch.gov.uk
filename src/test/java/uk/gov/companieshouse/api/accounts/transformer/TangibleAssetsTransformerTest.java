@@ -37,7 +37,7 @@ public class TangibleAssetsTransformerTest {
     private static final Long DEPRECIATION_AT_PERIOD_END = 9L;
     private static final Long DEPRECIATION_AT_PERIOD_START = 10L;
     private static final Long DEPRECIATION_CHARGE_FOR_YEAR = 11L;
-    private static final Long DEPRECIATION_ON_DISPOSABLES = 12L;
+    private static final Long DEPRECIATION_ON_DISPOSALS = 12L;
     private static final Long DEPRECIATION_OTHER_ADJUSTMENTS = 13L;
     private static final String ADDITIONAL_INFORMATION = "additionalInformation";
 
@@ -755,7 +755,7 @@ public class TangibleAssetsTransformerTest {
         depreciation.setAtPeriodEnd(DEPRECIATION_AT_PERIOD_END);
         depreciation.setAtPeriodStart(DEPRECIATION_AT_PERIOD_START);
         depreciation.setChargeForYear(DEPRECIATION_CHARGE_FOR_YEAR);
-        depreciation.setOnDisposables(DEPRECIATION_ON_DISPOSABLES);
+        depreciation.setOnDisposals(DEPRECIATION_ON_DISPOSALS);
         depreciation.setOtherAdjustments(DEPRECIATION_OTHER_ADJUSTMENTS);
         return depreciation;
     }
@@ -790,7 +790,7 @@ public class TangibleAssetsTransformerTest {
         assertEquals(DEPRECIATION_AT_PERIOD_END, depreciation.getAtPeriodEnd());
         assertEquals(DEPRECIATION_AT_PERIOD_START, depreciation.getAtPeriodStart());
         assertEquals(DEPRECIATION_CHARGE_FOR_YEAR, depreciation.getChargeForYear());
-        assertEquals(DEPRECIATION_ON_DISPOSABLES, depreciation.getOnDisposables());
+        assertEquals(DEPRECIATION_ON_DISPOSALS, depreciation.getOnDisposals());
         assertEquals(DEPRECIATION_OTHER_ADJUSTMENTS, depreciation.getOtherAdjustments());
     }
 }
