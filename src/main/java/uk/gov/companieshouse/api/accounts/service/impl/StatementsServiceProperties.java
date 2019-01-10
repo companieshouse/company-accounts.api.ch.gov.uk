@@ -13,11 +13,7 @@ public class StatementsServiceProperties {
 
     private Map<String, String> statements;
 
-    public Map<String, String> getStatements() {
+    public Map<String, String> getCloneOfStatements() {
         return new HashMap<>(statements);
-    }
-
-    public void setStatements(Map<String, String> statements) {
-        this.statements = statements;
     }
 }
