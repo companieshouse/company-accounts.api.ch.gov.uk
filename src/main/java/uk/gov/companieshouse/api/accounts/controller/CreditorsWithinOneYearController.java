@@ -5,13 +5,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CreditorsWithinOneYearService;
@@ -80,6 +85,96 @@ public class CreditorsWithinOneYearController {
         }
 
         return responseEntity;
+    }
+
+    @PutMapping
+    public ResponseEntity update(@RequestBody @Valid CreditorsWithinOneYear creditorsWithinOneYear,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+        if (smallFull.getLinks().get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink()) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .update(creditorsWithinOneYear, transaction, companyAccountId, request);
+
+            return apiResponseMapper
+                .map(response.getStatus(), response.getData(), response.getErrors());
+
+        } catch (DataException ex) {
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to update creditors within one year resource");
+            LOGGER.errorRequest(request, ex, debugMap);
+            return apiResponseMapper.map(ex);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+                              HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String creditorsWithinOneYearId = creditorsWithinOneYearService.generateID(companyAccountId);
+
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .findById(creditorsWithinOneYearId, request);
+
+            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to retrieve creditors within one year resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            responseEntity = apiResponseMapper.map(de);
+        }
+
+        return responseEntity;
+    }
+
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
+                                 HttpServletRequest request) {
+
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String creditorsWithinOneYearId = creditorsWithinOneYearService.generateID(companyAccountsId);
+
+        try {
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .deleteById(creditorsWithinOneYearId, request);
+
+            if (smallFull.getLinks().get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink()) != null) {
+                smallFull.getLinks().remove(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink());
+            }
+
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+        } catch (DataException de) {
+            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
+                "Failed to delete creditors within one year resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
+        }
     }
 
     private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId,

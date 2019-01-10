@@ -85,19 +85,69 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          Transaction transaction,
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
-        return null;
+
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
+
+        CreditorsWithinOneYearEntity entity = transformer.transform(rest);
+        entity.setId(generateID(companyAccountId));
+
+        try {
+            repository.save(entity);
+        } catch (MongoException me) {
+            DataException dataException =
+                new DataException("Failed to update" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), me);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
+                companyAccountId, entity.getId()));
+
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
     public ResponseObject<CreditorsWithinOneYear> findById(String id,
                                                            HttpServletRequest request) throws DataException {
-        return null;
+
+        CreditorsWithinOneYearEntity entity;
+
+        try {
+            entity = repository.findById(id).orElse(null);
+        } catch (MongoException e) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find creditors within one year", e);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
+
+        if (entity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(entity));
     }
 
     @Override
     public ResponseObject<CreditorsWithinOneYear> deleteById(String id,
                                                              HttpServletRequest request) throws DataException {
-        return null;
+
+        try {
+            if (repository.existsById(id)) {
+                repository.deleteById(id);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to delete creditors within one year", me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
     }
 
     @Override
