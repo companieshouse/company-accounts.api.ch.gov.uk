@@ -82,7 +82,7 @@ public class CreditorsWithinOneYearController {
         return responseEntity;
     }
 
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId,
+    private Map<String, Object> createDebugMap(String companyAccountId,
                                                Transaction transaction, String message) {
 
         final Map<String, Object> debugMap = new HashMap<>();
