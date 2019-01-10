@@ -16,4 +16,8 @@ public class StatementsServiceProperties {
     public Map<String, String> getCloneOfStatements() {
         return new HashMap<>(statements);
     }
+
+    public void setStatements(Map<String, String> statements) {
+        this.statements = statements;
+    }
 }
