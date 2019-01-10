@@ -86,7 +86,7 @@ public class CreditorsWithinOneYearController {
 
         return responseEntity;
     }
-
+    
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid CreditorsWithinOneYear creditorsWithinOneYear,
                                  BindingResult bindingResult,
@@ -177,7 +177,7 @@ public class CreditorsWithinOneYearController {
         }
     }
 
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId,
+    private Map<String, Object> createDebugMap(String companyAccountId,
                                                Transaction transaction, String message) {
 
         final Map<String, Object> debugMap = new HashMap<>();
