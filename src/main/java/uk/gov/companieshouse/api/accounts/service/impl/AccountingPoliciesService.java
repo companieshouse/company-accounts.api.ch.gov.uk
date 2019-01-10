@@ -154,6 +154,7 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+                + "notes/"
                 + ResourceName.ACCOUNTING_POLICIES.getName();
     }
 
