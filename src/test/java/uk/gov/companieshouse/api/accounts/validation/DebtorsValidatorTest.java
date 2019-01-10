@@ -525,7 +525,7 @@ public class DebtorsValidatorTest {
                 new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
         CurrentAssets currentAssets = new CurrentAssets();
 
-        currentAssets.setDebtors(10L);
+        currentAssets.setDebtors(7L);
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCurrentAssets(currentAssets);
         currentPeriodTest.setBalanceSheet(balanceSheet);
@@ -542,7 +542,7 @@ public class DebtorsValidatorTest {
         uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
         CurrentAssets currentAssets = new CurrentAssets();
-        currentAssets.setDebtors(20L);
+        currentAssets.setDebtors(14L);
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCurrentAssets(currentAssets);
         previousPeriodTest.setBalanceSheet(balanceSheet);
@@ -626,7 +626,7 @@ public class DebtorsValidatorTest {
         currentDebtors.setPrepaymentsAndAccruedIncome(2L);
         currentDebtors.setGreaterThanOneYear(3L);
         currentDebtors.setOtherDebtors(4L);
-        currentDebtors.setTotal(10L);
+        currentDebtors.setTotal(7L);
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
@@ -664,7 +664,7 @@ public class DebtorsValidatorTest {
         previousDebtors.setPrepaymentsAndAccruedIncome(4L);
         previousDebtors.setGreaterThanOneYear(6L);
         previousDebtors.setOtherDebtors(8L);
-        previousDebtors.setTotal(20L);
+        previousDebtors.setTotal(14L);
 
         debtors.setPreviousPeriod(previousDebtors);
     }
