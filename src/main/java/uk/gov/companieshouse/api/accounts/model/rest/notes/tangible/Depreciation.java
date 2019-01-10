@@ -16,7 +16,7 @@ public class Depreciation {
     private Long chargeForYear;
 
     @JsonProperty("on_disposals")
-    private Long onDisposables;
+    private Long onDisposals;
 
     @JsonProperty("other_adjustments")
     private Long otherAdjustments;
@@ -45,12 +45,12 @@ public class Depreciation {
         this.chargeForYear = chargeForYear;
     }
 
-    public Long getOnDisposables() {
-        return onDisposables;
+    public Long getOnDisposals() {
+        return onDisposals;
     }
 
-    public void setOnDisposables(Long onDisposables) {
-        this.onDisposables = onDisposables;
+    public void setOnDisposals(Long onDisposals) {
+        this.onDisposals = onDisposals;
     }
 
     public Long getOtherAdjustments() {
