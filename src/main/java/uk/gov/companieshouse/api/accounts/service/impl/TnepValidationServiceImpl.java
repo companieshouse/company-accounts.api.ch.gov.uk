@@ -46,6 +46,9 @@ public class TnepValidationServiceImpl implements TnepValidationService {
     @Override
     public boolean validate(String ixbrl, String location) {
 
+        boolean isIxbrlValid = false;
+
+        LOGGER.info("TnepValidationServiceImpl: Ixbrl validation has started");
         try {
             Results results = validatIxbrlAgainstTnep(ixbrl, location);
 
@@ -53,21 +56,21 @@ public class TnepValidationServiceImpl implements TnepValidationService {
                 addToLog(false, null, results, location,
                     "Ixbrl is valid. It has passed the TNEP validation");
 
-                return true;
+                isIxbrlValid = true;
 
             } else {
                 addToLog(true, null, results, location,
                     "Ixbrl is invalid. It has failed the TNEP validation");
-
-                return false;
             }
 
         } catch (Exception e) {
             addToLog(true, e, null, location,
                 "Exception has been thrown when calling TNEP validator. Unable to validate Ixbrl");
-
-            return false;
         }
+
+        LOGGER.info("TnepValidationServiceImpl: Ixbrl validation has finished");
+
+        return isIxbrlValid;
     }
 
     /**

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
@@ -18,7 +19,9 @@ import uk.gov.companieshouse.api.accounts.model.filing.Link;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
+import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -41,17 +44,23 @@ public class FilingServiceImpl implements FilingService {
     private final EnvironmentReader environmentReader;
     private final DocumentGeneratorResponseValidator documentGeneratorResponseValidator;
     private final AccountsDatesHelper accountsDatesHelper;
+    private final FileTransferTool fileTransferTool;
+    private final TnepValidationService tnepValidationService;
 
     @Autowired
     public FilingServiceImpl(DocumentGeneratorCaller documentGeneratorCaller,
         EnvironmentReader environmentReader,
         DocumentGeneratorResponseValidator documentGeneratorResponseValidator,
-        AccountsDatesHelper accountsDatesHelper) {
+        AccountsDatesHelper accountsDatesHelper,
+        FileTransferTool fileTransferTool,
+        TnepValidationService tnepValidationService) {
 
         this.documentGeneratorCaller = documentGeneratorCaller;
         this.environmentReader = environmentReader;
         this.documentGeneratorResponseValidator = documentGeneratorResponseValidator;
         this.accountsDatesHelper = accountsDatesHelper;
+        this.fileTransferTool = fileTransferTool;
+        this.tnepValidationService = tnepValidationService;
     }
 
     /**
@@ -100,7 +109,7 @@ public class FilingServiceImpl implements FilingService {
 
         if (documentGeneratorResponse != null &&
             isDocumentGeneratorResponseValid(documentGeneratorResponse) &&
-            isValidIxbrl()) {
+            isValidIxbrl(documentGeneratorResponse.getLinks().getLocation())) {
 
             return createAccountFiling(transaction, accountsType, documentGeneratorResponse);
         }
@@ -143,16 +152,22 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Validates the ixbrl against TNEP. This validation is driven by the environment and it can be
-     * disable.
+     * Downloads the ixbrl content and call the tnep validation service if the download was
+     * successful. The tnep validation service needs the location and the data to performs the
+     * validation. This validation is driven by the environment and it can be disable.
+     *
+     * @param fileLocation - location of the file that needs to be validated.
+     * @return true is valid ixbrl.
      */
-    private boolean isValidIxbrl() {
-        //TODO: this will be set to true when TNEP Validation plugged in.(STORY SFA-574)
+    private boolean isValidIxbrl(String fileLocation) {
+
         boolean isIxbrlValid = false;
         if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
-            //TODO Add TNEP validation to be added when functionality is implemented . (STORY SFA-574)
-            //isIxbrlValid will be set to false if fails the tnep validation.
-            isIxbrlValid = true;
+            String ixbrlData = downloadIxbrlFromLocation(fileLocation);
+
+            if (ixbrlData != null) {
+                isIxbrlValid = tnepValidationService.validate(ixbrlData, fileLocation);
+            }
         }
 
         return isIxbrlValid;
@@ -230,5 +245,27 @@ public class FilingServiceImpl implements FilingService {
      */
     private boolean isDocumentGeneratorResponseValid(DocumentGeneratorResponse response) {
         return documentGeneratorResponseValidator.isDocumentGeneratorResponseValid(response);
+    }
+
+    /**
+     * Calls the fileTransferTool to download file from public location.
+     *
+     * @param location - the ixbrl location, which is a public location.
+     * @return the actual ixbrl content. Or null if download fails.
+     */
+    private String downloadIxbrlFromLocation(String location) {
+
+        String ixbrlData = fileTransferTool.downloadFileFromPublicLocation(location);
+
+        if (StringUtils.isEmpty(ixbrlData)) {
+            Map<String, Object> logMap = new HashMap<>();
+            logMap.put(LOG_MESSAGE_KEY, "The ixbrl data content is empty");
+
+            LOGGER.error("FilingServiceImpl: File Transfer Tool has fail to download file", logMap);
+
+            return null;
+        }
+
+        return ixbrlData;
     }
 }

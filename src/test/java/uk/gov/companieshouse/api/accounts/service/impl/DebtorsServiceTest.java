@@ -102,7 +102,7 @@ public class DebtorsServiceTest {
         errors = new Errors();
 
         when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
-        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction)).thenReturn(errors);
+        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(errors);
 
 
         ResponseObject<Debtors> result = service.create(mockDebtors, mockTransaction,
@@ -119,10 +119,11 @@ public class DebtorsServiceTest {
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));
 
-        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction)).thenReturn(errors);
+        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(errors);
         when(mockRepository.insert(debtorsEntity)).thenThrow(mockDuplicateKeyException);
 
-        ResponseObject response = service.create(mockDebtors, mockTransaction, "", mockRequest);
+        ResponseObject response = service.create(mockDebtors, mockTransaction, "",
+            mockRequest);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -135,7 +136,7 @@ public class DebtorsServiceTest {
 
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));
-        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction)).thenReturn(errors);
+        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(errors);
         when(mockRepository.insert(debtorsEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
