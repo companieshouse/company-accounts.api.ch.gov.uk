@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -13,7 +14,7 @@ public class StatementsServiceProperties {
     private Map<String, String> statements;
 
     public Map<String, String> getStatements() {
-        return statements;
+        return new HashMap<>(statements);
     }
 
     public void setStatements(Map<String, String> statements) {
