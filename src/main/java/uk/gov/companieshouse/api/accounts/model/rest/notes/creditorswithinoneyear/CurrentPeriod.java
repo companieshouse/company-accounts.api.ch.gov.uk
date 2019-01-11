@@ -1,10 +1,9 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import org.hibernate.validator.constraints.Range;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
@@ -12,7 +11,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreditorsWithinOneYear extends RestObject {
+public class CurrentPeriod {
 
     private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MAX_RANGE = 99999999;
@@ -117,16 +116,16 @@ public class CreditorsWithinOneYear extends RestObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CreditorsWithinOneYear)) return false;
-        CreditorsWithinOneYear that = (CreditorsWithinOneYear) o;
-        return getAccrualsAndDeferredIncome() == that.getAccrualsAndDeferredIncome() &&
-            getBankLoansAndOverdrafts() == that.getBankLoansAndOverdrafts() &&
-            getFinanceLeasesAndHirePurchaseContracts() == that.getFinanceLeasesAndHirePurchaseContracts() &&
-            getOtherCreditors() == that.getOtherCreditors() &&
-            getTaxationAndSocialSecurity() == that.getTaxationAndSocialSecurity() &&
-            getTradeCreditors() == that.getTradeCreditors() &&
-            getTotal() == that.getTotal() &&
+        if (this == o) {return true;}
+        if (!(o instanceof CurrentPeriod)) {return false;}
+        CurrentPeriod that = (CurrentPeriod) o;
+        return Objects.equals(getAccrualsAndDeferredIncome(), that.getAccrualsAndDeferredIncome()) &&
+            Objects.equals(getBankLoansAndOverdrafts(), that.getBankLoansAndOverdrafts()) &&
+            Objects.equals(getFinanceLeasesAndHirePurchaseContracts(), that.getFinanceLeasesAndHirePurchaseContracts()) &&
+            Objects.equals(getOtherCreditors(), that.getOtherCreditors()) &&
+            Objects.equals(getTaxationAndSocialSecurity(), that.getTaxationAndSocialSecurity()) &&
+            Objects.equals(getTradeCreditors(), that.getTradeCreditors()) &&
+            Objects.equals(getTotal(), that.getTotal()) &&
             Objects.equals(getDetails(), that.getDetails());
     }
 

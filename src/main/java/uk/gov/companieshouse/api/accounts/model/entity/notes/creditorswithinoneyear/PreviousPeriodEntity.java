@@ -1,12 +1,11 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes;
+package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear;
 
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
 import java.util.Objects;
 
-public class CreditorsWithinOneYearDataEntity extends BaseDataEntity {
+public class PreviousPeriodEntity {
 
     @Field("accruals_and_deferred_income")
     private Long accrualsAndDeferredIncome;
@@ -28,9 +27,6 @@ public class CreditorsWithinOneYearDataEntity extends BaseDataEntity {
 
     @Field("total")
     private Long total;
-
-    @Field("details")
-    private String details;
 
     public Long getAccrualsAndDeferredIncome() {
         return accrualsAndDeferredIncome;
@@ -88,27 +84,18 @@ public class CreditorsWithinOneYearDataEntity extends BaseDataEntity {
         this.total = total;
     }
 
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CreditorsWithinOneYearDataEntity)) return false;
-        CreditorsWithinOneYearDataEntity that = (CreditorsWithinOneYearDataEntity) o;
-        return getAccrualsAndDeferredIncome() == that.getAccrualsAndDeferredIncome() &&
-            getBankLoansAndOverdrafts() == that.getBankLoansAndOverdrafts() &&
-            getFinanceLeasesAndHirePurchaseContracts() == that.getFinanceLeasesAndHirePurchaseContracts() &&
-            getOtherCreditors() == that.getOtherCreditors() &&
-            getTaxationAndSocialSecurity() == that.getTaxationAndSocialSecurity() &&
-            getTradeCreditors() == that.getTradeCreditors() &&
-            getTotal() == that.getTotal() &&
-            Objects.equals(getDetails(), that.getDetails());
+        if (this == o) {return true;}
+        if (!(o instanceof PreviousPeriodEntity)) {return false;}
+        PreviousPeriodEntity that = (PreviousPeriodEntity) o;
+        return Objects.equals(getAccrualsAndDeferredIncome(), that.getAccrualsAndDeferredIncome()) &&
+            Objects.equals(getBankLoansAndOverdrafts(), that.getBankLoansAndOverdrafts()) &&
+            Objects.equals(getFinanceLeasesAndHirePurchaseContracts(), that.getFinanceLeasesAndHirePurchaseContracts()) &&
+            Objects.equals(getOtherCreditors(), that.getOtherCreditors()) &&
+            Objects.equals(getTaxationAndSocialSecurity(), that.getTaxationAndSocialSecurity()) &&
+            Objects.equals(getTradeCreditors(), that.getTradeCreditors()) &&
+            Objects.equals(getTotal(), that.getTotal());
     }
 
     @Override
@@ -116,7 +103,7 @@ public class CreditorsWithinOneYearDataEntity extends BaseDataEntity {
 
         return Objects.hash(getAccrualsAndDeferredIncome(), getBankLoansAndOverdrafts(),
             getFinanceLeasesAndHirePurchaseContracts(), getOtherCreditors(), getTaxationAndSocialSecurity(),
-            getTradeCreditors(), getTotal(), getDetails());
+            getTradeCreditors(), getTotal());
     }
 
     @Override

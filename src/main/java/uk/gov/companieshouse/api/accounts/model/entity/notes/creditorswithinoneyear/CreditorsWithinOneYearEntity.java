@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes;
+package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear;
 
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,7 +9,7 @@ import java.util.Objects;
 @Document(collection = "notes")
 public class CreditorsWithinOneYearEntity extends BaseEntity {
 
-    CreditorsWithinOneYearDataEntity data;
+    private CreditorsWithinOneYearDataEntity data;
 
     public CreditorsWithinOneYearDataEntity getData() {
         return data;
@@ -21,8 +21,8 @@ public class CreditorsWithinOneYearEntity extends BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CreditorsWithinOneYearEntity)) return false;
+        if (this == o) {return true;}
+        if (!(o instanceof CreditorsWithinOneYearEntity)) {return false;}
         CreditorsWithinOneYearEntity that = (CreditorsWithinOneYearEntity) o;
         return Objects.equals(getData(), that.getData());
     }
