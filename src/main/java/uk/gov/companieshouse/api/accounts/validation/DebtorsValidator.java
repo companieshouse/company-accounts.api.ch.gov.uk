@@ -238,7 +238,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
                 && (! debtors.getPreviousPeriod().getTotal().equals(
                 previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors()))) {
+                        .getDebtors().longValue()))) {
 
             addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
         }
@@ -292,12 +292,13 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
     private void checkIfCurrentBalanceAndNoteValuesAreEqual (Errors errors, Debtors debtors,
             ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
+        
         if (! (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject)) &&
                 (! isDebtorsNoteCurrentTotalNull(debtors))
 
                 && (debtors.getCurrentPeriod().getTotal() !=
                 currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors())) {
+                        .getDebtors().longValue())) {
 
             addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
         }
