@@ -6,9 +6,13 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.CreditorsWithinOneYearDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.CreditorsWithinOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
 
 import java.util.HashMap;
 
@@ -35,8 +39,8 @@ public class CreditorsWithinOneYearTransformerTest {
     private CreditorsWithinOneYearTransformer creditorsWithinOneYearTransformer = new CreditorsWithinOneYearTransformer();
 
     @Test
-    @DisplayName("Tests creditors within one year transformer with empty object returns null values")
-    public void testTransformerWithEmptyObject() {
+    @DisplayName("Tests transformer with empty rest object returns null values ")
+    public void testTransformerWithEmptyRestObject() {
 
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = creditorsWithinOneYearTransformer
             .transform(new CreditorsWithinOneYear());
@@ -47,59 +51,70 @@ public class CreditorsWithinOneYearTransformerTest {
     }
 
     @Test
-    @DisplayName("Tests crediors within one year transformer with populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    @DisplayName("Tests transformer with empty previous period Rest Object")
+    public void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
 
         CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
-        creditorsWithinOneYear.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
-        creditorsWithinOneYear.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
-        creditorsWithinOneYear.setOtherCreditors(OTHER_CREDITORS);
-        creditorsWithinOneYear.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
-        creditorsWithinOneYear.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
-        creditorsWithinOneYear.setTradeCreditors(TRADE_CREDITORS);
-        creditorsWithinOneYear.setTotal(TOTAL);
-        creditorsWithinOneYear.setDetails(DETAILS);
 
         creditorsWithinOneYear.setEtag(ETAG);
         creditorsWithinOneYear.setKind(KIND);
         creditorsWithinOneYear.setLinks(new HashMap<>());
 
+        CurrentPeriod currentPeriod = createCurrentPeriodRestObject();
+
+        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
+
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = creditorsWithinOneYearTransformer
             .transform(creditorsWithinOneYear);
-        CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = creditorsWithinOneYearEntity.getData();
 
-        assertNotNull(creditorsWithinOneYearDataEntity);
-        assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYearDataEntity.getAccrualsAndDeferredIncome());
-        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYearDataEntity.getBankLoansAndOverdrafts());
-        assertEquals(OTHER_CREDITORS, creditorsWithinOneYearDataEntity.getOtherCreditors());
-        assertEquals(FINANCE_LEASE, creditorsWithinOneYearDataEntity.getFinanceLeasesAndHirePurchaseContracts());
-        assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYearDataEntity.getTaxationAndSocialSecurity());
-        assertEquals(TRADE_CREDITORS, creditorsWithinOneYearDataEntity.getTradeCreditors());
-        assertEquals(TOTAL, creditorsWithinOneYearDataEntity.getTotal());
-        assertEquals(new HashMap<>(), creditorsWithinOneYearDataEntity.getLinks());
-        assertEquals(DETAILS, creditorsWithinOneYearDataEntity.getDetails());
-        assertEquals(ETAG, creditorsWithinOneYearDataEntity.getEtag());
-        assertEquals(KIND, creditorsWithinOneYearDataEntity.getKind());
+        assertNotNull(creditorsWithinOneYearEntity);
+        assertNull(creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity());
+        assertEqualsEntityObject(creditorsWithinOneYearEntity);
+        assertEquals(new HashMap<>(), creditorsWithinOneYearEntity.getData().getLinks());
     }
 
     @Test
-    @DisplayName("Tests crediors within one year transformer with populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
+    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+
+        CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
+
+        creditorsWithinOneYear.setEtag(ETAG);
+        creditorsWithinOneYear.setKind(KIND);
+        creditorsWithinOneYear.setLinks(new HashMap<>());
+        creditorsWithinOneYear.setCurrentPeriod(createCurrentPeriodRestObject());
+        creditorsWithinOneYear.setPreviousPeriod(createPreiousPeriodRestObject());
+
+        CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = creditorsWithinOneYearTransformer
+            .transform(creditorsWithinOneYear);
+
+        assertNotNull(creditorsWithinOneYearEntity);
+        assertEqualsEntityObject(creditorsWithinOneYearEntity);
+    }
+
+    @Test
+    @DisplayName("Tests transformer with empty entity object returns null values ")
+    public void testTransformerWithEmptyEntityObject() {
+
+        CreditorsWithinOneYear creditorsWithinOneYear = creditorsWithinOneYearTransformer
+            .transform(new CreditorsWithinOneYearEntity());
+
+        assertNotNull(creditorsWithinOneYear);
+        assertNull(creditorsWithinOneYear.getEtag());
+        assertEquals(new HashMap<>(), creditorsWithinOneYear.getLinks());
+    }
+
+    @Test
+    @DisplayName("Tests transformer with empty previous period Entity Object")
+    public void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
 
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = new CreditorsWithinOneYearEntity();
         CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = new CreditorsWithinOneYearDataEntity();
-        creditorsWithinOneYearDataEntity.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
-        creditorsWithinOneYearDataEntity.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
-        creditorsWithinOneYearDataEntity.setOtherCreditors(OTHER_CREDITORS);
-        creditorsWithinOneYearDataEntity.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
-        creditorsWithinOneYearDataEntity.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
-        creditorsWithinOneYearDataEntity.setTradeCreditors(TRADE_CREDITORS);
-        creditorsWithinOneYearDataEntity.setTotal(TOTAL);
-        creditorsWithinOneYearDataEntity.setDetails(DETAILS);
 
         creditorsWithinOneYearDataEntity.setEtag(ETAG);
         creditorsWithinOneYearDataEntity.setKind(KIND);
         creditorsWithinOneYearDataEntity.setLinks(new HashMap<>());
+        creditorsWithinOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
 
         creditorsWithinOneYearEntity.setData(creditorsWithinOneYearDataEntity);
 
@@ -107,16 +122,145 @@ public class CreditorsWithinOneYearTransformerTest {
             .transform(creditorsWithinOneYearEntity);
 
         assertNotNull(creditorsWithinOneYear);
-        assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYear.getAccrualsAndDeferredIncome());
-        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYear.getBankLoansAndOverdrafts());
-        assertEquals(OTHER_CREDITORS, creditorsWithinOneYear.getOtherCreditors());
-        assertEquals(FINANCE_LEASE, creditorsWithinOneYear.getFinanceLeasesAndHirePurchaseContracts());
-        assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYear.getTaxationAndSocialSecurity());
-        assertEquals(TRADE_CREDITORS, creditorsWithinOneYear.getTradeCreditors());
-        assertEquals(TOTAL, creditorsWithinOneYear.getTotal());
+        assertEqualsRestObject(creditorsWithinOneYear);
         assertEquals(new HashMap<>(), creditorsWithinOneYear.getLinks());
-        assertEquals(DETAILS, creditorsWithinOneYear.getDetails());
         assertEquals(ETAG, creditorsWithinOneYear.getEtag());
         assertEquals(KIND, creditorsWithinOneYear.getKind());
+    }
+
+    @Test
+    @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
+    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+
+        CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = new CreditorsWithinOneYearEntity();
+        CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = new CreditorsWithinOneYearDataEntity();
+
+        creditorsWithinOneYearDataEntity.setEtag(ETAG);
+        creditorsWithinOneYearDataEntity.setKind(KIND);
+        creditorsWithinOneYearDataEntity.setLinks(new HashMap<>());
+        creditorsWithinOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
+        creditorsWithinOneYearDataEntity.setPreviousPeriodEntity(createPreviousPeriodEntityObject());
+
+        creditorsWithinOneYearEntity.setData(creditorsWithinOneYearDataEntity);
+
+        CreditorsWithinOneYear creditorsWithinOneYear = creditorsWithinOneYearTransformer
+            .transform(creditorsWithinOneYearEntity);
+
+        assertNotNull(creditorsWithinOneYear);
+        assertEqualsRestObject(creditorsWithinOneYear);
+        assertEquals(new HashMap<>(), creditorsWithinOneYear.getLinks());
+        assertEquals(ETAG, creditorsWithinOneYear.getEtag());
+        assertEquals(KIND, creditorsWithinOneYear.getKind());
+    }
+
+    private PreviousPeriodEntity createPreviousPeriodEntityObject() {
+
+        PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
+        previousPeriodEntity.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
+        previousPeriodEntity.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
+        previousPeriodEntity.setOtherCreditors(OTHER_CREDITORS);
+        previousPeriodEntity.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
+        previousPeriodEntity.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
+        previousPeriodEntity.setTradeCreditors(TRADE_CREDITORS);
+        previousPeriodEntity.setTotal(TOTAL);
+
+        return previousPeriodEntity;
+    }
+
+    private CurrentPeriodEntity createCurrentPeriodEntityObject() {
+
+        CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
+        currentPeriodEntity.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
+        currentPeriodEntity.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
+        currentPeriodEntity.setOtherCreditors(OTHER_CREDITORS);
+        currentPeriodEntity.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
+        currentPeriodEntity.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
+        currentPeriodEntity.setTradeCreditors(TRADE_CREDITORS);
+        currentPeriodEntity.setTotal(TOTAL);
+        currentPeriodEntity.setDetails(DETAILS);
+
+        return currentPeriodEntity;
+    }
+
+    private PreviousPeriod createPreiousPeriodRestObject() {
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
+        previousPeriod.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
+        previousPeriod.setOtherCreditors(OTHER_CREDITORS);
+        previousPeriod.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
+        previousPeriod.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
+        previousPeriod.setTradeCreditors(TRADE_CREDITORS);
+        previousPeriod.setTotal(TOTAL);
+
+        return previousPeriod;
+    }
+
+    private CurrentPeriod createCurrentPeriodRestObject() {
+
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setAccrualsAndDeferredIncome(ACCRUALS_AND_DEFERRED_INCOME);
+        currentPeriod.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
+        currentPeriod.setOtherCreditors(OTHER_CREDITORS);
+        currentPeriod.setFinanceLeasesAndHirePurchaseContracts(FINANCE_LEASE);
+        currentPeriod.setTaxationAndSocialSecurity(TAXATION_AND_SOCIAL_SECURITY);
+        currentPeriod.setTradeCreditors(TRADE_CREDITORS);
+        currentPeriod.setTotal(TOTAL);
+        currentPeriod.setDetails(DETAILS);
+
+        return currentPeriod;
+    }
+
+    private void assertEqualsEntityObject(CreditorsWithinOneYearEntity creditorsWithinOneYearEntity) {
+
+        assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getAccrualsAndDeferredIncome());
+        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
+        assertEquals(OTHER_CREDITORS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
+        assertEquals(FINANCE_LEASE, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTaxationAndSocialSecurity());
+        assertEquals(TRADE_CREDITORS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTradeCreditors());
+        assertEquals(TOTAL, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
+        assertEquals(DETAILS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getDetails());
+
+        assertEquals(new HashMap<>(), creditorsWithinOneYearEntity.getData().getLinks());
+        assertEquals(ETAG, creditorsWithinOneYearEntity.getData().getEtag());
+        assertEquals(KIND, creditorsWithinOneYearEntity.getData().getKind());
+
+        if (creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity() != null) {
+            assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getAccrualsAndDeferredIncome());
+            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getBankLoansAndOverdrafts());
+            assertEquals(OTHER_CREDITORS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
+            assertEquals(FINANCE_LEASE, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+            assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTaxationAndSocialSecurity());
+            assertEquals(TRADE_CREDITORS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTradeCreditors());
+            assertEquals(TOTAL, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
+        }
+    }
+
+    private void assertEqualsRestObject(CreditorsWithinOneYear creditorsWithinOneYear) {
+
+        assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome());
+        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts());
+        assertEquals(OTHER_CREDITORS, creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors());
+        assertEquals(FINANCE_LEASE, creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity());
+        assertEquals(TRADE_CREDITORS, creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors());
+        assertEquals(TOTAL, creditorsWithinOneYear.getCurrentPeriod().getTotal());
+        assertEquals(DETAILS, creditorsWithinOneYear.getCurrentPeriod().getDetails());
+
+        assertEquals(new HashMap<>(), creditorsWithinOneYear.getLinks());
+        assertEquals(ETAG, creditorsWithinOneYear.getEtag());
+        assertEquals(KIND, creditorsWithinOneYear.getKind());
+
+        if (creditorsWithinOneYear.getPreviousPeriod() != null) {
+            assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYear.getPreviousPeriod().getAccrualsAndDeferredIncome());
+            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts());
+            assertEquals(OTHER_CREDITORS, creditorsWithinOneYear.getPreviousPeriod().getOtherCreditors());
+            assertEquals(FINANCE_LEASE, creditorsWithinOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts());
+            assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYear.getPreviousPeriod().getTaxationAndSocialSecurity());
+            assertEquals(TRADE_CREDITORS, creditorsWithinOneYear.getPreviousPeriod().getTradeCreditors());
+            assertEquals(TOTAL, creditorsWithinOneYear.getPreviousPeriod().getTotal());
+        }
+
     }
 }

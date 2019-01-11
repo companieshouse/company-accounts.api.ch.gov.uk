@@ -17,7 +17,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CreditorsWithinOneYearService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -44,7 +44,7 @@ public class CreditorsWithinOneYearController {
     private static final String MESSAGE = "message";
 
     @Autowired
-    CreditorsWithinOneYearService creditorsWithinOneYearService;
+    private CreditorsWithinOneYearService creditorsWithinOneYearService;
 
     @Autowired
     private ErrorMapper errorMapper;

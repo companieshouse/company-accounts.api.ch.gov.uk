@@ -13,9 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.CreditorsWithinOneYearDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.CreditorsWithinOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsWithinOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -35,6 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,7 +77,6 @@ public class CreditorsWithinOneYearServiceTest {
 
     private CreditorsWithinOneYearEntity creditorsWithinOneYearEntity;
 
-
     @BeforeEach
     void setUp() {
 
@@ -99,6 +102,7 @@ public class CreditorsWithinOneYearServiceTest {
         assertNotNull(result);
         assertEquals(ResponseStatus.CREATED, result.getStatus());
         assertEquals(mockCreditorsWithinOneYear, result.getData());
+        verify(mockSmallFullService).addLink(anyString(), any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
     }
 
     @Test
