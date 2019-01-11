@@ -9,7 +9,8 @@ public enum ResourceName {
     APPROVAL("approval"),
     ACCOUNTING_POLICIES("accounting-policy"),
     DEBTORS("debtors"),
-    STATEMENTS("statements");
+    STATEMENTS("statements"),
+    TANGIBLE_ASSETS("tangible-assets");
 
     private String name;
 
