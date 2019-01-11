@@ -1,6 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -24,12 +29,6 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
@@ -167,7 +166,7 @@ public class DebtorsService implements ResourceService<Debtors> {
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
-                + ResourceName.SMALL_FULL.getName() + "/" + ResourceName.DEBTORS.getName();
+                + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.DEBTORS.getName();
     }
 
     public String getSelfLinkFromDebtorsEntity (DebtorsEntity entity) {

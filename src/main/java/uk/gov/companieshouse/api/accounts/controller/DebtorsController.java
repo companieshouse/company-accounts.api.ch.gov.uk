@@ -174,7 +174,7 @@ public class DebtorsController {
         }
     }
 
-    private Map<String, Object> createDebugMap(@PathVariable("companyAccountId") String companyAccountId, Transaction transaction, String message) {
+    private Map<String, Object> createDebugMap(String companyAccountId, Transaction transaction, String message) {
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);

@@ -1,5 +1,13 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,15 +30,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -212,7 +211,7 @@ public class DebtorsControllerTest {
 
     @Test
     @DisplayName("Update debtors - success")
-    void updateAccountingPoliciesSuccess() throws DataException {
+    void updateDebtorsSuccess() throws DataException {
 
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
@@ -236,7 +235,7 @@ public class DebtorsControllerTest {
 
     @Test
     @DisplayName("Update debtors - data exception thrown")
-    void updateAccountingPoliciesDataException() throws DataException {
+    void updateDebtorsDataException() throws DataException {
 
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);

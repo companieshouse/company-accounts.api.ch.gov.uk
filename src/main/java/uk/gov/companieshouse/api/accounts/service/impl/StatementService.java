@@ -264,7 +264,7 @@ public class StatementService implements ResourceService<Statement> {
      * @return
      */
     private Map<String, String> getLegalStatementsFromProperties() {
-        return statementsServiceProperties.getStatements();
+        return statementsServiceProperties.getCloneOfStatements();
     }
 
     /**
