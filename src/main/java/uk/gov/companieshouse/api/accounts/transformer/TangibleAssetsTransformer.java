@@ -7,7 +7,10 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.Depreciati
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsResourceEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
 
 @Component
 public class TangibleAssetsTransformer implements GenericTransformer<TangibleAssets, TangibleAssetsEntity> {
@@ -158,6 +161,144 @@ public class TangibleAssetsTransformer implements GenericTransformer<TangibleAss
 
     @Override
     public TangibleAssets transform(TangibleAssetsEntity entity) {
-        return null;
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        TangibleAssetsDataEntity dataEntity = entity.getData();
+
+        BeanUtils.copyProperties(dataEntity, tangibleAssets);
+
+        if (dataEntity.getFixturesAndFittings() != null) {
+
+            TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getFixturesAndFittings(), fixturesAndFittings);
+
+            if (dataEntity.getFixturesAndFittings().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getFixturesAndFittings().getCost(), cost);
+                fixturesAndFittings.setCost(cost);
+            }
+
+            if (dataEntity.getFixturesAndFittings().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getFixturesAndFittings().getDepreciation(), depreciation);
+                fixturesAndFittings.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+        }
+
+        if (dataEntity.getLandAndBuildings() != null) {
+
+            TangibleAssetsResource landAndBuildings = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getLandAndBuildings(), landAndBuildings);
+
+            if (dataEntity.getLandAndBuildings().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getLandAndBuildings().getCost(), cost);
+                landAndBuildings.setCost(cost);
+            }
+
+            if (dataEntity.getLandAndBuildings().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getLandAndBuildings().getDepreciation(), depreciation);
+                landAndBuildings.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setLandAndBuildings(landAndBuildings);
+        }
+
+        if (dataEntity.getMotorVehicles() != null) {
+
+            TangibleAssetsResource motorVehicles = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getMotorVehicles(), motorVehicles);
+
+            if (dataEntity.getMotorVehicles().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getMotorVehicles().getCost(), cost);
+                motorVehicles.setCost(cost);
+            }
+
+            if (dataEntity.getMotorVehicles().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getMotorVehicles().getDepreciation(), depreciation);
+                motorVehicles.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setMotorVehicles(motorVehicles);
+        }
+
+        if (dataEntity.getOfficeEquipment() != null) {
+
+            TangibleAssetsResource officeEquipment = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getOfficeEquipment(), officeEquipment);
+
+            if (dataEntity.getOfficeEquipment().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getOfficeEquipment().getCost(), cost);
+                officeEquipment.setCost(cost);
+            }
+
+            if (dataEntity.getOfficeEquipment().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getOfficeEquipment().getDepreciation(), depreciation);
+                officeEquipment.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setOfficeEquipment(officeEquipment);
+        }
+
+        if (dataEntity.getPlantAndMachinery() != null) {
+
+            TangibleAssetsResource plantAndMachinery = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getPlantAndMachinery(), plantAndMachinery);
+
+            if (dataEntity.getPlantAndMachinery().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getPlantAndMachinery().getCost(), cost);
+                plantAndMachinery.setCost(cost);
+            }
+
+            if (dataEntity.getPlantAndMachinery().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getPlantAndMachinery().getDepreciation(), depreciation);
+                plantAndMachinery.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setPlantAndMachinery(plantAndMachinery);
+        }
+
+        if (dataEntity.getTotal() != null) {
+
+            TangibleAssetsResource total = new TangibleAssetsResource();
+            BeanUtils.copyProperties(dataEntity.getTotal(), total);
+
+            if (dataEntity.getTotal().getCost() != null) {
+
+                Cost cost = new Cost();
+                BeanUtils.copyProperties(dataEntity.getTotal().getCost(), cost);
+                total.setCost(cost);
+            }
+
+            if (dataEntity.getTotal().getDepreciation() != null) {
+
+                Depreciation depreciation = new Depreciation();
+                BeanUtils.copyProperties(dataEntity.getTotal().getDepreciation(), depreciation);
+                total.setDepreciation(depreciation);
+            }
+
+            tangibleAssets.setTotal(total);
+        }
+
+        return tangibleAssets;
     }
 }
