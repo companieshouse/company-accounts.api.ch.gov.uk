@@ -69,7 +69,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             return  new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
             DataException dataException = new DataException("Failed to insert "
-                + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName());
+                + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), e);
             LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId, entity.getId()));
             throw dataException;
         }
