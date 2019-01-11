@@ -31,8 +31,7 @@ public class CreditorsWithinOneYearTransformerTest {
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
-
-
+    
     private CreditorsWithinOneYearTransformer creditorsWithinOneYearTransformer = new CreditorsWithinOneYearTransformer();
 
     @Test
