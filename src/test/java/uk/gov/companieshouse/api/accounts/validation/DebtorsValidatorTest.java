@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.time.LocalDate;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +32,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
-import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -613,27 +609,6 @@ public class DebtorsValidatorTest {
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
-    }
-
-    private CompanyProfileApi createCompanyProfileMultipleYearFiler() {
-
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        CompanyAccountApi companyAccountApi = new CompanyAccountApi();
-
-        LastAccountsApi lastAccountsApi = new LastAccountsApi();
-        lastAccountsApi.setType("lastaccounts");
-        lastAccountsApi.setPeriodStartOn(LocalDate.now());
-
-        companyAccountApi.setLastAccounts(lastAccountsApi);
-        companyProfileApi.setAccounts(companyAccountApi);
-
-        return companyProfileApi;
-    }
-
-    private CompanyProfileApi createCompanyProfileSingleYearFiler() {
-
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        return companyProfileApi;
     }
 
     private Error createError(String error, String path) {
