@@ -37,13 +37,11 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
         this.companyService = companyService;
     }
 
-
     public Errors validateCreditorsWithinOneYear(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
         if (creditorsWithinOneYear != null) {
-
 
             if (creditorsWithinOneYear.getCurrentPeriod() != null) {
 
@@ -60,11 +58,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
 
                     } else {
 
-                        if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
-
-                            addInconsistentDataError(errors,
-                                    CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
-                        }
+                        validateInconsistentFiling(creditorsWithinOneYear, errors);
                     }
                 } catch (ServiceException e) {
                     throw new DataException(e.getMessage(), e);
@@ -74,8 +68,37 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
         return errors;
     }
 
+    private void validateInconsistentFiling(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
+            Errors errors) {
+        if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
+
+            addInconsistentDataError(errors,
+                    CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
+    }
+
     private void validatePreviousPeriod(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
             Errors errors) {
+        validatePreviousTotalCalculationCorrect(creditorsWithinOneYear, errors);
+        validatePreviousTotalProvidedIfValuesEntered(creditorsWithinOneYear, errors);
+    }
+
+    private void validatePreviousTotalProvidedIfValuesEntered(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
+        if ((creditorsWithinOneYear.getPreviousPeriod() != null) &&
+
+                (creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts() != null ||
+                        creditorsWithinOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts() != null ||
+                        creditorsWithinOneYear.getPreviousPeriod().getTradeCreditors() != null ||
+                        creditorsWithinOneYear.getPreviousPeriod().getTaxationAndSocialSecurity() != null ||
+                        creditorsWithinOneYear.getPreviousPeriod().getAccrualsAndDeferredIncome() != null ||
+                        creditorsWithinOneYear.getPreviousPeriod().getOtherCreditors() != null) &&
+                creditorsWithinOneYear.getPreviousPeriod().getTotal() == null) {
+
+            addError(errors, invalidNote, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private void validatePreviousTotalCalculationCorrect(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
         if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
 
             Long bankLoans =
@@ -98,27 +121,17 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
             validateAggregateTotal(total, sum,
                     CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH, errors);
         }
-
-
-        // Validate total field present if numeric fields present
-        if (creditorsWithinOneYear.getPreviousPeriod() != null) {
-
-            if ((creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts() != null ||
-                    creditorsWithinOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts() != null ||
-                    creditorsWithinOneYear.getPreviousPeriod().getTradeCreditors() != null ||
-                    creditorsWithinOneYear.getPreviousPeriod().getTaxationAndSocialSecurity() != null ||
-                    creditorsWithinOneYear.getPreviousPeriod().getAccrualsAndDeferredIncome() != null ||
-                    creditorsWithinOneYear.getPreviousPeriod().getOtherCreditors() != null) &&
-                    creditorsWithinOneYear.getPreviousPeriod().getTotal() == null) {
-
-                addError(errors, invalidNote, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
-            }
-        }
     }
 
     private void validateCurrentPeriod(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
             Errors errors) {
-        // Validate total field present if numeric fields present
+
+        validateTotalFieldPresentIfCurrentValuesProvided(creditorsWithinOneYear, errors);
+        validateCurrentPeriodTotalCalculation(creditorsWithinOneYear, errors);
+        validateDetailsPresentIfNoTotalProvided(creditorsWithinOneYear, errors);
+    }
+
+    private void validateTotalFieldPresentIfCurrentValuesProvided(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
         if ((creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts() != null ||
                 creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts() != null ||
                 creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors() != null ||
@@ -129,8 +142,24 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
 
             addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
         }
+    }
 
-        // Validate total calculations
+    private void validateDetailsPresentIfNoTotalProvided(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
+        if (creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getTotal() == null &&
+                creditorsWithinOneYear.getCurrentPeriod().getDetails() == null) {
+
+            addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH);
+
+        }
+    }
+
+    private void validateCurrentPeriodTotalCalculation(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
         if (creditorsWithinOneYear.getCurrentPeriod().getTotal() != null) {
 
             Long bankLoans =
@@ -152,21 +181,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
 
             validateAggregateTotal(total, sum, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH
                     , errors);
-        }
-
-
-        // If total field not present validate additional info is present
-        if (creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTotal() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getDetails() == null) {
-
-            addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH);
-
         }
     }
 }
