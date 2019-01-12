@@ -60,7 +60,6 @@ public class CreditorsWithinOneYearValidatorTests {
 
     private CreditorsWithinOneYearValidator validator;
 
-
     @BeforeEach
     void setup() {
         creditorsWithinOneYear = new CreditorsWithinOneYear();
@@ -227,8 +226,7 @@ public class CreditorsWithinOneYearValidatorTests {
 
         creditorsWithinOneYear.setPreviousPeriod(previousCreditors);
     }
-
-
+    
     private CreditorsWithinOneYear createValidCurrentPeriodCreditors() {
         CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
         CurrentPeriod creditorsCurrent = new CurrentPeriod();
@@ -248,8 +246,4 @@ public class CreditorsWithinOneYearValidatorTests {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
-
-    // multipleyearfiler function fails
-
-
 }
