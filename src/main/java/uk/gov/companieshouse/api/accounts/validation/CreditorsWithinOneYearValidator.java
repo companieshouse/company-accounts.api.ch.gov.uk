@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
-import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @Component
@@ -32,16 +31,10 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
 
     private CompanyService companyService;
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public CreditorsWithinOneYearValidator(CompanyService companyService,
-            CurrentPeriodService currentPeriodService,
-            PreviousPeriodService previousPeriodService) {
+    public CreditorsWithinOneYearValidator(CompanyService companyService) {
         this.companyService = companyService;
-        this.currentPeriodService = currentPeriodService;
-        this.previousPeriodService = previousPeriodService;
     }
 
 
@@ -57,15 +50,24 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
                 validateCurrentPeriod(creditorsWithinOneYear, errors);
             }
 
-            if (companyService.isMultipleYearFiler(transaction)) {
+            if (creditorsWithinOneYear.getPreviousPeriod() != null) {
 
-                validatePreviousPeriod(creditorsWithinOneYear, errors);
+                try {
 
-            } else {
+                    if (companyService.isMultipleYearFiler(transaction)) {
 
-                if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
+                        validatePreviousPeriod(creditorsWithinOneYear, errors);
 
-                    addInconsistentDataError(errors, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+                    } else {
+
+                        if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
+
+                            addInconsistentDataError(errors,
+                                    CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+                        }
+                    }
+                } catch (ServiceException e) {
+                    throw new DataException(e.getMessage(), e);
                 }
             }
         }

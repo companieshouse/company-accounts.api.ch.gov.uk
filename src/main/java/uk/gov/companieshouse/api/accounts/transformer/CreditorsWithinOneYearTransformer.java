@@ -6,9 +6,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoney
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.PreviousPeriod;
 
 @Component
 public class CreditorsWithinOneYearTransformer implements GenericTransformer<CreditorsWithinOneYear, CreditorsWithinOneYearEntity> {

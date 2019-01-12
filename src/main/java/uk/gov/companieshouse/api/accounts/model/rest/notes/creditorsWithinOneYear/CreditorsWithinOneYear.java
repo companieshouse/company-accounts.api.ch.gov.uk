@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

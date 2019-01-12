@@ -49,7 +49,6 @@ public class DebtorsValidatorTest {
     private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
-    private static final String COMPANY_NUMBER = "12345";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
@@ -324,30 +323,30 @@ public class DebtorsValidatorTest {
         assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE, CURRENT_TOTAL_PATH)));
     }
 
-//    @Test
-//    @DisplayName("Tests data exception thrown when company profile api call fails")
-//    void testDataExceptionThrown() throws DataException, ServiceException {
-//
-//        addValidCurrentDebtors();
-//        addValidPreviousDebtors();
-//
-//        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-//                COMPANY_ACCOUNTS_ID);
-//        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-//                COMPANY_ACCOUNTS_ID, mockRequest);
-//
-//        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-//                COMPANY_ACCOUNTS_ID);
-//        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-//                COMPANY_ACCOUNTS_ID,
-//                mockRequest);
-//
-//        when(mockCompanyService.getCompanyProfile(null)).thenThrow(mockServiceException);
-//
-//        assertThrows(DataException.class,
-//                () -> validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,
-//                        mockRequest));
-//    }
+    @Test
+    @DisplayName("Tests data exception thrown when company profile api call fails")
+    void testDataExceptionThrown() throws DataException, ServiceException {
+
+        addValidCurrentDebtors();
+        addValidPreviousDebtors();
+
+        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
+                COMPANY_ACCOUNTS_ID, mockRequest);
+
+        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
+                COMPANY_ACCOUNTS_ID,
+                mockRequest);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+
+        assertThrows(DataException.class,
+                () -> validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,
+                        mockRequest));
+    }
 
     @Test
     @DisplayName("Tests data exception thrown when current period api call fails")

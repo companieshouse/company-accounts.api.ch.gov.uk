@@ -45,7 +45,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public boolean isMultipleYearFiler (Transaction transaction) throws DataException {
+    public boolean isMultipleYearFiler (Transaction transaction) throws ServiceException {
 
         try {
             CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
@@ -54,7 +54,7 @@ public class CompanyServiceImpl implements CompanyService {
                     companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
 
         } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 }

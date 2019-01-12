@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
@@ -71,13 +72,17 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             if (debtors.getPreviousPeriod() != null) {
 
-                if (companyService.isMultipleYearFiler(transaction)) {
+                try {
+                    if (companyService.isMultipleYearFiler(transaction)) {
 
-                    validatePreviousPeriodDebtors(errors, debtors);
+                        validatePreviousPeriodDebtors(errors, debtors);
 
-                } else {
+                    } else {
 
-                    validateInconsistentPeriodFiling(debtors, errors);
+                        validateInconsistentPeriodFiling(debtors, errors);
+                    }
+                } catch (ServiceException e) {
+                    throw new DataException(e.getMessage(), e);
                 }
             }
         }
