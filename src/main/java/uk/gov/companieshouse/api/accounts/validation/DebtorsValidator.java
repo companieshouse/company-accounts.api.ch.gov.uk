@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
@@ -18,16 +17,12 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 
 @Component
 public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
 
     @Value("${invalid.note}")
     private String invalidNote;
-
-    @Value("${inconsistent.data}")
-    private String inconsistentData;
 
     @Value("${current.balancesheet.not.equal}")
     private String currentBalanceSheetNotEqual;
@@ -76,7 +71,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             if (debtors.getPreviousPeriod() != null) {
 
-                if (isMultipleYearFiler(transaction)) {
+                if (companyService.isMultipleYearFiler(transaction)) {
 
                     validatePreviousPeriodDebtors(errors, debtors);
 
@@ -93,11 +88,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         validateRequiredPreviousPeriodTotalFieldNotNull(debtors, errors);
         validatePreviousPeriodTotalIsCorrect(debtors, errors);
-    }
-
-    private void addInconsistentDataError (Errors errors, String errorPath) {
-
-        addError(errors, inconsistentData, errorPath);
     }
 
     private void validateCurrentPeriodDebtors (Errors errors, Debtors debtors) {
@@ -167,19 +157,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private boolean isMultipleYearFiler (Transaction transaction) throws DataException {
 
-        try {
-            CompanyProfileApi companyProfile =
-                    companyService.getCompanyProfile(transaction.getCompanyNumber());
-            return (companyProfile != null && companyProfile.getAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
-
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
-        }
-    }
 
     private void validateInconsistentPeriodFiling (Debtors debtors, Errors errors) {
 

@@ -80,4 +80,33 @@ public class CompanyServiceImplTests {
         assertThrows(ServiceException.class, () ->
             companyService.getCompanyProfile(COMPANY_NUMBER));
     }
+
+//    @Test
+//    @DisplayName("Multiple Year Filer returns true")
+//
+//    @Test
+//    @DisplayName(("Single Year filer returns false"))
+//
+//        @Test
+////    @DisplayName("Tests data exception thrown when current period api call fails")
+////    void testDataExceptionThrownWhenRetrievingCurrentPeriod() throws DataException {
+////
+////        addValidCurrentDebtors();
+////        ;
+////
+////        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+////                COMPANY_ACCOUNTS_ID);
+////        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(mockMongoException);
+////
+////        assertThrows(DataException.class,
+////                () -> validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,
+////                        mockRequest));
+////
+////        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+////                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+////
+////        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+////                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+////    }
+
 }

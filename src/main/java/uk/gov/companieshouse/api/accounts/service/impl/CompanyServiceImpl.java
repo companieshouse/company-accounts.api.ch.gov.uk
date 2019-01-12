@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
 import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
@@ -40,6 +42,20 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         return companyProfileApi;
+    }
+
+    @Override
+    public boolean isMultipleYearFiler (Transaction transaction) throws DataException {
+
+        try {
+            CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
+            return (companyProfile != null && companyProfile.getAccounts() != null &&
+                    companyProfile.getAccounts().getLastAccounts() != null &&
+                    companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
+        }
     }
 }
 
