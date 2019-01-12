@@ -150,8 +150,6 @@ public class TangibleAssetsController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                  HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -161,12 +159,11 @@ public class TangibleAssetsController {
             ResponseObject<TangibleAssets> response =
                     tangibleAssetsService.deleteById(tangibleAssetsId, request);
 
-            if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) != null) {
-                smallFull.getLinks().remove(SmallFullLinkType.DEBTORS_NOTE.getLink());
-            }
+            return apiResponseMapper
+                    .map(response.getStatus(), response.getData(), response.getErrors());
 
-            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
+
             final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
                     "Failed to delete tangible assets resource");
             LOGGER.errorRequest(request, de, debugMap);
