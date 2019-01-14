@@ -2418,7 +2418,7 @@ ul.accounts-comps-ct {
                   </tr>
                 {{end}}
 
-                {{if $debtorsOneYear := $debtorsNote.debtors_after_one_year}}
+                {{if $debtorsOneYear := $debtorsNote.greater_than_one_year}}
                   <tr class="figures">
                     <td id="debtors-after-one-year-label">Debtors due after more than one year:</td>
                     <td id="debtors-after-one-year-curr-val" class="strong figure">
