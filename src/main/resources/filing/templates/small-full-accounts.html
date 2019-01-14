@@ -2355,12 +2355,12 @@ ul.accounts-comps-ct {
                     <td id="trade-debtors">Trade debtors</td>
                     <td id="trade-debtors-curr-val" class="strong figure">
                       {{if isNotEmpty $tradeDebtors.current_amount}}
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{$tradeDebtors.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeDebtors.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                     <td id="trade-debtors-prev-val" class="figure">
                       {{if isNotEmpty $tradeDebtors.previous_amount}}
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{$tradeDebtors.previous_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeDebtors.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                   </tr>
@@ -2371,13 +2371,13 @@ ul.accounts-comps-ct {
                     <td id="prepayments-label">Prepayments and accrued income</td>
                     <td id="prepayments-curr-val" class="strong figure">
                       {{if isNotEmpty $prepayments.current_amount}}
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{$prepayments.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
 
                     <td id="prepayments-prev-val" class="figure">
                       {{if isNotEmpty $prepayments.previous_amount}}
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{$prepayments.previous_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                   </tr>
@@ -2388,13 +2388,13 @@ ul.accounts-comps-ct {
                     <td id="other-debtors-label">Other debtors</td>
                     <td id="other-debtors-curr-val" class="strong figure">
                       {{if isNotEmpty $otherDebtors.current_amount}}
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{$otherDebtors.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherDebtors.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
 
                     <td id="other-debtors-prev-val" class="figure">
                       {{if isNotEmpty $otherDebtors.previous_amount}}
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{$otherDebtors.previous_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherDebtors.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                   </tr>
@@ -2406,13 +2406,13 @@ ul.accounts-comps-ct {
                     {{if isNotEmpty $totalDebtors.current_amount}}
                     <td id="debtors-total-curr-val" class="strong total">
 
-                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$totalDebtors.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
 
                     {{if isNotEmpty $totalDebtors.previous_amount}}
                     <td id="debtors-total-prev-val" class="total">
-                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$totalDebtors.previous_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                   </tr>
@@ -2423,13 +2423,13 @@ ul.accounts-comps-ct {
                     <td id="debtors-after-one-year-label">Debtors due after more than one year:</td>
                     <td id="debtors-after-one-year-curr-val" class="strong figure">
                       {{if isNotEmpty $debtorsOneYear.current_amount}}
-                        <ix:nonFraction contextRef="Debtors_CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtorsOneYear.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="Debtors_CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtorsOneYear.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
 
                     <td id="debtors-after-one-year-prev-val" class="figure">
                       {{if isNotEmpty $debtorsOneYear.previous_amount}}
-                        <ix:nonFraction contextRef="Debtors_PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{$debtorsOneYear.previous_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="Debtors_PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtorsOneYear.previous_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
                   </tr>
