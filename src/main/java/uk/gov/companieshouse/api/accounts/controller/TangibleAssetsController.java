@@ -153,11 +153,9 @@ public class TangibleAssetsController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String tangibleAssetsId = tangibleAssetsService.generateID(companyAccountsId);
-
         try {
             ResponseObject<TangibleAssets> response =
-                    tangibleAssetsService.deleteById(tangibleAssetsId, request);
+                    tangibleAssetsService.delete(companyAccountsId, request);
 
             return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());

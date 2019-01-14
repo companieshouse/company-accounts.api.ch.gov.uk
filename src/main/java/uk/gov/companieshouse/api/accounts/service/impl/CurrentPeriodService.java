@@ -138,7 +138,7 @@ public class CurrentPeriodService implements
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<CurrentPeriod> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 

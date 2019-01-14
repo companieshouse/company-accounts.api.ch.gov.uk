@@ -135,13 +135,18 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
     }
 
     @Override
-    public ResponseObject<TangibleAssets> deleteById(String id, HttpServletRequest request)
+    public ResponseObject<TangibleAssets> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        try {
-            if (repository.existsById(id)) {
+        String tangibleId = generateID(companyAccountsId);
 
-                repository.deleteById(id);
+        try {
+            if (repository.existsById(tangibleId)) {
+
+                repository.deleteById(tangibleId);
+
+                smallFullService
+                        .removeLink(companyAccountsId, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -150,7 +155,7 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
         } catch (MongoException me) {
 
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("id", companyAccountsId);
 
             DataException dataException =
                     new DataException("Failed to delete " + ResourceName.TANGIBLE_ASSETS.getName(), me);

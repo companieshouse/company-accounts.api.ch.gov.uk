@@ -321,10 +321,9 @@ public class TangibleAssetsControllerTest {
     void deleteTangibleAssetsSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(tangibleAssetsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(GENERATED_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
-        when(tangibleAssetsService.deleteById(GENERATED_ID, request))
+        when(tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -337,7 +336,7 @@ public class TangibleAssetsControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(tangibleAssetsService, times(1)).deleteById(GENERATED_ID, request);
+        verify(tangibleAssetsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
@@ -347,10 +346,9 @@ public class TangibleAssetsControllerTest {
     void deleteTangibleAssetsServiceThrowsDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(tangibleAssetsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(GENERATED_ID);
 
         DataException dataException = new DataException("");
-        doThrow(dataException).when(tangibleAssetsService).deleteById(GENERATED_ID, request);
+        doThrow(dataException).when(tangibleAssetsService).delete(COMPANY_ACCOUNTS_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
@@ -361,7 +359,7 @@ public class TangibleAssetsControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(tangibleAssetsService, times(1)).deleteById(GENERATED_ID, request);
+        verify(tangibleAssetsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1)).map(dataException);
     }
 }

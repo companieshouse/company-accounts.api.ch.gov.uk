@@ -139,7 +139,7 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
     }
 
     @Override
-    public ResponseObject<AccountingPolicies> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<AccountingPolicies> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 
