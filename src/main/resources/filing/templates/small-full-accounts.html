@@ -1993,7 +1993,7 @@ ul.accounts-comps-ct {
               <!-- BALANCE SHEET - LIABILITIES - ACCRUALS AND DEFERRED INCOME -->
 
                   {{if $accruals := $liabilities.accruals_and_deferred_income}}
-              
+
                       <tr class="figures">
                           <td id="accruals-and-deferred-income-label">Accruals and deferred income:</td>
 
@@ -2186,6 +2186,9 @@ ul.accounts-comps-ct {
             </p>
             <p>
               <ix:nonNumeric contextRef="CY" name="direp:StatementThatAccountsHaveBeenPreparedInAccordanceWithProvisionsSmallCompaniesRegime">{{$statements.small_companies_regime}}</ix:nonNumeric>
+            </p>
+            <p>
+              {{$statements.no_profit_and_loss}}
             </p>
 
           {{end}}
