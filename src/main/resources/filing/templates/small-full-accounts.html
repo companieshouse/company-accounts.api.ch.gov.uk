@@ -2405,16 +2405,15 @@ ul.accounts-comps-ct {
                     <td id="debtors-total-label">Total</td>
                     {{if isNotEmpty $totalDebtors.current_amount}}
                     <td id="debtors-total-curr-val" class="strong total">
-
                         <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.current_amount}}</ix:nonFraction>
-                      {{end}}
                     </td>
+                    {{end}}
 
                     {{if isNotEmpty $totalDebtors.previous_amount}}
                     <td id="debtors-total-prev-val" class="total">
                         <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.previous_amount}}</ix:nonFraction>
-                      {{end}}
                     </td>
+                    {{end}}
                   </tr>
                 {{end}}
 
