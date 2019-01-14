@@ -1853,13 +1853,13 @@ ul.accounts-comps-ct {
 
                           <td class="figure noteIndex" id="uk-busPrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotalCY_ENDNoteIndexes"></td>
 
-                          <td id="prepayments-curr-val" class="strong figure">
+                          <td id="prepayments-and-accrued-income-curr-val" class="strong figure">
                               {{if isNotEmpty $prepayments.current_amount}}
                                   <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.current_amount}}</ix:nonFraction>
                               {{end}}
                           </td>
 
-                          <td id="prepayments-prev-val" class="figure">
+                          <td id="prepayments-and-accrued-income-prev-val" class="figure">
                               {{if isNotEmpty $prepayments.previous_amount}}
                                   <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.previous_amount}}</ix:nonFraction>
                               {{end}}
