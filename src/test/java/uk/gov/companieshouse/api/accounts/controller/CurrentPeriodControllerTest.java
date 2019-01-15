@@ -51,9 +51,6 @@ public class CurrentPeriodControllerTest {
     private SmallFull smallFull;
 
     @Mock
-    private CurrentPeriodValidator currentPeriodValidator;
-
-    @Mock
     private BindingResult bindingResult;
 
     @Mock
@@ -83,8 +80,6 @@ public class CurrentPeriodControllerTest {
         when(apiResponseMapper
             .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
             .thenReturn(responseEntity);
-
-        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
 
         ResponseEntity response = currentPeriodController
             .create(currentPeriod, bindingResult, "", request);
@@ -129,8 +124,6 @@ public class CurrentPeriodControllerTest {
         doReturn(responseObject).when(currentPeriodService)
             .update(currentPeriod, null, "12345", request);
 
-        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
-
         ResponseEntity response = currentPeriodController
             .update(currentPeriod, bindingResult, "12345", request);
 
@@ -153,14 +146,4 @@ public class CurrentPeriodControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    @Test
-    @DisplayName("Test correct response when validator fails")
-    public void badRequestWhenValidatorFails() {
-        when(currentPeriodValidator.validateCurrentPeriod(any())).thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(true);
-
-        ResponseEntity<?> response = currentPeriodController.create(currentPeriod, bindingResult, "123456", request);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
 }
