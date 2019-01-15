@@ -112,7 +112,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                 debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
                 debtors.getCurrentPeriod().getOtherDebtors() != null ||
                 debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
-                ! debtors.getCurrentPeriod().getDetails().isEmpty()) &&
+                debtors.getCurrentPeriod().getDetails() != null) &&
                 debtors.getCurrentPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, CURRENT_TOTAL_PATH);
