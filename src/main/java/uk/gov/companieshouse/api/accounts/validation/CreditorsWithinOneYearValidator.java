@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
@@ -45,20 +47,24 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
 
             if (creditorsWithinOneYear.getCurrentPeriod() != null) {
 
-                validateCurrentPeriod(creditorsWithinOneYear, errors);
+                CurrentPeriod creditorsCurrentPeriod = creditorsWithinOneYear.getCurrentPeriod();
+
+                validateCurrentPeriod(creditorsCurrentPeriod, errors);
             }
 
             if (creditorsWithinOneYear.getPreviousPeriod() != null) {
+
+                PreviousPeriod creditorsPreviousPeriod = creditorsWithinOneYear.getPreviousPeriod();
 
                 try {
 
                     if (companyService.isMultipleYearFiler(transaction)) {
 
-                        validatePreviousPeriod(creditorsWithinOneYear, errors);
+                        validatePreviousPeriod(creditorsPreviousPeriod, errors);
 
                     } else {
 
-                        validateInconsistentFiling(creditorsWithinOneYear, errors);
+                        validateInconsistentFiling(creditorsPreviousPeriod, errors);
                     }
                 } catch (ServiceException e) {
                     throw new DataException(e.getMessage(), e);
@@ -68,53 +74,52 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
         return errors;
     }
 
-    private void validateInconsistentFiling(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
+    private void validateInconsistentFiling(@Valid PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
-        if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
+        if (creditorsPreviousPeriod.getTotal() != null) {
 
             addInconsistentDataError(errors,
                     CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
-    private void validatePreviousPeriod(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
+    private void validatePreviousPeriod(@Valid PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
-        validatePreviousTotalCalculationCorrect(creditorsWithinOneYear, errors);
-        validatePreviousTotalProvidedIfValuesEntered(creditorsWithinOneYear, errors);
+        validatePreviousTotalCalculationCorrect(creditorsPreviousPeriod, errors);
+        validatePreviousTotalProvidedIfValuesEntered(creditorsPreviousPeriod, errors);
     }
 
-    private void validatePreviousTotalProvidedIfValuesEntered(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
-        if ((creditorsWithinOneYear.getPreviousPeriod() != null) &&
+    private void validatePreviousTotalProvidedIfValuesEntered(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
-                (creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts() != null ||
-                        creditorsWithinOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts() != null ||
-                        creditorsWithinOneYear.getPreviousPeriod().getTradeCreditors() != null ||
-                        creditorsWithinOneYear.getPreviousPeriod().getTaxationAndSocialSecurity() != null ||
-                        creditorsWithinOneYear.getPreviousPeriod().getAccrualsAndDeferredIncome() != null ||
-                        creditorsWithinOneYear.getPreviousPeriod().getOtherCreditors() != null) &&
-                creditorsWithinOneYear.getPreviousPeriod().getTotal() == null) {
+        if ((creditorsPreviousPeriod.getBankLoansAndOverdrafts() != null ||
+                creditorsPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts() != null ||
+                creditorsPreviousPeriod.getTradeCreditors() != null ||
+                creditorsPreviousPeriod.getTaxationAndSocialSecurity() != null ||
+                creditorsPreviousPeriod.getAccrualsAndDeferredIncome() != null ||
+                creditorsPreviousPeriod.getOtherCreditors() != null) &&
+                (creditorsPreviousPeriod.getTotal() == null)) {
 
             addError(errors, invalidNote, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
-    private void validatePreviousTotalCalculationCorrect(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
-        if (creditorsWithinOneYear.getPreviousPeriod().getTotal() != null) {
+    private void validatePreviousTotalCalculationCorrect(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
+        if (creditorsPreviousPeriod.getTotal() != null) {
 
             Long bankLoans =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
             Long amountsDueUnderFinance =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
             Long tradeCreditors =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
             Long taxation =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getTaxationAndSocialSecurity()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getTaxationAndSocialSecurity()).orElse(0L);
             Long accruals =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getAccrualsAndDeferredIncome()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
             Long otherCreditors =
-                    Optional.ofNullable(creditorsWithinOneYear.getPreviousPeriod().getOtherCreditors()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getOtherCreditors()).orElse(0L);
 
-            Long total = creditorsWithinOneYear.getPreviousPeriod().getTotal();
+            Long total = creditorsPreviousPeriod.getTotal();
             Long sum =
                     bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
 
@@ -123,59 +128,59 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
         }
     }
 
-    private void validateCurrentPeriod(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
+    private void validateCurrentPeriod(@Valid CurrentPeriod creditorsCurrentPeriod,
             Errors errors) {
 
-        validateTotalFieldPresentIfCurrentValuesProvided(creditorsWithinOneYear, errors);
-        validateCurrentPeriodTotalCalculation(creditorsWithinOneYear, errors);
-        validateDetailsPresentIfNoTotalProvided(creditorsWithinOneYear, errors);
+        validateTotalFieldPresentIfCurrentValuesProvided(creditorsCurrentPeriod, errors);
+        validateCurrentPeriodTotalCalculation(creditorsCurrentPeriod, errors);
+        validateDetailsPresentIfNoTotalProvided(creditorsCurrentPeriod, errors);
     }
 
-    private void validateTotalFieldPresentIfCurrentValuesProvided(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
-        if ((creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts() != null ||
-                creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts() != null ||
-                creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors() != null ||
-                creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity() != null ||
-                creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome() != null ||
-                creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors() != null) &&
-                creditorsWithinOneYear.getCurrentPeriod().getTotal() == null) {
+    private void validateTotalFieldPresentIfCurrentValuesProvided(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+        if ((creditorsCurrentPeriod.getBankLoansAndOverdrafts() != null ||
+                creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts() != null ||
+                creditorsCurrentPeriod.getTradeCreditors() != null ||
+                creditorsCurrentPeriod.getTaxationAndSocialSecurity() != null ||
+                creditorsCurrentPeriod.getAccrualsAndDeferredIncome() != null ||
+                creditorsCurrentPeriod.getOtherCreditors() != null) &&
+                creditorsCurrentPeriod.getTotal() == null) {
 
             addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 
-    private void validateDetailsPresentIfNoTotalProvided(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
-        if (creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTradeCreditors() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getTotal() == null &&
-                creditorsWithinOneYear.getCurrentPeriod().getDetails() == null) {
+    private void validateDetailsPresentIfNoTotalProvided(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+        if (creditorsCurrentPeriod.getBankLoansAndOverdrafts() == null &&
+                creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts() == null &&
+                creditorsCurrentPeriod.getTradeCreditors() == null &&
+                creditorsCurrentPeriod.getTaxationAndSocialSecurity() == null &&
+                creditorsCurrentPeriod.getAccrualsAndDeferredIncome() == null &&
+                creditorsCurrentPeriod.getOtherCreditors() == null &&
+                creditorsCurrentPeriod.getTotal() == null &&
+                creditorsCurrentPeriod.getDetails() == null) {
 
             addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH);
 
         }
     }
 
-    private void validateCurrentPeriodTotalCalculation(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Errors errors) {
-        if (creditorsWithinOneYear.getCurrentPeriod().getTotal() != null) {
+    private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+        if (creditorsCurrentPeriod.getTotal() != null) {
 
             Long bankLoans =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
             Long amountsDueUnderFinance =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
             Long tradeCreditors =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
             Long taxation =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getTaxationAndSocialSecurity()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getTaxationAndSocialSecurity()).orElse(0L);
             Long accruals =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getAccrualsAndDeferredIncome()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
             Long otherCreditors =
-                    Optional.ofNullable(creditorsWithinOneYear.getCurrentPeriod().getOtherCreditors()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getOtherCreditors()).orElse(0L);
 
-            Long total = creditorsWithinOneYear.getCurrentPeriod().getTotal();
+            Long total = creditorsCurrentPeriod.getTotal();
             Long sum =
                     bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
 
