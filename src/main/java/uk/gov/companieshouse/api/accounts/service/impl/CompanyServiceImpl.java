@@ -19,7 +19,7 @@ public class CompanyServiceImpl implements CompanyService {
     private ApiClientService apiClientService;
 
     private static final UriTemplate GET_COMPANY_URI =
-        new UriTemplate("/company/{companyNumber}");
+            new UriTemplate("/company/{companyNumber}");
 
     @Override
     public CompanyProfileApi getCompanyProfile(String companyNumber) throws ServiceException {
@@ -44,17 +44,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public boolean isMultipleYearFiler (Transaction transaction) throws ServiceException {
+    public boolean isMultipleYearFiler(Transaction transaction) throws ServiceException {
 
-        try {
-            CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
-            return (companyProfile != null && companyProfile.getAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
-
-        } catch (ServiceException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
+        CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
+        return (companyProfile != null && companyProfile.getAccounts() != null &&
+                companyProfile.getAccounts().getLastAccounts() != null &&
+                companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
     }
 }
 
