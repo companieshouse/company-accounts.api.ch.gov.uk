@@ -1729,7 +1729,10 @@ ul.accounts-comps-ct {
                       <td id="fixed-assets-curr-total" class="strong total">
                               <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:FixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.current_total}}</ix:nonFraction>
                       </td>
+                    {{else}}
+                    <td  class="figures">&#160;</td>
                     {{end}}
+
 
                     {{if isNotEmpty $fixedAssets.previous_total}}
                       <td id="fixed-assets-prev-total" class="total">
@@ -1776,7 +1779,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="debtors-label">Debtors:</td>
 
-                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes"></td>
+                        {{ if .small_full_accounts.balance_sheet_notes.debtors }}
+                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
+                        {{else}}
+                          <td class="figure noteIndex">&#160;</td>
+                        {{end}}
 
                           <td id="debtors-curr-val" class="strong figure">
                               {{if isNotEmpty $debtors.current_amount}}
@@ -1830,7 +1837,11 @@ ul.accounts-comps-ct {
                             <td id="current-assets-curr-val" class="strong total">
                              <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.current_total}}</ix:nonFraction>
                             </td>
+                        {{else}}
+                          <td class="figures">&#160;</td>
                         {{end}}
+
+
                         {{if isNotEmpty $currentAssets.previous_total}}
                             <td id="current-assets-prev-val" class="total">
                               <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CurrentAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.previous_total}}</ix:nonFraction>
@@ -1849,17 +1860,17 @@ ul.accounts-comps-ct {
                   {{if $prepayments := $liabilities.prepayments_and_accrued_income}}
 
                       <tr class="figures">
-                          <td id="prepayments-label">Prepayments and accrued income:</td>
+                          <td id="prepayments-and-accrued-income-label">Prepayments and accrued income:</td>
 
                           <td class="figure noteIndex" id="uk-busPrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotalCY_ENDNoteIndexes"></td>
 
-                          <td id="prepayments-curr-val" class="strong figure">
+                          <td id="prepayments-and-accrued-income-curr-val" class="strong figure">
                               {{if isNotEmpty $prepayments.current_amount}}
                                   <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.current_amount}}</ix:nonFraction>
                               {{end}}
                           </td>
 
-                          <td id="prepayments-prev-val" class="figure">
+                          <td id="prepayments-and-accrued-income-prev-val" class="figure">
                               {{if isNotEmpty $prepayments.previous_amount}}
                                   <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncomeNotExpressedWithinCurrentAssetSubtotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.previous_amount}}</ix:nonFraction>
                               {{end}}
@@ -2034,7 +2045,9 @@ ul.accounts-comps-ct {
                               <td id="total-net-assets-curr-val" class="strong total">
                                 <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_net_assets}}</ix:nonFraction>
                               </td>
-                           {{end}}
+                        {{else}}
+                        <td  class="figures">&#160;</td>
+                        {{end}}
 
                           {{if isNotEmpty $previous_total_net_assets}}
                               <td id="total-net-assets-prev-val" class="total">
@@ -2149,7 +2162,9 @@ ul.accounts-comps-ct {
                            <td id="shareholders-fund-curr-val" class="strong total">
                                {{emitIfNegative $current_shareholders_fund "("}} <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_shareholders_fund}}</ix:nonFraction> {{emitIfNegative $current_shareholders_fund ")"}}
                            </td>
-                      {{end}}
+                    {{else}}
+                    <td  class="figures">&#160;</td>
+                    {{end}}
 
                     {{if isNotEmpty $previous_shareholders_fund}}
                       <td id="shareholders-fund-prev-val" class="total">
@@ -2161,7 +2176,6 @@ ul.accounts-comps-ct {
                   {{end}}
 
               {{end}}
-
 
 
               </tbody>
@@ -2221,89 +2235,88 @@ ul.accounts-comps-ct {
         </div>
 
         <!-- ADDITIONAL NOTES START -->
+        {{setValue "notes-page-count" 0}}
         {{if $additionalNotes := .small_full_accounts.additional_notes}}
 
-        <!-- ACCOUNTING POLICIES START -->
-        {{setValue "notes-page-count" 0}}
-        {{if $accountingPolicies := $additionalNotes.accounting_policies}}
+          <!-- ACCOUNTING POLICIES START -->
+          {{if $accountingPolicies := $additionalNotes.accounting_policies}}
+            {{incValue "notes-page-count" }}
 
-        {{incValue "notes-page-count" }}
-
-        <div class="page">
-          <div class="header">
-            <h1 class="text--center">
-              <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-            </h1>
-          </div>
-
-          <h2 class="text--center">Notes to the Financial Statements</h2>
-          <p class="text--center">
-            <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
-          </p>
-
-          <ul>
-            <li>
-              <h2>{{getValue "notes-page-count" }}. Accounting policies </h2>
-
-              {{if $basisOfMeasurementAndPreparation := $accountingPolicies.basis_of_measurement_and_preparation}}
-              <p class="strong">Basis of measurement and preparation</p>
-              <div class="text-area-display" id="basis-of-measurement-and-preparation-text-note">
-                <p class="text-area-display">
-                  <ix:nonnumeric contextref="CY" name="core:GeneralDescriptionBasisMeasurementUsedInPreparingFinancialStatements">{{$basisOfMeasurementAndPreparation}}</ix:nonnumeric>
-                </p>
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
               </div>
-              {{end}}
 
-              {{if $turnoverPolicy := $accountingPolicies.turnover_policy}}
-              <p class="strong">Turnover policy</p>
-              <div class="text-area-display" id="turnover-policy-free-text-note">
-                <p class="text-area-display">
-                  <ix:nonnumeric contextref="CY" name="core:RevenueRecognitionPolicy">{{$turnoverPolicy}}</ix:nonnumeric>
-                </p>
-              </div>
-              {{end}}
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
 
-              {{if $tangibleFixedAssetsDepreciationPolicy := $accountingPolicies.tangible_fixed_assets_depreciation_policy}}
-              <p class="strong">Tangible fixed assets depreciation policy</p>
-              <div class="text-area-display" id="tangible-fixed-assets-depreciation-policy-free-text-note">
-                <p class="text-area-display">
-                  <ix:nonnumeric contextref="CY" name="core:PropertyPlantEquipmentPolicy">{{$tangibleFixedAssetsDepreciationPolicy}}</ix:nonnumeric>
-                </p>
-              </div>
-              {{end}}
+              <ul>
+                <li>
+                  <h2>{{- getValue "notes-page-count"}}. Accounting policies </h2>
 
-              {{if $intangibleFixedAssetsAmortisationPolicy := $accountingPolicies.intangible_fixed_assets_amortisation_policy}}
-              <p class="strong">Intangible fixed assets amortisation policy</p>
-              <div class="text-area-display" id="intangible-fixed-assets-amortisation-policy-free-text-note">
-                <p class="text-area-display">
-                  <ix:nonnumeric contextref="CY" name="core:IntangibleAssetsPolicy">{{$intangibleFixedAssetsAmortisationPolicy}}</ix:nonnumeric>
-                </p>
-              </div>
-              {{end}}
+                  {{if $basisOfMeasurementAndPreparation := $accountingPolicies.basis_of_measurement_and_preparation}}
+                  <p class="strong">Basis of measurement and preparation</p>
+                  <div class="text-area-display" id="basis-of-measurement-and-preparation-text-note">
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="CY" name="core:GeneralDescriptionBasisMeasurementUsedInPreparingFinancialStatements">{{$basisOfMeasurementAndPreparation}}</ix:nonNumeric>
+                    </p>
+                  </div>
+                  {{end}}
 
-              {{if $valuationInformationPolicy := $accountingPolicies.valuation_information_and_policy}}
-              <p class="strong">Valuation information and policy</p>
-              <div class="text-area-display" id="valuation-information-and-policy-free-text-note">
-                <p class="text-area-display">
-                  <ix:nonnumeric contextref="CY" name="core:ValuationFinancialInstrumentsPolicy">{{$valuationInformationPolicy}}</ix:nonnumeric>
-                </p>
-              </div>
-              {{end}}
+                  {{if $turnoverPolicy := $accountingPolicies.turnover_policy}}
+                  <p class="strong">Turnover policy</p>
+                  <div class="text-area-display" id="turnover-policy-free-text-note">
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="CY" name="core:RevenueRecognitionPolicy">{{$turnoverPolicy}}</ix:nonNumeric>
+                    </p>
+                  </div>
+                  {{end}}
 
-              {{if $otherAccountingPolicy := $accountingPolicies.other_accounting_policy}}
-              <p class="strong">Other accounting policies</p>
-              <div class="text-area-display" id="other-accounting-policies-free-text-note">{{$otherAccountingPolicy}}</div>
-              {{end}}
+                  {{if $tangibleFixedAssetsDepreciationPolicy := $accountingPolicies.tangible_fixed_assets_depreciation_policy}}
+                  <p class="strong">Tangible fixed assets depreciation policy</p>
+                  <div class="text-area-display" id="tangible-fixed-assets-depreciation-policy-free-text-note">
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="CY" name="core:PropertyPlantEquipmentPolicy">{{$tangibleFixedAssetsDepreciationPolicy}}</ix:nonNumeric>
+                    </p>
+                  </div>
+                  {{end}}
 
-            </li>
-          </ul>
+                  {{if $intangibleFixedAssetsAmortisationPolicy := $accountingPolicies.intangible_fixed_assets_amortisation_policy}}
+                  <p class="strong">Intangible fixed assets amortisation policy</p>
+                  <div class="text-area-display" id="intangible-fixed-assets-amortisation-policy-free-text-note">
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="CY" name="core:IntangibleAssetsPolicy">{{$intangibleFixedAssetsAmortisationPolicy}}</ix:nonNumeric>
+                    </p>
+                  </div>
+                  {{end}}
 
-          <div id="AdditionalNotesSection" class="section-marker"></div>
+                  {{if $valuationInformationPolicy := $accountingPolicies.valuation_information_and_policy}}
+                  <p class="strong">Valuation information and policy</p>
+                  <div class="text-area-display" id="valuation-information-and-policy-free-text-note">
+                    <p class="text-area-display">
+                      <ix:nonNumeric contextRef="CY" name="core:ValuationFinancialInstrumentsPolicy">{{$valuationInformationPolicy}}</ix:nonNumeric>
+                    </p>
+                  </div>
+                  {{end}}
 
-        </div>
+                  {{if $otherAccountingPolicy := $accountingPolicies.other_accounting_policy}}
+                  <p class="strong">Other accounting policies</p>
+                  <div class="text-area-display" id="other-accounting-policies-free-text-note">{{$otherAccountingPolicy}}</div>
+                  {{end}}
 
-        {{end}}
-        <!-- ACCOUNTING POLICIES END -->
+                </li>
+              </ul>
+
+              <div id="AdditionalNotesSection" class="section-marker"></div>
+
+            </div>
+
+          {{end}}
+          <!-- ACCOUNTING POLICIES END -->
 
         {{ if $tangibleAssetsNote := $additionalNotes.tangible_assets }}
             {{incValue "notes-page-count" }}
@@ -2728,6 +2741,164 @@ ul.accounts-comps-ct {
 
         {{end}}
         <!-- NOTES END -->
+
+        <!-- BALANCE SHEET NOTES START -->
+        {{if $balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
+
+          <!-- DEBTORS NOTE START -->
+          {{if $debtorsNote := $balanceSheetNotes.debtors}}
+            {{incValue "notes-page-count" }}
+            {{setValue "debtors-notes-id" (getValue "notes-page-count") }}
+
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+              </div>
+
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
+
+              <h2>{{getValue "notes-page-count"}}. Debtors</h2>
+
+              <table cellspacing="10" id="debtors-note-table">
+                <tbody>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $debtorsNote.total.current_amount}}
+                    <th class="table-heading" id="debtors-note-current-heading">{{$period.current_period_bs_date}}</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $debtorsNote.total.previous_amount}}
+                    <th class="table-heading" id="debtors-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                  {{end}}
+                </tr>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $debtorsNote.total.current_amount}}
+                    <th class="table-heading" id="debtors-note-current-currency">£</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $debtorsNote.total.previous_amount}}
+                  <th class="table-heading" id="debtors-note-previous-currency">£</th>
+                  {{end}}
+                </tr>
+
+                {{if $tradeDebtors := $debtorsNote.trade_debtors}}
+                  <tr class="figures">
+                    <td id="trade-debtors">Trade debtors</td>
+                    <td id="trade-debtors-curr-val" class="strong figure">
+                      {{if isNotEmpty $tradeDebtors.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeDebtors.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="trade-debtors-prev-val" class="figure">
+                      {{if isNotEmpty $tradeDebtors.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TradeDebtorsTradeReceivables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeDebtors.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $prepayments := $debtorsNote.prepayments_and_accrued_income}}
+                  <tr class="figures">
+                    <td id="prepayments-label">Prepayments and accrued income</td>
+                    <td id="prepayments-curr-val" class="strong figure">
+                      {{if isNotEmpty $prepayments.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+
+                    <td id="prepayments-prev-val" class="figure">
+                      {{if isNotEmpty $prepayments.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PrepaymentsAccruedIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $prepayments.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $otherDebtors := $debtorsNote.other_debtors}}
+                  <tr class="figures">
+                    <td id="other-debtors-label">Other debtors</td>
+                    <td id="other-debtors-curr-val" class="strong figure">
+                      {{if isNotEmpty $otherDebtors.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherDebtors.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+
+                    <td id="other-debtors-prev-val" class="figure">
+                      {{if isNotEmpty $otherDebtors.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherDebtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherDebtors.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $totalDebtors := $debtorsNote.total}}
+                  <tr class="figures">
+                    <td id="debtors-total-label">Total</td>
+                    {{if isNotEmpty $totalDebtors.current_amount}}
+                    <td id="debtors-total-curr-val" class="strong total">
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.current_amount}}</ix:nonFraction>
+                    </td>
+                    {{else}}
+                      <td  class="figures">&#160;</td>
+                    {{end}}
+
+                    {{if isNotEmpty $totalDebtors.previous_amount}}
+                    <td id="debtors-total-prev-val" class="total">
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalDebtors.previous_amount}}</ix:nonFraction>
+                    </td>
+                    {{end}}
+                  </tr>
+                {{end}}
+
+                {{if $debtorsOneYear := $debtorsNote.greater_than_one_year}}
+                  <tr class="figures">
+                    <td id="debtors-after-one-year-label">Debtors due after more than one year:</td>
+                    <td id="debtors-after-one-year-curr-val" class="strong figure">
+                      {{if isNotEmpty $debtorsOneYear.current_amount}}
+                        <ix:nonFraction contextRef="Debtors_CY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtorsOneYear.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+
+                    <td id="debtors-after-one-year-prev-val" class="figure">
+                      {{if isNotEmpty $debtorsOneYear.previous_amount}}
+                        <ix:nonFraction contextRef="Debtors_PY_END" decimals="0" unitRef="GBP" name="core:Debtors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $debtorsOneYear.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+                </tbody>
+              </table>
+
+              {{if $debtorsNote.details}}
+                <div class="text-area-display" id="debtors-free-text-note">
+
+                  <p class="text-area-display">
+                    <ix:nonNumeric contextRef="CY" name="core:DebtorsFree-textComment">{{$debtorsNote.details}}</ix:nonNumeric>
+                  </p>
+
+                </div>
+              {{end}}
+              <div id="BalanceSheetNotesSection" class="section-marker"></div>
+
+            </div>
+
+          {{end}}
+          <!-- DEBTORS NOTE END -->
+
+        {{end}}
+        <!-- BALANCE SHEET NOTES END -->
 
         <!-- POST BALANCE SHEET EVENTS NOTE START -->
         {{if $postBalanceSheetEvents := .small_full_accounts.notes.post_balance_sheet_events}}
