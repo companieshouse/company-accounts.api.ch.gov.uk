@@ -111,7 +111,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
             Long amountsDueUnderFinance =
                     Optional.ofNullable(creditorsPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
             Long tradeCreditors =
-                    Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsPreviousPeriod.getTradeCreditors()).orElse(0L);
             Long taxation =
                     Optional.ofNullable(creditorsPreviousPeriod.getTaxationAndSocialSecurity()).orElse(0L);
             Long accruals =
@@ -172,7 +172,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
             Long amountsDueUnderFinance =
                     Optional.ofNullable(creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
             Long tradeCreditors =
-                    Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
+                    Optional.ofNullable(creditorsCurrentPeriod.getTradeCreditors()).orElse(0L);
             Long taxation =
                     Optional.ofNullable(creditorsCurrentPeriod.getTaxationAndSocialSecurity()).orElse(0L);
             Long accruals =
