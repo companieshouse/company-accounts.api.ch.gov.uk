@@ -1546,9 +1546,280 @@ ul.accounts-comps-ct {
                   <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
                 </xbrli:period>
               </xbrli:context>
+
+              <xbrli:context id='LandAndBuildings_CY'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:LandBuildings</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id='LandAndBuildings_CY_END'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:LandBuildings</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+                </xbrli:period>
+            </xbrli:context>
+
+            {{if $previous_period_end_on}}
+            {{if $previous_period_start_on}}
+                <xbrli:context id='LandAndBuildings_PY'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:LandBuildings</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>{{$previous_period_start_on}}</xbrli:startDate>
+                        <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+                <xbrli:context id='LandAndBuildings_PY_END'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:LandBuildings</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+            <xbrli:context id='PlantMachinery_CY'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:PlantMachinery</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+
+            <xbrli:context id='PlantMachinery_CY_END'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:PlantMachinery</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+                </xbrli:period>
+            </xbrli:context>
+
+            {{if $previous_period_end_on}}
+            {{if $previous_period_start_on}}
+                <xbrli:context id='PlantMachinery_PY'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:PlantMachinery</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>{{$previous_period_start_on}}</xbrli:startDate>
+                        <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+                <xbrli:context id='PlantMachinery_PY_END'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:PlantMachinery</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+            
+
+            <xbrli:context id='FurnitureFittingsToolsEquipment_CY'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:FurnitureFittingsToolsEquipment</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+
+            <xbrli:context id='FurnitureFittingsToolsEquipment_CY_END'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:FurnitureFittingsToolsEquipment</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+                </xbrli:period>
+            </xbrli:context>
+
+            {{if $previous_period_end_on}}
+            {{if $previous_period_start_on}}
+                <xbrli:context id='FurnitureFittingsToolsEquipment_PY'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:FurnitureFittingsToolsEquipment</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>{{$previous_period_start_on}}</xbrli:startDate>
+                        <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+                <xbrli:context id='FurnitureFittingsToolsEquipment_PY_END'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:FurnitureFittingsToolsEquipment</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+        
+            <xbrli:context id='OfficeEquipment_CY'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:OfficeEquipment</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+
+            <xbrli:context id='OfficeEquipment_CY_END'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:OfficeEquipment</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+                </xbrli:period>
+            </xbrli:context>
+
+            {{if $previous_period_end_on}}
+            {{if $previous_period_start_on}}
+                <xbrli:context id='OfficeEquipment_PY'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:OfficeEquipment</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>{{$previous_period_start_on}}</xbrli:startDate>
+                        <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+                <xbrli:context id='OfficeEquipment_PY_END'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:OfficeEquipment</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+        
+            <xbrli:context id='Vehicles_CY'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:Vehicles</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+
+            <xbrli:context id='Vehicles_CY_END'>
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:Vehicles</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+                </xbrli:period>
+            </xbrli:context>
+
+            {{if $previous_period_end_on}}
+            {{if $previous_period_start_on}}
+                <xbrli:context id='Vehicles_PY'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:Vehicles</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>{{$previous_period_start_on}}</xbrli:startDate>
+                        <xbrli:endDate>{{$previous_period_end_on}}</xbrli:endDate>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
+
+                <xbrli:context id='Vehicles_PY_END'>
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                        <xbrli:segment>
+                            <xbrldi:explicitMember dimension="core:PropertyPlantEquipmentClassesDimension">core:Vehicles</xbrldi:explicitMember>
+                        </xbrli:segment>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+                    </xbrli:period>
+                </xbrli:context>
+            {{end}}
             </ix:resources>
           </ix:header>
         </div>
+
 
         {{$charsPerPage := 7000}}
         {{setValue "page-number" 0}}
@@ -2421,13 +2692,13 @@ ul.accounts-comps-ct {
                         <tr class="figures">
                             <td>Disposals</td>
                             <td class="strong figure">
-                                <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.land_and_buildings}})</span>
+                                <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.land_and_buildings}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.plant_and_machinery}})</span>
+                                <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.plant_and_machinery}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.fixtures_and_fittings}})</span>
+                                <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
                                 <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.office_equipment}}</ix:nonFraction>)</span>
@@ -2599,56 +2870,56 @@ ul.accounts-comps-ct {
                         <tr class="figures">
                             <td>On disposals</td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.land_and_buildings}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.land_and_buildings}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.plant_and_machinery}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.plant_and_machinery}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.fixtures_and_fittings}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.office_equipment}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.office_equipment}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.motor_vehicles}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.motor_vehicles}}</ix:nonFraction>)</span>
                             </td>
                             <td class="strong figure">
-                                    <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.total}})</span>
+                                    <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.total}}</ix:nonFraction>)</span>
                             </td>
                         </tr>
 
                         <tr class="figures">
                             <td>Other adjustments</td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.land_and_buildings}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.plant_and_machinery}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.fixtures_and_fittings}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.office_equipment}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.motor_vehicles}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                             <td class="strong figure">
-                                <ix:nonFunction contextRef="CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
+                                <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                                     {{getMagnitudeFormatted $depreciation.other_adjustments.total}}
-                                </ix:nonFunction>
+                                </ix:nonFraction>
                             </td>
                         </tr>
 
@@ -2687,22 +2958,22 @@ ul.accounts-comps-ct {
                         <tr class="figures">
                             <td>At {{$period.current_period_end_on_formatted}}</td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.land_and_buildings "(" }}<ix:nonFunction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.land_and_buildings}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.land_and_buildings ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.land_and_buildings ")" }}
                             </td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.plant_and_machinery "(" }}<ix:nonFunction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.plant_and_machinery}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.plant_and_machinery ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.plant_and_machinery ")" }}
                             </td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.fixtures_and_fittings "(" }}<ix:nonFunction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.fixtures_and_fittings}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.fixtures_and_fittings ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.fixtures_and_fittings ")" }}
                             </td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.office_equipment "(" }}<ix:nonFunction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.office_equipment}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.office_equipment ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.office_equipment}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.office_equipment ")" }}
                             </td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.motor_vehicles "(" }}<ix:nonFunction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.motor_vehicles}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.motor_vehicles ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.motor_vehicles ")" }}
                             </td>
                             <td class="strong grandtotal">
-                                    {{emitIfNegative $netBookValue.current_period.total "(" }}<ix:nonFunction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.total}}</ix:nonFunction>{{emitIfNegative $netBookValue.current_period.total ")" }}
+                                    {{emitIfNegative $netBookValue.current_period.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.total}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.total ")" }}
                             </td>
                         </tr>
 
