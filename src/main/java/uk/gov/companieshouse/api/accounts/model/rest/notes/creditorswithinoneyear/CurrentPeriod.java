@@ -1,15 +1,19 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsWithinOneYear;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import org.hibernate.validator.constraints.Range;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.charset.CharSet;
 
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PreviousPeriod {
+public class CurrentPeriod {
 
+    private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MAX_RANGE = 99999999;
     private static final int MIN_RANGE = 0;
 
@@ -40,6 +44,11 @@ public class PreviousPeriod {
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("total")
     private Long total;
+
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("details")
+    private String details;
 
     public Long getAccrualsAndDeferredIncome() {
         return accrualsAndDeferredIncome;
@@ -97,18 +106,27 @@ public class PreviousPeriod {
         this.total = total;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {return true;}
-        if (!(o instanceof PreviousPeriod)) {return false;}
-        PreviousPeriod that = (PreviousPeriod) o;
+        if (!(o instanceof CurrentPeriod)) {return false;}
+        CurrentPeriod that = (CurrentPeriod) o;
         return Objects.equals(getAccrualsAndDeferredIncome(), that.getAccrualsAndDeferredIncome()) &&
             Objects.equals(getBankLoansAndOverdrafts(), that.getBankLoansAndOverdrafts()) &&
             Objects.equals(getFinanceLeasesAndHirePurchaseContracts(), that.getFinanceLeasesAndHirePurchaseContracts()) &&
             Objects.equals(getOtherCreditors(), that.getOtherCreditors()) &&
             Objects.equals(getTaxationAndSocialSecurity(), that.getTaxationAndSocialSecurity()) &&
             Objects.equals(getTradeCreditors(), that.getTradeCreditors()) &&
-            Objects.equals(getTotal(), that.getTotal());
+            Objects.equals(getTotal(), that.getTotal()) &&
+            Objects.equals(getDetails(), that.getDetails());
     }
 
     @Override
@@ -116,7 +134,7 @@ public class PreviousPeriod {
 
         return Objects.hash(getAccrualsAndDeferredIncome(), getBankLoansAndOverdrafts(),
             getFinanceLeasesAndHirePurchaseContracts(), getOtherCreditors(), getTaxationAndSocialSecurity(),
-            getTradeCreditors(), getTotal());
+            getTradeCreditors(), getTotal(), getDetails());
     }
 
     @Override
