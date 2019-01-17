@@ -74,6 +74,9 @@ public class CreditorsWithinOneYearServiceTest {
     private MongoException mockMongoException;
 
     @Mock
+    private Errors mockErrors;
+
+    @Mock
     private SmallFullService mockSmallFullService;
 
     @Mock
@@ -238,6 +241,17 @@ public class CreditorsWithinOneYearServiceTest {
         doThrow(mockMongoException).when(mockRepository).deleteById("");
 
         assertThrows(DataException.class, () -> service.deleteById("", mockRequest));
+    }
+
+    @Test
+    @DisplayName("Tests correct response when error returned from validator")
+    void validationError() throws DataException {
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(mockErrors);
+        when(mockErrors.hasErrors()).thenReturn(true);
+
+        ResponseObject<CreditorsWithinOneYear>responseObject = service.create(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest);
+
+        assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
     }
 
     private ResponseStatus responseStatusNotFound() {
