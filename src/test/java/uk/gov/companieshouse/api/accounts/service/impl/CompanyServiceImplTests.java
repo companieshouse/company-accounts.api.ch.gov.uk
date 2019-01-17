@@ -77,7 +77,7 @@ public class CompanyServiceImplTests {
 
     @Test
     @DisplayName("Get Company Profile - Throws URIValidationException")
-    void getBalanceSheetThrowsURIValidationException() throws ApiErrorResponseException,
+    void getCompanyProfileThrowsURIValidationException() throws ApiErrorResponseException,
             URIValidationException {
 
         when(mockCompanyGet.execute()).thenThrow(URIValidationException.class);
