@@ -1,9 +1,12 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,8 @@ import uk.gov.companieshouse.api.handler.company.CompanyResourceHandler;
 import uk.gov.companieshouse.api.handler.company.request.CompanyGet;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
+import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,13 +39,16 @@ public class CompanyServiceImplTests {
     private ApiClient mockApiClient;
 
     @Mock
+    private Transaction mockTransaction;
+
+    @Mock
     private CompanyResourceHandler mockCompanyResourceHandler;
 
     @Mock
     private CompanyGet mockCompanyGet;
 
     @Mock
-    private Transaction mockTransaction;
+    private CompanyProfileApi mockCompanyProfileApi;
 
     @InjectMocks
     private CompanyService companyService = new CompanyServiceImpl();
@@ -85,4 +93,55 @@ public class CompanyServiceImplTests {
         assertThrows(ServiceException.class, () ->
                 companyService.getCompanyProfile(COMPANY_NUMBER));
     }
+
+    @Test
+    @DisplayName("Multiple year filer returns true")
+    void multipleYearFilerReturnsTrue() throws ServiceException, ApiErrorResponseException,
+            URIValidationException {
+
+        when(mockCompanyGet.execute()).thenReturn(generateMultipleYearFiler());
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+
+        assertTrue(companyService.isMultipleYearFiler(mockTransaction));
+
+    }
+
+    @Test
+    @DisplayName("First year filer returns true")
+    void firstYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
+            URIValidationException {
+
+        when(mockCompanyGet.execute()).thenReturn(new CompanyProfileApi());
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+
+        assertFalse(companyService.isMultipleYearFiler(mockTransaction));
+    }
+
+    @Test
+    @DisplayName("Service error thrown when method fails")
+    void serviceErrorThrownWhenFails() throws ApiErrorResponseException, URIValidationException {
+
+        when(mockCompanyGet.execute()).thenThrow(URIValidationException.class);
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+
+        assertThrows(ServiceException.class, () ->
+                companyService.isMultipleYearFiler(mockTransaction));
+
+    }
+
+    private CompanyProfileApi generateMultipleYearFiler() {
+
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        CompanyAccountApi companyAccountApi = new CompanyAccountApi();
+
+        LastAccountsApi lastAccountsApi = new LastAccountsApi();
+        lastAccountsApi.setType("lastaccounts");
+        lastAccountsApi.setPeriodStartOn(LocalDate.now());
+
+        companyAccountApi.setLastAccounts(lastAccountsApi);
+        companyProfileApi.setAccounts(companyAccountApi);
+
+        return companyProfileApi;
+    }
+
 }
