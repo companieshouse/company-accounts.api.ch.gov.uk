@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.Range;
 public class TangibleAssetsResource {
 
     private static final int MAX_RANGE = 999999999;
-    private static final int MIN_RANGE = -999999999;
+    private static final int MIN_RANGE = 0;
 
     @Valid
     @JsonProperty("cost")
