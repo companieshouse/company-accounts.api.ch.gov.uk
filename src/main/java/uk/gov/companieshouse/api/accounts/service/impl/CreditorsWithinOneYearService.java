@@ -96,6 +96,13 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+        
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         CreditorsWithinOneYearEntity entity = transformer.transform(rest);

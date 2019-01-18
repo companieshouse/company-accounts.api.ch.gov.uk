@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -13,10 +14,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,12 +31,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsWithinOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -41,6 +47,8 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsWithinOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CreditorsWithinOneYearValidator;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -154,6 +162,9 @@ public class CreditorsWithinOneYearServiceTest {
     @DisplayName("Tests the successful update of a creditors within one year resource")
     void canUpdateACreditorsWithinOneYear() throws DataException {
 
+        Errors errors = new Errors();
+        
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
         when(mockTransformer.transform(mockCreditorsWithinOneYear)).thenReturn(creditorsWithinOneYearEntity);
 
         ResponseObject<CreditorsWithinOneYear> result = service.update(mockCreditorsWithinOneYear, mockTransaction,
@@ -164,9 +175,39 @@ public class CreditorsWithinOneYearServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the mongo exception when updating a creditors within one year")
-    void updateCreditorsWithinOneYearMongoExceptionFailure() {
+    @DisplayName("Tests for validation error response during creation of a creditors within one year resource")
+    void validationErrorDuringCreateCreditorsWithinOneYear() throws DataException {
 
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location", LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+
+        ResponseObject<CreditorsWithinOneYear> result = service.create(mockCreditorsWithinOneYear, mockTransaction,
+            "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+        verify(mockSmallFullService, times(0)).addLink(anyString(), any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+    }
+    
+    @Test
+    @DisplayName("Tests for validation error response during updating of a creditors within one year resource")
+    void validationErrorDuringUpdateCreditorsWithinOneYear() throws DataException {
+
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location", LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+
+        ResponseObject<CreditorsWithinOneYear> result = service.update(mockCreditorsWithinOneYear, mockTransaction,
+            "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+    }
+    
+    @Test
+    @DisplayName("Tests the mongo exception when updating a creditors within one year")
+    void updateCreditorsWithinOneYearMongoExceptionFailure() throws DataException {
+
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(new Errors());
         doReturn(creditorsWithinOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(CreditorsWithinOneYear.class));
         when(mockRepository.save(creditorsWithinOneYearEntity)).thenThrow(mockMongoException);
@@ -191,7 +232,7 @@ public class CreditorsWithinOneYearServiceTest {
 
     @Test
     @DisplayName("Tests creditors within one year response not found")
-    void findCreditrsWithinOneYearResponseNotFound() throws DataException {
+    void findCreditorsWithinOneYearResponseNotFound() throws DataException {
 
         creditorsWithinOneYearEntity = null;
 
@@ -206,7 +247,7 @@ public class CreditorsWithinOneYearServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a creditors within one year resource")
-    void findDebtorsMongoException() {
+    void findCreditorsMongoException() {
 
         when(mockRepository.findById("")).thenThrow(mockMongoException);
         assertThrows(DataException.class, () -> service.findById("", mockRequest));
