@@ -11,4 +11,6 @@ public interface ParentService<T extends RestObject, U extends LinkType> extends
     void addLink(String id, U linkType, String link, HttpServletRequest request)
         throws DataException;
 
+    void removeLink(String id, U linkType, HttpServletRequest request) throws DataException;
+
 }

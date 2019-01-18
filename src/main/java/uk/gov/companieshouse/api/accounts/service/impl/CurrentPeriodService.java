@@ -17,6 +17,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -24,6 +25,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -38,6 +40,8 @@ public class CurrentPeriodService implements
 
     private CurrentPeriodTransformer currentPeriodTransformer;
 
+    private CurrentPeriodValidator currentPeriodValidator;
+
     private SmallFullService smallFullService;
 
     private KeyIdGenerator keyIdGenerator;
@@ -46,26 +50,35 @@ public class CurrentPeriodService implements
     public CurrentPeriodService(
         CurrentPeriodRepository currentPeriodRepository,
         CurrentPeriodTransformer currentPeriodTransformer,
+        CurrentPeriodValidator currentPeriodValidator,
         SmallFullService smallFullService,
         KeyIdGenerator keyIdGenerator) {
         this.currentPeriodRepository = currentPeriodRepository;
         this.currentPeriodTransformer = currentPeriodTransformer;
+        this.currentPeriodValidator = currentPeriodValidator;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
     public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
-        Transaction transaction,
-        String companyAccountId, HttpServletRequest request)
+        Transaction transaction, String companyAccountId, HttpServletRequest request)
         throws DataException {
-
-        populateMetadata(currentPeriod, transaction, companyAccountId);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("company_accounts_id", companyAccountId);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
+
+        if (errors.hasErrors()) {
+            DataException dataException = new DataException(
+                "Failed to validate " + ResourceName.CURRENT_PERIOD.getName());
+            LOGGER.errorRequest(request, dataException, debugMap);
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
+        populateMetadata(currentPeriod, transaction, companyAccountId);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         String id = generateID(companyAccountId);
         currentPeriodEntity.setId(id);
@@ -94,15 +107,24 @@ public class CurrentPeriodService implements
     public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        populateMetadata(rest, transaction, companyAccountId);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
         String id = generateID(companyAccountId);
-        currentPeriodEntity.setId(id);
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("transaction_id", transaction.getId());
         debugMap.put("company_accounts_id", companyAccountId);
         debugMap.put("id", id);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(rest);
+
+        if (errors.hasErrors()) {
+            DataException dataException = new DataException(
+                "Failed to validate " + ResourceName.CURRENT_PERIOD.getName());
+            LOGGER.errorRequest(request, dataException, debugMap);
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
+        populateMetadata(rest, transaction, companyAccountId);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
+        currentPeriodEntity.setId(id);
 
         try {
             currentPeriodRepository.save(currentPeriodEntity);
@@ -119,6 +141,7 @@ public class CurrentPeriodService implements
     @Override
     public ResponseObject<CurrentPeriod> findById(String id, HttpServletRequest request)
         throws DataException {
+
         CurrentPeriodEntity currentPeriodEntity;
         try {
             currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
@@ -135,6 +158,11 @@ public class CurrentPeriodService implements
         }
         CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
+    }
+
+    @Override
+    public ResponseObject<CurrentPeriod> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
     }
 
     @Override

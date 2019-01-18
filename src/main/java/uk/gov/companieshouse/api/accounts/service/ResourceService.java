@@ -21,6 +21,9 @@ public interface ResourceService<T extends RestObject> {
     ResponseObject<T> findById(String id, HttpServletRequest request)
         throws DataException;
 
+    ResponseObject<T> deleteById(String id, HttpServletRequest request)
+        throws DataException;
+
     String generateID(String companyAccountId);
 
     default Map<String, Object> getDebugMap(Transaction transaction, String companyAccountsId, String id) {

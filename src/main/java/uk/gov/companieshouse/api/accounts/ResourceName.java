@@ -8,7 +8,10 @@ public enum ResourceName {
     PREVIOUS_PERIOD("previous-period"),
     APPROVAL("approval"),
     ACCOUNTING_POLICIES("accounting-policy"),
-    STATEMENTS("statements");
+    DEBTORS("debtors"),
+    STATEMENTS("statements"),
+    CREDITORS_WITHIN_ONE_YEAR("creditors-within-one-year"),
+    TANGIBLE_ASSETS("tangible-assets");
 
     private String name;
 

@@ -132,6 +132,11 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
+    public ResponseObject<Approval> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.APPROVAL.getName());
     }

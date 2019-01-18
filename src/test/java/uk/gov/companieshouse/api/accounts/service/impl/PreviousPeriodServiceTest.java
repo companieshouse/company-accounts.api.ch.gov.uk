@@ -25,12 +25,14 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -55,6 +57,12 @@ public class PreviousPeriodServiceTest {
     private MessageDigest messageDigest;
 
     @Mock
+    private PreviousPeriodValidator previousPeriodValidator;
+
+    @Mock
+    private Errors errors;
+
+    @Mock
     private PreviousPeriodEntity previousPeriodEntity;
 
     @Mock
@@ -77,6 +85,7 @@ public class PreviousPeriodServiceTest {
     @DisplayName("Tests the successful creation of a previousPeriod resource")
     public void canCreatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         ResponseObject<PreviousPeriod> result = previousPeriodService
             .create(previousPeriod, transaction, "", request);
         assertNotNull(result);
@@ -90,6 +99,7 @@ public class PreviousPeriodServiceTest {
             .any(PreviousPeriod.class));
         when(previousPeriodRepository.insert(previousPeriodEntity))
             .thenThrow(duplicateKeyException);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         ResponseObject response = previousPeriodService.create(previousPeriod, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -101,6 +111,7 @@ public class PreviousPeriodServiceTest {
     void createSmallfullMongoExceptionFailure() {
         doReturn(previousPeriodEntity).when(previousPeriodTransformer).transform(ArgumentMatchers
             .any(PreviousPeriod.class));
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         when(previousPeriodRepository.insert(previousPeriodEntity)).thenThrow(mongoException);
 
         assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, "", request));
@@ -142,6 +153,7 @@ public class PreviousPeriodServiceTest {
     @DisplayName("PUT - Success - Previous Period")
     public void canUpdatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, "", request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
@@ -151,6 +163,7 @@ public class PreviousPeriodServiceTest {
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     public void canUpdatePreviousPeriodFailureMongoException() {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
 
         assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, "", request));

@@ -3,108 +3,133 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.net.URI;
-
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
+import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.validation.Results;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class TnepValidationServiceImplTest {
+class TnepValidationServiceImplTest {
 
+    private static final String ENV_VARIABLE_IXBRL_VALIDATOR_URI = "IXBRL_VALIDATOR_URI";
+    private static final String ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE = "http://tnep.url/validate";
+    private static final String IXBRL_LOCATION = "s3://test-bucket/accounts/ixbrl-generated-name.html";
+    private static final String IXBRL = getIxbrl();
+    private static final String VALIDATION_STATUS_UNIT_TEST_FAILURE = "unit test failure";
+    private static final String VALIDATION_STATUS_OK = "OK";
 
     @Mock
-    RestTemplate restTemplate;
-
+    private RestTemplate restTemplateMock;
     @Mock
-    EnvironmentReader environmentReader;
+    private EnvironmentReader environmentReaderMock;
 
     private TnepValidationServiceImpl tnepValidationService;
 
     @BeforeEach
-    public void setup(){
-    	MockitoAnnotations.initMocks(this);
-        tnepValidationService = new TnepValidationServiceImpl(restTemplate, environmentReader);
+    void setup() {
+        tnepValidationService = new TnepValidationServiceImpl(
+            restTemplateMock,
+            environmentReaderMock);
     }
 
     @Test
-    public void validationSuccess() throws IOException {
+    @DisplayName("Tnep validation call is successful. Happy path")
+    void validationSuccess() {
 
         Results results = new Results();
-        results.setValidationStatus("OK");
+        results.setValidationStatus(VALIDATION_STATUS_OK);
 
-        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(results);
+        mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
-
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+            .thenReturn(results);
 
         assertTrue(validateIxbrl());
-
     }
 
     @Test
-    public void validationFailure() throws IOException {
+    @DisplayName("Tnep validation fails due to unit test failure")
+    void validationFailure() {
 
         Results results = new Results();
-        results.setValidationStatus("unit test failure");
+        results.setValidationStatus(VALIDATION_STATUS_UNIT_TEST_FAILURE);
 
-        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(results);
+        mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+            .thenReturn(results);
 
         assertFalse(validateIxbrl());
-
     }
 
     @Test
-    public void validationMissingResponse() throws IOException {
+    void validationMissingResponse() {
 
-        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenReturn(null);
+        mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
 
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+            .thenReturn(null);
 
         assertFalse(validateIxbrl());
-
     }
 
     @Test
-    public void invalidResponse() {
+    void invalidResponse() {
 
-        when(environmentReader.getMandatoryString(anyString())).thenReturn("testuri");
-        when(restTemplate.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class))).thenThrow(
-        		new RestClientException("unit test failure"));
+        mockEnvironmentReaderGetMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI_VALUE);
+
+        when(restTemplateMock.postForObject(any(URI.class), any(HttpEntity.class), eq(Results.class)))
+            .thenThrow(new RestClientException(VALIDATION_STATUS_UNIT_TEST_FAILURE));
 
         assertFalse(validateIxbrl());
-
-
     }
 
     @Test
-    public void missingEnvVariable() {
+    void missingEnvVariable() {
 
-        when(environmentReader.getMandatoryString(anyString())).thenReturn(null);
-
+        mockEnvironmentReaderGetMandatoryString(null);
         assertFalse(validateIxbrl());
+    }
+
+    private void mockEnvironmentReaderGetMandatoryString(String returnedMandatoryValue) {
+
+        when(environmentReaderMock.getMandatoryString(ENV_VARIABLE_IXBRL_VALIDATOR_URI))
+            .thenReturn(returnedMandatoryValue);
     }
 
     private boolean validateIxbrl() {
-        return tnepValidationService.validate("test", "S3-LOCATION");
+        return tnepValidationService.validate(IXBRL, IXBRL_LOCATION);
+    }
+
+    private static String getIxbrl() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<html xmlns:ixt2=\"http://www.xbrl.org/inlineXBRL/transformation/2011-07-31\">\n"
+            + "  <head>\n"
+            + "    <meta content=\"application/xhtml+xml; charset=UTF-8\" http-equiv=\"content-type\" />\n"
+            + "    <title>\n"
+            + "            TEST COMPANY\n"
+            + "        </title>\n"
+            + "  <body xml:lang=\"en\">\n"
+            + "    <div class=\"accounts-body \">\n"
+            + "      <div id=\"your-account-type\" class=\"wholedoc\">\n"
+            + "      </div>\n"
+            + "    </div>\n"
+            + "   </body>\n"
+            + "</html>\n";
     }
 }

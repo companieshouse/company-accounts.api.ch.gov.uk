@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
+import uk.gov.companieshouse.accountsdates.impl.AccountsDatesHelperImpl;
 import uk.gov.companieshouse.charset.validation.CharSetValidation;
 import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -37,5 +39,10 @@ public class ApplicationConfiguration {
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public AccountsDatesHelper getAccountsDatesHelper() {
+        return new AccountsDatesHelperImpl();
     }
 }

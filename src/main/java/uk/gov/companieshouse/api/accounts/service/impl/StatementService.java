@@ -162,6 +162,11 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     @Override
+    public ResponseObject<Statement> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.STATEMENTS.getName());
     }
@@ -259,7 +264,7 @@ public class StatementService implements ResourceService<Statement> {
      * @return
      */
     private Map<String, String> getLegalStatementsFromProperties() {
-        return statementsServiceProperties.getStatements();
+        return statementsServiceProperties.getCloneOfStatements();
     }
 
     /**

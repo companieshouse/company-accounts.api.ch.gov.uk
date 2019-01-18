@@ -9,15 +9,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -103,7 +99,7 @@ public class StatementServiceTest {
     void shouldCreateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
         when(companyAccountMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementsServicePropertiesMock.getStatements()).thenReturn(legalStatements);
+        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
 
         ResponseObject<Statement> result =

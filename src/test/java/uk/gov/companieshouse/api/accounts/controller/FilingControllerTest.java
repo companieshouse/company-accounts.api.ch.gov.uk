@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
@@ -35,8 +34,6 @@ class FilingControllerTest {
     private HttpServletRequest httpServletRequestMock;
     @Mock
     private Transaction transactionMock;
-    @Mock
-    private CompanyAccountEntity companyAccountEntity;
     @Mock
     private CompanyAccount companyAccount;
 

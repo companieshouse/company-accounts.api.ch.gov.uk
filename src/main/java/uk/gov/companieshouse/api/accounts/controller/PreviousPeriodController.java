@@ -29,7 +29,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -48,29 +47,19 @@ public class PreviousPeriodController {
     @Autowired
     private ErrorMapper errorMapper;
 
-    @Autowired
-    private PreviousPeriodValidator previousPeriodValidator;
-
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody PreviousPeriod previousPeriod,
-        BindingResult bindingResult,
-        @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
+    public ResponseEntity create(@RequestBody @Valid PreviousPeriod previousPeriod,
+        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
 
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
-        if (errors.hasErrors()) {
-
-            LOGGER.error(
-                "Previous period validation failure");
-            logValidationFailureError(request, errors);
-
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-
+            if (errors.hasErrors()) {
+                LOGGER.error("Previous period validation failure");
+                logValidationFailureError(request, errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
         }
 
         Transaction transaction = getTransactionFromRequest(request);
@@ -98,6 +87,7 @@ public class PreviousPeriodController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
+
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -119,8 +109,8 @@ public class PreviousPeriodController {
 
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid PreviousPeriod previousPeriod,
-            BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-            HttpServletRequest request) {
+        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
+        HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink()) == null) {
@@ -129,23 +119,24 @@ public class PreviousPeriodController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+            if (errors.hasErrors()) {
+                LOGGER.error("Previous period validation failure");
+                logValidationFailureError(request, errors);
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
         }
 
-        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
-        if (errors.hasErrors()) {
-            LOGGER.info( "Previous period validation failure");
-            logValidationFailureError(request, errors);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity;
 
         try {
-            ResponseObject<PreviousPeriod> responseObject = previousPeriodService.update(previousPeriod, transaction, companyAccountId, request);
-            responseEntity = apiResponseMapper.map(responseObject.getStatus(), null, responseObject.getErrors());
+            ResponseObject<PreviousPeriod> responseObject = previousPeriodService
+                .update(previousPeriod, transaction, companyAccountId, request);
+            responseEntity = apiResponseMapper
+                .map(responseObject.getStatus(), null, responseObject.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();

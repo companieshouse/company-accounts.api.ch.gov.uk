@@ -119,12 +119,17 @@ public class SmallFullService implements
     }
 
     @Override
+    public ResponseObject<SmallFull> deleteById(String id, HttpServletRequest request) throws DataException {
+        return null;
+    }
+
+    @Override
     public void addLink(String id, SmallFullLinkType linkType, String link, HttpServletRequest request)
         throws DataException {
         String smallFullId = generateID(id);
         SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
             .orElseThrow(() -> new DataException(
-                "Failed to add get Small full entity to add link"));
+                "Failed to get Small full entity to add link"));
         smallFullEntity.getData().getLinks().put(linkType.getLink(), link);
 
         try {
@@ -137,6 +142,30 @@ public class SmallFullService implements
             debugMap.put("link_type", linkType.getLink());
 
             DataException dataException = new DataException("Failed to add link to Small full", me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+            throw dataException;
+        }
+    }
+
+    @Override
+    public void removeLink(String id, SmallFullLinkType linkType, HttpServletRequest request)
+            throws DataException {
+
+        String smallFullId = generateID(id);
+        SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get Small full entity from which to remove link"));
+        smallFullEntity.getData().getLinks().remove(linkType.getLink());
+
+        try {
+            smallFullRepository.save(smallFullEntity);
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("company_account_id", id);
+            debugMap.put("id", smallFullId);
+            debugMap.put("link_type", linkType.getLink());
+
+            DataException dataException = new DataException("Failed to remove Small full link", me);
             LOGGER.errorRequest(request, dataException, debugMap);
             throw dataException;
         }
