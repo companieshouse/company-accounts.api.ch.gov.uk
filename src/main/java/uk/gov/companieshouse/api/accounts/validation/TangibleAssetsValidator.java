@@ -606,12 +606,12 @@ public class TangibleAssetsValidator extends BaseValidator {
 
     private void validatePresenceOfSingleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
 
-        if (tangibleAssetsResource.getCost() != null || tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
+        if (tangibleAssetsResource.getCost() != null && tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
 
             addError(errors, inconsistentData, TANGIBLE_NOTE + subResource + COST_AT_PERIOD_START);
         }
 
-        if (tangibleAssetsResource.getDepreciation() != null || tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
+        if (tangibleAssetsResource.getDepreciation() != null && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
 
             addError(errors, inconsistentData, TANGIBLE_NOTE + subResource + DEPRECIATION_AT_PERIOD_START);
         }
