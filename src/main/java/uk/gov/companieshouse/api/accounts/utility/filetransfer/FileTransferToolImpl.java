@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -22,26 +21,15 @@ public class FileTransferToolImpl implements FileTransferTool {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+
     private static final String S3_BUCKET = "s3://";
     private static final String PATH_DELIMITER = "/";
 
-    private final String awsAccessKeyId;
-    private final String awsSecretAccessKey;
-    private final String imageCloudProxyHost;
-    private final Integer imageCloudProxyPort;
-
-    private final AmazonS3Handler amazonS3Handler;
-    private final EnvironmentReader environmentReader;
+    private final AmazonS3 amazonS3;
 
     @Autowired
-    FileTransferToolImpl(EnvironmentReader environmentReader, AmazonS3Handler amazonS3Handler) {
-        this.environmentReader = environmentReader;
-        this.amazonS3Handler = amazonS3Handler;
-
-        awsAccessKeyId = environmentReader.getMandatoryString("AWS_ACCESS_KEY_ID");
-        awsSecretAccessKey = environmentReader.getMandatoryString("AWS_SECRET_ACCESS_KEY");
-        imageCloudProxyHost = environmentReader.getOptionalString("IMAGE_CLOUD_PROXY_HOST");
-        imageCloudProxyPort = environmentReader.getOptionalInteger("IMAGE_CLOUD_PROXY_PORT");
+    FileTransferToolImpl(AmazonS3 amazonS3) {
+        this.amazonS3 = amazonS3;
     }
 
     @Override
@@ -68,8 +56,7 @@ public class FileTransferToolImpl implements FileTransferTool {
     private String downloadFileFromS3(String fileLocation) {
 
         try {
-            AmazonS3 s3client = getAmazonS3Client();
-            S3Object s3Object = getObjectInS3(fileLocation, s3client);
+            S3Object s3Object = getObjectInS3(fileLocation);
 
             return getConvertInputStringToString(s3Object.getObjectContent());
 
@@ -87,23 +74,15 @@ public class FileTransferToolImpl implements FileTransferTool {
         return null;
     }
 
-    /**
-     * Get the AWS credentials passing all the S3 information: aws key, aws secred key, cloud proxy,
-     * cloud port
-     */
-    private AmazonS3 getAmazonS3Client() {
-        return amazonS3Handler.getAmazonS3(awsAccessKeyId, awsSecretAccessKey, imageCloudProxyHost,
-            imageCloudProxyPort);
-    }
 
-    private S3Object getObjectInS3(String location, AmazonS3 s3client) {
+    private S3Object getObjectInS3(String location) {
 
         String locationWithoutS3 = location.replace(S3_BUCKET, "");
 
         String bucket = locationWithoutS3.split(PATH_DELIMITER)[0];
         String key = locationWithoutS3.replace(bucket + PATH_DELIMITER, "");
 
-        return s3client.getObject(new GetObjectRequest(bucket, key));
+        return amazonS3.getObject(new GetObjectRequest(bucket, key));
     }
 
     private String getConvertInputStringToString(InputStream inputStream) throws IOException {
