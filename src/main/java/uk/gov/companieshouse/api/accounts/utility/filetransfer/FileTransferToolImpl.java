@@ -56,7 +56,7 @@ public class FileTransferToolImpl implements FileTransferTool {
             downloadedFile = downloadFileFromS3(fileLocation);
         } else {
             logError(null, "FileTransferImpl: Invalid file location",
-                "The file cannot be downloaded as it is not stored in a S3 location: "
+                "The file cannot be downloaded as it is not stored in a private S3 location: "
                     + fileLocation);
         }
 
