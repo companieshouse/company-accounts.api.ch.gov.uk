@@ -255,7 +255,7 @@ public class FilingServiceImpl implements FilingService {
      */
     private String downloadIxbrlFromLocation(String location) {
 
-        String ixbrlData = fileTransferTool.downloadFileFromPublicLocation(location);
+        String ixbrlData = fileTransferTool.downloadFileFromLocation(location);
 
         if (StringUtils.isEmpty(ixbrlData)) {
             Map<String, Object> logMap = new HashMap<>();
