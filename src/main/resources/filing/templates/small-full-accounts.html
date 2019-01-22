@@ -2595,6 +2595,8 @@ ul.accounts-comps-ct {
         <!-- BALANCE SHEET NOTES START -->
         {{if $balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
 
+          <div id="BalanceSheetNotesSection" class="section-marker"></div>
+
           {{ if $tangibleAssetsNote := $balanceSheetNotes.tangible_assets }}
           {{incValue "notes-page-count" }}
           {{setValue "tangible-notes-id" (getValue "notes-page-count" ) }}
@@ -3161,7 +3163,6 @@ ul.accounts-comps-ct {
 
                 </div>
               {{end}}
-              <div id="BalanceSheetNotesSection" class="section-marker"></div>
 
             </div>
 
