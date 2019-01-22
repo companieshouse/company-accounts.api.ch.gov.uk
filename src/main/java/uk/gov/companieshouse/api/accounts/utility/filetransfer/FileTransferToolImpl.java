@@ -74,7 +74,13 @@ public class FileTransferToolImpl implements FileTransferTool {
         return null;
     }
 
-
+    /**
+     * It will get the S3Object by using the location information: bucket name and the location of the
+     * file within the bucket(key).
+     *
+     * @param location
+     * @return
+     */
     private S3Object getObjectInS3(String location) {
 
         String locationWithoutS3 = location.replace(S3_BUCKET, "");
