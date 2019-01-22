@@ -100,6 +100,14 @@ public class DebtorsService implements ResourceService<Debtors> {
             String companyAccountsId, HttpServletRequest request) throws DataException {
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
+        Errors errors = debtorsValidator.validateDebtors(rest, transaction, companyAccountsId,
+                request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         DebtorsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountsId));
 
