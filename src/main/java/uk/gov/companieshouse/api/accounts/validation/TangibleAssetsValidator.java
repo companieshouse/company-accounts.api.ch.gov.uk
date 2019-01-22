@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -34,6 +36,9 @@ public class TangibleAssetsValidator extends BaseValidator {
     @Value("${inconsistent.data}")
     private String inconsistentData;
 
+    @Value("${invalid.note}")
+    private String invalidNote;
+
     private static final String TANGIBLE_NOTE = "$.tangible_assets.";
     private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
@@ -63,7 +68,10 @@ public class TangibleAssetsValidator extends BaseValidator {
         try {
             boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
 
-            validateSubResourceTotals(tangibleAssets, errors, isMultipleYearFiler);
+            List<TangibleSubResource> invalidSubResources = new ArrayList<>();
+
+            verifySubResourceIsValid(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+            validateSubResourceTotals(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             if (errors.hasErrors()) {
                 return errors;
             }
@@ -78,17 +86,57 @@ public class TangibleAssetsValidator extends BaseValidator {
         return errors;
     }
 
-    private void validateSubResourceShape(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler) {
+    private void verifySubResourceIsValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
 
         if (tangibleAssets.getFixturesAndFittings() != null) {
 
-            validatePresenceOfConditionalFields(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS, isMultipleYearFiler);
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
+            }
+        }
+
+        if (tangibleAssets.getLandAndBuildings() != null) {
+
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
+            }
+        }
+
+        if (tangibleAssets.getMotorVehicles() != null) {
+
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
+            }
+        }
+
+        if (tangibleAssets.getOfficeEquipment() != null) {
+
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
+            }
+        }
+
+        if (tangibleAssets.getPlantAndMachinery() != null) {
+
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
+            }
         }
     }
 
-    private void validateSubResourceTotals(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler) {
+    private void validateSubResourceTotals(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
 
-        if (tangibleAssets.getFixturesAndFittings() != null) {
+        if (tangibleAssets.getFixturesAndFittings() != null && !invalidSubResources.contains(TangibleSubResource.FIXTURES_AND_FITTINGS)) {
 
             validateCosts(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS);
             validateDepreciation(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS);
@@ -99,7 +147,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             }
         }
 
-        if (tangibleAssets.getLandAndBuildings() != null) {
+        if (tangibleAssets.getLandAndBuildings() != null && !invalidSubResources.contains(TangibleSubResource.LAND_AND_BUILDINGS)) {
 
             validateCosts(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS);
             validateDepreciation(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS);
@@ -110,7 +158,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             }
         }
 
-        if (tangibleAssets.getMotorVehicles() != null) {
+        if (tangibleAssets.getMotorVehicles() != null && !invalidSubResources.contains(TangibleSubResource.MOTOR_VEHICLES)) {
 
             validateCosts(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES);
             validateDepreciation(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES);
@@ -121,7 +169,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             }
         }
 
-        if (tangibleAssets.getOfficeEquipment() != null) {
+        if (tangibleAssets.getOfficeEquipment() != null && !invalidSubResources.contains(TangibleSubResource.OFFICE_EQUIPMENT)) {
 
             validateCosts(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT);
             validateDepreciation(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT);
@@ -132,7 +180,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             }
         }
 
-        if (tangibleAssets.getPlantAndMachinery() != null) {
+        if (tangibleAssets.getPlantAndMachinery() != null && !invalidSubResources.contains(TangibleSubResource.PLANT_AND_MACHINERY)) {
 
             validateCosts(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY);
             validateDepreciation(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY);
@@ -591,36 +639,88 @@ public class TangibleAssetsValidator extends BaseValidator {
         }
     }
 
-    private void validatePresenceOfConditionalFields(Errors errors, TangibleAssetsResource tangibleAssetsResource,
-                                                    TangibleSubResource subResource, boolean isMultipleYearFiler) {
+    private void validatePresenceOfMultipleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
 
-        if (isMultipleYearFiler) {
-            validatePresenceOfMultipleYearFilerFields(errors, tangibleAssetsResource, subResource);
+        boolean subResourceInvalid = false;
+
+        if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null  || tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
+
+            if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() == null) {
+
+                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_PREVIOUS_PERIOD);
+                subResourceInvalid = true;
+            }
+
+            if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() == null) {
+
+                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_CURRENT_PERIOD);
+                subResourceInvalid = true;
+            }
+
+            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+
+                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+                subResourceInvalid = true;
+            }
+
+            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+
+                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_END);
+                subResourceInvalid = true;
+            }
+
+            if (tangibleAssetsResource.getDepreciation() != null) {
+
+                if (hasDepreciationFieldsSet(tangibleAssetsResource)) {
+
+                    if (tangibleAssetsResource.getDepreciation().getAtPeriodStart() == null) {
+
+                        addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_START);
+                        subResourceInvalid = true;
+                    }
+
+                    if (tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
+
+                        addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_END);
+                        subResourceInvalid = true;
+                    }
+                }
+            }
         } else {
-            validatePresenceOfSingleYearFilerFields(errors, tangibleAssetsResource, subResource);
+
+            if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
+
+                addError(errors, invalidNote, TANGIBLE_NOTE + subResource.getJsonPath());
+                subResourceInvalid = true;
+            }
+        }
+
+        if (subResourceInvalid) {
+
+            invalidSubResources.add(subResource);
         }
     }
 
-    private void validatePresenceOfMultipleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+    private void validatePresenceOfSingleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
 
-        // Validate multi year filer fields here
-    }
-
-    private void validatePresenceOfSingleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+        boolean subResourceInvalid = false;
 
         if (tangibleAssetsResource.getCost() != null && tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource + COST_AT_PERIOD_START);
+            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+            subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getDepreciation() != null && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource + DEPRECIATION_AT_PERIOD_START);
+            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_START);
+            subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
 
             addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_PREVIOUS_PERIOD);
+            subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
@@ -628,6 +728,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodStart() == null) {
 
                 addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+                subResourceInvalid = true;
             }
 
             if (tangibleAssetsResource.getDepreciation() != null) {
@@ -636,11 +737,21 @@ public class TangibleAssetsValidator extends BaseValidator {
                         && tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
 
                     addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_END);
+                    subResourceInvalid = true;
                 }
             }
         } else {
 
-            // verify whole sub resource is empty here...
+            if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
+
+                addError(errors, invalidNote, TANGIBLE_NOTE + subResource.getJsonPath());
+                subResourceInvalid = true;
+            }
+        }
+
+        if (subResourceInvalid) {
+
+            invalidSubResources.add(subResource);
         }
     }
 
@@ -650,6 +761,68 @@ public class TangibleAssetsValidator extends BaseValidator {
                             tangibleAssetsResource.getDepreciation().getOnDisposals(),
                             tangibleAssetsResource.getDepreciation().getOtherAdjustments())
                 .anyMatch(Objects::nonNull);
+    }
+
+    private boolean hasSingleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
+
+        if (tangibleAssetsResource.getCost() != null) {
+
+            if (Stream.of(tangibleAssetsResource.getCost().getAdditions(),
+                            tangibleAssetsResource.getCost().getDisposals(),
+                            tangibleAssetsResource.getCost().getRevaluations(),
+                            tangibleAssetsResource.getCost().getTransfers(),
+                            tangibleAssetsResource.getCost().getAtPeriodEnd())
+                    .anyMatch(Objects::nonNull)) {
+
+                return true;
+            }
+        }
+
+        if (tangibleAssetsResource.getDepreciation() != null) {
+
+            if (Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
+                            tangibleAssetsResource.getDepreciation().getOnDisposals(),
+                            tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
+                            tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
+                    .anyMatch(Objects::nonNull)) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasMultipleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
+
+        if (tangibleAssetsResource.getCost() != null) {
+
+            if (Stream.of(tangibleAssetsResource.getCost().getAtPeriodStart(),
+                    tangibleAssetsResource.getCost().getAdditions(),
+                    tangibleAssetsResource.getCost().getDisposals(),
+                    tangibleAssetsResource.getCost().getRevaluations(),
+                    tangibleAssetsResource.getCost().getTransfers(),
+                    tangibleAssetsResource.getCost().getAtPeriodEnd())
+                    .anyMatch(Objects::nonNull)) {
+
+                return true;
+            }
+        }
+
+        if (tangibleAssetsResource.getDepreciation() != null) {
+
+            if (Stream.of(tangibleAssetsResource.getDepreciation().getAtPeriodStart(),
+                    tangibleAssetsResource.getDepreciation().getChargeForYear(),
+                    tangibleAssetsResource.getDepreciation().getOnDisposals(),
+                    tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
+                    tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
+                    .anyMatch(Objects::nonNull)) {
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Long getCostAtPeriodStart(TangibleAssetsResource tangibleAssetsResource) {
