@@ -19,15 +19,15 @@ public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEn
         DebtorsDataEntity debtorsDataEntity = new DebtorsDataEntity();
         DebtorsEntity debtorsEntity = new DebtorsEntity();
 
-        BeanUtils.copyProperties(rest, debtorsDataEntity);
         if (rest.getCurrentPeriod() != null) {
+            BeanUtils.copyProperties(rest, debtorsDataEntity);
             CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
             BeanUtils.copyProperties(rest.getCurrentPeriod(), currentPeriodEntity);
             debtorsDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
-        BeanUtils.copyProperties(rest, debtorsDataEntity);
         if (rest.getPreviousPeriod() != null) {
+            BeanUtils.copyProperties(rest, debtorsDataEntity);
             PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
             BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);
             debtorsDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
