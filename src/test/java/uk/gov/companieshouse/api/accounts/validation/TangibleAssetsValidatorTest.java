@@ -613,6 +613,145 @@ public class TangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
+    @Test
+    @DisplayName("Single year filer - no total fields match")
+    void singleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost fixturesCost = new Cost();
+        fixturesCost.setAdditions(1L);
+        fixturesCost.setDisposals(1L);
+        fixturesCost.setRevaluations(1L);
+        fixturesCost.setTransfers(1L);
+        fixturesCost.setAtPeriodEnd(2L);
+        fixturesAndFittings.setCost(fixturesCost);
+
+        Depreciation fixturesDepreciation = new Depreciation();
+        fixturesDepreciation.setChargeForYear(1L);
+        fixturesDepreciation.setOnDisposals(1L);
+        fixturesDepreciation.setOtherAdjustments(1L);
+        fixturesDepreciation.setAtPeriodEnd(1L);
+        fixturesAndFittings.setDepreciation(fixturesDepreciation);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(4L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setChargeForYear(2L);
+        totalDepreciation.setOnDisposals(2L);
+        totalDepreciation.setOtherAdjustments(2L);
+        totalDepreciation.setAtPeriodEnd(2L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+        tangibleAssets.setTotal(total);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(10, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - no total fields match")
+    void multipleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost fixturesCost = new Cost();
+        fixturesCost.setAtPeriodStart(1L);
+        fixturesCost.setAdditions(1L);
+        fixturesCost.setDisposals(1L);
+        fixturesCost.setRevaluations(1L);
+        fixturesCost.setTransfers(1L);
+        fixturesCost.setAtPeriodEnd(3L);
+        fixturesAndFittings.setCost(fixturesCost);
+
+        Depreciation fixturesDepreciation = new Depreciation();
+        fixturesDepreciation.setAtPeriodStart(1L);
+        fixturesDepreciation.setChargeForYear(1L);
+        fixturesDepreciation.setOnDisposals(1L);
+        fixturesDepreciation.setOtherAdjustments(1L);
+        fixturesDepreciation.setAtPeriodEnd(2L);
+        fixturesAndFittings.setDepreciation(fixturesDepreciation);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(3L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(7L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setAtPeriodStart(2L);
+        totalDepreciation.setChargeForYear(2L);
+        totalDepreciation.setOnDisposals(2L);
+        totalDepreciation.setOtherAdjustments(2L);
+        totalDepreciation.setAtPeriodEnd(4L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(3L);
+        total.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+        tangibleAssets.setTotal(total);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(13, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
     private Error createError(String error, String path) {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
