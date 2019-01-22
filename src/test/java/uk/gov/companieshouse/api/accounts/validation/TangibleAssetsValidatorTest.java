@@ -185,7 +185,7 @@ public class TangibleAssetsValidatorTest {
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
@@ -207,7 +207,7 @@ public class TangibleAssetsValidatorTest {
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     private Error createError(String error, String path) {

@@ -40,25 +40,19 @@ public class TangibleAssetsValidator extends BaseValidator {
     private String invalidNote;
 
     private static final String TANGIBLE_NOTE = "$.tangible_assets.";
-    private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
-    private static final String DEPRECIATION_AT_PERIOD_END = ".depreciation.at_period_end";
+    private static final String ADDITIONS = ".cost.additions";
+    private static final String DISPOSALS = ".cost.disposals";
+    private static final String REVALUATIONS = ".cost.revaluations";
+    private static final String TRANSFERS = ".cost.transfers";
+    private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String DEPRECIATION_AT_PERIOD_START = ".depreciation.at_period_start";
+    private static final String CHARGE_FOR_YEAR = ".depreciation.charge_for_year";
+    private static final String ON_DISPOSALS = ".depreciation.on_disposals";
+    private static final String OTHER_ADJUSTMENTS = ".depreciation.other_adjustments";
+    private static final String DEPRECIATION_AT_PERIOD_END = ".depreciation.at_period_end";
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
-    private static final String TOTAL_COST_AT_PERIOD_START = "$.tangible_assets.total.cost.at_period_start";
-    private static final String TOTAL_ADDITIONS = "$.tangible_assets.total.cost.additions";
-    private static final String TOTAL_DISPOSALS = "$.tangible_assets.total.cost.disposals";
-    private static final String TOTAL_REVALUATIONS = "$.tangible_assets.total.cost.revaluations";
-    private static final String TOTAL_TRANSFERS = "$.tangible_assets.total.cost.transfers";
-    private static final String TOTAL_COST_AT_PERIOD_END = "$.tangible_assets.total.cost.at_period_end";
-    private static final String TOTAL_DEPRECIATION_AT_PERIOD_START = "$.tangible_assets.depreciation.cost.at_period_start";
-    private static final String TOTAL_CHARGE_FOR_YEAR = "$.tangible_assets.total.depreciation.charge_for_year";
-    private static final String TOTAL_ON_DISPOSALS = "$.tangible_assets.total.depreciation.on_disposals";
-    private static final String TOTAL_OTHER_ADJUSTMENTS = "$.tangible_assets.total.depreciation.other_adjustments";
-    private static final String TOTAL_DEPRECIATION_AT_PERIOD_END = "$.tangible_assets.total.depreciation.at_period_end";
-    private static final String TOTAL_NET_BOOK_VALUE_CURRENT = "$.tangible_assets.total.net_book_value_at_end_of_current_period";
-    private static final String TOTAL_NET_BOOK_VALUE_PREVIOUS = "$.tangible_assets.total.net_book_value_at_end_of_previous_period";
 
     public Errors validateTangibleAssets(TangibleAssets tangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {
@@ -232,7 +226,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getAtPeriodStart().equals(resourceCostAtPeriodStartTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_COST_AT_PERIOD_START);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, COST_AT_PERIOD_START));
         }
     }
 
@@ -259,7 +253,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getAdditions().equals(resourceAdditionsTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_ADDITIONS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, ADDITIONS));
         }
     }
 
@@ -286,7 +280,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getDisposals().equals(resourceDisposalsTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_DISPOSALS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DISPOSALS));
         }
     }
 
@@ -313,7 +307,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getRevaluations().equals(resourceRevaluationsTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_REVALUATIONS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, REVALUATIONS));
         }
     }
 
@@ -340,7 +334,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getTransfers().equals(resourceTransfersTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_TRANSFERS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, TRANSFERS));
         }
     }
 
@@ -367,7 +361,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getCost().getAtPeriodEnd().equals(resourceCostAtPeriodEndTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_COST_AT_PERIOD_END);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, COST_AT_PERIOD_END));
         }
     }
 
@@ -394,7 +388,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getDepreciation().getAtPeriodStart().equals(resourceDepreciationAtPeriodStartTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_DEPRECIATION_AT_PERIOD_START);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DEPRECIATION_AT_PERIOD_START));
         }
     }
 
@@ -421,7 +415,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getDepreciation().getChargeForYear().equals(resourceChargeForYearTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_CHARGE_FOR_YEAR);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, CHARGE_FOR_YEAR));
         }
     }
 
@@ -448,7 +442,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getDepreciation().getOnDisposals().equals(resourceOnDisposalsTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_ON_DISPOSALS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, ON_DISPOSALS));
         }
     }
 
@@ -475,7 +469,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getDepreciation().getOtherAdjustments().equals(resourceOtherAdjustmentsTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_OTHER_ADJUSTMENTS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, OTHER_ADJUSTMENTS));
         }
     }
 
@@ -502,7 +496,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getDepreciation().getAtPeriodEnd().equals(resourceDepreciationAtPeriodEndTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_DEPRECIATION_AT_PERIOD_END);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DEPRECIATION_AT_PERIOD_END));
         }
     }
 
@@ -529,7 +523,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getNetBookValueAtEndOfCurrentPeriod().equals(resourceNetBookValueTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_NET_BOOK_VALUE_CURRENT);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
@@ -556,7 +550,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssets.getTotal().getNetBookValueAtEndOfPreviousPeriod().equals(resourceNetBookValueTotal)) {
 
-            addError(errors, incorrectTotal, TOTAL_NET_BOOK_VALUE_PREVIOUS);
+            addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
@@ -581,7 +575,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssetsResource.getCost().getAtPeriodEnd().equals(calculatedAtPeriodEnd)) {
 
-            addError(errors, incorrectTotal, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_END);
+            addError(errors, incorrectTotal, getJsonPath(subResource, COST_AT_PERIOD_END));
         }
     }
 
@@ -603,7 +597,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssetsResource.getDepreciation().getAtPeriodEnd().equals(calculatedAtPeriodEnd)) {
 
-            addError(errors, incorrectTotal, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_END);
+            addError(errors, incorrectTotal, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
         }
     }
 
@@ -619,7 +613,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod().equals(calculatedCurrentNetBookValue)) {
 
-            addError(errors, incorrectTotal, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_CURRENT_PERIOD);
+            addError(errors, incorrectTotal, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
@@ -635,7 +629,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (!tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod().equals(calculatedPreviousNetBookValue)) {
 
-            addError(errors, incorrectTotal, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_PREVIOUS_PERIOD);
+            addError(errors, incorrectTotal, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
@@ -647,25 +641,25 @@ public class TangibleAssetsValidator extends BaseValidator {
 
             if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() == null) {
 
-                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_PREVIOUS_PERIOD);
+                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
                 subResourceInvalid = true;
             }
 
             if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() == null) {
 
-                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_CURRENT_PERIOD);
+                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
                 subResourceInvalid = true;
             }
 
             if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodStart() == null) {
 
-                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_START));
                 subResourceInvalid = true;
             }
 
             if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
 
-                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_END);
+                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
                 subResourceInvalid = true;
             }
 
@@ -675,13 +669,13 @@ public class TangibleAssetsValidator extends BaseValidator {
 
                     if (tangibleAssetsResource.getDepreciation().getAtPeriodStart() == null) {
 
-                        addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_START);
+                        addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
                         subResourceInvalid = true;
                     }
 
                     if (tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
 
-                        addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_END);
+                        addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
                         subResourceInvalid = true;
                     }
                 }
@@ -690,7 +684,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
             if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
 
-                addError(errors, invalidNote, TANGIBLE_NOTE + subResource.getJsonPath());
+                addError(errors, invalidNote, getJsonPath(subResource));
                 subResourceInvalid = true;
             }
         }
@@ -707,27 +701,27 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         if (tangibleAssetsResource.getCost() != null && tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+            addError(errors, inconsistentData, getJsonPath(subResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getDepreciation() != null && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_START);
+            addError(errors, inconsistentData, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
 
-            addError(errors, inconsistentData, TANGIBLE_NOTE + subResource.getJsonPath() + NET_BOOK_VALUE_PREVIOUS_PERIOD);
+            addError(errors, inconsistentData, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
 
-            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
 
-                addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + COST_AT_PERIOD_START);
+                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
                 subResourceInvalid = true;
             }
 
@@ -736,7 +730,7 @@ public class TangibleAssetsValidator extends BaseValidator {
                 if (hasDepreciationFieldsSet(tangibleAssetsResource)
                         && tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
 
-                    addError(errors, valueRequired, TANGIBLE_NOTE + subResource.getJsonPath() + DEPRECIATION_AT_PERIOD_END);
+                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
                     subResourceInvalid = true;
                 }
             }
@@ -744,7 +738,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
             if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
 
-                addError(errors, invalidNote, TANGIBLE_NOTE + subResource.getJsonPath());
+                addError(errors, invalidNote, getJsonPath(subResource));
                 subResourceInvalid = true;
             }
         }
@@ -927,13 +921,24 @@ public class TangibleAssetsValidator extends BaseValidator {
                 .orElse(0L);
     }
 
+    private String getJsonPath(TangibleSubResource subResource) {
+
+        return TANGIBLE_NOTE + subResource.getJsonPath();
+    }
+
+    private String getJsonPath(TangibleSubResource subResource, String pathSuffix) {
+
+        return TANGIBLE_NOTE + subResource.getJsonPath() + pathSuffix;
+    }
+
     private enum TangibleSubResource {
 
         FIXTURES_AND_FITTINGS("fixtures_and_fittings"),
         LAND_AND_BUILDINGS("land_and_buildings"),
         MOTOR_VEHICLES("motor_vehicles"),
         OFFICE_EQUIPMENT("office_equipment"),
-        PLANT_AND_MACHINERY("plant_and_machinery");
+        PLANT_AND_MACHINERY("plant_and_machinery"),
+        TOTAL("total");
 
         private String jsonPath;
 
