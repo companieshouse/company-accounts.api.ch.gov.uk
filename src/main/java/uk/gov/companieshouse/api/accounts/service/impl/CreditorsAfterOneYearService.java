@@ -94,8 +94,9 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
     @Override
     public String generateID(String companyAccountId) {
-        return null;
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName());
     }
+
 
     private void setMetadataOnRestObject(CreditorsAfterOneYear rest, Transaction transaction,
             String companyAccountsId) {
