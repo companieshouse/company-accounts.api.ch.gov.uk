@@ -51,7 +51,7 @@ public class AmazonS3Configuration {
     }
 
     private Integer getProxyPort() {
-        return environmentReader.getOptionalInteger("IMAGE_CLOUD_PROXY_PORT");
+        return environmentReader.getOptionalInteger("HTTP_URL_CONNECTION_PROXY_PORT");
     }
 
     private String getProxyHost() {
