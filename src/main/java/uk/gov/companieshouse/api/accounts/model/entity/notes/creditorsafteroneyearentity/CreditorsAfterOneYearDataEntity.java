@@ -3,8 +3,6 @@ package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroney
 import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
 
 public class CreditorsAfterOneYearDataEntity extends BaseDataEntity {
 

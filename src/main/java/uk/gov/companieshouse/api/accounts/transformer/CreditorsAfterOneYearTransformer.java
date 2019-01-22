@@ -4,11 +4,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.PreviousPeriod;
+
 
 @Component
 public class CreditorsAfterOneYearTransformer implements GenericTransformer<CreditorsAfterOneYear, CreditorsAfterOneYearEntity>  {
