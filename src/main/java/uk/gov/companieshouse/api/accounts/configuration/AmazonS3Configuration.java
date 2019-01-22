@@ -20,12 +20,12 @@ public class AmazonS3Configuration {
     public AmazonS3 getAmazonS3() {
         return AmazonS3ClientBuilder
             .standard()
-            .withRegion(getDownloadRegionFromLocalEnv())
+            .withRegion(getRegion())
             .withClientConfiguration(getClientConfiguration())
             .build();
     }
 
-    private Regions getDownloadRegionFromLocalEnv() {
+    private Regions getRegion() {
         return Regions.fromName(getRegionNameForAmazonS3());
     }
 
