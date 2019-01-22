@@ -20,9 +20,13 @@ public class AmazonS3Configuration {
     public AmazonS3 getAmazonS3() {
         return AmazonS3ClientBuilder
             .standard()
-            .withRegion(Regions.EU_WEST_1)
+            .withRegion(getDownloadRegionFromLocalEnv())
             .withClientConfiguration(getClientConfiguration())
             .build();
+    }
+
+    private Regions getDownloadRegionFromLocalEnv() {
+        return Regions.fromName(getRegionNameForAmazonS3());
     }
 
     /**
@@ -56,5 +60,9 @@ public class AmazonS3Configuration {
 
     private String getProxyHost() {
         return environmentReader.getOptionalString("IMAGE_CLOUD_PROXY_HOST");
+    }
+
+    private String getRegionNameForAmazonS3() {
+        return environmentReader.getMandatoryString("REGION_NAME_FOR_AMAZON_S3");
     }
 }

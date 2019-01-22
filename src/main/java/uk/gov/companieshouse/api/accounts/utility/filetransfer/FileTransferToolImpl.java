@@ -58,7 +58,7 @@ public class FileTransferToolImpl implements FileTransferTool {
         try {
             S3Object s3Object = getObjectInS3(fileLocation);
 
-            return getConvertInputStringToString(s3Object.getObjectContent());
+            return convertInputStringToString(s3Object.getObjectContent());
 
         } catch (SdkClientException sdkEx) {
             logError(sdkEx,
@@ -91,7 +91,7 @@ public class FileTransferToolImpl implements FileTransferTool {
         return amazonS3.getObject(new GetObjectRequest(bucket, key));
     }
 
-    private String getConvertInputStringToString(InputStream inputStream) throws IOException {
+    private String convertInputStringToString(InputStream inputStream) throws IOException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         return new String(byteArray);
     }
