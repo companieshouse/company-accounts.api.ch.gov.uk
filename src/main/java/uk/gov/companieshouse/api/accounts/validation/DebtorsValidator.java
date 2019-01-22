@@ -96,11 +96,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         validatePreviousPeriodTotalIsCorrect(debtors, errors);
     }
 
-    private void addInconsistentDataError(Errors errors, String errorPath) {
-
-        addError(errors, inconsistentData, errorPath);
-    }
-
     private void validateCurrentPeriodDebtors(Errors errors, Debtors debtors) {
 
         validateRequiredCurrentPeriodTotalFieldNotNull(debtors, errors);
