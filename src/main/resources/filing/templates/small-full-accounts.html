@@ -2597,6 +2597,7 @@ ul.accounts-comps-ct {
 
           <div id="BalanceSheetNotesSection" class="section-marker"></div>
 
+          <!-- TANGIBLE ASSETS NOTE START -->
           {{ if $tangibleAssetsNote := $balanceSheetNotes.tangible_assets }}
           {{incValue "notes-page-count" }}
           {{setValue "tangible-notes-id" (getValue "notes-page-count" ) }}
@@ -3017,6 +3018,8 @@ ul.accounts-comps-ct {
           </div>
 
           {{ end }}
+
+          <!-- TANGIBLE ASSETS NOTE END -->
 
           <!-- DEBTORS NOTE START -->
           {{if $debtorsNote := $balanceSheetNotes.debtors}}
