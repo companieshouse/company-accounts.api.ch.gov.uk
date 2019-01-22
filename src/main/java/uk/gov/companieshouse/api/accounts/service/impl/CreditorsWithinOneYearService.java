@@ -60,7 +60,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -96,7 +96,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 

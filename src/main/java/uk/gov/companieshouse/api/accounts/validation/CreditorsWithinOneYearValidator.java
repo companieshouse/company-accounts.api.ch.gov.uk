@@ -1,24 +1,36 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.mongodb.MongoException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @Component
-public class CreditorsWithinOneYearValidator extends BaseValidator {
+public class CreditorsWithinOneYearValidator extends BaseValidator implements CrossValidator<CreditorsWithinOneYear> {
 
     @Value("${invalid.note}")
     private String invalidNote;
+    
+    @Value("${current.balancesheet.not.equal}")
+    private String currentBalanceSheetNotEqual;
+
+    @Value("${previous.balancesheet.not.equal}")
+    private String previousBalanceSheetNotEqual;
 
     private static final String CREDITORS_WITHIN_PATH = "$.creditors_within_one_year";
     private static final String CREDITORS_WITHIN_CURRENT_PERIOD_PATH = CREDITORS_WITHIN_PATH +
@@ -33,15 +45,24 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
 
     private CompanyService companyService;
+    private CurrentPeriodService currentPeriodService;
+    private PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public CreditorsWithinOneYearValidator(CompanyService companyService) {
+    public CreditorsWithinOneYearValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
+        PreviousPeriodService previousPeriodService) {
         this.companyService = companyService;
+        this.currentPeriodService = currentPeriodService;
+        this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateCreditorsWithinOneYear(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Transaction transaction) throws DataException {
+    public Errors validateCreditorsWithinOneYear(@Valid CreditorsWithinOneYear creditorsWithinOneYear, Transaction transaction,
+            String companyAccountsId,
+            HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
+        
+        crossValidate(errors, request, companyAccountsId, creditorsWithinOneYear);
 
         if (creditorsWithinOneYear.getCurrentPeriod() != null) {
 
@@ -68,7 +89,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
                 throw new DataException(e.getMessage(), e);
             }
         }
-
         return errors;
     }
 
@@ -188,5 +208,171 @@ public class CreditorsWithinOneYearValidator extends BaseValidator {
 
         validateAggregateTotal(total, sum, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH
                 , errors);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+
+    @Override
+    public Errors crossValidate (Errors errors, HttpServletRequest request,
+            String companyAccountsId,
+            CreditorsWithinOneYear creditorsWithinOneYear) throws DataException {
+
+        crossValidateCurrentPeriod(errors, request, creditorsWithinOneYear, companyAccountsId);
+        crossValidatePreviousPeriod(errors, request, creditorsWithinOneYear, companyAccountsId);
+
+        return errors;
+    }
+    
+    private void crossValidatePreviousPeriod (Errors errors, HttpServletRequest request,
+            CreditorsWithinOneYear creditorsWithinOneYear, String companyAccountsId) throws DataException {
+
+        BalanceSheet previousPeriodBalanceSheet =
+                getPreviousPeriodBalanceSheet(request, companyAccountsId);
+
+        checkIfPreviousNoteIsNullAndBalanceNot(errors, creditorsWithinOneYear, previousPeriodBalanceSheet);
+        checkIsPrevousBalanceNullAndNoteNot(errors, creditorsWithinOneYear, previousPeriodBalanceSheet);
+        checkIfPreviousBalanceAndNoteValuesAreEqual(errors, creditorsWithinOneYear, previousPeriodBalanceSheet);
+    }
+
+    private void checkIfPreviousBalanceAndNoteValuesAreEqual (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+        BalanceSheet previousPeriodBalanceSheet) {
+        if (! isPreviousPeriodBalanceSheetCreditorsWithinOneYearNull(previousPeriodBalanceSheet) &&
+                (! isCreditorsWithinOneYearNotePreviousTotalNull(creditorsWithinOneYear))
+                && (! creditorsWithinOneYear.getPreviousPeriod().getTotal().equals(
+                    previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
+                    .getCreditorsDueWithinOneYear()))) {
+
+            addError(errors, previousBalanceSheetNotEqual, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private void checkIsPrevousBalanceNullAndNoteNot (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+        BalanceSheet previousPeriodBalanceSheet) {
+        if (isPreviousPeriodBalanceSheetCreditorsWithinOneYearNull(previousPeriodBalanceSheet) &&
+                (! isCreditorsWithinOneYearNotePreviousTotalNull(creditorsWithinOneYear))) {
+
+            addError(errors, previousBalanceSheetNotEqual, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfPreviousNoteIsNullAndBalanceNot (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+        BalanceSheet previousPeriodBalanceSheet) {
+        if (isCreditorsWithinOneYearNotePreviousTotalNull(creditorsWithinOneYear) &&
+                (! isPreviousPeriodBalanceSheetCreditorsWithinOneYearNull(previousPeriodBalanceSheet))) {
+
+            addError(errors, previousBalanceSheetNotEqual, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private BalanceSheet getPreviousPeriodBalanceSheet (
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
+
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
+
+        try {
+            previousPeriodResponseObject =
+                    previousPeriodService.findById(previousPeriodId, request);
+        } catch (MongoException e) {
+
+            throw new DataException(e.getMessage(), e);
+        }
+        if(previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
+          return previousPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+          return null;
+        }
+    }
+
+    private void crossValidateCurrentPeriod (Errors errors, HttpServletRequest request,
+            CreditorsWithinOneYear creditorsWithinOneYear,
+            String companyAccountsId) throws DataException {
+
+        BalanceSheet currentPeriodBalanceSheet =
+                getCurrentPeriodBalanceSheet(request, companyAccountsId);
+
+        checkIfCurrentNoteIsNullAndBalanceSheetNot(errors, creditorsWithinOneYear, currentPeriodBalanceSheet);
+        checkIfCurrentBalanceSheetIsNullAndNoteNot(errors, creditorsWithinOneYear, currentPeriodBalanceSheet);
+        checkIfCurrentBalanceAndNoteValuesAreEqual(errors, creditorsWithinOneYear, currentPeriodBalanceSheet);
+    }
+
+    private void checkIfCurrentBalanceAndNoteValuesAreEqual (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+        BalanceSheet currentPeriodBalanceSheet) {
+        
+        if (! (isCurrentPeriodBalanceSheetCreditorsWithinOneYearNull(currentPeriodBalanceSheet)) &&
+                (! isCreditorsWithinOneYearNoteCurrentTotalNull(creditorsWithinOneYear))
+
+                && !(creditorsWithinOneYear.getCurrentPeriod().getTotal().equals(currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
+                    .getCreditorsDueWithinOneYear()))) {
+
+            addError(errors, currentBalanceSheetNotEqual, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentBalanceSheetIsNullAndNoteNot (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+        BalanceSheet currentPeriodBalanceSheet) {
+        if (isCurrentPeriodBalanceSheetCreditorsWithinOneYearNull(currentPeriodBalanceSheet) &&
+                (! isCreditorsWithinOneYearNoteCurrentTotalNull(creditorsWithinOneYear))) {
+
+            addError(errors, currentBalanceSheetNotEqual, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentNoteIsNullAndBalanceSheetNot (Errors errors, CreditorsWithinOneYear creditorsWithinOneYear,
+            BalanceSheet currentPeriodBalanceSheet) {
+        if (isCreditorsWithinOneYearNoteCurrentTotalNull(creditorsWithinOneYear) &&
+            currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
+                        .getCreditorsDueWithinOneYear() != null) {
+
+            addError(errors, currentBalanceSheetNotEqual, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
+        }
+    }
+
+    private BalanceSheet getCurrentPeriodBalanceSheet (HttpServletRequest request,
+            String companyAccountsId) throws DataException {
+        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
+
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
+
+        try {
+
+            currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        } catch (MongoException e) {
+
+            throw new DataException(e.getMessage(), e);
+        }
+        if(currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
+          return currentPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+          return null;
+        }
+    }
+
+    private boolean isCreditorsWithinOneYearNoteCurrentTotalNull (CreditorsWithinOneYear creditorsWithinOneYear) {
+        return creditorsWithinOneYear.getCurrentPeriod() == null || creditorsWithinOneYear.getCurrentPeriod().getTotal() == null;
+    }
+
+    private boolean isCurrentPeriodBalanceSheetCreditorsWithinOneYearNull (
+            BalanceSheet currentPeriodBalanceSheet) {
+
+        return currentPeriodBalanceSheet == null ||
+            currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets() == null ||
+            currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsDueWithinOneYear() == null;
+    }
+
+    private boolean isPreviousPeriodBalanceSheetCreditorsWithinOneYearNull (
+            BalanceSheet previousPeriodBlanceSheet) {
+
+        return previousPeriodBlanceSheet == null ||
+            previousPeriodBlanceSheet.getOtherLiabilitiesOrAssets() == null ||
+            previousPeriodBlanceSheet.getOtherLiabilitiesOrAssets().getCreditorsDueWithinOneYear() == null;
+    }
+
+    private boolean isCreditorsWithinOneYearNotePreviousTotalNull (CreditorsWithinOneYear creditorsWithinOneYear) {
+
+        return creditorsWithinOneYear.getPreviousPeriod() == null ||
+            creditorsWithinOneYear.getPreviousPeriod().getTotal() == null;
     }
 }
