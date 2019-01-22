@@ -64,7 +64,7 @@ public class TangibleAssetsValidator extends BaseValidator {
 
             List<TangibleSubResource> invalidSubResources = new ArrayList<>();
 
-            verifySubResourceIsValid(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+            verifySubResourcesAreValid(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             validateSubResourceTotals(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             if (errors.hasErrors()) {
                 return errors;
@@ -80,7 +80,7 @@ public class TangibleAssetsValidator extends BaseValidator {
         return errors;
     }
 
-    private void verifySubResourceIsValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
+    private void verifySubResourcesAreValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
 
         if (tangibleAssets.getFixturesAndFittings() != null) {
 
@@ -597,7 +597,9 @@ public class TangibleAssetsValidator extends BaseValidator {
 
         Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear - onDisposals + otherAdjustments;
 
-        if (!tangibleAssetsResource.getDepreciation().getAtPeriodEnd().equals(calculatedAtPeriodEnd)) {
+        Long atPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssetsResource);
+
+        if (!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
 
             addError(errors, incorrectTotal, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
         }

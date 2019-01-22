@@ -50,6 +50,9 @@ public class TangibleAssetsValidatorTest {
     private static final String VALUE_REQUIRED_KEY = "valueRequired";
     private static final String VALUE_REQUIRED = "value_required";
 
+    private static final String INCORRECT_TOTAL_KEY = "incorrectTotal";
+    private static final String INCORRECT_TOTAL = "incorrect_total";
+
     @Test
     @DisplayName("First year filer - provides cost at period start in sub resource")
     void firstYearFilerProvidesCostAtPeriodStartInSubResource() throws ServiceException, DataException {
@@ -409,6 +412,205 @@ public class TangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - cost fields don't total in sub resource")
+    void singleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        fixturesAndFittings.setCost(cost);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - depreciation fields don't total in sub resource")
+    void singleYearFilerDepreciationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(1L);
+        fixturesAndFittings.setCost(cost);
+
+        Depreciation depreciation = new Depreciation();
+        depreciation.setChargeForYear(2L);
+        depreciation.setAtPeriodEnd(1L);
+        fixturesAndFittings.setDepreciation(depreciation);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(0L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
+    void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(1L);
+        fixturesAndFittings.setCost(cost);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - cost fields don't total in sub resource")
+    void multipleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(3L);
+        fixturesAndFittings.setCost(cost);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(3L);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - depreciation fields don't total in sub resource")
+    void multipleYearFilerDepreciationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        fixturesAndFittings.setCost(cost);
+
+        Depreciation depreciation = new Depreciation();
+        depreciation.setAtPeriodStart(1L);
+        depreciation.setChargeForYear(2L);
+        depreciation.setAtPeriodEnd(1L);
+        fixturesAndFittings.setDepreciation(depreciation);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - net book value at end of current period doesn't total in sub resource")
+    void multipleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        fixturesAndFittings.setCost(cost);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - net book value at end of previous period doesn't total in sub resource")
+    void multipleYearFilerPreviousNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        fixturesAndFittings.setCost(cost);
+
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(2L);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(2L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     private Error createError(String error, String path) {
