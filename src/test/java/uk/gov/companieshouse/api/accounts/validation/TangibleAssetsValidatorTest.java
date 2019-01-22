@@ -210,6 +210,207 @@ public class TangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide net book value at end of previous period in sub resource")
+    void multipleYearFilerDoesNotProvideNetBookValuePreviousPeriodInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAtPeriodEnd(1L);
+
+        fixturesAndFittings.setCost(cost);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide net book value at end of current period in sub resource")
+    void multipleYearFilerDoesNotProvideNetBookValueCurrentPeriodInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAtPeriodEnd(1L);
+
+        fixturesAndFittings.setCost(cost);
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide cost in sub resource")
+    void multipleYearFilerDoesNotProvideCostInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide cost at period start in sub resource")
+    void multipleYearFilerDoesNotProvideCostAtPeriodStartInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        Cost cost = new Cost();
+        cost.setAtPeriodEnd(1L);
+        fixturesAndFittings.setCost(cost);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide cost at period end in sub resource")
+    void multipleYearFilerDoesNotProvideCostAtPeriodEndInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        fixturesAndFittings.setCost(cost);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide depreciation at period start or end in sub resource")
+    void multipleYearFilerDoesNotProvideDepreciationAtPeriodStartOrEndInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+        fixturesAndFittings.setNetBookValueAtEndOfPreviousPeriod(1L);
+        fixturesAndFittings.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAtPeriodEnd(1L);
+        fixturesAndFittings.setCost(cost);
+
+        Depreciation depreciation = new Depreciation();
+        depreciation.setChargeForYear(1L);
+        fixturesAndFittings.setDepreciation(depreciation);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - provides only cost fields in sub resource")
+    void multipleYearFilerProvidesOnlyCostFieldsInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        fixturesAndFittings.setCost(cost);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - provides only depreciation fields in sub resource")
+    void multipleYearFilerProvidesOnlyDepreciationFieldsInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
+
+        Depreciation depreciation = new Depreciation();
+        depreciation.setAtPeriodStart(1L);
+        fixturesAndFittings.setDepreciation(depreciation);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+
+        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+    }
+
     private Error createError(String error, String path) {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());

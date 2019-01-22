@@ -70,7 +70,7 @@ public class TangibleAssetsValidator extends BaseValidator {
                 return errors;
             }
 
-            validateTotalFieldsMatch(errors, tangibleAssets);
+            validateTotalFieldsMatch(errors, tangibleAssets, isMultipleYearFiler);
 
         } catch (ServiceException e) {
 
@@ -186,21 +186,23 @@ public class TangibleAssetsValidator extends BaseValidator {
         }
     }
 
-    private void validateTotalFieldsMatch(Errors errors, TangibleAssets tangibleAssets) {
+    private void validateTotalFieldsMatch(Errors errors, TangibleAssets tangibleAssets, boolean isMultipleYearFiler) {
 
-        validateCostAtPeriodStartTotal(errors, tangibleAssets);
+        if (isMultipleYearFiler) {
+            validateCostAtPeriodStartTotal(errors, tangibleAssets);
+            validateDepreciationAtPeriodStartTotal(errors, tangibleAssets);
+            validatePreviousNetBookValuesTotal(errors, tangibleAssets);
+        }
         validateAdditionsTotal(errors, tangibleAssets);
         validateDisposalsTotal(errors, tangibleAssets);
         validateRevaluationsTotal(errors, tangibleAssets);
         validateTransfersTotal(errors, tangibleAssets);
         validateCostAtPeriodEndTotal(errors, tangibleAssets);
-        validateDepreciationAtPeriodStartTotal(errors, tangibleAssets);
         validateChargeForYearTotal(errors, tangibleAssets);
         validateOnDisposalsTotal(errors, tangibleAssets);
         validateOtherAdjustmentsTotal(errors, tangibleAssets);
         validateDepreciationAtPeriodEndTotal(errors, tangibleAssets);
         validateCurrentNetBookValuesTotal(errors, tangibleAssets);
-        validatePreviousNetBookValuesTotal(errors, tangibleAssets);
     }
 
     private void validateCostAtPeriodStartTotal(Errors errors, TangibleAssets tangibleAssets) {
