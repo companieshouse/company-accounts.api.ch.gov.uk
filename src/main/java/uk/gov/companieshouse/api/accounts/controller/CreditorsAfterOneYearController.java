@@ -29,7 +29,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/creditors-after-one-year", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/creditors-after-more-than-one-year", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CreditorsAfterOneYearController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);

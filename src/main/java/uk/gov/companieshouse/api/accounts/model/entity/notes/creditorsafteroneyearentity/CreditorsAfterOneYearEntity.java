@@ -3,18 +3,17 @@ package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroney
 import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
 
 @Document(collection = "notes")
 public class CreditorsAfterOneYearEntity extends BaseEntity {
 
-    private CreditorsWithinOneYearDataEntity data;
+    private CreditorsAfterOneYearDataEntity data;
 
-    public CreditorsWithinOneYearDataEntity getData() {
+    public CreditorsAfterOneYearDataEntity getData() {
         return data;
     }
 
-    public void setData(CreditorsWithinOneYearDataEntity data) {
+    public void setData(CreditorsAfterOneYearDataEntity data) {
         this.data = data;
     }
 

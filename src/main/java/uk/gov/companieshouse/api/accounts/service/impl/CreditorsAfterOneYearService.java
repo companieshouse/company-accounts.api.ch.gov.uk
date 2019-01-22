@@ -17,7 +17,6 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -34,6 +33,10 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
+    private CreditorsAfterOneYearRepository repository;
+    private CreditorsAfterOneYearTransformer transformer;
+    private KeyIdGenerator keyIdGenerator;
+    private SmallFullService smallFullService;
     @Autowired
     public CreditorsAfterOneYearService(CreditorsAfterOneYearRepository repository,
             CreditorsAfterOneYearTransformer transformer,
@@ -52,7 +55,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CreditorsWithinOneYearEntity entity = transformer.transform(rest);
+        CreditorsAfterOneYearEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -67,7 +70,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             throw dataException;
         }
 
-        smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE,
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE,
                 getSelfLinkFromCreditorsAfterOneYearEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
@@ -114,7 +117,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
-                + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName();
+                + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName();
     }
 
     public String getSelfLinkFromCreditorsAfterOneYearEntity(CreditorsAfterOneYearEntity entity) {
