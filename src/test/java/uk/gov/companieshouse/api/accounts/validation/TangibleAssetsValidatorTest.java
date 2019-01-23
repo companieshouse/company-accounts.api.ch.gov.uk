@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -750,6 +751,120 @@ public class TangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - valid submission")
+    void singleYearFilerValidSubmission() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(false));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(false));
+        tangibleAssets.setMotorVehicles(createValidSubResource(false));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(false));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(false));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(10L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(5L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+
+        tangibleAssets.setTotal(total);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - valid submission")
+    void multipleYearFilerValidSubmission() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(true));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(true));
+        tangibleAssets.setMotorVehicles(createValidSubResource(true));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(true));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(true));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(5L);
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(15L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setAtPeriodStart(5L);
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(10L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        tangibleAssets.setTotal(total);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    private TangibleAssetsResource createValidSubResource(boolean isMultipleYearFiler) {
+
+        TangibleAssetsResource resource = new TangibleAssetsResource();
+
+        Cost cost = new Cost();
+        if (isMultipleYearFiler) {
+            cost.setAtPeriodStart(1L);
+        }
+        cost.setAdditions(1L);
+        cost.setDisposals(1L);
+        cost.setRevaluations(1L);
+        cost.setTransfers(1L);
+        cost.setAtPeriodEnd(isMultipleYearFiler ? 3L : 2L);
+        resource.setCost(cost);
+
+        Depreciation depreciation = new Depreciation();
+        if (isMultipleYearFiler) {
+            depreciation.setAtPeriodStart(1L);
+        }
+        depreciation.setChargeForYear(1L);
+        depreciation.setOnDisposals(1L);
+        depreciation.setOtherAdjustments(1L);
+        depreciation.setAtPeriodEnd(isMultipleYearFiler ? 2L : 1L);
+        resource.setDepreciation(depreciation);
+
+        resource.setNetBookValueAtEndOfCurrentPeriod(1L);
+        if (isMultipleYearFiler) {
+            resource.setNetBookValueAtEndOfPreviousPeriod(0L);
+        }
+
+        return resource;
     }
 
     private Error createError(String error, String path) {
