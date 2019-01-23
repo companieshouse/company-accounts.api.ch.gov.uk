@@ -72,11 +72,13 @@ public class CreditorsAfterOneYearControllerTest {
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
-        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(mockCreditorsAfterOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+                controller.create(mockCreditorsAfterOneYear, mockBindingResult,
+                        COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -94,12 +96,14 @@ public class CreditorsAfterOneYearControllerTest {
         when(mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
                 COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity responseEntity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(mockApiResponseMapper.map(dataException))
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(mockCreditorsAfterOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+                controller.create(mockCreditorsAfterOneYear, mockBindingResult,
+                        COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -114,7 +118,8 @@ public class CreditorsAfterOneYearControllerTest {
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-                controller.create(mockCreditorsAfterOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+                controller.create(mockCreditorsAfterOneYear, mockBindingResult,
+                        COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());

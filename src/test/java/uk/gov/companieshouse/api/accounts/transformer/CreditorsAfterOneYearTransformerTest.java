@@ -31,7 +31,8 @@ public class CreditorsAfterOneYearTransformerTest {
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private CreditorsAfterOneYearTransformer creditorsAfterOneYearTransformer = new CreditorsAfterOneYearTransformer();
+    private CreditorsAfterOneYearTransformer creditorsAfterOneYearTransformer =
+            new CreditorsAfterOneYearTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
@@ -114,21 +115,30 @@ public class CreditorsAfterOneYearTransformerTest {
 
     private void assertEqualsEntityObject(CreditorsAfterOneYearEntity creditorsAfterOneYearEntity) {
 
-        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
-        assertEquals(OTHER_CREDITORS, creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
-        assertEquals(FINANCE_LEASE, creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
-        assertEquals(TOTAL, creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
-        assertEquals(DETAILS, creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getDetails());
+        assertEquals(BANK_LOANS_AND_OVERDRAFTS,
+                creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
+        assertEquals(OTHER_CREDITORS,
+                creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
+        assertEquals(FINANCE_LEASE,
+                creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(TOTAL,
+                creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
+        assertEquals(DETAILS,
+                creditorsAfterOneYearEntity.getData().getCurrentPeriodEntity().getDetails());
 
         assertEquals(new HashMap<>(), creditorsAfterOneYearEntity.getData().getLinks());
         assertEquals(ETAG, creditorsAfterOneYearEntity.getData().getEtag());
         assertEquals(KIND, creditorsAfterOneYearEntity.getData().getKind());
 
         if (creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity() != null) {
-            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getBankLoansAndOverdrafts());
-            assertEquals(OTHER_CREDITORS, creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
-            assertEquals(FINANCE_LEASE, creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
-            assertEquals(TOTAL, creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
+            assertEquals(BANK_LOANS_AND_OVERDRAFTS,
+                    creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getBankLoansAndOverdrafts());
+            assertEquals(OTHER_CREDITORS,
+                    creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
+            assertEquals(FINANCE_LEASE,
+                    creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+            assertEquals(TOTAL,
+                    creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
         }
     }
 }
