@@ -1,6 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsWithinOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -20,14 +26,9 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsWithinOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CreditorsWithinOneYearValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @Service
 public class CreditorsWithinOneYearService implements ResourceService<CreditorsWithinOneYear> {
@@ -36,6 +37,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
 
     private CreditorsWithinOneYearRepository repository;
     private CreditorsWithinOneYearTransformer transformer;
+    private CreditorsWithinOneYearValidator validator;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
 
@@ -43,12 +45,13 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     public CreditorsWithinOneYearService (CreditorsWithinOneYearRepository repository,
                                           CreditorsWithinOneYearTransformer transformer,
                                           KeyIdGenerator keyIdGenerator,
-                                          SmallFullService smallFullService) {
+                                          SmallFullService smallFullService, CreditorsWithinOneYearValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.validator = validator;
     }
 
     @Override
@@ -56,6 +59,13 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          Transaction transaction,
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -86,6 +96,13 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+        
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         CreditorsWithinOneYearEntity entity = transformer.transform(rest);

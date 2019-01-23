@@ -13,6 +13,9 @@ public class BaseValidator {
     @Value("${date.invalid}")
     protected String dateInvalid;
 
+    @Value("${inconsistent.data}")
+    private String inconsistentData;
+
     /**
      * Validate the given total is correctly aggregated
      *
@@ -42,6 +45,16 @@ public class BaseValidator {
         addError(errors, incorrectTotal, location);
     }
 
+    /**
+     * Add an inconsistent data error for the given location
+     *
+     * @param errors
+     * @param location
+     */
+    protected void addInconsistentDataError (Errors errors, String location) {
+
+        addError(errors, inconsistentData, location);
+    }
     /**
      * Add an error for the given location
      *

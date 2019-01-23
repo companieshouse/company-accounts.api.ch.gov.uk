@@ -18,16 +18,12 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 
 @Component
 public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
 
     @Value("${invalid.note}")
     private String invalidNote;
-
-    @Value("${inconsistent.data}")
-    private String inconsistentData;
 
     @Value("${current.balancesheet.not.equal}")
     private String currentBalanceSheetNotEqual;
@@ -76,13 +72,17 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             if (debtors.getPreviousPeriod() != null) {
 
-                if (isMultipleYearFiler(transaction)) {
+                try {
+                    if (companyService.isMultipleYearFiler(transaction)) {
 
-                    validatePreviousPeriodDebtors(errors, debtors);
+                        validatePreviousPeriodDebtors(errors, debtors);
 
-                } else {
+                    } else {
 
-                    validateInconsistentPeriodFiling(debtors, errors);
+                        validateInconsistentPeriodFiling(debtors, errors);
+                    }
+                } catch (ServiceException e) {
+                    throw new DataException(e.getMessage(), e);
                 }
             }
         }
@@ -93,11 +93,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         validateRequiredPreviousPeriodTotalFieldNotNull(debtors, errors);
         validatePreviousPeriodTotalIsCorrect(debtors, errors);
-    }
-
-    private void addInconsistentDataError (Errors errors, String errorPath) {
-
-        addError(errors, inconsistentData, errorPath);
     }
 
     private void validateCurrentPeriodDebtors (Errors errors, Debtors debtors) {
@@ -167,19 +162,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private boolean isMultipleYearFiler (Transaction transaction) throws DataException {
 
-        try {
-            CompanyProfileApi companyProfile =
-                    companyService.getCompanyProfile(transaction.getCompanyNumber());
-            return (companyProfile != null && companyProfile.getAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts() != null &&
-                    companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
-
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
-        }
-    }
 
     private void validateInconsistentPeriodFiling (Debtors debtors, Errors errors) {
 
