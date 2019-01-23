@@ -82,57 +82,22 @@ public class TangibleAssetsValidator extends BaseValidator {
 
     private void verifySubResourcesAreValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
 
-        if (tangibleAssets.getFixturesAndFittings() != null) {
+        validateSubResource(errors, tangibleAssets.getFixturesAndFittings(), isMultipleYearFiler, TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getLandAndBuildings(), isMultipleYearFiler, TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getMotorVehicles(), isMultipleYearFiler, TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getOfficeEquipment(), isMultipleYearFiler, TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getPlantAndMachinery(), isMultipleYearFiler, TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getTotal(), isMultipleYearFiler, TangibleSubResource.TOTAL, invalidSubResources);
+    }
+
+    private void validateSubResource(Errors errors, TangibleAssetsResource resource, boolean isMultipleYearFiler, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
+
+        if (resource != null) {
 
             if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
+                validatePresenceOfMultipleYearFilerFields(errors, resource, subResource, invalidSubResources);
             } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getFixturesAndFittings(), TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
-            }
-        }
-
-        if (tangibleAssets.getLandAndBuildings() != null) {
-
-            if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
-            } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getLandAndBuildings(), TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
-            }
-        }
-
-        if (tangibleAssets.getMotorVehicles() != null) {
-
-            if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
-            } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getMotorVehicles(), TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
-            }
-        }
-
-        if (tangibleAssets.getOfficeEquipment() != null) {
-
-            if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
-            } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getOfficeEquipment(), TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
-            }
-        }
-
-        if (tangibleAssets.getPlantAndMachinery() != null) {
-
-            if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
-            } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
-            }
-        }
-
-        if (tangibleAssets.getTotal() != null) {
-
-            if (isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getTotal(), TangibleSubResource.TOTAL, invalidSubResources);
-            } else {
-                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getTotal(), TangibleSubResource.TOTAL, invalidSubResources);
+                validatePresenceOfSingleYearFilerFields(errors, resource, subResource, invalidSubResources);
             }
         }
     }
