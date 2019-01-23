@@ -19,7 +19,7 @@ public class CompanyServiceImpl implements CompanyService {
     private ApiClientService apiClientService;
 
     private static final UriTemplate GET_COMPANY_URI =
-        new UriTemplate("/company/{companyNumber}");
+            new UriTemplate("/company/{companyNumber}");
 
     @Override
     public CompanyProfileApi getCompanyProfile(String companyNumber) throws ServiceException {
