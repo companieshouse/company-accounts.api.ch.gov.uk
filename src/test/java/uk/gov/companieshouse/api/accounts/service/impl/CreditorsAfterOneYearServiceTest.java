@@ -133,4 +133,30 @@ public class CreditorsAfterOneYearServiceTest {
                 () -> mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
                         mockTransaction, "", mockRequest));
     }
+
+    @Test
+    @DisplayName("Tests the successful update of a creditors after one year resource")
+    void canUpdateACreditorsAfterOneYear() throws DataException {
+
+        when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction,
+                "", mockRequest);
+
+        assertNotNull(result);
+        assertEquals(mockCreditorsAfterOneYear, result.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the mongo exception when updating a creditors after one year")
+    void updateCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
+
+        doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
+                .any(CreditorsAfterOneYear.class));
+        when(mockRepository.save(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
+
+        assertThrows(DataException.class,
+                () -> mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
+    }
+
 }
