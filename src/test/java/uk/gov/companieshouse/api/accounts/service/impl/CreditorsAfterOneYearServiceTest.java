@@ -93,13 +93,15 @@ public class CreditorsAfterOneYearServiceTest {
 
         when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
 
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
+        ResponseObject<CreditorsAfterOneYear> result =
+                mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
                 "", mockRequest);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.CREATED, result.getStatus());
         assertEquals(mockCreditorsAfterOneYear, result.getData());
-        verify(mockSmallFullService).addLink(anyString(), any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+        verify(mockSmallFullService).addLink(anyString(), any(SmallFullLinkType.class),
+                anyString(), any(HttpServletRequest.class));
     }
 
     @Test
@@ -110,7 +112,9 @@ public class CreditorsAfterOneYearServiceTest {
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockDuplicateKeyException);
 
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest);
+        ResponseObject<CreditorsAfterOneYear> result =
+                mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
+                        mockTransaction, "", mockRequest);
 
         assertNotNull(result);
         assertEquals(result.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -126,6 +130,7 @@ public class CreditorsAfterOneYearServiceTest {
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
-                () -> mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
+                () -> mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
+                        mockTransaction, "", mockRequest));
     }
 }

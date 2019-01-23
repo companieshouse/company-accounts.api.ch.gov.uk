@@ -1,5 +1,10 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.HashMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,12 +18,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoney
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
-
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -213,27 +212,42 @@ public class CreditorsWithinOneYearTransformerTest {
 
     private void assertEqualsEntityObject(CreditorsWithinOneYearEntity creditorsWithinOneYearEntity) {
 
-        assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getAccrualsAndDeferredIncome());
-        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
-        assertEquals(OTHER_CREDITORS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
-        assertEquals(FINANCE_LEASE, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
-        assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTaxationAndSocialSecurity());
-        assertEquals(TRADE_CREDITORS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTradeCreditors());
-        assertEquals(TOTAL, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
-        assertEquals(DETAILS, creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getDetails());
+        assertEquals(ACCRUALS_AND_DEFERRED_INCOME,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getAccrualsAndDeferredIncome());
+        assertEquals(BANK_LOANS_AND_OVERDRAFTS,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
+        assertEquals(OTHER_CREDITORS,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
+        assertEquals(FINANCE_LEASE,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(TAXATION_AND_SOCIAL_SECURITY,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTaxationAndSocialSecurity());
+        assertEquals(TRADE_CREDITORS,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTradeCreditors());
+        assertEquals(TOTAL,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
+        assertEquals(DETAILS,
+                creditorsWithinOneYearEntity.getData().getCurrentPeriodEntity().getDetails());
 
         assertEquals(new HashMap<>(), creditorsWithinOneYearEntity.getData().getLinks());
         assertEquals(ETAG, creditorsWithinOneYearEntity.getData().getEtag());
         assertEquals(KIND, creditorsWithinOneYearEntity.getData().getKind());
 
         if (creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity() != null) {
-            assertEquals(ACCRUALS_AND_DEFERRED_INCOME, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getAccrualsAndDeferredIncome());
-            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getBankLoansAndOverdrafts());
-            assertEquals(OTHER_CREDITORS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
-            assertEquals(FINANCE_LEASE, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
-            assertEquals(TAXATION_AND_SOCIAL_SECURITY, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTaxationAndSocialSecurity());
-            assertEquals(TRADE_CREDITORS, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTradeCreditors());
-            assertEquals(TOTAL, creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
+            assertEquals(ACCRUALS_AND_DEFERRED_INCOME,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getAccrualsAndDeferredIncome());
+            assertEquals(BANK_LOANS_AND_OVERDRAFTS,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getBankLoansAndOverdrafts());
+            assertEquals(OTHER_CREDITORS,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
+            assertEquals(FINANCE_LEASE,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+            assertEquals(TAXATION_AND_SOCIAL_SECURITY,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTaxationAndSocialSecurity());
+            assertEquals(TRADE_CREDITORS,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTradeCreditors());
+            assertEquals(TOTAL,
+                    creditorsWithinOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
         }
     }
 
