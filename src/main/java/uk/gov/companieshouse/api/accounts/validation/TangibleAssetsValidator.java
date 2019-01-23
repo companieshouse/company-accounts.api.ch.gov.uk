@@ -126,6 +126,15 @@ public class TangibleAssetsValidator extends BaseValidator {
                 validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getPlantAndMachinery(), TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
             }
         }
+
+        if (tangibleAssets.getTotal() != null) {
+
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(errors, tangibleAssets.getTotal(), TangibleSubResource.TOTAL, invalidSubResources);
+            } else {
+                validatePresenceOfSingleYearFilerFields(errors, tangibleAssets.getTotal(), TangibleSubResource.TOTAL, invalidSubResources);
+            }
+        }
     }
 
     private void validateSubResourceTotals(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
