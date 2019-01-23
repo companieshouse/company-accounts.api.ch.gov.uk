@@ -104,7 +104,7 @@ public class CreditorsAfterOneYearServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating a creditors after one year resource")
-    void createCreditorsWithinOneYearDuplicateKey() throws DataException {
+    void createCreditorsAfterOneYearDuplicateKey() throws DataException {
 
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));

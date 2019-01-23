@@ -37,6 +37,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     private CreditorsAfterOneYearTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+
     @Autowired
     public CreditorsAfterOneYearService(CreditorsAfterOneYearRepository repository,
             CreditorsAfterOneYearTransformer transformer,
