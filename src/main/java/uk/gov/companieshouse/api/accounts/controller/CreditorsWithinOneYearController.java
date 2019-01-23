@@ -1,11 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,9 +17,9 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
+import uk.gov.companieshouse.api.accounts.service.impl.CreditorsWithinOneYearService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -33,9 +27,16 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DebtorsController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/creditors-within-one-year", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CreditorsWithinOneYearController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
     private static final String TRANSACTION_ID = "transaction_id";
@@ -43,84 +44,57 @@ public class DebtorsController {
     private static final String MESSAGE = "message";
 
     @Autowired
-    private DebtorsService debtorsService;
-
-    @Autowired
-    private ApiResponseMapper apiResponseMapper;
+    private CreditorsWithinOneYearService creditorsWithinOneYearService;
 
     @Autowired
     private ErrorMapper errorMapper;
 
+    @Autowired
+    private ApiResponseMapper apiResponseMapper;
+
+
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Debtors debtors,
+    public ResponseEntity create(@Valid @RequestBody CreditorsWithinOneYear creditorsWithinOneYear,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction =
             (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
+
         ResponseEntity responseEntity;
 
         try {
-            ResponseObject<Debtors> response = debtorsService
-                .create(debtors, transaction, companyAccountId, request);
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .create(creditorsWithinOneYear, transaction, companyAccountId, request);
 
             responseEntity = apiResponseMapper
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-
             final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to create debtors resource");
+                "Failed to update creditors within one year resource");
             LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
-        }
-        return responseEntity;
-    }
-
-    @GetMapping
-    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-                              HttpServletRequest request) {
-
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        String debtorsId = debtorsService.generateID(companyAccountId);
-
-        ResponseEntity responseEntity;
-
-        try {
-            ResponseObject<Debtors> response = debtorsService
-                .findById(debtorsId, request);
-
-            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
-
-        } catch (DataException de) {
-
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to retrieve debtors resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            responseEntity = apiResponseMapper.map(de);
+            return apiResponseMapper.map(ex);
         }
 
         return responseEntity;
     }
-
+    
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid Debtors debtors,
+    public ResponseEntity update(@RequestBody @Valid CreditorsWithinOneYear creditorsWithinOneYear,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) == null) {
+        if (smallFull.getLinks().get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -132,8 +106,8 @@ public class DebtorsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Debtors> response = debtorsService
-                .update(debtors, transaction, companyAccountId, request);
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .update(creditorsWithinOneYear, transaction, companyAccountId, request);
 
             return apiResponseMapper
                 .map(response.getStatus(), response.getData(), response.getErrors());
@@ -141,40 +115,71 @@ public class DebtorsController {
         } catch (DataException ex) {
 
             final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update debtors resource");
+                "Failed to update creditors within one year resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
     }
 
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+                              HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+            .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String creditorsWithinOneYearId = creditorsWithinOneYearService.generateID(companyAccountId);
+
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .findById(creditorsWithinOneYearId, request);
+
+            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                "Failed to retrieve creditors within one year resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            responseEntity = apiResponseMapper.map(de);
+        }
+
+        return responseEntity;
+    }
+
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
-                                               HttpServletRequest request) {
+                                 HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String debtorsId = debtorsService.generateID(companyAccountsId);
+        String creditorsWithinOneYearId = creditorsWithinOneYearService.generateID(companyAccountsId);
 
         try {
-            ResponseObject<Debtors> response = debtorsService.deleteById(debtorsId, request);
+            ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
+                .deleteById(creditorsWithinOneYearId, request);
 
-            if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) != null) {
-                smallFull.getLinks().remove(SmallFullLinkType.DEBTORS_NOTE.getLink());
+            if (smallFull.getLinks().get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink()) != null) {
+                smallFull.getLinks().remove(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink());
             }
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
             final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                "Failed to delete debtors resource");
+                "Failed to delete creditors within one year resource");
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
         }
     }
 
-    private Map<String, Object> createDebugMap(String companyAccountId, Transaction transaction, String message) {
+    private Map<String, Object> createDebugMap(String companyAccountId,
+                                               Transaction transaction, String message) {
+
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);

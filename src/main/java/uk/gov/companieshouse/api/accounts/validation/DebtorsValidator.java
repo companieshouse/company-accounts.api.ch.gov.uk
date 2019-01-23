@@ -51,14 +51,15 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     private PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public DebtorsValidator (CompanyService companyService, CurrentPeriodService currentPeriodService,
+    public DebtorsValidator(CompanyService companyService,
+            CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
         this.companyService = companyService;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateDebtors (@Valid Debtors debtors, Transaction transaction,
+    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
@@ -89,37 +90,37 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return errors;
     }
 
-    private void validatePreviousPeriodDebtors (Errors errors, Debtors debtors) {
+    private void validatePreviousPeriodDebtors(Errors errors, Debtors debtors) {
 
         validateRequiredPreviousPeriodTotalFieldNotNull(debtors, errors);
         validatePreviousPeriodTotalIsCorrect(debtors, errors);
     }
 
-    private void addInconsistentDataError (Errors errors, String errorPath) {
+    private void addInconsistentDataError(Errors errors, String errorPath) {
 
         addError(errors, inconsistentData, errorPath);
     }
 
-    private void validateCurrentPeriodDebtors (Errors errors, Debtors debtors) {
+    private void validateCurrentPeriodDebtors(Errors errors, Debtors debtors) {
 
         validateRequiredCurrentPeriodTotalFieldNotNull(debtors, errors);
         validateCurrentPeriodTotalIsCorrect(debtors, errors);
     }
 
-    private void validateRequiredCurrentPeriodTotalFieldNotNull (Debtors debtors, Errors errors) {
+    private void validateRequiredCurrentPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getCurrentPeriod().getTradeDebtors() != null ||
                 debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
                 debtors.getCurrentPeriod().getOtherDebtors() != null ||
                 debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
-                ! debtors.getCurrentPeriod().getDetails().isEmpty()) &&
+                debtors.getCurrentPeriod().getDetails() != null) &&
                 debtors.getCurrentPeriod().getTotal() == null) {
 
             addError(errors, invalidNote, CURRENT_TOTAL_PATH);
         }
     }
 
-    private void validateRequiredPreviousPeriodTotalFieldNotNull (Debtors debtors, Errors errors) {
+    private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
 
         if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
                 debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null ||
@@ -131,7 +132,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void validateCurrentPeriodTotalIsCorrect (Debtors debtors, Errors errors) {
+    private void validateCurrentPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getCurrentPeriod().getTotal() != null) {
             Long traderDebtors =
@@ -141,17 +142,15 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                             .orElse(0L);
             Long otherDebtors =
                     Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear =
-                    Optional.ofNullable(debtors.getCurrentPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getCurrentPeriod().getTotal();
-            Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
+            Long sum = traderDebtors + prepayments + otherDebtors;
 
             validateAggregateTotal(total, sum, CURRENT_TOTAL_PATH, errors);
         }
     }
 
-    private void validatePreviousPeriodTotalIsCorrect (Debtors debtors, Errors errors) {
+    private void validatePreviousPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
 
         if (debtors.getPreviousPeriod().getTotal() != null) {
             Long traderDebtors =
@@ -161,17 +160,15 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                             .orElse(0L);
             Long otherDebtors =
                     Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
-            Long moreThanOneYear =
-                    Optional.ofNullable(debtors.getPreviousPeriod().getGreaterThanOneYear()).orElse(0L);
 
             Long total = debtors.getPreviousPeriod().getTotal();
-            Long sum = traderDebtors + prepayments + otherDebtors + moreThanOneYear;
+            Long sum = traderDebtors + prepayments + otherDebtors;
 
             validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
         }
     }
 
-    private boolean isMultipleYearFiler (Transaction transaction) throws DataException {
+    private boolean isMultipleYearFiler(Transaction transaction) throws DataException {
 
         try {
             CompanyProfileApi companyProfile =
@@ -185,7 +182,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void validateInconsistentPeriodFiling (Debtors debtors, Errors errors) {
+    private void validateInconsistentPeriodFiling(Debtors debtors, Errors errors) {
 
         if (debtors.getPreviousPeriod().getTradeDebtors() != null) {
             addInconsistentDataError(errors, PREVIOUS_TRADE_DEBTORS);
@@ -213,7 +210,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
      */
 
     @Override
-    public Errors crossValidate (Errors errors, HttpServletRequest request,
+    public Errors crossValidate(Errors errors, HttpServletRequest request,
             String companyAccountsId,
             Debtors debtors) throws DataException {
 
@@ -223,7 +220,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return errors;
     }
 
-    private void crossValidatePreviousPeriod (Errors errors, HttpServletRequest request,
+    private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request,
             String companyAccountsId,
             Debtors debtors) throws DataException {
 
@@ -235,7 +232,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         checkIfPreviousBalanceAndNoteValuesAreEqual(errors, debtors, previousPeriodResponseObject);
     }
 
-    private void checkIfPreviousBalanceAndNoteValuesAreEqual (Errors errors, Debtors debtors,
+    private void checkIfPreviousBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
             ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
         if (! isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
                 (! isDebtorsNotePreviousTotalNull(debtors))
@@ -248,7 +245,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void checkIsPrevousBalanceNullAndNoteNot (Errors errors, Debtors debtors,
+    private void checkIsPrevousBalanceNullAndNoteNot(Errors errors, Debtors debtors,
             ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
         if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
                 (! isDebtorsNotePreviousTotalNull(debtors))) {
@@ -257,7 +254,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void checkIfPreviousNoteIsNullAndBalanceNot (Errors errors, Debtors debtors,
+    private void checkIfPreviousNoteIsNullAndBalanceNot(Errors errors, Debtors debtors,
             ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
         if (isDebtorsNotePreviousTotalNull(debtors) &&
                 (! isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject))) {
@@ -266,7 +263,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private ResponseObject<PreviousPeriod> getPreviousPeriodResponseObject (
+    private ResponseObject<PreviousPeriod> getPreviousPeriodResponseObject(
             HttpServletRequest request, String companyAccountsId) throws DataException {
         String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
@@ -282,7 +279,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return previousPeriodResponseObject;
     }
 
-    private void crossValidateCurrentPeriod (Errors errors, HttpServletRequest request,
+    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request,
             Debtors debtors,
             String companyAccountsId) throws DataException {
 
@@ -294,20 +291,20 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         checkIfCurrentBalanceAndNoteValuesAreEqual(errors, debtors, currentPeriodResponseObject);
     }
 
-    private void checkIfCurrentBalanceAndNoteValuesAreEqual (Errors errors, Debtors debtors,
+    private void checkIfCurrentBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
             ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
+
         if (! (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject)) &&
                 (! isDebtorsNoteCurrentTotalNull(debtors))
 
-                && (debtors.getCurrentPeriod().getTotal() !=
-                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors())) {
+                && ! (debtors.getCurrentPeriod().getTotal().equals(currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
+                .getDebtors()))) {
 
             addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
         }
     }
 
-    private void checkIfCurrentBalanceSheetIsNullAndNoteNot (Errors errors, Debtors debtors,
+    private void checkIfCurrentBalanceSheetIsNullAndNoteNot(Errors errors, Debtors debtors,
             ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
         if (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject) &&
                 (! isDebtorsNoteCurrentTotalNull(debtors))) {
@@ -316,9 +313,10 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private void checkIfCurrentNoteIsNullAndBalanceSheetNot (Errors errors, Debtors debtors,
+    private void checkIfCurrentNoteIsNullAndBalanceSheetNot(Errors errors, Debtors debtors,
             ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
         if (isDebtorsNoteCurrentTotalNull(debtors) &&
+                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() != null &&
                 currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
                         .getDebtors() != null) {
 
@@ -326,7 +324,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    private ResponseObject<CurrentPeriod> getCurrentPeriodResponseObject (HttpServletRequest request,
+    private ResponseObject<CurrentPeriod> getCurrentPeriodResponseObject(HttpServletRequest request,
             String companyAccountsId) throws DataException {
         String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
 
@@ -342,11 +340,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return currentPeriodResponseObject;
     }
 
-    private boolean isDebtorsNoteCurrentTotalNull (Debtors debtors) {
+    private boolean isDebtorsNoteCurrentTotalNull(Debtors debtors) {
         return debtors.getCurrentPeriod() == null || debtors.getCurrentPeriod().getTotal() == null;
     }
 
-    private boolean isCurrentPeriodBalanceSheetDebtorsNull (
+    private boolean isCurrentPeriodBalanceSheetDebtorsNull(
             ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
 
         return currentPeriodResponseObject.getData() == null ||
@@ -356,7 +354,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                         .getDebtors() == null;
     }
 
-    private boolean isPreviousPeriodBalanceSheetDebtorsNull (
+    private boolean isPreviousPeriodBalanceSheetDebtorsNull(
             ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
 
         return previousPeriodResponseObject.getData() == null ||
@@ -366,7 +364,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                         .getDebtors() == null;
     }
 
-    private boolean isDebtorsNotePreviousTotalNull (Debtors debtors) {
+    private boolean isDebtorsNotePreviousTotalNull(Debtors debtors) {
 
         return debtors.getPreviousPeriod() == null ||
                 debtors.getPreviousPeriod().getTotal() == null;

@@ -1,14 +1,19 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
 import java.security.MessageDigest;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
@@ -50,6 +58,12 @@ public class SmallFullServiceTest {
     private SmallFullEntity smallFullEntity;
 
     @Mock
+    private SmallFullDataEntity smallFullDataEntity;
+
+    @Mock
+    private Map<String, String> links;
+
+    @Mock
     private MessageDigest messageDigest;
 
     @Mock
@@ -72,6 +86,9 @@ public class SmallFullServiceTest {
 
     @InjectMocks
     private SmallFullService smallFullService;
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
 
     public void setUpCreate() {
     }
@@ -131,5 +148,64 @@ public class SmallFullServiceTest {
             smallFullService.findById("", request);
         };
         assertThrows(DataException.class, executable);
+    }
+
+    @Test
+    @DisplayName("Tests the successful removal of a small full link")
+    void removeLinkSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
+
+        when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
+        when(smallFullDataEntity.getLinks()).thenReturn(links);
+
+        SmallFullLinkType smallFullLinkType = SmallFullLinkType.TANGIBLE_ASSETS_NOTE;
+
+        assertAll(() -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
+
+        verify(links, times(1)).remove(smallFullLinkType.getLink());
+    }
+
+    @Test
+    @DisplayName("Tests the  removal of a small full link where the repository throws a Mongo exception")
+    void removeLinkMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
+
+        when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
+        when(smallFullDataEntity.getLinks()).thenReturn(links);
+
+        when(smallFullRepository.save(smallFullEntity)).thenThrow(MongoException.class);
+
+        SmallFullLinkType smallFullLinkType = SmallFullLinkType.TANGIBLE_ASSETS_NOTE;
+
+        assertThrows(DataException.class,
+                () -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
+
+        verify(links, times(1)).remove(smallFullLinkType.getLink());
+    }
+
+    @Test
+    @DisplayName("Tests the  removal of a small full link where the entity is not found")
+    void removeLinkSmallFullEntityNotFound() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
+                .thenReturn(GENERATED_ID);
+
+        SmallFullEntity smallFullEntity = null;
+        when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
+
+        SmallFullLinkType smallFullLinkType = SmallFullLinkType.TANGIBLE_ASSETS_NOTE;
+
+        assertThrows(DataException.class,
+                () -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
+
+        verify(smallFullRepository, never()).save(smallFullEntity);
     }
 }

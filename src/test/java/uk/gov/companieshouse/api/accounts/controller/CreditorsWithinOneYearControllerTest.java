@@ -1,13 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,39 +14,51 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
+import uk.gov.companieshouse.api.accounts.service.impl.CreditorsWithinOneYearService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DebtorsControllerTest {
+public class CreditorsWithinOneYearControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String DEBTORS_ID = "debtorsId";
+    private static final String CREDITORS_WITHIN_ONE_YEAR_ID = "creditorsWithinOneYearId";
 
     @Mock
     private BindingResult mockBindingResult;
 
     @Mock
-    private Debtors mockDebtors;
+    private HttpServletRequest mockRequest;
 
     @Mock
     private Transaction mockTransaction;
 
     @Mock
-    private HttpServletRequest mockRequest;
+    private CreditorsWithinOneYear mockCreditorsWithinOneYear;
+
+    @Mock
+    private CreditorsWithinOneYearService mockCreditorsWithinOneYearService;
 
     @Mock
     private ApiResponseMapper mockApiResponseMapper;
 
     @Mock
-    DebtorsService mockDebtorsService;
+    private ErrorMapper mockErrorMapper;
 
     @Mock
     private SmallFull mockSmallFull;
@@ -62,24 +66,21 @@ public class DebtorsControllerTest {
     @Mock
     private Map<String, String> mockSmallFullLinks;
 
-    @Mock
-    private ErrorMapper mockErrorMapper;
-
     @InjectMocks
-    DebtorsController controller;
+    private CreditorsWithinOneYearController controller;
 
     @Test
-    @DisplayName("Debtors resource created successfully")
-    void createDebtorsResource() throws DataException {
+    @DisplayName("Creditors within one year resource created successfully")
+    void createCreditorsWithinOneYearResource() throws DataException {
 
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
-            mockDebtors);
-        when(mockDebtorsService.create(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenReturn(responseObject);
+            mockCreditorsWithinOneYear);
+        when(mockCreditorsWithinOneYearService.create(mockCreditorsWithinOneYear, mockTransaction,
+            COMPANY_ACCOUNTS_ID, mockRequest)).thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
@@ -87,30 +88,30 @@ public class DebtorsControllerTest {
             .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-            controller.create(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.create(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(mockDebtors, responseEntity.getBody());
+        assertEquals(mockCreditorsWithinOneYear, responseEntity.getBody());
     }
 
     @Test
-    @DisplayName("Create debtors has failed - data exception thrown")
-    void createDebtorsDataException() throws DataException {
+    @DisplayName("Create creditors within one year has failed - data exception thrown")
+    void createCreditorsWithinOneYearDataException() throws DataException {
 
         when(mockBindingResult.hasErrors()).thenReturn(false);
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         DataException dataException = new DataException("");
-        when(mockDebtorsService.create(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
+        when(mockCreditorsWithinOneYearService.create(mockCreditorsWithinOneYear, mockTransaction,
+            COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(mockApiResponseMapper.map(dataException))
             .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-            controller.create(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.create(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -118,29 +119,107 @@ public class DebtorsControllerTest {
     }
 
     @Test
-    @DisplayName("Create debtors - has binding errors")
-    void createDebtorsBindingErrors() {
+    @DisplayName("Create creditors within one year - has binding errors")
+    void createCreditorsWithinOneYearBindingErrors() {
 
         when(mockBindingResult.hasErrors()).thenReturn(true);
         when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-            controller.create(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+            controller.create(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
     @Test
-    @DisplayName("Get debtors - success")
-    void getDebtorsSuccess() throws DataException {
+    @DisplayName("Update creditors within one year - no small full link")
+    void updateCreditorsWithinOneYearNoSmallFullLink() {
+
+        when(mockRequest.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(mockSmallFull);
+        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
+        when(mockSmallFullLinks.get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink())).thenReturn(null);
+
+        ResponseEntity responseEntity =
+            controller.update(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Update creditors within one year - has binding errors")
+    void updateCreditorsWithinOneYearBindingErrors() {
+
+        mockTransactionAndLinks();
+        when(mockBindingResult.hasErrors()).thenReturn(true);
+        when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
+
+        ResponseEntity responseEntity =
+            controller.update(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Update creditors within one year - success")
+    void updateCreditorsWithinOneYearSuccess() throws DataException {
+
+        mockTransactionAndLinks();
+        when(mockBindingResult.hasErrors()).thenReturn(false);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+            mockCreditorsWithinOneYear);
+        when(mockCreditorsWithinOneYearService.update(mockCreditorsWithinOneYear, mockTransaction,
+            COMPANY_ACCOUNTS_ID, mockRequest)).thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+            .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+            controller.update(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Update creditors within one year - data exception thrown")
+    void updateACreditorsWithinOneYearDataException() throws DataException {
+
+        mockTransactionAndLinks();
+        when(mockBindingResult.hasErrors()).thenReturn(false);
+
+        DataException dataException = new DataException("");
+        when(mockCreditorsWithinOneYearService.update(mockCreditorsWithinOneYear, mockTransaction,
+            COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+            controller.update(mockCreditorsWithinOneYear, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Get creditors within one year - success")
+    void getCreditorsWithinOneYearSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
-            mockDebtors);
-        when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
+            mockCreditorsWithinOneYear);
+        when(mockCreditorsWithinOneYearService.findById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -153,18 +232,18 @@ public class DebtorsControllerTest {
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
-        assertEquals(mockDebtors, responseEntity.getBody());
+        assertEquals(mockCreditorsWithinOneYear, responseEntity.getBody());
     }
 
     @Test
-    @DisplayName("Get debtors - data exception thrown")
+    @DisplayName("Get creditors within one year - data exception thrown")
     void getDebtorsDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
 
         DataException dataException = new DataException("");
-        when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
+        when(mockCreditorsWithinOneYearService.findById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
             .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -178,93 +257,15 @@ public class DebtorsControllerTest {
     }
 
     @Test
-    @DisplayName("Update debtors - no small full link")
-    void updateDebtorsNoSmallFullLink() {
-
-        when(mockRequest.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(mockSmallFull);
-        when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn(null);
-
-        ResponseEntity responseEntity =
-            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update debtors - has binding errors")
-    void updateDebtorsBindingErrors() {
+    @DisplayName("Delete creditors within one year - success")
+    void deleteCreditorsWithinOneYearSuccess() throws DataException {
 
         mockTransactionAndLinks();
-        when(mockBindingResult.hasErrors()).thenReturn(true);
-        when(mockErrorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult)).thenReturn(new Errors());
-
-        ResponseEntity responseEntity =
-            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update debtors - success")
-    void updateDebtorsSuccess() throws DataException {
-
-        mockTransactionAndLinks();
-        when(mockBindingResult.hasErrors()).thenReturn(false);
+        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
-            mockDebtors);
-        when(mockDebtorsService.update(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenReturn(responseObject);
-
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
-            .thenReturn(responseEntity);
-
-        ResponseEntity returnedResponse =
-            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertNotNull(returnedResponse);
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update debtors - data exception thrown")
-    void updateDebtorsDataException() throws DataException {
-
-        mockTransactionAndLinks();
-        when(mockBindingResult.hasErrors()).thenReturn(false);
-
-        DataException dataException = new DataException("");
-        when(mockDebtorsService.update(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
-
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
-
-        ResponseEntity returnedResponse =
-            controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertNotNull(returnedResponse);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Delete debtors - success")
-    void deleteDebtorsSuccess() throws DataException {
-
-        mockTransactionAndLinks();
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
-            mockDebtors);
-        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+            mockCreditorsWithinOneYear);
+        when(mockCreditorsWithinOneYearService.deleteById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
@@ -280,14 +281,14 @@ public class DebtorsControllerTest {
     }
 
     @Test
-    @DisplayName("Delete debtors - data exception thrown")
+    @DisplayName("Delete creditors within one year - data exception thrown")
     void deleteDebtorsDataException() throws DataException {
 
         when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
 
         DataException dataException = new DataException("");
-        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+        when(mockCreditorsWithinOneYearService.deleteById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
             .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -302,6 +303,6 @@ public class DebtorsControllerTest {
     private void mockTransactionAndLinks() {
         when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
         when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
-        when(mockSmallFullLinks.get(SmallFullLinkType.DEBTORS_NOTE.getLink())).thenReturn("");
+        when(mockSmallFullLinks.get(SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE.getLink())).thenReturn("");
     }
 }
