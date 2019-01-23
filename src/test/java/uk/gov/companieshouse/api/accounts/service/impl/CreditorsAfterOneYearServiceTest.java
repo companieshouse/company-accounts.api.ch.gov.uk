@@ -35,6 +35,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -60,6 +61,9 @@ public class CreditorsAfterOneYearServiceTest {
 
     @Mock
     private DuplicateKeyException mockDuplicateKeyException;
+
+    @Mock
+    private KeyIdGenerator mockKeyIdGenerator;
 
     @Mock
     private MongoException mockMongoException;
