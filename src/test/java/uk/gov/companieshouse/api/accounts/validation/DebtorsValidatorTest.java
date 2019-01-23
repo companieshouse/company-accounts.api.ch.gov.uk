@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.time.LocalDate;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +32,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
-import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,7 +45,6 @@ public class DebtorsValidatorTest {
     private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
     private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
     private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
-    private static final String COMPANY_NUMBER = "12345";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
@@ -145,8 +140,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
                 PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
@@ -175,8 +169,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
-                .thenReturn(createCompanyProfileSingleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
         ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
@@ -216,19 +209,13 @@ public class DebtorsValidatorTest {
         doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
-
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
                 PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        when(mockCompanyService.getCompanyProfile(mockTransaction.getCompanyNumber()))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -256,9 +243,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
@@ -352,7 +337,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockCompanyService.getCompanyProfile(null)).thenThrow(mockServiceException);
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
                 () -> validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID,
@@ -399,9 +384,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
@@ -437,9 +420,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
@@ -475,9 +456,7 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
 
-        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyService.getCompanyProfile(COMPANY_NUMBER))
-                .thenReturn(createCompanyProfileMultipleYearFiler());
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -630,27 +609,6 @@ public class DebtorsValidatorTest {
         currentDebtors.setDetails("details");
 
         debtors.setCurrentPeriod(currentDebtors);
-    }
-
-    private CompanyProfileApi createCompanyProfileMultipleYearFiler() {
-
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        CompanyAccountApi companyAccountApi = new CompanyAccountApi();
-
-        LastAccountsApi lastAccountsApi = new LastAccountsApi();
-        lastAccountsApi.setType("lastaccounts");
-        lastAccountsApi.setPeriodStartOn(LocalDate.now());
-
-        companyAccountApi.setLastAccounts(lastAccountsApi);
-        companyProfileApi.setAccounts(companyAccountApi);
-
-        return companyProfileApi;
-    }
-
-    private CompanyProfileApi createCompanyProfileSingleYearFiler() {
-
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        return companyProfileApi;
     }
 
     private Error createError(String error, String path) {
