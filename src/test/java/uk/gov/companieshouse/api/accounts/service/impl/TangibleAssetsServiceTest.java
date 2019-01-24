@@ -157,7 +157,7 @@ public class TangibleAssetsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the creation of a Tangible Assets resource where the validation errors are present")
+    @DisplayName("Tests the creation of a Tangible Assets resource where validation errors are present")
     void createTangibleAssetsWithValidationErrors() throws DataException {
 
         when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
@@ -216,7 +216,7 @@ public class TangibleAssetsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the update of a Tangible Assets resource where the validation errors are present")
+    @DisplayName("Tests the update of a Tangible Assets resource where validation errors are present")
     void updateTangibleAssetsWithValidationErrors() throws DataException {
 
         when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
@@ -227,7 +227,7 @@ public class TangibleAssetsServiceTest {
                 tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
-        verify(repository, never()).insert(any(TangibleAssetsEntity.class));
+        verify(repository, never()).save(any(TangibleAssetsEntity.class));
     }
 
     @Test
