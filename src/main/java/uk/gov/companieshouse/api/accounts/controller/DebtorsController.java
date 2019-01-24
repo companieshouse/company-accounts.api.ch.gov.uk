@@ -160,7 +160,7 @@ public class DebtorsController {
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
             final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                "Failed to delete debtors resource");
+                    "Failed to delete debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
         }

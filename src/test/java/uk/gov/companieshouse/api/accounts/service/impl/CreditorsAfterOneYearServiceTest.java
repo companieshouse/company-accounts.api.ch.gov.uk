@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,8 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
@@ -74,6 +79,9 @@ public class CreditorsAfterOneYearServiceTest {
     private SmallFullService mockSmallFullService;
 
     private CreditorsAfterOneYearEntity creditorsAfterOneYearEntity;
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String CREDITORS_AFTER_ID = "creditorsAfterId";
 
 
     @BeforeAll
@@ -137,6 +145,46 @@ public class CreditorsAfterOneYearServiceTest {
     }
 
     @Test
+    @DisplayName("Test the successful delete of a creditors within one year resource")
+    void deleteCreditorsAfterOneYear() throws DataException {
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+        when(mockRepository.existsById(CREDITORS_AFTER_ID)).thenReturn(true);
+        doNothing().when(mockRepository).deleteById(CREDITORS_AFTER_ID);
+
+        ResponseObject<CreditorsAfterOneYear> responseObject = mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(responseObject);
+        assertEquals(responseObject.getStatus(), ResponseStatus.UPDATED);
+        verify(mockSmallFullService, Mockito.times(1))
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE, mockRequest);
+    }
+
+    @Test
+    @DisplayName("Test attempt to delete empty resource produces not found response")
+    void deleteEmptyCreditorsAfterOneYear() throws DataException {
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+        when(mockRepository.existsById(CREDITORS_AFTER_ID)).thenReturn(false);
+        ResponseObject<CreditorsAfterOneYear> responseObject = mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(responseObject);
+        assertEquals(responseObject.getStatus(), ResponseStatus.NOT_FOUND);
+        verify(mockSmallFullService, never())
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE, mockRequest);
+    }
+
+    @Test
+    @DisplayName("Tests mongo exception thrown on deletion of a creditors after one year resource")
+    void deleteCreditorsAfterOneYearMongoException() {
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+        when(mockRepository.existsById(CREDITORS_AFTER_ID)).thenReturn(true);
+        doThrow(mockMongoException).when(mockRepository).deleteById(CREDITORS_AFTER_ID);
+
+        assertThrows(DataException.class, () -> mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
     @DisplayName("Tests the successful update of a creditors after one year resource")
     void canUpdateACreditorsAfterOneYear() throws DataException {
 
@@ -161,6 +209,7 @@ public class CreditorsAfterOneYearServiceTest {
                 () -> mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
     }
 
+    @Test
     @DisplayName("Tests the successful find of a creditors after one year resource")
     void findCreditorsAfterOneYear() throws DataException {
 
@@ -172,6 +221,7 @@ public class CreditorsAfterOneYearServiceTest {
 
     }
 
+    @Test
     @DisplayName("Tests creditors within one year response not found")
     void findCreditorsAfterOneYearResponseNotFound() throws DataException {
 
