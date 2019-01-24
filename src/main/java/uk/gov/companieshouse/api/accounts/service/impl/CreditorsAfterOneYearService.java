@@ -80,7 +80,24 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     @Override
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-        return null;
+
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
+
+        CreditorsAfterOneYearEntity entity = transformer.transform(rest);
+        entity.setId(generateID(companyAccountId));
+
+        try {
+            repository.save(entity);
+        } catch (MongoException me) {
+            DataException dataException =
+                    new DataException("Failed to update" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName(), me);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
+                    companyAccountId, entity.getId()));
+
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
