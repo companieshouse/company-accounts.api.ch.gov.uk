@@ -91,7 +91,26 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     @Override
     public ResponseObject<CreditorsAfterOneYear> delete(String companyAccountsId,
             HttpServletRequest request) throws DataException {
-        return null;
+
+        String creditorsAfterOneYearId = generateID(companyAccountsId);
+
+        try {
+            if (repository.existsById(creditorsAfterOneYearId)) {
+                repository.deleteById(creditorsAfterOneYearId);
+                smallFullService
+                        .removeLink(companyAccountsId, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException me) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", companyAccountsId);
+            DataException dataException = new DataException("Failed to delete Creditors after one year", me);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
     }
 
     @Override

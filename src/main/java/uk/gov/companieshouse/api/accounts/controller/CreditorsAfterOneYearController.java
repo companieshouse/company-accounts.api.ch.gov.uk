@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,6 +81,30 @@ public class CreditorsAfterOneYearController {
         }
 
         return responseEntity;
+    }
+
+
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
+            HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+
+            ResponseObject<CreditorsAfterOneYear> response =
+                    creditorsAfterOneYearService.delete(companyAccountsId, request);
+
+            return apiResponseMapper.map(response.getStatus(), response.getData(),
+                    response.getErrors());
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
+                    "Failed to delete debtors resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            return apiResponseMapper.map(de);
+        }
     }
 
     private Map<String, Object> createDebugMap(String companyAccountId,

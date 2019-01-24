@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
@@ -124,4 +125,51 @@ public class CreditorsAfterOneYearControllerTest {
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
+
+    @Test
+    @DisplayName("Delete creditors after one year - success")
+    void deleteCreditorsAfterOneYearSuccess() throws DataException {
+
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+                mockCreditorsAfterOneYear);
+
+        when(mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Delete creditors after one year - data exception thrown")
+    void deleteCreditorsDataException() throws DataException {
+
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
+
+        DataException dataException = new DataException("");
+
+        when(mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
+                .thenThrow(dataException);
+
+        ResponseEntity responseEntity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
 }
