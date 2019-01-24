@@ -60,7 +60,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -96,7 +96,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
                                                          String companyAccountId,
                                                          HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction);
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -147,19 +147,24 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     }
 
     @Override
-    public ResponseObject<CreditorsWithinOneYear> deleteById(String id,
+    public ResponseObject<CreditorsWithinOneYear> delete(String companyAccountsId,
                                                              HttpServletRequest request) throws DataException {
 
+        String creditorsWithinOneYearId = generateID(companyAccountsId);
+
         try {
-            if (repository.existsById(id)) {
-                repository.deleteById(id);
+            if (repository.existsById(creditorsWithinOneYearId)) {
+                repository.deleteById(creditorsWithinOneYearId);
+
+                smallFullService.removeLink(companyAccountsId,
+                        SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("id", creditorsWithinOneYearId);
             DataException dataException = new DataException("Failed to delete creditors within one year", me);
             LOGGER.errorRequest(request, dataException, debugMap);
 

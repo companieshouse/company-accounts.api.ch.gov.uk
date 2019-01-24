@@ -260,12 +260,11 @@ public class CreditorsWithinOneYearControllerTest {
     @DisplayName("Delete creditors within one year - success")
     void deleteCreditorsWithinOneYearSuccess() throws DataException {
 
-        mockTransactionAndLinks();
-        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
             mockCreditorsWithinOneYear);
-        when(mockCreditorsWithinOneYearService.deleteById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
+        when(mockCreditorsWithinOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
@@ -284,11 +283,10 @@ public class CreditorsWithinOneYearControllerTest {
     @DisplayName("Delete creditors within one year - data exception thrown")
     void deleteDebtorsDataException() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
 
         DataException dataException = new DataException("");
-        when(mockCreditorsWithinOneYearService.deleteById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
+        when(mockCreditorsWithinOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
