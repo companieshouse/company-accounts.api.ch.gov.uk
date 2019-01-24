@@ -14,7 +14,7 @@ import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -74,7 +74,7 @@ public class CreditorsAfterOneYearServiceTest {
     private CreditorsAfterOneYearEntity creditorsAfterOneYearEntity;
 
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
 
         CreditorsAfterOneYearDataEntity dataEntity = new CreditorsAfterOneYearDataEntity();
