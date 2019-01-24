@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,6 +75,34 @@ public class CreditorsAfterOneYearController {
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+            HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        String creditorsAfterOneYearId = creditorsAfterOneYearService.generateID(companyAccountId);
+
+        ResponseEntity responseEntity;
+
+        try {
+            ResponseObject<CreditorsAfterOneYear> response = creditorsAfterOneYearService
+                    .findById(creditorsAfterOneYearId, request);
+
+            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException de) {
+
+            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
+                    "Failed to retrieve creditors within one year resource");
+            LOGGER.errorRequest(request, de, debugMap);
+            responseEntity = apiResponseMapper.map(de);
+        }
+
+        return responseEntity;
     }
 
     private Map<String, Object> createDebugMap(String companyAccountId,
