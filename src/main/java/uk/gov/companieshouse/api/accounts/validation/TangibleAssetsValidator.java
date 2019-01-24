@@ -641,21 +641,18 @@ public class TangibleAssetsValidator extends BaseValidator {
                 subResourceInvalid = true;
             }
 
-            if (tangibleAssetsResource.getDepreciation() != null) {
+            if (tangibleAssetsResource.getDepreciation() != null && hasDepreciationFieldsSet(tangibleAssetsResource)) {
 
-                if (hasDepreciationFieldsSet(tangibleAssetsResource)) {
+                if (tangibleAssetsResource.getDepreciation().getAtPeriodStart() == null) {
 
-                    if (tangibleAssetsResource.getDepreciation().getAtPeriodStart() == null) {
+                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
+                    subResourceInvalid = true;
+                }
 
-                        addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
-                        subResourceInvalid = true;
-                    }
+                if (tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
 
-                    if (tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
-
-                        addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
-                        subResourceInvalid = true;
-                    }
+                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
+                    subResourceInvalid = true;
                 }
             }
         } else {
@@ -703,14 +700,11 @@ public class TangibleAssetsValidator extends BaseValidator {
                 subResourceInvalid = true;
             }
 
-            if (tangibleAssetsResource.getDepreciation() != null) {
+            if (tangibleAssetsResource.getDepreciation() != null && hasDepreciationFieldsSet(tangibleAssetsResource)
+                    && tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
 
-                if (hasDepreciationFieldsSet(tangibleAssetsResource)
-                        && tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
-
-                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
-                    subResourceInvalid = true;
-                }
+                addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
+                subResourceInvalid = true;
             }
         } else {
 
