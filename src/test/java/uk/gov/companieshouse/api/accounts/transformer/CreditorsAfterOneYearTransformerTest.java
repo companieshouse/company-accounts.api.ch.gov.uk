@@ -36,7 +36,7 @@ public class CreditorsAfterOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = creditorsAfterOneYearTransformer
                 .transform(new CreditorsAfterOneYear());
@@ -48,7 +48,7 @@ public class CreditorsAfterOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
-    public void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
+    void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
 
         CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
 
@@ -71,7 +71,7 @@ public class CreditorsAfterOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
 
@@ -88,6 +88,68 @@ public class CreditorsAfterOneYearTransformerTest {
         assertNotNull(creditorsAfterOneYearEntity);
         assertFieldsMappedToEntity(creditorsAfterOneYearEntity);
     }
+
+    @Test
+    @DisplayName("Tests transformer with empty entity object returns null values ")
+    void testTransformerWithEmptyEntityObject() {
+
+        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
+                .transform(new CreditorsAfterOneYearEntity());
+
+        assertNotNull(creditorsAfterOneYear);
+        assertNull(creditorsAfterOneYear.getEtag());
+        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
+    }
+
+    @Test
+    @DisplayName("Tests transformer with empty previous period Entity Object")
+    void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
+
+        CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
+        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
+
+        creditorsAfterOneYearDataEntity.setEtag(ETAG);
+        creditorsAfterOneYearDataEntity.setKind(KIND);
+        creditorsAfterOneYearDataEntity.setLinks(new HashMap<>());
+        creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
+
+        creditorsAfterOneYearEntity.setData(creditorsAfterOneYearDataEntity);
+
+        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
+                .transform(creditorsAfterOneYearEntity);
+
+        assertNotNull(creditorsAfterOneYear);
+        assertFieldsMappedToRest(creditorsAfterOneYear);
+        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
+        assertEquals(ETAG, creditorsAfterOneYear.getEtag());
+        assertEquals(KIND, creditorsAfterOneYear.getKind());
+    }
+
+    @Test
+    @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+
+        CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
+        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
+
+        creditorsAfterOneYearDataEntity.setEtag(ETAG);
+        creditorsAfterOneYearDataEntity.setKind(KIND);
+        creditorsAfterOneYearDataEntity.setLinks(new HashMap<>());
+        creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
+        creditorsAfterOneYearDataEntity.setPreviousPeriodEntity(createPreviousPeriodEntityObject());
+
+        creditorsAfterOneYearEntity.setData(creditorsAfterOneYearDataEntity);
+
+        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
+                .transform(creditorsAfterOneYearEntity);
+
+        assertNotNull(creditorsAfterOneYear);
+        assertFieldsMappedToRest(creditorsAfterOneYear);
+        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
+        assertEquals(ETAG, creditorsAfterOneYear.getEtag());
+        assertEquals(KIND, creditorsAfterOneYear.getKind());
+    }
+
 
     private CurrentPeriod createCurrentPeriodRestObject() {
 
@@ -140,67 +202,6 @@ public class CreditorsAfterOneYearTransformerTest {
             assertEquals(TOTAL,
                     creditorsAfterOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
         }
-    }
-
-    @Test
-    @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
-
-        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
-                .transform(new CreditorsAfterOneYearEntity());
-
-        assertNotNull(creditorsAfterOneYear);
-        assertNull(creditorsAfterOneYear.getEtag());
-        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
-    }
-
-    @Test
-    @DisplayName("Tests transformer with empty previous period Entity Object")
-    public void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
-
-        CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
-        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
-
-        creditorsAfterOneYearDataEntity.setEtag(ETAG);
-        creditorsAfterOneYearDataEntity.setKind(KIND);
-        creditorsAfterOneYearDataEntity.setLinks(new HashMap<>());
-        creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
-
-        creditorsAfterOneYearEntity.setData(creditorsAfterOneYearDataEntity);
-
-        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
-                .transform(creditorsAfterOneYearEntity);
-
-        assertNotNull(creditorsAfterOneYear);
-        assertFieldsMappedToRest(creditorsAfterOneYear);
-        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
-        assertEquals(ETAG, creditorsAfterOneYear.getEtag());
-        assertEquals(KIND, creditorsAfterOneYear.getKind());
-    }
-
-    @Test
-    @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
-        CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
-        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
-
-        creditorsAfterOneYearDataEntity.setEtag(ETAG);
-        creditorsAfterOneYearDataEntity.setKind(KIND);
-        creditorsAfterOneYearDataEntity.setLinks(new HashMap<>());
-        creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(createCurrentPeriodEntityObject());
-        creditorsAfterOneYearDataEntity.setPreviousPeriodEntity(createPreviousPeriodEntityObject());
-
-        creditorsAfterOneYearEntity.setData(creditorsAfterOneYearDataEntity);
-
-        CreditorsAfterOneYear creditorsAfterOneYear = creditorsAfterOneYearTransformer
-                .transform(creditorsAfterOneYearEntity);
-
-        assertNotNull(creditorsAfterOneYear);
-        assertFieldsMappedToRest(creditorsAfterOneYear);
-        assertEquals(new HashMap<>(), creditorsAfterOneYear.getLinks());
-        assertEquals(ETAG, creditorsAfterOneYear.getEtag());
-        assertEquals(KIND, creditorsAfterOneYear.getKind());
     }
 
     private CurrentPeriodEntity createCurrentPeriodEntityObject() {
