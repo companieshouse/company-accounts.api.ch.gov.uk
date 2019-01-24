@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
@@ -93,6 +95,9 @@ public class CreditorsWithinOneYearServiceTest {
 
     private CreditorsWithinOneYearEntity creditorsWithinOneYearEntity;
 
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
+
     @BeforeEach
     void setUp() {
 
@@ -112,7 +117,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
 
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
         when(mockTransformer.transform(mockCreditorsWithinOneYear)).thenReturn(creditorsWithinOneYearEntity);
 
         ResponseObject<CreditorsWithinOneYear> result = service.create(mockCreditorsWithinOneYear, mockTransaction,
@@ -130,7 +135,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
 
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
         doReturn(creditorsWithinOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(CreditorsWithinOneYear.class));
@@ -149,7 +154,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
 
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
         doReturn(creditorsWithinOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(CreditorsWithinOneYear.class));
@@ -165,7 +170,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
         
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
         when(mockTransformer.transform(mockCreditorsWithinOneYear)).thenReturn(creditorsWithinOneYearEntity);
 
         ResponseObject<CreditorsWithinOneYear> result = service.update(mockCreditorsWithinOneYear, mockTransaction,
@@ -181,7 +186,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
         errors.addError(new Error("test.message.key", "location", LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
         ResponseObject<CreditorsWithinOneYear> result = service.create(mockCreditorsWithinOneYear, mockTransaction,
             "", mockRequest);
@@ -196,7 +201,7 @@ public class CreditorsWithinOneYearServiceTest {
 
         Errors errors = new Errors();
         errors.addError(new Error("test.message.key", "location", LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(errors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
         ResponseObject<CreditorsWithinOneYear> result = service.update(mockCreditorsWithinOneYear, mockTransaction,
             "", mockRequest);
@@ -208,7 +213,7 @@ public class CreditorsWithinOneYearServiceTest {
     @DisplayName("Tests the mongo exception when updating a creditors within one year")
     void updateCreditorsWithinOneYearMongoExceptionFailure() throws DataException {
 
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(new Errors());
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(new Errors());
         doReturn(creditorsWithinOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(CreditorsWithinOneYear.class));
         when(mockRepository.save(creditorsWithinOneYearEntity)).thenThrow(mockMongoException);
@@ -257,38 +262,48 @@ public class CreditorsWithinOneYearServiceTest {
     @Test
     @DisplayName("Test the successful delete of a creditors within one year resource")
     void deleteCreditorsWithinOneYear() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doNothing().when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doNothing().when(mockRepository).deleteById(GENERATED_ID);
 
-        ResponseObject<CreditorsWithinOneYear> responseObject = service.deleteById("", mockRequest);
+        ResponseObject<CreditorsWithinOneYear> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.UPDATED);
+        verify(mockSmallFullService, times(1))
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Test attempt to delete empty resource produces not found response")
     void deleteEmptyCreditorsWithinOneYear() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(false);
-        ResponseObject<CreditorsWithinOneYear> responseObject = service.deleteById("", mockRequest);
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(false);
+        ResponseObject<CreditorsWithinOneYear> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.NOT_FOUND);
+        verify(mockSmallFullService, never())
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on deletion of a creditors within one year resource")
     void deleteCreditorsWithinOneYearMongoException() {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doThrow(mockMongoException).when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doThrow(mockMongoException).when(mockRepository).deleteById(GENERATED_ID);
 
-        assertThrows(DataException.class, () -> service.deleteById("", mockRequest));
+        assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test
     @DisplayName("Tests correct response when error returned from validator")
     void validationError() throws DataException {
-        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction)).thenReturn(mockErrors);
+        when(mockCreditorsWithinOneYearValidator.validateCreditorsWithinOneYear(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockErrors.hasErrors()).thenReturn(true);
 
         ResponseObject<CreditorsWithinOneYear>responseObject = service.create(mockCreditorsWithinOneYear, mockTransaction, "", mockRequest);

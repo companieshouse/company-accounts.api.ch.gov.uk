@@ -108,7 +108,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<CreditorsAfterOneYear> delete(String companyAccountsId,
+            HttpServletRequest request) throws DataException {
         return null;
     }
 

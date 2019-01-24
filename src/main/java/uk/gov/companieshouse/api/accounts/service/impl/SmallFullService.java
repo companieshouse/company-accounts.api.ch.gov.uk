@@ -119,7 +119,7 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<SmallFull> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 
