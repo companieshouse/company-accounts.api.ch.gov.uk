@@ -259,12 +259,11 @@ public class DebtorsControllerTest {
     @DisplayName("Delete debtors - success")
     void deleteDebtorsSuccess() throws DataException {
 
-        mockTransactionAndLinks();
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
             mockDebtors);
-        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+        when(mockDebtorsService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
@@ -283,11 +282,10 @@ public class DebtorsControllerTest {
     @DisplayName("Delete debtors - data exception thrown")
     void deleteDebtorsDataException() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         DataException dataException = new DataException("");
-        when(mockDebtorsService.deleteById(DEBTORS_ID, mockRequest))
+        when(mockDebtorsService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

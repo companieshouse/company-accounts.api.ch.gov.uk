@@ -21,7 +21,7 @@ public interface ResourceService<T extends RestObject> {
     ResponseObject<T> findById(String id, HttpServletRequest request)
         throws DataException;
 
-    ResponseObject<T> deleteById(String id, HttpServletRequest request)
+    ResponseObject<T> delete(String companyAccountsId, HttpServletRequest request)
         throws DataException;
 
     String generateID(String companyAccountId);
