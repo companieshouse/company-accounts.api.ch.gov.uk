@@ -731,29 +731,25 @@ public class TangibleAssetsValidator extends BaseValidator {
 
     private boolean hasSingleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
 
-        if (tangibleAssetsResource.getCost() != null) {
-
-            if (Stream.of(tangibleAssetsResource.getCost().getAdditions(),
+        if (tangibleAssetsResource.getCost() != null &&
+                Stream.of(tangibleAssetsResource.getCost().getAdditions(),
                             tangibleAssetsResource.getCost().getDisposals(),
                             tangibleAssetsResource.getCost().getRevaluations(),
                             tangibleAssetsResource.getCost().getTransfers(),
                             tangibleAssetsResource.getCost().getAtPeriodEnd())
                     .anyMatch(Objects::nonNull)) {
 
-                return true;
-            }
+            return true;
         }
 
-        if (tangibleAssetsResource.getDepreciation() != null) {
-
-            if (Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
+        if (tangibleAssetsResource.getDepreciation() != null &&
+                Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
                             tangibleAssetsResource.getDepreciation().getOnDisposals(),
                             tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
                             tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
                     .anyMatch(Objects::nonNull)) {
 
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -761,9 +757,8 @@ public class TangibleAssetsValidator extends BaseValidator {
 
     private boolean hasMultipleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
 
-        if (tangibleAssetsResource.getCost() != null) {
-
-            if (Stream.of(tangibleAssetsResource.getCost().getAtPeriodStart(),
+        if (tangibleAssetsResource.getCost() != null &&
+                Stream.of(tangibleAssetsResource.getCost().getAtPeriodStart(),
                     tangibleAssetsResource.getCost().getAdditions(),
                     tangibleAssetsResource.getCost().getDisposals(),
                     tangibleAssetsResource.getCost().getRevaluations(),
@@ -771,21 +766,18 @@ public class TangibleAssetsValidator extends BaseValidator {
                     tangibleAssetsResource.getCost().getAtPeriodEnd())
                     .anyMatch(Objects::nonNull)) {
 
-                return true;
-            }
+            return true;
         }
 
-        if (tangibleAssetsResource.getDepreciation() != null) {
-
-            if (Stream.of(tangibleAssetsResource.getDepreciation().getAtPeriodStart(),
+        if (tangibleAssetsResource.getDepreciation() != null &&
+                Stream.of(tangibleAssetsResource.getDepreciation().getAtPeriodStart(),
                     tangibleAssetsResource.getDepreciation().getChargeForYear(),
                     tangibleAssetsResource.getDepreciation().getOnDisposals(),
                     tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
                     tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
                     .anyMatch(Objects::nonNull)) {
 
-                return true;
-            }
+            return true;
         }
 
         return false;
