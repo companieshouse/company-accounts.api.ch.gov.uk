@@ -62,15 +62,11 @@ public class CreditorsAfterOneYearController {
         Transaction transaction =
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<CreditorsAfterOneYear> response = creditorsAfterOneYearService
                     .create(creditorsAfterOneYear, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
@@ -78,8 +74,6 @@ public class CreditorsAfterOneYearController {
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
-
-        return responseEntity;
     }
 
     private Map<String, Object> createDebugMap(String companyAccountId,
