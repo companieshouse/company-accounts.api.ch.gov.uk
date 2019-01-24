@@ -162,7 +162,7 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     @Override
-    public ResponseObject<Statement> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Statement> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 
