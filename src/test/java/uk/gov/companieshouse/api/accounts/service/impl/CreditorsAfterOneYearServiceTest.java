@@ -13,8 +13,9 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -29,6 +30,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -74,7 +76,7 @@ public class CreditorsAfterOneYearServiceTest {
     private CreditorsAfterOneYearEntity creditorsAfterOneYearEntity;
 
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
 
         CreditorsAfterOneYearDataEntity dataEntity = new CreditorsAfterOneYearDataEntity();
@@ -159,4 +161,41 @@ public class CreditorsAfterOneYearServiceTest {
                 () -> mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
     }
 
+    @DisplayName("Tests the successful find of a creditors after one year resource")
+    void findCreditorsAfterOneYear() throws DataException {
+
+        when(mockRepository.findById(""))
+                .thenReturn(Optional.ofNullable(creditorsAfterOneYearEntity));
+        when(mockTransformer.transform(creditorsAfterOneYearEntity)).thenReturn(mockCreditorsAfterOneYear);
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.findById("", mockRequest);
+
+    }
+
+    @DisplayName("Tests creditors within one year response not found")
+    void findCreditorsAfterOneYearResponseNotFound() throws DataException {
+
+        creditorsAfterOneYearEntity = null;
+
+        when(mockRepository.findById(""))
+                .thenReturn(Optional.ofNullable(creditorsAfterOneYearEntity));
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.findById("", mockRequest);
+
+        assertNotNull(result);
+        assertEquals(responseStatusNotFound(), result.getStatus());
+    }
+
+    @Test
+    @DisplayName("Tests mongo exception thrown on find of a creditors after one year resource")
+    void findCreditorsMongoException() {
+
+        when(mockRepository.findById("")).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> mockCreditorsAfterOneYearService.findById("", mockRequest));
+    }
+
+    private ResponseStatus responseStatusNotFound() {
+        ResponseObject<RestObject> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        return responseObject.getStatus();
+    }
 }

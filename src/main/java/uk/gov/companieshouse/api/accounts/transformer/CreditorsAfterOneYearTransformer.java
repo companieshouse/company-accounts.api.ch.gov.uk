@@ -28,7 +28,6 @@ public class CreditorsAfterOneYearTransformer implements GenericTransformer<Cred
             creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
-        BeanUtils.copyProperties(rest, creditorsAfterOneYearDataEntity);
         if (rest.getPreviousPeriod() != null) {
             PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
             BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);

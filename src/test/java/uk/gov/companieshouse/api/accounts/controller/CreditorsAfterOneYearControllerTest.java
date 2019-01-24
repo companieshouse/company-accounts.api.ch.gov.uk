@@ -36,6 +36,7 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class CreditorsAfterOneYearControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String CREDITORS_AFTER_ONE_YEAR_ID = "creditorsAfterOneYearId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -185,10 +186,56 @@ public class CreditorsAfterOneYearControllerTest {
         assertNull(responseEntity.getBody());
     }
 
+    @Test
+    @DisplayName("Get creditors after one year - success")
+    void getCreditorsAfterOneYearSuccess() throws DataException {
+
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        when(mockCreditorsAfterOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_AFTER_ONE_YEAR_ID);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+                mockCreditorsAfterOneYear);
+        when(mockCreditorsAfterOneYearService.findById(CREDITORS_AFTER_ONE_YEAR_ID, mockRequest))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+                .body(responseObject.getData());
+        when(mockApiResponseMapper.mapGetResponse(responseObject.getData(), mockRequest))
+                .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
+        assertEquals(mockCreditorsAfterOneYear, responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Get creditors after one year - data exception thrown")
+    void getCreditorsAfterOneYearDataException() throws DataException {
+
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
+        when(mockCreditorsAfterOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_AFTER_ONE_YEAR_ID);
+
+        DataException dataException = new DataException("");
+        when(mockCreditorsAfterOneYearService.findById(CREDITORS_AFTER_ONE_YEAR_ID, mockRequest))
+                .thenThrow(dataException);
+
+        ResponseEntity responseEntity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
     private void mockTransactionAndLinks() {
         when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
         when(mockSmallFull.getLinks()).thenReturn(mockSmallFullLinks);
         when(mockSmallFullLinks.get(SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE.getLink())).thenReturn("");
     }
-
 }
