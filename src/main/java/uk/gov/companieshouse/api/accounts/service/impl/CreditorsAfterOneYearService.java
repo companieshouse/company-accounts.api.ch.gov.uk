@@ -80,12 +80,48 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     @Override
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-        return null;
+
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
+
+        CreditorsAfterOneYearEntity entity = transformer.transform(rest);
+        entity.setId(generateID(companyAccountId));
+
+        try {
+            repository.save(entity);
+        } catch (MongoException me) {
+            DataException dataException =
+                    new DataException("Failed to update" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName(), me);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
+                    companyAccountId, entity.getId()));
+
+            throw dataException;
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
     public ResponseObject<CreditorsAfterOneYear> findById(String id, HttpServletRequest request) throws DataException {
-        return null;
+        CreditorsAfterOneYearEntity entity;
+
+        try {
+            entity = repository.findById(id).orElse(null);
+        } catch (MongoException e) {
+            final Map<String, Object> debugMap = new HashMap<>();
+            debugMap.put("id", id);
+            DataException dataException = new DataException("Failed to find creditors after one " +
+                    "year", e);
+            LOGGER.errorRequest(request, dataException, debugMap);
+
+            throw dataException;
+        }
+
+        if (entity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(entity));
+
     }
 
     @Override
