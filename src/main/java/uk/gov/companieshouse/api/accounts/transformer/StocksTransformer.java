@@ -42,7 +42,7 @@ public class StocksTransformer implements GenericTransformer<Stocks, StocksEntit
     public Stocks transform(StocksEntity entity) {
 
         Stocks stocks = new Stocks();
-        StocksDataEntity stocksDataEntity = entity.getData();
+        StocksDataEntity stocksDataEntity;
 
         if (entity.getData() != null) {
             stocksDataEntity = entity.getData();
