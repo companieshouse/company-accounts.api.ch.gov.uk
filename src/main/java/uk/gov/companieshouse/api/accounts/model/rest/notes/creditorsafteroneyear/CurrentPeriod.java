@@ -2,23 +2,37 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyea
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Range;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.charset.CharSet;
+
+import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CurrentPeriod {
 
+    private static final int MAX_FIELD_LENGTH = 20000;
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = 0;
+
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("bank_loans_and_overdrafts")
     private Long bankLoansAndOverdrafts;
 
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("finance_leases_and_hire_purchase_contracts")
     private Long financeLeasesAndHirePurchaseContracts;
 
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("other_creditors")
     private Long otherCreditors;
 
-
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("total")
     private Long total;
 
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("details")
     private String details;
 
