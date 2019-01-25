@@ -37,7 +37,6 @@ public class PreviousPeriod {
     @JsonProperty("trade_creditors")
     private Long tradeCreditors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("total")
     private Long total;
 
