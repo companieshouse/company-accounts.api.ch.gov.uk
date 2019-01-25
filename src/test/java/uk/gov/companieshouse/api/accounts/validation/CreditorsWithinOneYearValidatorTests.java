@@ -276,7 +276,7 @@ public class CreditorsWithinOneYearValidatorTests {
     }
 
     @Test
-    @DisplayName("Error thrown when no total and no additional information provided")
+    @DisplayName("Error thrown when no totals provided")
     void testErrorThrownWhenNoTotalAndNoDetailsProvided() throws ServiceException,
             DataException {
 
@@ -302,8 +302,10 @@ public class CreditorsWithinOneYearValidatorTests {
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
     @Test
