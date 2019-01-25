@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
@@ -92,6 +94,9 @@ public class CreditorsWithinOneYearServiceTest {
     private KeyIdGenerator mockKeyIdGenerator;
 
     private CreditorsWithinOneYearEntity creditorsWithinOneYearEntity;
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
 
     @BeforeEach
     void setUp() {
@@ -257,32 +262,42 @@ public class CreditorsWithinOneYearServiceTest {
     @Test
     @DisplayName("Test the successful delete of a creditors within one year resource")
     void deleteCreditorsWithinOneYear() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doNothing().when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doNothing().when(mockRepository).deleteById(GENERATED_ID);
 
-        ResponseObject<CreditorsWithinOneYear> responseObject = service.deleteById("", mockRequest);
+        ResponseObject<CreditorsWithinOneYear> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.UPDATED);
+        verify(mockSmallFullService, times(1))
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Test attempt to delete empty resource produces not found response")
     void deleteEmptyCreditorsWithinOneYear() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(false);
-        ResponseObject<CreditorsWithinOneYear> responseObject = service.deleteById("", mockRequest);
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(false);
+        ResponseObject<CreditorsWithinOneYear> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.NOT_FOUND);
+        verify(mockSmallFullService, never())
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on deletion of a creditors within one year resource")
     void deleteCreditorsWithinOneYearMongoException() {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doThrow(mockMongoException).when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doThrow(mockMongoException).when(mockRepository).deleteById(GENERATED_ID);
 
-        assertThrows(DataException.class, () -> service.deleteById("", mockRequest));
+        assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test

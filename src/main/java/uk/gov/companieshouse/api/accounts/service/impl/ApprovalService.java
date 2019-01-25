@@ -132,7 +132,7 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
-    public ResponseObject<Approval> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Approval> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 
