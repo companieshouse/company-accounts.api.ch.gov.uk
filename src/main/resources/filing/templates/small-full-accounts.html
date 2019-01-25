@@ -2232,9 +2232,12 @@ ul.accounts-comps-ct {
 
                       <tr class="figures">
                           <td id="creditors-after-label">Creditors: amounts falling due after more than one year:</td>
-
-                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsAfterOneYear_CY_ENDNoteIndexes"></td>
-
+                        {{ if .small_full_accounts.balance_sheet_notes.creditors_after_one_year }}
+                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsAfterOneYear_CY_ENDNoteIndexes">{{getValue "creditors-after-one-year-notes-id"}}</td>
+                        {{else}}
+                          <td class="figure noteIndex">&#160;</td>
+                        {{end}}
+                        
                           <td id="creditors-after-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_after.current_amount}}
                                   {{if gt $creditors_after.current_amount 0.0}}({{end}}
@@ -3356,6 +3359,139 @@ ul.accounts-comps-ct {
 
           {{end}}
           <!-- CREDITORS WITHIN ONE YEAR NOTE END -->
+          
+          <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE START -->
+          {{if $creditorsAfterOneYearNote := $balanceSheetNotes.creditors_after_one_year}}
+            {{incValue "notes-page-count" }}
+            {{setValue "creditors-after-one-year-notes-id" (getValue "notes-page-count") }}
+
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+              </div>
+
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
+
+              <h2>{{getValue "notes-page-count"}}. Creditors: amounts falling due after more than one year note</h2>
+
+              <table cellspacing="10" id="creditors-after-one-year-note-table">
+                <tbody>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $creditorsAfterOneYearNote.total.current_amount}}
+                    <th class="table-heading" id="creditors-after-one-year-note-current-heading">{{$period.current_period_bs_date}}</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $creditorsAfterOneYearNote.total.previous_amount}}
+                    <th class="table-heading" id="creditors-after-one-year-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                  {{end}}
+                </tr>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $creditorsAfterOneYearNote.total.current_amount}}
+                    <th class="table-heading" id="creditors-after-one-year-note-current-currency">£</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $creditorsAfterOneYearNote.total.previous_amount}}
+                  <th class="table-heading" id="creditors-after-one-year-note-previous-currency">£</th>
+                  {{end}}
+                </tr>
+
+                {{if $bankLoansAndOverdrafts := $creditorsAfterOneYearNote.bank_loans_and_overdrafts}}
+                  <tr class="figures">
+                    <td id="bank-loans-and-overdrafts">Bank loans and overdrafts</td>
+                    <td id="bank-loans-and-overdrafts-curr-val" class="strong figure">
+                      {{if isNotEmpty $bankLoansAndOverdrafts.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="bank-loans-and-overdrafts-prev-val" class="figure">
+                      {{if isNotEmpty $bankLoansAndOverdrafts.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+				
+                {{if $financeLeasesAndHirePurchaseContracts := $creditorsAfterOneYearNote.finance_leases_and_hire_purchase_contracts}}
+                  <tr class="figures">
+                    <td id="finance-leases-and-hire-purchase-contracts">Amounts due under finance leases and hire purchase contracts</td>
+                    <td id="finance-leases-and-hire-purchase-contracts-curr-val" class="strong figure">
+                      {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="finance-leases-and-hire-purchase-contracts-prev-val" class="figure">
+                      {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}				
+				
+                {{if $otherCreditors := $creditorsAfterOneYearNote.other_creditors}}
+                  <tr class="figures">
+                    <td id="other-creditors">Other creditors</td>
+                    <td id="other-creditors-curr-val" class="strong figure">
+                      {{if isNotEmpty $otherCreditors.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="other-creditors-prev-val" class="figure">
+                      {{if isNotEmpty $otherCreditors.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}			
+
+                {{if $totalCreditorsAfterOneYear := $creditorsAfterOneYearNote.total}}
+                  <tr class="figures">
+                    <td id="creditors-after-one-year-total-label">Total</td>
+                    {{if isNotEmpty $totalCreditorsAfterOneYear.current_amount}}
+                    <td id="creditors-after-one-year-curr-val" class="strong total">
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalCreditorsAfterOneYear.current_amount}}</ix:nonFraction>
+                    </td>
+                    {{else}}
+                      <td  class="figures">&#160;</td>
+                    {{end}}
+
+                    {{if isNotEmpty $totalCreditorsAfterOneYear.previous_amount}}
+                    <td id="creditors-after-one-year-prev-val" class="total">
+                        <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalCreditorsAfterOneYear.previous_amount}}</ix:nonFraction>
+                    </td>
+                    {{end}}
+                  </tr>
+                {{end}}
+
+                </tbody>
+              </table>
+
+              {{if $creditorsAfterOneYearNote.details}}
+                <div class="text-area-display" id="creditors-after-one-year-free-text-note">
+
+                  <p class="text-area-display">
+                    <ix:nonNumeric contextRef="CreditorsAfterOneYear_CY" name="core:CreditorsFree-textComment">{{$creditorsAfterOneYearNote.details}}</ix:nonNumeric>
+                  </p>
+
+                </div>
+              {{end}}
+
+            </div>
+
+          {{end}}
+          <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
 
         {{end}}
         <!-- BALANCE SHEET NOTES END -->
