@@ -17,6 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
@@ -24,6 +28,10 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAsse
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +47,12 @@ public class TangibleAssetsValidatorTest {
     @Mock
     private CompanyService companyService;
 
+    @Mock
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
+
     @InjectMocks
     private TangibleAssetsValidator validator;
 
@@ -53,6 +67,15 @@ public class TangibleAssetsValidatorTest {
 
     private static final String INCORRECT_TOTAL_KEY = "incorrectTotal";
     private static final String INCORRECT_TOTAL = "incorrect_total";
+
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY = "currentBalanceSheetNotEqual";
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL = "value_not_equal_to_current_period_on_balance_sheet";
+
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY = "previousBalanceSheetNotEqual";
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL = "value_not_equal_to_previous_period_on_balance_sheet";
+
+    private static final String CURRENT_PERIOD_ID = "currentPeriodId";
+    private static final String PREVIOUS_PERIOD_ID = "previousPeriodId";
 
     @Test
     @DisplayName("First year filer - provides cost at period start in sub resource")
@@ -664,6 +687,14 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(2L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(10, errors.getErrorCount());
@@ -735,6 +766,14 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(3L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(1L));
+
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(13, errors.getErrorCount());
@@ -751,6 +790,266 @@ public class TangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - no current period to validate against")
+    void singleYearFilerWithoutCurrentPeriod() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(false));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(false));
+        tangibleAssets.setMotorVehicles(createValidSubResource(false));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(false));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(false));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(10L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(5L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+
+        tangibleAssets.setTotal(total);
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - submits empty tangible assets note but has provided current period")
+    void singleYearFilerEmptyNoteWithCurrentPeriod() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(1L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - current period does not match note")
+    void singleYearFilerCurrentPeriodDoesNotMatchNote() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(false));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(false));
+        tangibleAssets.setMotorVehicles(createValidSubResource(false));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(false));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(false));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(10L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(5L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+
+        tangibleAssets.setTotal(total);
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(100L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - no current or previous period to validate against")
+    void multipleYearFilerWithoutCurrentOrPreviousPeriod() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(true));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(true));
+        tangibleAssets.setMotorVehicles(createValidSubResource(true));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(true));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(true));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(5L);
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(15L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setAtPeriodStart(5L);
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(10L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        tangibleAssets.setTotal(total);
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - submits empty tangible assets note but has provided current and previous period")
+    void multipleYearFilerEmptyNoteWithCurrentAndPreviousPeriod() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(1L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(1L));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - neither current nor previous period match note")
+    void multipleYearFilerCurrentAndPreviousPeriodDoNotMatchNote() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setFixturesAndFittings(createValidSubResource(true));
+        tangibleAssets.setLandAndBuildings(createValidSubResource(true));
+        tangibleAssets.setMotorVehicles(createValidSubResource(true));
+        tangibleAssets.setOfficeEquipment(createValidSubResource(true));
+        tangibleAssets.setPlantAndMachinery(createValidSubResource(true));
+
+        TangibleAssetsResource total = new TangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(5L);
+        totalCost.setAdditions(5L);
+        totalCost.setDisposals(5L);
+        totalCost.setRevaluations(5L);
+        totalCost.setTransfers(5L);
+        totalCost.setAtPeriodEnd(15L);
+        total.setCost(totalCost);
+
+        Depreciation totalDepreciation = new Depreciation();
+        totalDepreciation.setAtPeriodStart(5L);
+        totalDepreciation.setChargeForYear(5L);
+        totalDepreciation.setOnDisposals(5L);
+        totalDepreciation.setOtherAdjustments(5L);
+        totalDepreciation.setAtPeriodEnd(10L);
+        total.setDepreciation(totalDepreciation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(5L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        tangibleAssets.setTotal(total);
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(100L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(100L));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
@@ -786,6 +1085,14 @@ public class TangibleAssetsValidatorTest {
         total.setNetBookValueAtEndOfCurrentPeriod(5L);
 
         tangibleAssets.setTotal(total);
+
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(5L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
@@ -829,6 +1136,14 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
+        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
+        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(5L));
+
+        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
+        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(0L));
+
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertFalse(errors.hasErrors());
@@ -870,5 +1185,33 @@ public class TangibleAssetsValidatorTest {
     private Error createError(String error, String path) {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
+    }
+
+    private ResponseObject<CurrentPeriod> createCurrentPeriodResponseObject(Long currentPeriodTangible) {
+
+        FixedAssets currentFixedAssets = new FixedAssets();
+        currentFixedAssets.setTangible(currentPeriodTangible);
+
+        BalanceSheet currentBalanceSheet = new BalanceSheet();
+        currentBalanceSheet.setFixedAssets(currentFixedAssets);
+
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setBalanceSheet(currentBalanceSheet);
+
+        return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
+    }
+
+    private ResponseObject<PreviousPeriod> createPreviousPeriodResponseObject(Long previousPeriodTangible) {
+
+        FixedAssets previousFixedAssets = new FixedAssets();
+        previousFixedAssets.setTangible(previousPeriodTangible);
+
+        BalanceSheet previousBalanceSheet = new BalanceSheet();
+        previousBalanceSheet.setFixedAssets(previousFixedAssets);
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setBalanceSheet(previousBalanceSheet);
+
+        return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
     }
 }
