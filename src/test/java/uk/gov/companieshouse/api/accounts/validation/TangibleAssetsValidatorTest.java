@@ -55,6 +55,23 @@ public class TangibleAssetsValidatorTest {
     private static final String INCORRECT_TOTAL = "incorrect_total";
 
     @Test
+    @DisplayName("Provides only additional info in note")
+    void noteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setAdditionalInformation("additionalInfo");
+
+        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets")));
+    }
+
+    @Test
     @DisplayName("First year filer - provides cost at period start in sub resource")
     void firstYearFilerProvidesCostAtPeriodStartInSubResource() throws ServiceException, DataException {
 

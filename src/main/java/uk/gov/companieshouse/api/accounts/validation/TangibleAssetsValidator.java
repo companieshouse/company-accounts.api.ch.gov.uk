@@ -39,7 +39,7 @@ public class TangibleAssetsValidator extends BaseValidator {
     @Value("${invalid.note}")
     private String invalidNote;
 
-    private static final String TANGIBLE_NOTE = "$.tangible_assets.";
+    private static final String TANGIBLE_NOTE = "$.tangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
     private static final String ADDITIONS = ".cost.additions";
     private static final String DISPOSALS = ".cost.disposals";
@@ -65,6 +65,7 @@ public class TangibleAssetsValidator extends BaseValidator {
             List<TangibleSubResource> invalidSubResources = new ArrayList<>();
 
             verifySubResourcesAreValid(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+            verifyNoteDoesNotOnlyContainAdditionalInfo(tangibleAssets, errors);
             validateSubResourceTotals(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             if (errors.hasErrors()) {
                 return errors;
@@ -78,6 +79,20 @@ public class TangibleAssetsValidator extends BaseValidator {
         }
 
         return errors;
+    }
+
+    private void verifyNoteDoesNotOnlyContainAdditionalInfo(TangibleAssets tangibleAssets, Errors errors) {
+
+        if (tangibleAssets.getFixturesAndFittings() == null &&
+                tangibleAssets.getLandAndBuildings() == null &&
+                tangibleAssets.getMotorVehicles() == null &&
+                tangibleAssets.getOfficeEquipment() == null &&
+                tangibleAssets.getPlantAndMachinery() == null &&
+                tangibleAssets.getTotal() == null &&
+                tangibleAssets.getAdditionalInformation() != null) {
+
+            addError(errors, invalidNote, TANGIBLE_NOTE);
+        }
     }
 
     private void verifySubResourcesAreValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
@@ -887,12 +902,12 @@ public class TangibleAssetsValidator extends BaseValidator {
 
     private String getJsonPath(TangibleSubResource subResource) {
 
-        return TANGIBLE_NOTE + subResource.getJsonPath();
+        return TANGIBLE_NOTE + "." + subResource.getJsonPath();
     }
 
     private String getJsonPath(TangibleSubResource subResource, String pathSuffix) {
 
-        return TANGIBLE_NOTE + subResource.getJsonPath() + pathSuffix;
+        return TANGIBLE_NOTE + "." + subResource.getJsonPath() + pathSuffix;
     }
 
     private enum TangibleSubResource {
