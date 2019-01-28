@@ -3081,7 +3081,7 @@ ul.accounts-comps-ct {
                   {{end}}
                 </tr>
 
-                {{if $tradestocks := $stocksNote.stocks}}
+                {{if $stocks := $stocksNote.stocks}}
                   <tr class="figures">
                     <td id="stocks">Stocks</td>
                     <td id="stocks-curr-val" class="strong figure">
@@ -3135,16 +3135,6 @@ ul.accounts-comps-ct {
 
                 </tbody>
               </table>
-
-              {{if $stocksNote.details}}
-                <div class="text-area-display" id="stocks-free-text-note">
-
-                  <p class="text-area-display">
-                    <ix:nonNumeric contextRef="CY" name="core:stocksFree-textComment">{{$stocksNote.details}}</ix:nonNumeric>
-                  </p>
-
-                </div>
-              {{end}}
 
             </div>
 
