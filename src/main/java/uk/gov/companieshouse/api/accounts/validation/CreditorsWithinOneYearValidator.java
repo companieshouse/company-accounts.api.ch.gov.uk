@@ -156,8 +156,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         if (creditorsCurrentPeriod.getTotal() == null) {
 
             addErrorIfOtherFieldsProvided(creditorsCurrentPeriod, errors);
-            addErrorIfDetailsNotProvided(creditorsCurrentPeriod, errors);
-
         } else {
 
             validateCurrentPeriodTotalCalculation(creditorsCurrentPeriod, errors);
@@ -175,15 +173,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
                 creditorsCurrentPeriod.getOtherCreditors() != null) {
 
             addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
-        }
-    }
-
-    private void addErrorIfDetailsNotProvided(@Valid CurrentPeriod creditorsCurrentPeriod,
-            Errors errors) {
-        if (creditorsCurrentPeriod.getDetails() == null) {
-
-            addError(errors, invalidNote, CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH);
-
         }
     }
 
