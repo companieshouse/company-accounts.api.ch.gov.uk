@@ -2027,8 +2027,13 @@ ul.accounts-comps-ct {
 
                       <tr class="figures">
                           <td id="stocks-label">Stocks:</td>
-                          <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes"></td>
-
+                          
+                        {{ if .small_full_accounts.balance_sheet_notes.stocks }}  
+                          <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes">{{getValue "stocks-notes-id"}}</td>
+                        {{else}}
+                          <td class="figure noteIndex">&#160;</td>
+                        {{end}}
+                        
                           <td id="stocks-curr-val" class="strong figure">
                             {{if isNotEmpty $stocks.current_amount}}
                                 <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
@@ -3028,6 +3033,124 @@ ul.accounts-comps-ct {
 
           <!-- TANGIBLE ASSETS NOTE END -->
 
+          <!-- STOCKS NOTE START -->
+          {{if $stocksNote := $balanceSheetNotes.stocks}}
+            {{incValue "notes-page-count" }}
+            {{setValue "stocks-notes-id" (getValue "notes-page-count") }}
+
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+              </div>
+
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
+
+              <h2>{{getValue "notes-page-count"}}. Stocks</h2>
+
+              <table cellspacing="10" id="stocks-note-table">
+                <tbody>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $stocksNote.total.current_amount}}
+                    <th class="table-heading" id="stocks-note-current-heading">{{$period.current_period_bs_date}}</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $stocksNote.total.previous_amount}}
+                    <th class="table-heading" id="stocks-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                  {{end}}
+                </tr>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $stocksNote.total.current_amount}}
+                    <th class="table-heading" id="stocks-note-current-currency">£</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $stocksNote.total.previous_amount}}
+                  <th class="table-heading" id="stocks-note-previous-currency">£</th>
+                  {{end}}
+                </tr>
+
+                {{if $tradestocks := $stocksNote.stocks}}
+                  <tr class="figures">
+                    <td id="stocks">Stocks</td>
+                    <td id="stocks-curr-val" class="strong figure">
+                      {{if isNotEmpty $stocks.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="trade-stocks-prev-val" class="figure">
+                      {{if isNotEmpty $stocks.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $paymentsOnAccount := $stocksNote.payments_on_account}}
+                  <tr class="figures">
+                    <td id="payments-on-account-label">Payments on account</td>
+                    <td id="payments-on-account-curr-val" class="strong figure">
+                      {{if isNotEmpty $paymentsOnAccount.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PaymentsOnAccountInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $paymentsOnAccount.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+
+                    <td id="payments-on-account-prev-val" class="figure">
+                      {{if isNotEmpty $paymentsOnAccount.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PaymentsOnAccountInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $paymentsOnAccount.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $totalStocks := $stocksNote.total}}
+                  <tr class="figures">
+                    <td id="stocks-total-label">Total</td>
+                    {{if isNotEmpty $totalStocks.current_amount}}
+                    <td id="stocks-total-curr-val" class="strong total">
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalStocks.current_amount}}</ix:nonFraction>
+                    </td>
+                    {{else}}
+                      <td  class="figures">&#160;</td>
+                    {{end}}
+
+                    {{if isNotEmpty $totalStocks.previous_amount}}
+                    <td id="stocks-total-prev-val" class="total">
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalStocks.previous_amount}}</ix:nonFraction>
+                    </td>
+                    {{end}}
+                  </tr>
+                {{end}}
+
+                </tbody>
+              </table>
+
+              {{if $stocksNote.details}}
+                <div class="text-area-display" id="stocks-free-text-note">
+
+                  <p class="text-area-display">
+                    <ix:nonNumeric contextRef="CY" name="core:stocksFree-textComment">{{$stocksNote.details}}</ix:nonNumeric>
+                  </p>
+
+                </div>
+              {{end}}
+
+            </div>
+
+          {{end}}
+          <!-- STOCKS NOTE END -->
+          
           <!-- DEBTORS NOTE START -->
           {{if $debtorsNote := $balanceSheetNotes.debtors}}
             {{incValue "notes-page-count" }}
