@@ -57,10 +57,7 @@ public class StocksTransformerTest {
         stocks.setEtag(ETAG);
         stocks.setKind(KIND);
         stocks.setLinks(new HashMap<>());
-
-        CurrentPeriod currentPeriod = createCurrentPeriodRestObject();
-
-        stocks.setCurrentPeriod(currentPeriod);
+        stocks.setCurrentPeriod(createCurrentPeriodRestObject());
 
         StocksEntity stocksEntity = stocksTransformer
                 .transform(stocks);
