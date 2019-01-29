@@ -65,14 +65,11 @@ public class StocksController {
         Transaction transaction =
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Stocks> response = stocksService
                     .create(stocks, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
             final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
@@ -80,8 +77,6 @@ public class StocksController {
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
-
-        return responseEntity;
     }
 
     @PutMapping
