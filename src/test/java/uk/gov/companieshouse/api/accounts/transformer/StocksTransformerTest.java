@@ -64,7 +64,7 @@ public class StocksTransformerTest {
 
         assertNotNull(stocksEntity);
         assertNull(stocksEntity.getData().getPreviousPeriodEntity());
-        assertEqualsEntityObject(stocksEntity);
+        validateStocksEntity(stocksEntity);
         assertEquals(new HashMap<>(), stocksEntity.getData().getLinks());
     }
 
@@ -83,7 +83,7 @@ public class StocksTransformerTest {
         StocksEntity stocksEntity = stocksTransformer.transform(stocks);
 
         assertNotNull(stocksEntity);
-        assertEqualsEntityObject(stocksEntity);
+        validateStocksEntity(stocksEntity);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class StocksTransformerTest {
         return currentPeriod;
     }
 
-    private void assertEqualsEntityObject(StocksEntity stocksEntity) {
+    private void validateStocksEntity(StocksEntity stocksEntity) {
 
         assertEquals(PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD, stocksEntity.getData().getCurrentPeriodEntity().getPaymentsOnAccount());
         assertEquals(STOCKS_CURRENT_PERIOD, stocksEntity.getData().getCurrentPeriodEntity().getStocks());
