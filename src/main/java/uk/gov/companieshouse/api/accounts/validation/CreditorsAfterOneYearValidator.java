@@ -136,7 +136,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             (!creditorsAfterOneYear.getPreviousPeriod().getTotal().equals(
                 previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsAfterOneYear()))) {
 
-            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
+            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
