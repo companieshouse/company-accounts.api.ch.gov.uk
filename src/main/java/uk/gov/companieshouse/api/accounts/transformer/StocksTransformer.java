@@ -20,13 +20,13 @@ public class StocksTransformer implements GenericTransformer<Stocks, StocksEntit
         StocksEntity stocksEntity = new StocksEntity();
 
         BeanUtils.copyProperties(rest, stocksDataEntity);
+        
         if (rest.getCurrentPeriod() != null) {
             CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
             BeanUtils.copyProperties(rest.getCurrentPeriod(), currentPeriodEntity);
             stocksDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
-        BeanUtils.copyProperties(rest, stocksDataEntity);
         if (rest.getPreviousPeriod() != null) {
             PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
             BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);
