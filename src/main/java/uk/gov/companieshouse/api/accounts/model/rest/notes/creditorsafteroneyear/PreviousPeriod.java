@@ -22,7 +22,6 @@ public class PreviousPeriod {
     @JsonProperty("other_creditors")
     private Long otherCreditors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("total")
     private Long total;
 
