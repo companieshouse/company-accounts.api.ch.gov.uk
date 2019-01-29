@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -258,25 +259,26 @@ public class StocksControllerTest {
 
     @Test
     @DisplayName("Delete stocks - success")
-    void deleteStocksSuccess() throws DataException {
 
-        mockTransactionAndLinks();
-        when(mockStocksService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STOCKS_ID);
+    void deleteStocksSuccess() throws DataException {
+        when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
                 mockStocks);
-        when(mockStocksService.deleteById(STOCKS_ID, mockRequest))
+
+        when(mockStocksService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
-        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+        when(mockApiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
                 controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
-        assertNotNull(returnedResponse);
+        Assertions.assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
     }
 
@@ -284,11 +286,10 @@ public class StocksControllerTest {
     @DisplayName("Delete stocks - data exception thrown")
     void deleteStocksDataException() throws DataException {
 
-        when(mockRequest.getAttribute(anyString())).thenReturn(mockSmallFull).thenReturn(mockTransaction);
-        when(mockStocksService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STOCKS_ID);
+        when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
         DataException dataException = new DataException("");
-        when(mockStocksService.deleteById(STOCKS_ID, mockRequest))
+        when(mockStocksService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenThrow(dataException);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -296,7 +297,7 @@ public class StocksControllerTest {
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
-        assertNotNull(returnedResponse);
+        Assertions.assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 

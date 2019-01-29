@@ -151,24 +151,16 @@ public class DebtorsController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                                HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String debtorsId = debtorsService.generateID(companyAccountsId);
-
         try {
-            ResponseObject<Debtors> response = debtorsService.deleteById(debtorsId, request);
-
-            if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) != null) {
-                smallFull.getLinks().remove(SmallFullLinkType.DEBTORS_NOTE.getLink());
-            }
+            ResponseObject<Debtors> response = debtorsService.delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
             final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                "Failed to delete debtors resource");
+                    "Failed to delete debtors resource");
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
         }

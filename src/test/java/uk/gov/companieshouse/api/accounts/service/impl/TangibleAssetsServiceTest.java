@@ -216,39 +216,51 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the successful deletion of a Tangible Assets resource")
     void deleteTangibleAssetsSuccess() throws DataException {
 
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<TangibleAssets> response =
-                tangibleAssetsService.deleteById(GENERATED_ID, request);
+                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryDeleteByIdCalled();
+        assertWhetherSmallFullServiceCalledToRemoveLink(true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertNull(response.getData());
     }
 
     @Test
     @DisplayName("Tests the deletion of a Tangible Assets resource where the repository throws a Mongo exception")
-    void deleteTangibleAssetsMongoException() {
+    void deleteTangibleAssetsMongoException() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
         doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
         assertThrows(DataException.class, () ->
-                tangibleAssetsService.deleteById(GENERATED_ID, request));
+                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request));
 
         assertRepositoryDeleteByIdCalled();
+        assertWhetherSmallFullServiceCalledToRemoveLink(false);
     }
 
     @Test
     @DisplayName("Tests the deletion of a non-existent Tangible Assets resource")
     void deleteTangibleAssetsNotFound() throws DataException {
 
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
         when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject<TangibleAssets> response =
-                tangibleAssetsService.deleteById(GENERATED_ID, request);
+                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
 
         verify(repository, never()).deleteById(GENERATED_ID);
+        assertWhetherSmallFullServiceCalledToRemoveLink(false);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
     }
@@ -284,6 +296,13 @@ public class TangibleAssetsServiceTest {
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(smallFullService, timesExpected)
                 .addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, SELF_LINK, request);
+    }
+
+    private void assertWhetherSmallFullServiceCalledToRemoveLink(boolean isServiceExpected) throws DataException {
+
+        VerificationMode timesExpected = isServiceExpected ? times(1) : never();
+        verify(smallFullService, timesExpected)
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, request);
     }
 
 }

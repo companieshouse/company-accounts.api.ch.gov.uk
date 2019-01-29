@@ -145,20 +145,12 @@ public class StocksController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                  HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String stocksId = stocksService.generateID(companyAccountsId);
-
         try {
             ResponseObject<Stocks> response = stocksService
-                    .deleteById(stocksId, request);
-
-            if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) {
-                smallFull.getLinks().remove(SmallFullLinkType.STOCKS_NOTE.getLink());
-            }
+                    .delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {

@@ -1,6 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsWithinOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -20,14 +26,9 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsWithinOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CreditorsWithinOneYearValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @Service
 public class CreditorsWithinOneYearService implements ResourceService<CreditorsWithinOneYear> {
@@ -36,26 +37,35 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
 
     private CreditorsWithinOneYearRepository repository;
     private CreditorsWithinOneYearTransformer transformer;
+    private CreditorsWithinOneYearValidator validator;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
 
     @Autowired
-    public CreditorsWithinOneYearService (CreditorsWithinOneYearRepository repository,
-                                          CreditorsWithinOneYearTransformer transformer,
-                                          KeyIdGenerator keyIdGenerator,
-                                          SmallFullService smallFullService) {
+    public CreditorsWithinOneYearService(CreditorsWithinOneYearRepository repository,
+            CreditorsWithinOneYearTransformer transformer,
+            KeyIdGenerator keyIdGenerator,
+            SmallFullService smallFullService, CreditorsWithinOneYearValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.validator = validator;
     }
 
     @Override
     public ResponseObject<CreditorsWithinOneYear> create(CreditorsWithinOneYear rest,
-                                                         Transaction transaction,
-                                                         String companyAccountId,
-                                                         HttpServletRequest request) throws DataException {
+            Transaction transaction,
+            String companyAccountId,
+            HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -65,26 +75,35 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId, entity.getId()));
-            return  new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
+            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId,
+                    entity.getId()));
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
             DataException dataException = new DataException("Failed to insert "
-                + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId, entity.getId()));
+                    + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), e);
+            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId
+                    , entity.getId()));
             throw dataException;
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE,
-            getSelfLinkFromCreditorsWithinOneYearEntity(entity), request);
+                getSelfLinkFromCreditorsWithinOneYearEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
     public ResponseObject<CreditorsWithinOneYear> update(CreditorsWithinOneYear rest,
-                                                         Transaction transaction,
-                                                         String companyAccountId,
-                                                         HttpServletRequest request) throws DataException {
+            Transaction transaction,
+            String companyAccountId,
+            HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -95,9 +114,9 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             repository.save(entity);
         } catch (MongoException me) {
             DataException dataException =
-                new DataException("Failed to update" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), me);
+                    new DataException("Failed to update" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), me);
             LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                companyAccountId, entity.getId()));
+                    companyAccountId, entity.getId()));
 
             throw dataException;
         }
@@ -107,7 +126,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
 
     @Override
     public ResponseObject<CreditorsWithinOneYear> findById(String id,
-                                                           HttpServletRequest request) throws DataException {
+            HttpServletRequest request) throws DataException {
 
         CreditorsWithinOneYearEntity entity;
 
@@ -116,7 +135,8 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
         } catch (MongoException e) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find creditors within one year", e);
+            DataException dataException = new DataException("Failed to find creditors within one " +
+                    "year", e);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -130,20 +150,27 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     }
 
     @Override
-    public ResponseObject<CreditorsWithinOneYear> deleteById(String id,
+    public ResponseObject<CreditorsWithinOneYear> delete(String companyAccountsId,
                                                              HttpServletRequest request) throws DataException {
 
+        String creditorsWithinOneYearId = generateID(companyAccountsId);
+
         try {
-            if (repository.existsById(id)) {
-                repository.deleteById(id);
+            if (repository.existsById(creditorsWithinOneYearId)) {
+                repository.deleteById(creditorsWithinOneYearId);
+
+                smallFullService.removeLink(companyAccountsId,
+                        SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+
+            debugMap.put("id", creditorsWithinOneYearId);
             DataException dataException = new DataException("Failed to delete creditors within one year", me);
+
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -156,7 +183,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     }
 
     private void setMetadataOnRestObject(CreditorsWithinOneYear rest, Transaction transaction,
-                                         String companyAccountsId) {
+            String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
@@ -173,9 +200,9 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
-            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
-            + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName();
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
+                + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName();
     }
 
     public String getSelfLinkFromCreditorsWithinOneYearEntity(CreditorsWithinOneYearEntity entity) {

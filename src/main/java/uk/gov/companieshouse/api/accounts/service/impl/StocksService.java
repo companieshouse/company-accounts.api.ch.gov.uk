@@ -124,18 +124,22 @@ public class StocksService implements ResourceService<Stocks> {
     }
 
     @Override
-    public ResponseObject<Stocks> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Stocks> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
+
+        String stocksId = generateID(companyAccountsId);
 
         try {
-            if (repository.existsById(id)) {
-                repository.deleteById(id);
+            if (repository.existsById(stocksId)) {
+                repository.deleteById(stocksId);
+                smallFullService
+                        .removeLink(companyAccountsId, SmallFullLinkType.STOCKS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("id", companyAccountsId);
             DataException dataException = new DataException("Failed to delete Stocks", me);
             LOGGER.errorRequest(request, dataException, debugMap);
 

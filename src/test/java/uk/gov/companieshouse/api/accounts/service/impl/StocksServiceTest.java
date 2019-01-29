@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,6 +79,9 @@ public class StocksServiceTest {
     private KeyIdGenerator mockKeyIdGenerator;
 
     private StocksEntity stocksEntity;
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
 
     @BeforeEach
     void setUp() {
@@ -196,32 +202,42 @@ public class StocksServiceTest {
     @Test
     @DisplayName("Test the successful delete of a stocks resource")
     void deleteStocks() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doNothing().when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doNothing().when(mockRepository).deleteById(GENERATED_ID);
 
-        ResponseObject<Stocks> responseObject = service.deleteById("", mockRequest);
+        ResponseObject<Stocks> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.UPDATED);
+        verify(mockSmallFullService, times(1))
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.STOCKS_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Test attempt to delete empty resource produces not found response")
     void deleteEmptyStocks() throws DataException {
-        when(mockRepository.existsById("")).thenReturn(false);
-        ResponseObject<Stocks> responseObject = service.deleteById("", mockRequest);
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(false);
+        ResponseObject<Stocks> responseObject = service.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(responseObject);
         assertEquals(responseObject.getStatus(), ResponseStatus.NOT_FOUND);
+        verify(mockSmallFullService, never())
+                .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.STOCKS_NOTE, mockRequest);
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on deletion of a stocks resource")
     void deleteStocksMongoException() {
-        when(mockRepository.existsById("")).thenReturn(true);
-        doThrow(mockMongoException).when(mockRepository).deleteById("");
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.existsById(GENERATED_ID)).thenReturn(true);
+        doThrow(mockMongoException).when(mockRepository).deleteById(GENERATED_ID);
 
-        assertThrows(DataException.class, () -> service.deleteById("", mockRequest));
+        assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     private ResponseStatus responseStatusNotFound() {
