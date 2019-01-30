@@ -2028,11 +2028,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="stocks-label">Stocks:</td>
                           
-                        {{ if .small_full_accounts.balance_sheet_notes.stocks }}  
-                          <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes">{{getValue "stocks-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}
+                          {{ if .small_full_accounts.balance_sheet_notes.stocks }}  
+                              <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes">{{getValue "stocks-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
                         
                           <td id="stocks-curr-val" class="strong figure">
                             {{if isNotEmpty $stocks.current_amount}}
@@ -2055,11 +2055,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="debtors-label">Debtors:</td>
 
-                        {{ if .small_full_accounts.balance_sheet_notes.debtors }}
-                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}
+                          {{ if .small_full_accounts.balance_sheet_notes.debtors }}
+                              <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
 
                           <td id="debtors-curr-val" class="strong figure">
                               {{if isNotEmpty $debtors.current_amount}}
@@ -2161,11 +2161,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="creditors-within-label">Creditors: amounts falling due within one year:</td>
                           
-                        {{ if .small_full_accounts.balance_sheet_notes.creditors_within_one_year }}
-                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}                          
+                          {{ if .small_full_accounts.balance_sheet_notes.creditors_within_one_year }}
+                              <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}                          
 
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
@@ -3084,12 +3084,12 @@ ul.accounts-comps-ct {
                 {{if $stocks := $stocksNote.stocks}}
                   <tr class="figures">
                     <td id="stocks">Stocks</td>
-                    <td id="stocks-curr-val" class="strong figure">
+                    <td id="stocks-note-curr-val" class="strong figure">
                       {{if isNotEmpty $stocks.current_amount}}
                         <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
-                    <td id="trade-stocks-prev-val" class="figure">
+                    <td id="stocks-note-prev-val" class="figure">
                       {{if isNotEmpty $stocks.previous_amount}}
                         <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.previous_amount}}</ix:nonFraction>
                       {{end}}
@@ -3523,13 +3523,13 @@ ul.accounts-comps-ct {
 
                 {{if $bankLoansAndOverdrafts := $creditorsAfterOneYearNote.bank_loans_and_overdrafts}}
                   <tr class="figures">
-                    <td id="bank-loans-and-overdrafts">Bank loans and overdrafts</td>
-                    <td id="bank-loans-and-overdrafts-curr-val" class="strong figure">
+                    <td id="bank-loans-and-overdrafts-after">Bank loans and overdrafts</td>
+                    <td id="bank-loans-and-overdrafts-after-curr-val" class="strong figure">
                       {{if isNotEmpty $bankLoansAndOverdrafts.current_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
-                    <td id="bank-loans-and-overdrafts-prev-val" class="figure">
+                    <td id="bank-loans-and-overdrafts-after-prev-val" class="figure">
                       {{if isNotEmpty $bankLoansAndOverdrafts.previous_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.previous_amount}}</ix:nonFraction>
                       {{end}}
@@ -3539,13 +3539,13 @@ ul.accounts-comps-ct {
 				
                 {{if $financeLeasesAndHirePurchaseContracts := $creditorsAfterOneYearNote.finance_leases_and_hire_purchase_contracts}}
                   <tr class="figures">
-                    <td id="finance-leases-and-hire-purchase-contracts">Amounts due under finance leases and hire purchase contracts</td>
-                    <td id="finance-leases-and-hire-purchase-contracts-curr-val" class="strong figure">
+                    <td id="finance-leases-and-hire-purchase-contracts-after">Amounts due under finance leases and hire purchase contracts</td>
+                    <td id="finance-leases-and-hire-purchase-contracts-after-curr-val" class="strong figure">
                       {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.current_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
-                    <td id="finance-leases-and-hire-purchase-contracts-prev-val" class="figure">
+                    <td id="finance-leases-and-hire-purchase-contracts-after-prev-val" class="figure">
                       {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.previous_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.previous_amount}}</ix:nonFraction>
                       {{end}}
@@ -3555,13 +3555,13 @@ ul.accounts-comps-ct {
 				
                 {{if $otherCreditors := $creditorsAfterOneYearNote.other_creditors}}
                   <tr class="figures">
-                    <td id="other-creditors">Other creditors</td>
-                    <td id="other-creditors-curr-val" class="strong figure">
+                    <td id="other-creditors-after">Other creditors</td>
+                    <td id="other-creditors-after-curr-val" class="strong figure">
                       {{if isNotEmpty $otherCreditors.current_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_CY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.current_amount}}</ix:nonFraction>
                       {{end}}
                     </td>
-                    <td id="other-creditors-prev-val" class="figure">
+                    <td id="other-creditors-after-prev-val" class="figure">
                       {{if isNotEmpty $otherCreditors.previous_amount}}
                         <ix:nonFraction contextRef="CreditorsAfterOneYear_PY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.previous_amount}}</ix:nonFraction>
                       {{end}}
