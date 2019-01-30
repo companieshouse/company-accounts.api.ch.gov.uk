@@ -169,7 +169,6 @@ public class DebtorsService implements ResourceService<Debtors> {
             throw dataException;
         }
     }
-
     @Override
     public String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
