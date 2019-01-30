@@ -2642,6 +2642,7 @@ ul.accounts-comps-ct {
                       <td class="text--center">&#163;</td>
                   </tr>
 
+                  {{if $previousPeriod}}
                   <tr class="figures">
                       <td id="tangible-cost-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
                       <td id="tangible-cost-at-period-start-land-and-building" class="strong figure">
@@ -2663,6 +2664,7 @@ ul.accounts-comps-ct {
                           <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.total}}</ix:nonFraction>
                       </td>
                   </tr>
+                  {{end}}
 
                   <tr class="figures">
                       <td id="tangible-cost-additions">Additions</td>
@@ -2820,6 +2822,7 @@ ul.accounts-comps-ct {
                       <td class="text--center"></td>
                   </tr>
 
+                  {{if $previousPeriod}}
                   <tr class="figures">
                       <td id="tangible-depreciation-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
                       <td id="tangible-depreciation-at-period-start-land-and-building" class="strong figure">
@@ -2841,6 +2844,7 @@ ul.accounts-comps-ct {
                           <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.total}}</ix:nonFraction>
                       </td>
                   </tr>
+                  {{end}}
 
                   <tr class="figures">
                       <td id="tangible-depreciation-charge">Charge for year</td>
@@ -2986,6 +2990,7 @@ ul.accounts-comps-ct {
                       </td>
                   </tr>
 
+                  {{if $previousPeriod}}
                   <tr class="figures">
                       <td id="tangible-net-book-value-at-period-end">At {{$period.previous_period_end_on_formatted}}</td>
                       <td id="tangible-net-book-value-at-period-start-land-and-building" class="strong grandtotal">
@@ -3007,6 +3012,7 @@ ul.accounts-comps-ct {
                           <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.total}}</ix:nonFraction>
                       </td>
                   </tr>
+                  {{end}}
                   </tbody>
               </table>
 
