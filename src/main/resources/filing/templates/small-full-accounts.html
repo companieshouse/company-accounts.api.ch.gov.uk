@@ -2050,11 +2050,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="debtors-label">Debtors:</td>
 
-                        {{ if .small_full_accounts.balance_sheet_notes.debtors }}
-                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}
+                          {{ if .small_full_accounts.balance_sheet_notes.debtors }}
+                              <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
 
                           <td id="debtors-curr-val" class="strong figure">
                               {{if isNotEmpty $debtors.current_amount}}
@@ -2156,11 +2156,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="creditors-within-label">Creditors: amounts falling due within one year:</td>
                           
-                        {{ if .small_full_accounts.balance_sheet_notes.creditors_within_one_year }}
-                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}                          
+                          {{ if .small_full_accounts.balance_sheet_notes.creditors_within_one_year }}
+                              <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}                          
 
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
