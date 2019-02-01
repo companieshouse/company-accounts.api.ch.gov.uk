@@ -131,6 +131,15 @@ public class StocksValidatorTest {
     }
 
     @Test
+    @DisplayName("No validation errors returned when no data to validate")
+    void testNoErrors() throws ServiceException, DataException {
+
+        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
     @DisplayName("Error returned when total field missing")
     void testErrorThrownWhenMandatoryFieldsMissing() throws ServiceException,
             DataException {
