@@ -110,7 +110,8 @@ class FilingServiceImplTest {
 
         doReturn(false).when(environmentReaderMock).getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
-        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION)).thenReturn(IXBRL_DATA);
+        when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
+            .thenReturn(IXBRL_DATA);
 
         when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(true);
 
@@ -190,7 +191,8 @@ class FilingServiceImplTest {
 
         doReturn(false).when(environmentReaderMock).getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
-        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION)).thenReturn(null);
+        when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
+            .thenReturn(null);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
@@ -215,7 +217,8 @@ class FilingServiceImplTest {
 
         when(environmentReaderMock.getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)).thenReturn(false);
 
-        when(fileTransferToolMock.downloadFileFromPublicLocation(IXBRL_LOCATION)).thenReturn(IXBRL_DATA);
+        when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
+            .thenReturn(IXBRL_DATA);
 
         when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(false);
 
@@ -280,7 +283,8 @@ class FilingServiceImplTest {
     }
 
     private void verifyfileTransferToolMock() {
-        verify(fileTransferToolMock, times(1)).downloadFileFromPublicLocation(IXBRL_LOCATION);
+        verify(fileTransferToolMock, times(1))
+            .downloadFileFromLocation(IXBRL_LOCATION);
     }
 
     private void verifyTnepValidationServiceMock() {

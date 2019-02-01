@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
@@ -27,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+@Service
 public class TangibleAssetsService implements ResourceService<TangibleAssets> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
@@ -133,13 +135,18 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
     }
 
     @Override
-    public ResponseObject<TangibleAssets> deleteById(String id, HttpServletRequest request)
+    public ResponseObject<TangibleAssets> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        try {
-            if (repository.existsById(id)) {
+        String tangibleId = generateID(companyAccountsId);
 
-                repository.deleteById(id);
+        try {
+            if (repository.existsById(tangibleId)) {
+
+                repository.deleteById(tangibleId);
+
+                smallFullService
+                        .removeLink(companyAccountsId, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -148,7 +155,7 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
         } catch (MongoException me) {
 
             final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
+            debugMap.put("id", companyAccountsId);
 
             DataException dataException =
                     new DataException("Failed to delete " + ResourceName.TANGIBLE_ASSETS.getName(), me);
