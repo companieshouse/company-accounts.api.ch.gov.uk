@@ -28,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -86,6 +87,9 @@ public class StocksValidatorTest {
 
     @Mock
     private HttpServletRequest mockRequest;
+
+    @Mock
+    private ServiceException mockServiceException;
 
     @InjectMocks
     private StocksValidator validator;
@@ -246,6 +250,23 @@ public class StocksValidatorTest {
                 PREVIOUS_PERIOD_STOCKS_PATH)));
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
                 PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Data exception thrown when company service API call fails")
+    void testDataExceptionThrown() throws ServiceException,
+            DataException {
+
+        createValidCurrentPeriodStocks();
+        createValidPreviousPeriodStocks();
+
+        mockCurrentPeriodServiceValidCurrentPeriod();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+
+        assertThrows(DataException.class,
+                () -> validator.validateStocks(stocks,
+                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {
