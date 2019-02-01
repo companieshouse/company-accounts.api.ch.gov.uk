@@ -15,6 +15,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -847,108 +849,103 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     private Long getCostAtPeriodStart(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getAtPeriodStart())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getAtPeriodStart)
                 .orElse(0L);
     }
 
     private Long getAdditions(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getAdditions())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getAdditions)
                 .orElse(0L);
     }
 
     private Long getDisposals(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getDisposals())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getDisposals)
                 .orElse(0L);
     }
 
     private Long getRevaluations(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getRevaluations())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getRevaluations)
                 .orElse(0L);
     }
 
     private Long getTransfers(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getTransfers())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getTransfers)
                 .orElse(0L);
     }
 
     private Long getCostAtPeriodEnd(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getCost())
-                .map(cost -> cost.getAtPeriodEnd())
+                .map(TangibleAssetsResource::getCost)
+                .map(Cost::getAtPeriodEnd)
                 .orElse(0L);
     }
 
     private Long getDepreciationAtPeriodStart(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getDepreciation())
-                .map(depreciation -> depreciation.getAtPeriodStart())
+                .map(TangibleAssetsResource::getDepreciation)
+                .map(Depreciation::getAtPeriodStart)
                 .orElse(0L);
     }
 
     private Long getChargeForYear(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getDepreciation())
-                .map(depreciation -> depreciation.getChargeForYear())
+                .map(TangibleAssetsResource::getDepreciation)
+                .map(Depreciation::getChargeForYear)
                 .orElse(0L);
     }
 
     private Long getOnDisposals(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getDepreciation())
-                .map(depreciation -> depreciation.getOnDisposals())
+                .map(TangibleAssetsResource::getDepreciation)
+                .map(Depreciation::getOnDisposals)
                 .orElse(0L);
     }
 
     private Long getOtherAdjustments(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getDepreciation())
-                .map(depreciation -> depreciation.getOtherAdjustments())
+                .map(TangibleAssetsResource::getDepreciation)
+                .map(Depreciation::getOtherAdjustments)
                 .orElse(0L);
     }
 
     private Long getDepreciationAtPeriodEnd(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getDepreciation())
-                .map(depreciation -> depreciation.getAtPeriodEnd())
+                .map(TangibleAssetsResource::getDepreciation)
+                .map(Depreciation::getAtPeriodEnd)
                 .orElse(0L);
     }
 
     private Long getNetBookValueAtEndOfCurrentPeriod(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getNetBookValueAtEndOfCurrentPeriod())
+                .map(TangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
                 .orElse(0L);
     }
 
     private Long getNetBookValueAtEndOfPreviousPeriod(TangibleAssetsResource tangibleAssetsResource) {
 
         return Optional.ofNullable(tangibleAssetsResource)
-                .map(resource -> resource.getNetBookValueAtEndOfPreviousPeriod())
+                .map(TangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
                 .orElse(0L);
-    }
-
-    private String getJsonPath(TangibleSubResource subResource) {
-
-        return TANGIBLE_NOTE + "." + subResource.getJsonPath();
     }
 
     private String getJsonPath(TangibleSubResource subResource, String pathSuffix) {
