@@ -59,9 +59,6 @@ public class TangibleAssetsValidatorTest {
     private static final String INCONSISTENT_DATA_KEY = "inconsistentData";
     private static final String INCONSISTENT_DATA = "inconsistent_data";
 
-    private static final String INVALID_NOTE_KEY = "invalidNote";
-    private static final String INVALID_NOTE = "invalid_note";
-
     private static final String VALUE_REQUIRED_KEY = "valueRequired";
     private static final String VALUE_REQUIRED = "value_required";
 
@@ -78,20 +75,38 @@ public class TangibleAssetsValidatorTest {
     private static final String PREVIOUS_PERIOD_ID = "previousPeriodId";
 
     @Test
-    @DisplayName("Provides only additional info in note")
-    void noteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
+    @DisplayName("First year filer - provides only additional info in note")
+    void firstYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
 
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setAdditionalInformation("additionalInfo");
 
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - provides only additional info in note")
+    void multipleYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        TangibleAssets tangibleAssets = new TangibleAssets();
+        tangibleAssets.setAdditionalInformation("additionalInfo");
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
@@ -179,12 +194,12 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
@@ -203,12 +218,12 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
@@ -424,12 +439,13 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
-        assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
@@ -447,12 +463,13 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_KEY, INVALID_NOTE);
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
-        assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INVALID_NOTE, "$.tangible_assets.fixtures_and_fittings")));
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
@@ -860,30 +877,6 @@ public class TangibleAssetsValidatorTest {
     }
 
     @Test
-    @DisplayName("Single year filer - submits empty tangible assets note but has provided current period")
-    void singleYearFilerEmptyNoteWithCurrentPeriod() throws ServiceException, DataException {
-
-        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
-
-        TangibleAssets tangibleAssets = new TangibleAssets();
-
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
-                .thenReturn(createCurrentPeriodResponseObject(1L));
-
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
-                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
-
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
-
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
-
-        assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-    }
-
-    @Test
     @DisplayName("Single year filer - current period does not match note")
     void singleYearFilerCurrentPeriodDoesNotMatchNote() throws ServiceException, DataException {
 
@@ -977,32 +970,6 @@ public class TangibleAssetsValidatorTest {
         when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
         when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
-
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
-
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
-
-        assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
-    }
-
-    @Test
-    @DisplayName("Multiple year filer - submits empty tangible assets note but has provided current and previous period")
-    void multipleYearFilerEmptyNoteWithCurrentAndPreviousPeriod() throws ServiceException, DataException {
-
-        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
-
-        TangibleAssets tangibleAssets = new TangibleAssets();
-
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
-                .thenReturn(createCurrentPeriodResponseObject(1L));
-
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
-                .thenReturn(createPreviousPeriodResponseObject(1L));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);

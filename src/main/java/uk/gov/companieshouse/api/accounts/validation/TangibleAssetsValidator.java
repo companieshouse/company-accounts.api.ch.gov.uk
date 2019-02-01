@@ -49,9 +49,6 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     @Value("${inconsistent.data}")
     private String inconsistentData;
 
-    @Value("${invalid.note}")
-    private String invalidNote;
-
     @Value("${current.balancesheet.not.equal}")
     private String currentBalanceSheetNotEqual;
 
@@ -84,7 +81,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
             List<TangibleSubResource> invalidSubResources = new ArrayList<>();
 
             verifySubResourcesAreValid(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
-            verifyNoteDoesNotOnlyContainAdditionalInfo(tangibleAssets, errors);
+            verifyNoteNotEmpty(tangibleAssets, errors, isMultipleYearFiler);
             validateSubResourceTotals(tangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             if (errors.hasErrors()) {
                 return errors;
@@ -101,17 +98,19 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         return errors;
     }
 
-    private void verifyNoteDoesNotOnlyContainAdditionalInfo(TangibleAssets tangibleAssets, Errors errors) {
+    private void verifyNoteNotEmpty(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler) {
 
         if (tangibleAssets.getFixturesAndFittings() == null &&
                 tangibleAssets.getLandAndBuildings() == null &&
                 tangibleAssets.getMotorVehicles() == null &&
                 tangibleAssets.getOfficeEquipment() == null &&
                 tangibleAssets.getPlantAndMachinery() == null &&
-                tangibleAssets.getTotal() == null &&
-                tangibleAssets.getAdditionalInformation() != null) {
+                tangibleAssets.getTotal() == null) {
 
-            addError(errors, invalidNote, TANGIBLE_NOTE);
+            addError(errors, valueRequired, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
+            if (isMultipleYearFiler) {
+                addError(errors, valueRequired, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+            }
         }
     }
 
@@ -720,7 +719,8 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
 
             if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
 
-                addError(errors, invalidNote, getJsonPath(subResource));
+                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
+                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
                 subResourceInvalid = true;
             }
         }
@@ -771,7 +771,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
 
             if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
 
-                addError(errors, invalidNote, getJsonPath(subResource));
+                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
                 subResourceInvalid = true;
             }
         }
