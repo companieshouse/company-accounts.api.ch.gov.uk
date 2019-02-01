@@ -1,8 +1,10 @@
 package uk.gov.companieshouse.api.accounts.model.rest.notes.stocks;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CurrentPeriod {
 
     private static final int MAX_RANGE = 99999999;

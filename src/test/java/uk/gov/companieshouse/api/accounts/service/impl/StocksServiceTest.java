@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -18,12 +18,14 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.StocksRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -78,6 +80,12 @@ public class StocksServiceTest {
     @Mock
     private KeyIdGenerator mockKeyIdGenerator;
 
+    @Mock
+    private StocksValidator mockValidator;
+
+    @Mock
+    private Errors mockErrors;
+
     private StocksEntity stocksEntity;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -100,6 +108,7 @@ public class StocksServiceTest {
     @DisplayName("Tests the successful creation of a stocks resource")
     void canCreateStocks() throws DataException {
 
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
 
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction,
@@ -116,6 +125,7 @@ public class StocksServiceTest {
     void createStocksDuplicateKey() throws DataException {
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers.any(Stocks.class));
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(stocksEntity)).thenThrow(mockDuplicateKeyException);
 
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction, "", mockRequest);
@@ -127,10 +137,11 @@ public class StocksServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating stocks")
-    void createStocksMongoExceptionFailure() {
+    void createStocksMongoExceptionFailure() throws DataException {
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Stocks.class));
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(stocksEntity)).thenThrow(mockMongoException);
 
         assertThrows(DataException.class,
@@ -140,6 +151,8 @@ public class StocksServiceTest {
     @Test
     @DisplayName("Tests the successful update of a stocks resource")
     void canUpdateStocks() throws DataException {
+
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
 
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
 
@@ -152,7 +165,9 @@ public class StocksServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when updating a stocks resource")
-    void updateStocksMongoExceptionFailure() {
+    void updateStocksMongoExceptionFailure() throws DataException {
+
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Stocks.class));
