@@ -27,6 +27,7 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -101,7 +102,7 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("Tests the validation passes on valid single year filer stocks resource")
+    @DisplayName("Validation passes with valid stocks resource for single year filer")
     void testSuccessfulSingleYearStocksNote() throws DataException {
 
         createValidCurrentPeriodStocks();
@@ -114,7 +115,7 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("Validation passes on valid multiple year filer stocks resource")
+    @DisplayName("Validation passes with valid stocks resource for multiple year filer")
     void testSuccessfulMultipleYearStocksNote() throws ServiceException, DataException {
 
         createValidCurrentPeriodStocks();
@@ -147,7 +148,7 @@ public class StocksValidatorTest {
 
     @Test
     @DisplayName("No validation errors returned when no data to validate")
-    void testNoErrors() throws ServiceException, DataException {
+    void testNoValidationErrorsWhenNoDataPresent() throws ServiceException, DataException {
 
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -155,8 +156,8 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("Error returned when total field missing")
-    void testErrorThrownWhenMandatoryFieldsMissing() throws ServiceException,
+    @DisplayName("Errors returned when total fields missing")
+    void testErrorsReturnedWhenTotalFieldsMissing() throws ServiceException,
             DataException {
 
         CurrentPeriod currentPeriod = new CurrentPeriod();
@@ -181,15 +182,20 @@ public class StocksValidatorTest {
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
+        assertEquals(4, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE,
                 CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE,
+                PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
     @Test
     @DisplayName("Errors returned when total values incorrect")
-    void testErrorThrownWhenTotalIsIncorrect() throws ServiceException,
+    void testErrorsReturnedWhenTotalValuesIncorrect() throws ServiceException,
             DataException {
 
         CurrentPeriod currentPeriod = new CurrentPeriod();
@@ -208,14 +214,11 @@ public class StocksValidatorTest {
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
                 CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
@@ -223,16 +226,25 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("Errors returned when balance sheet periods have no stocks value but the note has values")
-    void testErrorThrownWhenBalanceSheetValueNotProvidedButNoteValueIsProvided() throws ServiceException,
+    @DisplayName("Errors returned when total values do not match balance sheet values")
+    void testErrorsReturnedWhenNoteTotalsNotEqualToBalanceSheetPeriodTotals() throws ServiceException,
             DataException {
 
-        createValidCurrentPeriodStocks();
-        createValidPreviousPeriodStocks();
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setPaymentsOnAccount(100L);
+        currentPeriod.setTotal(100L);
+        stocks.setCurrentPeriod(currentPeriod);
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setPaymentsOnAccount(200L);
+        previousPeriod.setTotal(200L);
+        stocks.setPreviousPeriod(previousPeriod);
+
+        mockCurrentPeriodServiceValidCurrentPeriod();
+        mockPreviousPeriodServiceValidPreviousPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
@@ -241,6 +253,32 @@ public class StocksValidatorTest {
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Errors returned when balance sheet periods have no stocks value but the note has values")
+    void testErrorsReturnedWhenBalanceSheetPeriodsNullButNoteHasValues() throws ServiceException,
+            DataException {
+
+        createValidCurrentPeriodStocks();
+        createValidPreviousPeriodStocks();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
@@ -249,7 +287,7 @@ public class StocksValidatorTest {
 
     @Test
     @DisplayName("Errors returned when single year filer creates stocks resource with previous period")
-    void testErrorThrownWhenPreviousPeriodFiledOnSingleYearCompany() throws ServiceException,
+    void testErrorsReturnedForFirstYearFilerWhenPreviousPeriodIncluded() throws ServiceException,
             DataException {
 
         createValidCurrentPeriodStocks();
@@ -260,14 +298,11 @@ public class StocksValidatorTest {
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
         ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
+        assertEquals(3, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
                 PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH)));
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
