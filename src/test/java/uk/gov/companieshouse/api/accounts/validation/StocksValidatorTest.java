@@ -131,6 +131,21 @@ public class StocksValidatorTest {
     }
 
     @Test
+    @DisplayName("Cross validation passes with valid stocks resource for multiple year filer")
+    void testSuccessfulCrossValidation() throws DataException, ServiceException {
+
+        createValidCurrentPeriodStocks();
+        createValidPreviousPeriodStocks();
+
+        mockCurrentPeriodServiceValidCurrentPeriod();
+        mockPreviousPeriodServiceValidPreviousPeriod();
+
+        errors = validator.crossValidate(errors, mockRequest, COMPANY_ACCOUNTS_ID, stocks);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
     @DisplayName("No validation errors returned when no data to validate")
     void testNoErrors() throws ServiceException, DataException {
 
