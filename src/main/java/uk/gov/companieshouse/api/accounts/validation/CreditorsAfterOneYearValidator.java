@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -174,41 +173,21 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
                                                       String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
-
-        try {
-            currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
-        } catch (MongoException me) {
-            throw new DataException(me.getMessage(), me);
-        }
-
-        if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
-            return currentPeriodResponseObject.getData().getBalanceSheet();
-        }
-
-        return null;
+        return Optional.ofNullable(
+            currentPeriodService.findById(currentPeriodService.generateID(companyAccountsId), request))
+            .map(ResponseObject::getData)
+            .map(uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod::getBalanceSheet)
+            .orElse(null);
     }
 
     private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
                                                        String companyAccountsId) throws DataException {
 
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
-
-        try {
-            previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
-        } catch (MongoException me) {
-            throw new DataException(me.getMessage(), me);
-        }
-
-        if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
-            return previousPeriodResponseObject.getData().getBalanceSheet();
-        }
-
-        return null;
+        return Optional.ofNullable(
+            previousPeriodService.findById(previousPeriodService.generateID(companyAccountsId), request))
+            .map(ResponseObject::getData)
+            .map(uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod::getBalanceSheet)
+            .orElse(null);
     }
 
     private void checkIfCurrentBalanceAndNoteValuesAreEqual(Errors errors, CreditorsAfterOneYear creditorsAfterOneYear,

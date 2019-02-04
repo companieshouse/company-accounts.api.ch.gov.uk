@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import com.mongodb.MongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -327,7 +326,7 @@ public class CreditorsAfterOneYearValidatorTest {
         createValidPreviousPeriodCreditorsAfter();
 
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
             () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,
@@ -346,7 +345,7 @@ public class CreditorsAfterOneYearValidatorTest {
             COMPANY_ACCOUNTS_ID, mockRequest);
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
             () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,
