@@ -8,7 +8,7 @@ public class CurrentPeriodEntity {
     @Field("details")
     private String details;
     
-    @Field("averageNumberOfEmployees")
+    @Field("average_number_of_employees")
     private Long averageNumberOfEmployees;
     
     public String getDetails() {
