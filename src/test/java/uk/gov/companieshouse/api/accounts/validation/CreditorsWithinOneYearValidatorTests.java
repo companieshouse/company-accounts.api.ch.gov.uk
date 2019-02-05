@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,10 +43,20 @@ public class CreditorsWithinOneYearValidatorTests {
             ".previous_period";
     private static final String CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".total";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_ACCRUALS_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".accruals_and_deferred_income";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_BANK_LOANS_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".bank_loans_and_overdrafts";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_FINANCE_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".finance_leases_and_hire_purchase_contracts";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_OTHER_CREDITORS_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".other_creditors";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TAXATION_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".taxation_and_social_security";
+    private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TRADE_CREDITORS_PATH =
+            CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".trade_creditors";
     private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".total";
-    private static final String CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH =
-            CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
     
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
@@ -271,6 +282,19 @@ public class CreditorsWithinOneYearValidatorTests {
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
+        assertEquals(7, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_ACCRUALS_PATH)));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_BANK_LOANS_PATH)));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_FINANCE_PATH)));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_OTHER_CREDITORS_PATH)));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TAXATION_PATH)));
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TRADE_CREDITORS_PATH)));
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
