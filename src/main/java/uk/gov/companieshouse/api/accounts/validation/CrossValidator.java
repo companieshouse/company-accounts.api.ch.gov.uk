@@ -15,7 +15,7 @@ public interface CrossValidator<T> {
      *
      * @return the errors object containing all errors added whilst validating
      */
-    Errors crossValidate(Errors errors, HttpServletRequest request, String CompanyAccountsId,
+    Errors crossValidate(Errors errors, HttpServletRequest request, String companyAccountsId,
                          T t) throws DataException;
 
 }

@@ -16,6 +16,15 @@ public class BaseValidator {
     @Value("${inconsistent.data}")
     private String inconsistentData;
 
+    @Value("${invalid.note}")
+    protected String invalidNote;
+
+    @Value("${current.balancesheet.not.equal}")
+    protected String currentBalanceSheetNotEqual;
+
+    @Value("${previous.balancesheet.not.equal}")
+    protected String previousBalanceSheetNotEqual;
+
     /**
      * Validate the given total is correctly aggregated
      *
