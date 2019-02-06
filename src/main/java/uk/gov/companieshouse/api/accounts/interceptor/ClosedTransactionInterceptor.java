@@ -9,7 +9,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -31,7 +31,7 @@ public class ClosedTransactionInterceptor extends HandlerInterceptorAdapter {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         if (transaction == null || !TransactionStatus.CLOSED.getStatus()
-            .equals(transaction.getStatus())) {
+            .equalsIgnoreCase(transaction.getStatus().getStatus())) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap.put("message",

@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
 import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionPatch;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -130,7 +129,7 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to mongo error scenario")
-    void createAccountWithMongoExceptionFailure() throws DataException, ApiErrorResponseException {
+    void createAccountWithMongoExceptionFailure() throws DataException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
         when(companyAccountRepository.insert(companyAccountEntityMock)).thenThrow(mock(MongoException.class));
@@ -145,7 +144,7 @@ public class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of an company account resource with a transaction patch failure")
     void createAccountWithTransactionPatchFailure()
-            throws DataException, ApiErrorResponseException {
+            throws DataException {
         when(request.getHeader(anyString())).thenReturn("");
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
