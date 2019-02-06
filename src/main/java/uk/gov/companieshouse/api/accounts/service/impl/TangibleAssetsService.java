@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.TangibleAssetsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -25,6 +26,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.TangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.TangibleAssetsValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -35,15 +37,17 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
 
     private TangibleAssetsRepository repository;
     private TangibleAssetsTransformer transformer;
+    private TangibleAssetsValidator validator;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
     public TangibleAssetsService(TangibleAssetsRepository repository, TangibleAssetsTransformer transformer,
-            SmallFullService smallFullService, KeyIdGenerator keyIdGenerator) {
+            TangibleAssetsValidator validator, SmallFullService smallFullService, KeyIdGenerator keyIdGenerator) {
 
         this.repository = repository;
         this.transformer = transformer;
+        this.validator = validator;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
     }
@@ -51,6 +55,11 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
     @Override
     public ResponseObject<TangibleAssets> create(TangibleAssets rest, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateTangibleAssets(rest, transaction, companyAccountsId, request);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
@@ -85,6 +94,11 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
     @Override
     public ResponseObject<TangibleAssets> update(TangibleAssets rest, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateTangibleAssets(rest, transaction, companyAccountsId, request);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
