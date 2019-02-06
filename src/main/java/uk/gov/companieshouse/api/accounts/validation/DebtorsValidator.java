@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -21,15 +20,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
 @Component
 public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
-
-    @Value("${invalid.note}")
-    private String invalidNote;
-
-    @Value("${current.balancesheet.not.equal}")
-    private String currentBalanceSheetNotEqual;
-
-    @Value("${previous.balancesheet.not.equal}")
-    private String previousBalanceSheetNotEqual;
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";

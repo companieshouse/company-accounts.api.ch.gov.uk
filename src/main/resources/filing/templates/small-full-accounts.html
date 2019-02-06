@@ -2050,11 +2050,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="debtors-label">Debtors:</td>
 
-                        {{ if .small_full_accounts.balance_sheet_notes.debtors }}
-                          <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}
+                          {{ if .small_full_accounts.balance_sheet_notes.debtors }}
+                              <td class="figure noteIndex" id="uk-busDebtorsCY_ENDNoteIndexes">{{getValue "debtors-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
 
                           <td id="debtors-curr-val" class="strong figure">
                               {{if isNotEmpty $debtors.current_amount}}
@@ -2156,7 +2156,11 @@ ul.accounts-comps-ct {
                       <tr class="figures">
                           <td id="creditors-within-label">Creditors: amounts falling due within one year:</td>
 
-                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes"></td>
+                          {{ if .small_full_accounts.balance_sheet_notes.creditors_within_one_year }}
+                              <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
 
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
@@ -2646,22 +2650,34 @@ ul.accounts-comps-ct {
                   <tr class="figures">
                       <td id="tangible-cost-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
                       <td id="tangible-cost-at-period-start-land-and-building" class="strong figure">
-                          <ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.land_and_buildings}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.land_and_buildings}}
+                          {{emitIfNegative $cost.at_period_start.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.land_and_buildings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-start-plant-and-machinery" class="strong figure">
-                          <ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.plant_and_machinery}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.plant_and_machinery}}
+                          {{emitIfNegative $cost.at_period_start.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-start-fixtures-and-fitting" class="strong figure">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.fixtures_and_fittings}}
+                          {{emitIfNegative $cost.at_period_start.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-start-office-equipment" class="strong figure">
-                          <ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.office_equipment}}
+                          {{emitIfNegative $cost.at_period_start.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.office_equipment}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.office_equipment ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-start-motor-vehicles" class="strong figure">
-                          <ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.motor_vehicles}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.motor_vehicles}}
+                          {{emitIfNegative $cost.at_period_start.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-start-total" class="strong figure">
-                          <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.total}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_start.total}}
+                          {{emitIfNegative $cost.at_period_start.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.total}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
                   {{end}}
@@ -2669,146 +2685,206 @@ ul.accounts-comps-ct {
                   <tr class="figures">
                       <td id="tangible-cost-additions">Additions</td>
                       <td id="tangible-cost-additions-land-and-building"class="strong figure">
+                          {{if isNotEmpty $cost.additions.land_and_buildings}}
                           <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.land_and_buildings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-additions-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $cost.additions.plant_and_machinery}}
                           <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.plant_and_machinery}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-additions-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $cost.additions.fixtures_and_fittings}}
                           <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.fixtures_and_fittings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-additions-office-equipment" class="strong figure">
+                          {{if isNotEmpty $cost.additions.office_equipment}}
                           <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.office_equipment}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-additions-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $cost.additions.motor_vehicles}}
                           <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.motor_vehicles}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-additions-total" class="strong figure">
+                          {{if isNotEmpty $cost.additions.total}}
                           <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.additions.total}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-cost-disposals">Disposals</td>
                       <td id="tangible-cost-disposals-land-and-building" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.land_and_buildings}}
                           <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.land_and_buildings}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-disposals-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.plant_and_machinery}}
                           <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.plant_and_machinery}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-disposals-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.fixtures_and_fittings}}
                           <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-disposals-office-equipment" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.office_equipment}}
                           <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.office_equipment}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-disposals-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.motor_vehicles}}
                           <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.motor_vehicles}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-disposals-total" class="strong figure">
+                          {{if isNotEmpty $cost.disposals.total}}
                           <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.total}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-cost-revaluations">Revaluations</td>
                       <td id="tangible-cost-revaluations-land-and-building" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.land_and_buildings}}
                           <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.land_and_buildings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-revaluations-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.plant_and_machinery}}
                           <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.plant_and_machinery}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-revaluations-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.fixtures_and_fittings}}
                           <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.fixtures_and_fittings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-revaluations-office-equipment" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.office_equipment}}
                           <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.office_equipment}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-revaluations-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.motor_vehicles}}
                           <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.motor_vehicles}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-revaluations-total" class="strong figure">
+                          {{if isNotEmpty $cost.revaluations.total}}
                           <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.revaluations.total}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-cost-transfers" >Transfers</td>
                       <td id="tangible-cost-transfers-land-and-building" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.land_and_buildings}}
                           <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.land_and_buildings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-transfers-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.plant_and_machinery}}
                           <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.plant_and_machinery}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-transfers-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.fixtures_and_fittings}}
                           <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.fixtures_and_fittings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-transfers-office-equipment" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.office_equipment}}
                           <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.office_equipment}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-transfers-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.motor_vehicles}}
                           <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.motor_vehicles}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-cost-transfers-total" class="strong figure">
+                          {{if isNotEmpty $cost.transfers.total}}
                           <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $cost.transfers.total}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-cost-at-period-end">At {{$period.current_period_end_on_formatted}}</td>
                       <td id="tangible-cost-at-period-end-land-and-building" class="strong grandtotal">
-                          <ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.land_and_buildings}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.land_and_buildings}}
+                          {{emitIfNegative $cost.at_period_end.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.land_and_buildings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-end-plant-and-machinery" class="strong grandtotal">
-                          <ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.plant_and_machinery}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.plant_and_machinery}}
+                          {{emitIfNegative $cost.at_period_end.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-end-fixtures-and-fitting" class="strong grandtotal">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.fixtures_and_fittings}}
+                          {{emitIfNegative $cost.at_period_end.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-end-office-equipment" class="strong grandtotal">
-                          <ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.office_equipment}}
+                          {{emitIfNegative $cost.at_period_end.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.office_equipment}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.office_equipment ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-end-motor-vehicles" class="strong grandtotal">
-                          <ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.motor_vehicles}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.motor_vehicles}}
+                          {{emitIfNegative $cost.at_period_end.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-cost-at-period-end-total" class="strong grandtotal">
-                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.total}}</ix:nonFraction>
+                          {{if isNotEmpty $cost.at_period_end.total}}
+                          {{emitIfNegative $cost.at_period_end.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipmentGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.total}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
 
@@ -2826,22 +2902,34 @@ ul.accounts-comps-ct {
                   <tr class="figures">
                       <td id="tangible-depreciation-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
                       <td id="tangible-depreciation-at-period-start-land-and-building" class="strong figure">
-                          <ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.land_and_buildings}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.land_and_buildings}}
+                          {{emitIfNegative $depreciation.at_period_start.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.land_and_buildings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-start-plant-and-machinery" class="strong figure">
-                          <ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.plant_and_machinery}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.plant_and_machinery}}
+                          {{emitIfNegative $depreciation.at_period_start.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-start-fixtures-and-fitting" class="strong figure">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.fixtures_and_fittings}}
+                          {{emitIfNegative $depreciation.at_period_start.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-start-office-equipment" class="strong figure">
-                          <ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.office_equipment}}
+                          {{emitIfNegative $depreciation.at_period_start.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.office_equipment}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.office_equipment ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-start-motor-vehicles" class="strong figure">
-                          <ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.motor_vehicles}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.motor_vehicles}}
+                          {{emitIfNegative $depreciation.at_period_start.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-start-total" class="strong figure">
-                          <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.total}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_start.total}}
+                          {{emitIfNegative $depreciation.at_period_start.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_start.total}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_start.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
                   {{end}}
@@ -2849,112 +2937,160 @@ ul.accounts-comps-ct {
                   <tr class="figures">
                       <td id="tangible-depreciation-charge">Charge for year</td>
                       <td id="tangible-depreciation-charge-land-and-building" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.land_and_buildings}}
                           <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.land_and_buildings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-charge-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.plant_and_machinery}}
                           <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.plant_and_machinery}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-charge-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.fixtures_and_fittings}}
                           <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.fixtures_and_fittings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-charge-office-equipment" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.office_equipment}}
                           <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.office_equipment}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-charge-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.motor_vehicles}}
                           <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.motor_vehicles}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-charge-total" class="strong figure">
+                          {{if isNotEmpty $depreciation.charge_for_year.total}}
                           <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:IncreaseFromDepreciationChargeForYearPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.charge_for_year.total}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-depreciation-on-disposals">On disposals</td>
                       <td id="tangible-depreciation-on-disposals-land-and-building" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.land_and_buildings}}
                           <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.land_and_buildings}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-on-disposals-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.plant_and_machinery}}
                           <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.plant_and_machinery}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-on-disposals-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.fixtures_and_fittings}}
                           <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-on-disposals-office-equipment" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.office_equipment}}
                           <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.office_equipment}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-on-disposals-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.motor_vehicles}}
                           <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.motor_vehicles}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-on-disposals-total" class="strong figure">
+                          {{if isNotEmpty $depreciation.on_disposals.total}}
                           <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.total}}</ix:nonFraction>)</span>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-depreciation-other-adjustments">Other adjustments</td>
                       <td id="tangible-depreciation-other-adjustments-land-and-building" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.land_and_buildings}}
                           <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.land_and_buildings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-other-adjustments-plant-and-machinery" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.plant_and_machinery}}
                           <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.plant_and_machinery}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-other-adjustments-fixtures-and-fitting" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.fixtures_and_fittings}}
                           <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.fixtures_and_fittings}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-other-adjustments-office-equipment" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.office_equipment}}
                           <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.office_equipment}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-other-adjustments-motor-vehicles" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.motor_vehicles}}
                           <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.motor_vehicles}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-other-adjustments-total" class="strong figure">
+                          {{if isNotEmpty $depreciation.other_adjustments.total}}
                           <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">
                               {{getMagnitudeFormatted $depreciation.other_adjustments.total}}
                           </ix:nonFraction>
+                          {{end}}
                       </td>
                   </tr>
 
                   <tr class="figures">
                       <td id="tangible-depreciation-at-period-end">At {{$period.current_period_end_on_formatted}}</td>
                       <td id="tangible-depreciation-at-period-end-land-and-building" class="strong grandtotal">
-                          <ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.land_and_buildings}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.land_and_buildings}}
+                          {{emitIfNegative $depreciation.at_period_end.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.land_and_buildings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-end-plant-and-machinery" class="strong grandtotal">
-                          <ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.plant_and_machinery}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.plant_and_machinery}}
+                          {{emitIfNegative $depreciation.at_period_end.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-end-fixtures-and-fitting" class="strong grandtotal">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.fixtures_and_fittings}}
+                          {{emitIfNegative $depreciation.at_period_end.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-end-office-equipment" class="strong grandtotal">
-                          <ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.office_equipment}}
+                          {{emitIfNegative $depreciation.at_period_end.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.office_equipment}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.office_equipment ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-end-motor-vehicles" class="strong grandtotal">
-                          <ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.motor_vehicles}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.motor_vehicles}}
+                          {{emitIfNegative $depreciation.at_period_end.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-depreciation-at-period-end-total" class="strong grandtotal">
-                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.total}}</ix:nonFraction>
+                          {{if isNotEmpty $depreciation.at_period_end.total}}
+                          {{emitIfNegative $depreciation.at_period_end.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.at_period_end.total}}</ix:nonFraction>{{emitIfNegative $depreciation.at_period_end.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
 
@@ -2970,23 +3106,35 @@ ul.accounts-comps-ct {
 
                   <tr class="figures">
                       <td id ="tangible-net-book-value-current-period">At {{$period.current_period_end_on_formatted}}</td>
-                      <td id="tangible-net-book-value-current-period-land-and-building" class="strong grandtotal">
-                          <ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.land_and_buildings}}</ix:nonFraction>
+                      <td  id="tangible-net-book-value-current-period-land-and-building" class="strong grandtotal">
+                          {{if isNotEmpty $netBookValue.current_period.land_and_buildings}}
+                          {{emitIfNegative $netBookValue.current_period.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.land_and_buildings ")" }}
+                          {{end}}
                       </td>
-                      <td id="tangible-net-book-value-current-period-land-and-building" class="strong grandtotal">
-                          <ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.plant_and_machinery}}</ix:nonFraction>
+                      <td id="tangible-net-book-value-current-period-plant-and-machinery" class="strong grandtotal">
+                          {{if isNotEmpty $netBookValue.current_period.plant_and_machinery}}
+                          {{emitIfNegative $netBookValue.current_period.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-current-period-fixtures-and-fitting" class="strong grandtotal">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.current_period.fixtures_and_fittings}}
+                          {{emitIfNegative $netBookValue.current_period.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-current-period-office-equipment" class="strong grandtotal">
-                          <ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.current_period.office_equipment}}
+                          {{emitIfNegative $netBookValue.current_period.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.office_equipment}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.office_equipment ")" }}
+                          {{end}}
                       </td>
-                      <td id="tangible-net-book-value-current-period-office-equipment" class="strong grandtotal">
-                          <ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.motor_vehicles}}</ix:nonFraction>
+                      <td id="tangible-net-book-value-current-period-motor-vehicles" class="strong grandtotal">
+                          {{if isNotEmpty $netBookValue.current_period.motor_vehicles}}
+                          {{emitIfNegative $netBookValue.current_period.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-current-period-total" class="strong grandtotal">
-                          <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.total}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.current_period.total}}
+                          {{emitIfNegative $netBookValue.current_period.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.total}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
 
@@ -2994,22 +3142,34 @@ ul.accounts-comps-ct {
                   <tr class="figures">
                       <td id="tangible-net-book-value-previous_period">At {{$period.previous_period_end_on_formatted}}</td>
                       <td id="tangible-net-book-value-previous_period-land-and-building" class="strong grandtotal">
-                          <ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.land_and_buildings}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.previous_period.land_and_buildings}}
+                          {{emitIfNegative $netBookValue.previous_period.land_and_buildings "(" }}<ix:nonFraction contextRef="LandAndBuildings_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.land_and_buildings}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.land_and_buildings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-previous_period-plant-and-machinery" class="strong grandtotal">
-                          <ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.plant_and_machinery}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.previous_period.plant_and_machinery}}
+                          {{emitIfNegative $netBookValue.previous_period.plant_and_machinery "(" }}<ix:nonFraction contextRef="PlantMachinery_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.plant_and_machinery}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.plant_and_machinery ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-previous_period-fixtures-and-fitting" class="strong grandtotal">
-                          <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.fixtures_and_fittings}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.previous_period.fixtures_and_fittings}}
+                          {{emitIfNegative $netBookValue.previous_period.fixtures_and_fittings "(" }}<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.fixtures_and_fittings}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.fixtures_and_fittings ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-previous_period-office-equipment" class="strong grandtotal">
-                          <ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.office_equipment}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.previous_period.office_equipment}}
+                          {{emitIfNegative $netBookValue.previous_period.office_equipment "(" }}<ix:nonFraction contextRef="OfficeEquipment_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.office_equipment}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.office_equipment ")" }}
+                          {{end}}
                       </td>
-                      <td id="tangible-net-book-value-previous_period-motor-vehicles" class="strong grandtotal">
-                          <ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.motor_vehicles}}</ix:nonFraction>
+                      <td  id="tangible-net-book-value-previous_period-motor-vehicles" class="strong grandtotal">
+                          {{if isNotEmpty $netBookValue.previous_period.motor_vehicles}}
+                          {{emitIfNegative $netBookValue.previous_period.motor_vehicles "(" }}<ix:nonFraction contextRef="Vehicles_PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.motor_vehicles}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.motor_vehicles ")" }}
+                          {{end}}
                       </td>
                       <td id="tangible-net-book-value-previous_period-total" class="strong grandtotal">
-                          <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.total}}</ix:nonFraction>
+                          {{if isNotEmpty $netBookValue.previous_period.total}}
+                          {{emitIfNegative $netBookValue.previous_period.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.total}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.total ")" }}
+                          {{end}}
                       </td>
                   </tr>
                   {{end}}
@@ -3177,6 +3337,187 @@ ul.accounts-comps-ct {
 
           {{end}}
           <!-- DEBTORS NOTE END -->
+
+          <!-- CREDITORS WITHIN ONE YEAR NOTE START -->
+          {{if $creditorsWithinOneYearNote := $balanceSheetNotes.creditors_within_one_year}}
+            {{incValue "notes-page-count" }}
+            {{setValue "creditors-within-one-year-notes-id" (getValue "notes-page-count") }}
+
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+              </div>
+
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
+
+              <h2>{{getValue "notes-page-count"}}. Creditors: amounts falling due within one year note</h2>
+
+              <table cellspacing="10" id="creditors-within-one-year-note-table">
+                <tbody>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $creditorsWithinOneYearNote.total.current_amount}}
+                    <th class="table-heading" id="creditors-within-one-year-note-current-heading">{{$period.current_period_bs_date}}</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $creditorsWithinOneYearNote.total.previous_amount}}
+                    <th class="table-heading" id="creditors-within-one-year-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                  {{end}}
+                </tr>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $creditorsWithinOneYearNote.total.current_amount}}
+                    <th class="table-heading" id="creditors-within-one-year-note-current-currency">£</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $creditorsWithinOneYearNote.total.previous_amount}}
+                  <th class="table-heading" id="creditors-within-one-year-note-previous-currency">£</th>
+                  {{end}}
+                </tr>
+
+                {{if $bankLoansAndOverdrafts := $creditorsWithinOneYearNote.bank_loans_and_overdrafts}}
+                  <tr class="figures">
+                    <td id="bank-loans-and-overdrafts">Bank loans and overdrafts</td>
+                    <td id="bank-loans-and-overdrafts-curr-val" class="strong figure">
+                      {{if isNotEmpty $bankLoansAndOverdrafts.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="bank-loans-and-overdrafts-prev-val" class="figure">
+                      {{if isNotEmpty $bankLoansAndOverdrafts.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:BankBorrowingsOverdrafts" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $bankLoansAndOverdrafts.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $financeLeasesAndHirePurchaseContracts := $creditorsWithinOneYearNote.finance_leases_and_hire_purchase_contracts}}
+                  <tr class="figures">
+                    <td id="finance-leases-and-hire-purchase-contracts">Amounts due under finance leases and hire purchase contracts</td>
+                    <td id="finance-leases-and-hire-purchase-contracts-curr-val" class="strong figure">
+                      {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="finance-leases-and-hire-purchase-contracts-prev-val" class="figure">
+                      {{if isNotEmpty $financeLeasesAndHirePurchaseContracts.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:FinanceLeaseLiabilitiesPresentValueTotal" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $financeLeasesAndHirePurchaseContracts.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $tradeCreditors := $creditorsWithinOneYearNote.trade_creditors}}
+                  <tr class="figures">
+                    <td id="trade-creditors">Trade creditors</td>
+                    <td id="trade-creditors-curr-val" class="strong figure">
+                      {{if isNotEmpty $tradeCreditors.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:TradeCreditorsTradePayables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeCreditors.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="trade-creditors-prev-val" class="figure">
+                      {{if isNotEmpty $tradeCreditors.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:TradeCreditorsTradePayables" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $tradeCreditors.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $taxationAndSocialSecurity := $creditorsWithinOneYearNote.taxation_and_social_security}}
+                  <tr class="figures">
+                    <td id="taxation-and-social-security">Taxation and social security</td>
+                    <td id="taxation-and-social-security-curr-val" class="strong figure">
+                      {{if isNotEmpty $taxationAndSocialSecurity.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:TaxationSocialSecurityPayable" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $taxationAndSocialSecurity.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="taxation-and-social-security-prev-val" class="figure">
+                      {{if isNotEmpty $taxationAndSocialSecurity.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:TaxationSocialSecurityPayable" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $taxationAndSocialSecurity.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $accrualsAndDeferredIncome := $creditorsWithinOneYearNote.accruals_and_deferred_income}}
+                  <tr class="figures">
+                    <td id="accruals-and-deferred-income">Accruals and deferred income</td>
+                    <td id="accruals-and-deferred-income-curr-val" class="strong figure">
+                      {{if isNotEmpty $accrualsAndDeferredIncome.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesDeferredIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $accrualsAndDeferredIncome.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="accruals-and-deferred-income-prev-val" class="figure">
+                      {{if isNotEmpty $accrualsAndDeferredIncome.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:AccruedLiabilitiesDeferredIncome" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $accrualsAndDeferredIncome.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $otherCreditors := $creditorsWithinOneYearNote.other_creditors}}
+                  <tr class="figures">
+                    <td id="other-creditors">Other creditors</td>
+                    <td id="other-creditors-curr-val" class="strong figure">
+                      {{if isNotEmpty $otherCreditors.current_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="other-creditors-prev-val" class="figure">
+                      {{if isNotEmpty $otherCreditors.previous_amount}}
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:OtherCreditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $otherCreditors.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $totalCreditorsWithinOneYear := $creditorsWithinOneYearNote.total}}
+                  <tr class="figures">
+                    <td id="creditors-within-one-year-total-label">Total</td>
+                    {{if isNotEmpty $totalCreditorsWithinOneYear.current_amount}}
+                    <td id="creditors-within-one-year-curr-val" class="strong total">
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_CY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalCreditorsWithinOneYear.current_amount}}</ix:nonFraction>
+                    </td>
+                    {{else}}
+                      <td  class="figures">&#160;</td>
+                    {{end}}
+
+                    {{if isNotEmpty $totalCreditorsWithinOneYear.previous_amount}}
+                    <td id="creditors-within-one-year-prev-val" class="total">
+                        <ix:nonFraction contextRef="CreditorsWithinOneYear_PY_END" decimals="0" unitRef="GBP" name="core:Creditors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalCreditorsWithinOneYear.previous_amount}}</ix:nonFraction>
+                    </td>
+                    {{end}}
+                  </tr>
+                {{end}}
+
+                </tbody>
+              </table>
+
+              {{if $creditorsWithinOneYearNote.details}}
+                <div class="text-area-display" id="creditors-within-one-year-free-text-note">
+
+                  <p class="text-area-display">
+                    <ix:nonNumeric contextRef="CreditorsWithinOneYear_CY" name="core:CreditorsFree-textComment">{{$creditorsWithinOneYearNote.details}}</ix:nonNumeric>
+                  </p>
+
+                </div>
+              {{end}}
+
+            </div>
+
+          {{end}}
+          <!-- CREDITORS WITHIN ONE YEAR NOTE END -->
 
         {{end}}
         <!-- BALANCE SHEET NOTES END -->
