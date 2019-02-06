@@ -68,8 +68,6 @@ public class StocksValidatorTest {
     private static final String PREVIOUS_PERIOD_PATH = STOCKS_PATH + ".previous_period";
     private static final String CURRENT_PERIOD_TOTAL_PATH = CURRENT_PERIOD_PATH + ".total";
     private static final String PREVIOUS_PERIOD_TOTAL_PATH = PREVIOUS_PERIOD_PATH + ".total";
-    private static final String PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH = PREVIOUS_PERIOD_PATH + ".payments_on_account";
-    private static final String PREVIOUS_PERIOD_STOCKS_PATH = PREVIOUS_PERIOD_PATH + ".stocks";
 
     private Stocks stocks;
     private Errors errors;
@@ -302,13 +300,9 @@ public class StocksValidatorTest {
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(3, errors.getErrorCount());
+        assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_STOCKS_PATH)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_TOTAL_PATH)));
+                PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
