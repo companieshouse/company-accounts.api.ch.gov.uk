@@ -25,7 +25,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPer
 @TestInstance(Lifecycle.PER_CLASS)
 public class EmployeesTransformerTest {
 
-    private static final Long AVERAGE_NUMBER_OF_EMPLOYEES = 19L;
+    private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT = 11L;
+    private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS = 19L;
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
@@ -152,7 +153,7 @@ public class EmployeesTransformerTest {
 
     private CurrentPeriod createCurrentPeriodRestObject() {
         CurrentPeriod currentPeriod = new CurrentPeriod();
-        currentPeriod.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES);
+        currentPeriod.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT);
         currentPeriod.setDetails(DETAILS);
         return currentPeriod;
     }
@@ -160,7 +161,7 @@ public class EmployeesTransformerTest {
 
     private PreviousPeriod createPreviousPeriodRestObject() {
         PreviousPeriod previousPeriod = new PreviousPeriod();
-        previousPeriod.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES);
+        previousPeriod.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS);
         return previousPeriod;
     }
 
@@ -168,7 +169,7 @@ public class EmployeesTransformerTest {
 
         EmployeesDataEntity employeesDataEntity = employeesEntity.getData();
         
-        assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES,
+        assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT,
                 employeesDataEntity.getCurrentPeriodEntity().getAverageNumberOfEmployees());
         assertEquals(DETAILS,
                 employeesDataEntity.getCurrentPeriodEntity().getDetails());
@@ -178,27 +179,27 @@ public class EmployeesTransformerTest {
         assertEquals(KIND, employeesDataEntity.getKind());
 
         if (employeesDataEntity.getPreviousPeriodEntity() != null) {
-            assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES,
+            assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS,
                     employeesDataEntity.getPreviousPeriodEntity().getAverageNumberOfEmployees());
         }
     }
 
     private CurrentPeriodEntity createCurrentPeriodEntityObject() {
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
-        currentPeriodEntity.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES);
+        currentPeriodEntity.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT);
         currentPeriodEntity.setDetails(DETAILS);
         return currentPeriodEntity;
     }
 
     private PreviousPeriodEntity createPreviousPeriodEntityObject() {
         PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
-        previousPeriodEntity.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES);
+        previousPeriodEntity.setAverageNumberOfEmployees(AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS);
         return previousPeriodEntity;
     }
 
     private void assertFieldsMappedToRest(Employees employees) {
 
-        assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES, employees.getCurrentPeriod().getAverageNumberOfEmployees());
+        assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT, employees.getCurrentPeriod().getAverageNumberOfEmployees());
         assertEquals(DETAILS, employees.getCurrentPeriod().getDetails());
 
         assertEquals(new HashMap<>(), employees.getLinks());
@@ -206,7 +207,7 @@ public class EmployeesTransformerTest {
         assertEquals(KIND, employees.getKind());
 
         if (employees.getPreviousPeriod() != null) {
-            assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES, employees.getPreviousPeriod().getAverageNumberOfEmployees());
+            assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS, employees.getPreviousPeriod().getAverageNumberOfEmployees());
         }
     }
 }

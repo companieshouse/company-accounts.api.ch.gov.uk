@@ -19,16 +19,16 @@ public class EmployeesTransformer implements GenericTransformer<Employees, Emplo
 
         EmployeesDataEntity employeesDataEntity = new EmployeesDataEntity();
         EmployeesEntity employeesEntity = new EmployeesEntity();
+        
+        BeanUtils.copyProperties(rest, employeesDataEntity);
 
         if (rest.getCurrentPeriod() != null) {
-            BeanUtils.copyProperties(rest, employeesDataEntity);
             CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
             BeanUtils.copyProperties(rest.getCurrentPeriod(), currentPeriodEntity);
             employeesDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
         if (rest.getPreviousPeriod() != null) {
-            BeanUtils.copyProperties(rest, employeesDataEntity);
             PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
             BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);
             employeesDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
