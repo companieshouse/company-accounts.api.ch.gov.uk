@@ -248,10 +248,6 @@ public class CreditorsAfterOneYearValidatorTest {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
             COMPANY_ACCOUNTS_ID, mockRequest);
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
         ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
@@ -264,7 +260,7 @@ public class CreditorsAfterOneYearValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-            CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
+                CREDITORS_AFTER_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
@@ -276,10 +272,6 @@ public class CreditorsAfterOneYearValidatorTest {
 
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
             COMPANY_ACCOUNTS_ID, mockRequest);
 
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
@@ -335,7 +327,7 @@ public class CreditorsAfterOneYearValidatorTest {
 
     @Test
     @DisplayName("Data exception thrown when mongo previous balancesheet call fails")
-    void testDataExceptionThrownWhenPreviousBalanceSheetMongoCallFails() throws DataException {
+    void testDataExceptionThrownWhenPreviousBalanceSheetMongoCallFails() throws DataException, ServiceException {
 
         createValidCurrentPeriodCreditorsAfter();
         createValidPreviousPeriodCreditorsAfter();
@@ -346,6 +338,8 @@ public class CreditorsAfterOneYearValidatorTest {
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         assertThrows(DataException.class,
             () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,
