@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.api.client.auth.oauth2.TokenResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -14,6 +15,7 @@ import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.http.ApiKeyHttpClient;
 import uk.gov.companieshouse.api.http.HttpClient;
+import uk.gov.companieshouse.api.http.OAuthHttpClient;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
@@ -23,6 +25,9 @@ public class ApiSdkManager {
     private static final String X_REQUEST_ID_HEADER           = "x-request-id";
     private static final String CHS_API_KEY                   = "CHS_API_KEY";
     private static final String API_URL                       = "API_URL";
+    private static final String OAUTH2_CLIENT_ID              = "OAUTH2_CLIENT_ID";
+    private static final String OAUTH2_CLIENT_SECRET          = "OAUTH2_CLIENT_SECRET";
+
 
     private static EnvironmentReader environmentReader = new EnvironmentReaderImpl();
 
@@ -101,13 +106,14 @@ public class ApiSdkManager {
     }
 
     private static HttpClient getHttpClient(PassthroughToken token) {
-        HttpClient httpClient;
 
-        if (token == null) {
-            httpClient = new ApiKeyHttpClient(getCHSApiKey());
-        } else {
-            httpClient = new ApiKeyHttpClient(token.getAccessToken());
+        TokenResponse tokenResponse = new TokenResponse();
+
+        if (token != null) {
+            tokenResponse.setAccessToken(token.getAccessToken());
         }
+
+        HttpClient httpClient = new OAuthHttpClient(tokenResponse, getClientId(), getClientSecret());
 
         setRequestId(httpClient);
         return httpClient;
@@ -153,5 +159,13 @@ public class ApiSdkManager {
 
     public static String getEricPassthroughTokenHeader() {
         return ERIC_PASSTHROUGH_TOKEN_HEADER;
+    }
+
+    private static String getClientId() {
+        return environmentReader.getMandatoryString(OAUTH2_CLIENT_ID);
+    }
+
+    private static String getClientSecret() {
+        return environmentReader.getMandatoryString(OAUTH2_CLIENT_SECRET);
     }
 }

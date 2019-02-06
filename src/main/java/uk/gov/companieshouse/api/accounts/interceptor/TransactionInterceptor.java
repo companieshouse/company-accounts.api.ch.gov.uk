@@ -7,18 +7,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
+import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -29,8 +30,8 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    // @Autowired
-    // private TransactionManager transactionManager;
+    @Autowired
+    private ApiClientService apiClientService;
 
     /**
      * Pre handle method to validate the request before it reaches the
@@ -49,37 +50,29 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
                     .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
             String transactionId = pathVariables.get("transactionId");
-            // ResponseEntity<Transaction> transaction = transactionManager
-            // .getTransaction(transactionId,
-            // request.getHeader("X-Request-Id"));
-            //
-            // request.setAttribute(AttributeName.TRANSACTION.getValue(),
-            // transaction.getBody());
-
             String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
-            // TODO remove from debugMap
-            debugMap.put("passthrough_header", passthroughHeader);
-
-            ApiClient apiClient = null;
+            InternalApiClient apiClient;
             try {
-                apiClient = ApiSdkManager.getSDK(passthroughHeader);
-            } catch (IOException ioe) {
-                LOGGER.errorRequest(request, ioe, debugMap);
+                apiClient = apiClientService.getInternalApiClient(passthroughHeader);
+            } catch (IOException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
             }
 
-            TransactionsGet transactionsGet = apiClient.transactions().get("/transactions/" + transactionId);
-            Transaction transaction = null;
+            Transaction transaction;
             try {
-                transaction = transactionsGet.execute();
-            } catch (ApiErrorResponseException aer) {
-                LOGGER.errorRequest(request, aer, debugMap);
-                response.setStatus(aer.getStatusCode());
+                transaction = apiClient.privateTransaction().get("/private/transactions/" + transactionId).execute();
+            } catch (ApiErrorResponseException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
+                response.setStatus(e.getStatusCode());
                 return false;
-            } catch (URIValidationException uve) {
-                LOGGER.errorRequest(request, uve, debugMap);
+            } catch (URIValidationException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
             }
@@ -87,9 +80,10 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction);
 
             return true;
-        } catch (HttpClientErrorException httpClientErrorException) {
-            LOGGER.errorRequest(request, httpClientErrorException, debugMap);
-            response.setStatus(httpClientErrorException.getStatusCode().value());
+        } catch (HttpClientErrorException e) {
+
+            LOGGER.errorRequest(request, e, debugMap);
+            response.setStatus(e.getStatusCode().value());
             return false;
         }
     }

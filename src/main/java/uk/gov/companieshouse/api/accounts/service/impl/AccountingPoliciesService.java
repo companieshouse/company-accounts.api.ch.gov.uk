@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.repository.AccountingPoliciesRepositor
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.AccountingPoliciesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.logging.Logger;
@@ -151,7 +151,7 @@ public class AccountingPoliciesService implements ResourceService<AccountingPoli
 
     private String getSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
                 + "notes/"

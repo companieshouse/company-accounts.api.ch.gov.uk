@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;

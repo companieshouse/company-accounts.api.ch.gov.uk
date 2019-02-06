@@ -38,7 +38,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StatementTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 

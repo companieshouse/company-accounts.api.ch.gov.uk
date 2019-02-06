@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.service;
 
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 public interface FilingService {
 

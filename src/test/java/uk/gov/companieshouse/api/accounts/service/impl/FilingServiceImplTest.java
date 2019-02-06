@@ -35,7 +35,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;

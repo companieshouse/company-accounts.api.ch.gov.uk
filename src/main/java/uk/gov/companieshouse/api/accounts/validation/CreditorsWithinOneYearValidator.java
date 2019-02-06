@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
 public class CreditorsWithinOneYearValidator extends BaseValidator implements CrossValidator<CreditorsWithinOneYear> {

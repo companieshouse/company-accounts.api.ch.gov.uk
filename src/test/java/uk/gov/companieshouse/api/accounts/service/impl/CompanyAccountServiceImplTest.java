@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,24 +24,27 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.links.LinkType;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
+import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
+import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionPatch;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+
+import java.io.IOException;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -50,6 +53,18 @@ public class CompanyAccountServiceImplTest {
     private static final String SELF_LINK = "self";
     private static final String TRANSACTION_LINK = "transaction";
     private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
+
+    @Mock
+    private ApiClientService mockApiClientService;
+
+    @Mock
+    private InternalApiClient mockApiClient;
+
+    @Mock
+    private PrivateTransactionResourceHandler mockTransactionResourceHandler;
+
+    @Mock
+    private PrivateTransactionPatch mockTransactionPatch;
 
     @InjectMocks
     private CompanyAccountServiceImpl companyAccountService;
@@ -69,8 +84,12 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private CompanyAccountTransformer companyAccountTransformer;
 
-    @Mock
-    private TransactionManager transactionManagerMock;
+    @BeforeEach
+    void setUp() throws IOException {
+        when(mockApiClientService.getInternalApiClient(anyString())).thenReturn(mockApiClient);
+        when(mockApiClient.privateTransaction()).thenReturn(mockTransactionResourceHandler);
+        when(mockTransactionResourceHandler.patch(anyString(), any(Transaction.class))).thenReturn(mockTransactionPatch);
+    }
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
@@ -130,8 +149,6 @@ public class CompanyAccountServiceImplTest {
         when(request.getHeader(anyString())).thenReturn("");
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
-        doThrow(mock(ApiErrorResponseException.class)).when(transactionManagerMock).updateTransaction(anyString(), anyString(), anyString());
-
         Executable executable = ()->{companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), request);};
 
         assertThrows(PatchException.class, executable);
@@ -148,20 +165,15 @@ public class CompanyAccountServiceImplTest {
     private Transaction createDummyTransaction(TransactionStatus status) {
         Transaction transaction = new Transaction();
         transaction.setId("id");
-        transaction.setStatus(status.getStatus());
-        transaction.setLinks(createLinksMap());
+        transaction.setStatus(status);
+        transaction.setLinks(createLinks());
 
         return transaction;
     }
 
-    /**
-     * creates an a links map with a test self link
-     *
-     * @return populated links map
-     */
-    private Map<String, String> createLinksMap() {
-        Map<String, String> links = new HashMap<>();
-        links.put(CompanyAccountLinkType.SELF.getLink(), MOCK_TRANSACTION_SELF_LINK);
+    private TransactionLinks createLinks() {
+        TransactionLinks links = new TransactionLinks();
+        links.setSelf(MOCK_TRANSACTION_SELF_LINK);
         return links;
     }
 }

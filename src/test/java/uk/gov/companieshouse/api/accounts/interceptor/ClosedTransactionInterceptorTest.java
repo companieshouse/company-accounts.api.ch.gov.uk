@@ -15,8 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -74,7 +74,7 @@ public class ClosedTransactionInterceptorTest {
         Transaction transaction = new Transaction();
 
         transaction.setStatus(
-            isOpen ? TransactionStatus.OPEN.getStatus() : TransactionStatus.CLOSED.getStatus());
+            isOpen ? TransactionStatus.OPEN : TransactionStatus.CLOSED);
 
         return transaction;
     }
