@@ -1,7 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -15,10 +17,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Optional;
 
 @Component
 public class CreditorsAfterOneYearValidator extends BaseValidator implements CrossValidator<CreditorsAfterOneYear> {
@@ -125,7 +123,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             (!creditorsAfterOneYear.getPreviousPeriod().getTotal().equals(
                 previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsAfterOneYear()))) {
 
-            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+            addError(errors, previousBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 

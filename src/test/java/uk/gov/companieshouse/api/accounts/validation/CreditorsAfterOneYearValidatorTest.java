@@ -1,5 +1,13 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,14 +31,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -238,6 +238,48 @@ public class CreditorsAfterOneYearValidatorTest {
     }
 
     @Test
+    @DisplayName("Error thrown when previous period balance sheet creditors does not match note value")
+    void testErrorThrownWhenPrevBalanceSheetValueDoesNotMatchNote() throws ServiceException, DataException {
+
+        createValidCurrentPeriodCreditorsAfter();
+        createValidPreviousPeriodCreditorsAfter();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+        when(mockPreviousPeriodService.findById(any(), any())).thenReturn(generatePreviousPeriodResponseObjectValueDiffersFromBalanceSheet());
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        errors = validator.validateCreditorsAfterOneYear(creditorsAfterOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Error thrown when current period balance sheet creditors does not match note value")
+    void testErrorThrownWhenCurrBalanceSheetValueDoesNotMatchNote() throws ServiceException, DataException {
+
+        createValidCurrentPeriodCreditorsAfter();
+
+        when(mockCurrentPeriodService.findById(any(), any())).thenReturn(generateCurrentPeriodResponseObjectValueDiffersFromBalanceSheet());
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        errors = validator.validateCreditorsAfterOneYear(creditorsAfterOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
     @DisplayName("Error thrown when single year filer creates previous period creditors after")
     void testErrorThrownWhenPreviousPeriodFiledOnSingleYearCompany() throws ServiceException, DataException {
 
@@ -370,6 +412,45 @@ public class CreditorsAfterOneYearValidatorTest {
         return previousPeriodResponseObject;
     }
 
+    private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generatePreviousPeriodResponseObjectValueDiffersFromBalanceSheet() {
+
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
+                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod>(ResponseStatus.FOUND);
+
+        uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
+                new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(100L);
+        BalanceSheet balanceSheet = new BalanceSheet();
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        previousPeriodTest.setBalanceSheet(balanceSheet);
+
+        previousPeriodResponseObject.setData(previousPeriodTest);
+
+        return previousPeriodResponseObject;
+    }
+
+    private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateCurrentPeriodResponseObjectValueDiffersFromBalanceSheet() {
+
+
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
+                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(ResponseStatus.FOUND);
+
+        uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
+                new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(300L);
+        BalanceSheet balanceSheet = new BalanceSheet();
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        currentPeriodTest.setBalanceSheet(balanceSheet);
+
+        currentPeriodResponseObject.setData(currentPeriodTest);
+        return currentPeriodResponseObject;
+
+    }
+
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {
 
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
@@ -398,6 +479,12 @@ public class CreditorsAfterOneYearValidatorTest {
         creditorsAfterCurrent.setTotal(30L);
         creditorsAfterCurrent.setDetails("test details data");
         
+        creditorsAfterOneYear.setCurrentPeriod(creditorsAfterCurrent);
+    }
+
+    private void createEmptyCreditorsNote() {
+
+        CurrentPeriod creditorsAfterCurrent = new CurrentPeriod();
         creditorsAfterOneYear.setCurrentPeriod(creditorsAfterCurrent);
     }
 
