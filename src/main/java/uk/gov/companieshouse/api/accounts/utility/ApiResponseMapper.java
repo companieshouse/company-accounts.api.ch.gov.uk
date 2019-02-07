@@ -43,11 +43,7 @@ public class ApiResponseMapper {
     }
 
     public ResponseEntity map(Exception exception) {
-        if (exception instanceof DataException || exception instanceof PatchException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     public ResponseEntity mapGetResponse(RestObject restObject, HttpServletRequest request) {
