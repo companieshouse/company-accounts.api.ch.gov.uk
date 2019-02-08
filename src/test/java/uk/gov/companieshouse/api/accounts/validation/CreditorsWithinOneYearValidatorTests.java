@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,6 +54,9 @@ public class CreditorsWithinOneYearValidatorTests {
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
             "value_not_equal_to_previous_period_on_balance_sheet";
+    private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
+            "mandatory_element_missing";
     
     private static final String COMPANY_ACCOUNTS_ID = "123abcefg";
 
@@ -254,11 +258,6 @@ public class CreditorsWithinOneYearValidatorTests {
             COMPANY_ACCOUNTS_ID);
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
             COMPANY_ACCOUNTS_ID, mockRequest);
-  
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
         
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
@@ -272,7 +271,7 @@ public class CreditorsWithinOneYearValidatorTests {
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
@@ -280,8 +279,8 @@ public class CreditorsWithinOneYearValidatorTests {
     void testErrorThrownWhenNoTotalAndNoDetailsProvided() throws ServiceException,
             DataException {
 
-        CurrentPeriod currentPeriod = new CurrentPeriod();
-        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
+        creditorsWithinOneYear.setCurrentPeriod(new CurrentPeriod());
+        creditorsWithinOneYear.setPreviousPeriod(new PreviousPeriod());
         
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
             COMPANY_ACCOUNTS_ID);
@@ -298,6 +297,8 @@ public class CreditorsWithinOneYearValidatorTests {
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -367,9 +368,29 @@ public class CreditorsWithinOneYearValidatorTests {
             COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
 
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
                         mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("Errors returned when no data to validate")
+    void testErrorsWhenNoDataPresent() throws ServiceException, DataException {
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
     }
 
     private void createPreviousPeriodCreditors() {

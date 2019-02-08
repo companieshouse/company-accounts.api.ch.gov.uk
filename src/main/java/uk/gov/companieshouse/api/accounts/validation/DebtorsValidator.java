@@ -23,7 +23,8 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
+    private static final String DEBTORS_PATH_CURRENT = DEBTORS_PATH + ".current_period";
+    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
 
     private CompanyService companyService;
@@ -45,30 +46,34 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         Errors errors = new Errors();
 
-        if (debtors != null) {
-
-            if (debtors.getCurrentPeriod() != null) {
-
-                validateCurrentPeriodDebtors(errors, debtors);
-                crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
-            }
-
-            if (debtors.getPreviousPeriod() != null) {
-
-                try {
-                    if (companyService.isMultipleYearFiler(transaction)) {
-
-                        validatePreviousPeriodDebtors(errors, debtors);
-                        crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
-                    } else {
-
-                        addInconsistentDataError(errors, DEBTORS_PATH_PREVIOUS);
-                    }
-                } catch (ServiceException e) {
-                    throw new DataException(e.getMessage(), e);
-                }
-            }
+        if (debtors.getCurrentPeriod() != null) {
+            validateCurrentPeriodDebtors(errors, debtors);
+            crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
+        } else {
+            addMandatoryElementMissingError(errors, DEBTORS_PATH_CURRENT);
         }
+
+        try {
+            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean hasProvidedPreviousPeriod = (debtors.getPreviousPeriod() != null);
+
+            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                validatePreviousPeriodDebtors(errors, debtors);
+                crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
+            }
+
+            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
+                addMandatoryElementMissingError(errors, DEBTORS_PATH_PREVIOUS);
+            }
+
+            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                addInconsistentDataError(errors, DEBTORS_PATH_PREVIOUS);
+            }
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
+        }
+
         return errors;
     }
 

@@ -27,8 +27,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
     private static final String PREVIOUS_PERIOD_PATH = STOCKS_PATH + ".previous_period";
     private static final String CURRENT_PERIOD_TOTAL_PATH = CURRENT_PERIOD_PATH + ".total";
     private static final String PREVIOUS_PERIOD_TOTAL_PATH = PREVIOUS_PERIOD_PATH + ".total";
-    private static final String PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH = PREVIOUS_PERIOD_PATH + ".payments_on_account";
-    private static final String PREVIOUS_PERIOD_STOCKS_PATH = PREVIOUS_PERIOD_PATH + ".stocks";
 
     private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
@@ -51,22 +49,31 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         if (stocks.getCurrentPeriod() != null) {
             validateCurrentPeriod(stocks, errors);
             crossValidateCurrentPeriod(errors, request, stocks, companyAccountsId);
+        } else {
+            addMandatoryElementMissingError(errors, CURRENT_PERIOD_PATH);
         }
 
-        if (stocks.getPreviousPeriod() != null) {
+        try {
+            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean hasProvidedPreviousPeriod = (stocks.getPreviousPeriod() != null);
 
-            try {
-                if (companyService.isMultipleYearFiler(transaction)) {
-                    validatePreviousPeriod(stocks, errors);
-                    crossValidatePreviousPeriod(errors, request, stocks, companyAccountsId);
-                } else {
-                    validateInconsistentFiling(stocks, errors);
-                }
-
-            } catch (ServiceException e) {
-                throw new DataException(e.getMessage(), e);
+            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                validatePreviousPeriod(stocks, errors);
+                crossValidatePreviousPeriod(errors, request, stocks, companyAccountsId);
             }
+
+            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
+                addMandatoryElementMissingError(errors, PREVIOUS_PERIOD_PATH);
+            }
+
+            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                addInconsistentDataError(errors, PREVIOUS_PERIOD_PATH);
+            }
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
         }
+
         return errors;
     }
 
@@ -78,21 +85,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
     private void validatePreviousPeriod(Stocks stocks, Errors errors) {
         validatePreviousPeriodTotalPresent(stocks, errors);
         validatePreviousPeriodTotalCorrect(stocks, errors);
-    }
-
-    private void validateInconsistentFiling(Stocks stocks, Errors errors) {
-
-        if (stocks.getPreviousPeriod().getPaymentsOnAccount() != null) {
-            addInconsistentDataError(errors, PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH);
-        }
-
-        if (stocks.getPreviousPeriod().getStocks() != null) {
-            addInconsistentDataError(errors, PREVIOUS_PERIOD_STOCKS_PATH);
-        }
-
-        if (stocks.getPreviousPeriod().getTotal() != null) {
-            addInconsistentDataError(errors, PREVIOUS_PERIOD_TOTAL_PATH);
-        }
     }
 
     private void validateCurrentPeriodTotalPresent(Stocks stocks, Errors errors) {

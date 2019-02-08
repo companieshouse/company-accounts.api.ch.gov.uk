@@ -62,14 +62,15 @@ public class StocksValidatorTest {
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
             "value_not_equal_to_previous_period_on_balance_sheet";
+    private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
+            "mandatory_element_missing";
 
     private static final String STOCKS_PATH = "$.stocks";
     private static final String CURRENT_PERIOD_PATH = STOCKS_PATH + ".current_period";
     private static final String PREVIOUS_PERIOD_PATH = STOCKS_PATH + ".previous_period";
     private static final String CURRENT_PERIOD_TOTAL_PATH = CURRENT_PERIOD_PATH + ".total";
     private static final String PREVIOUS_PERIOD_TOTAL_PATH = PREVIOUS_PERIOD_PATH + ".total";
-    private static final String PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH = PREVIOUS_PERIOD_PATH + ".payments_on_account";
-    private static final String PREVIOUS_PERIOD_STOCKS_PATH = PREVIOUS_PERIOD_PATH + ".stocks";
 
     private Stocks stocks;
     private Errors errors;
@@ -147,12 +148,21 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("No validation errors returned when no data to validate")
-    void testNoValidationErrorsWhenNoDataPresent() throws ServiceException, DataException {
+    @DisplayName("Errors returned when no data to validate")
+    void testErrorsWhenNoDataPresent() throws ServiceException, DataException {
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
-        assertFalse(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CURRENT_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
@@ -302,13 +312,9 @@ public class StocksValidatorTest {
         errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(3, errors.getErrorCount());
+        assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_PAYMENTS_ON_ACCOUNT_PATH)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_STOCKS_PATH)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                PREVIOUS_PERIOD_TOTAL_PATH)));
+                PREVIOUS_PERIOD_PATH)));
     }
 
     @Test

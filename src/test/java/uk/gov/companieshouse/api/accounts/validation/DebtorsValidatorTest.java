@@ -39,8 +39,9 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public class DebtorsValidatorTest {
 
     private static final String DEBTORS_PATH = "$.debtors";
+    private static final String DEBTORS_PATH_CURRENT = DEBTORS_PATH + ".current_period";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
+    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
     private static final String INVALID_NOTE_NAME = "invalidNote";
@@ -55,6 +56,10 @@ public class DebtorsValidatorTest {
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
             "value_not_equal_to_previous_period_on_balance_sheet";
+    private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
+            "mandatory_element_missing";
+
     private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
@@ -461,6 +466,24 @@ public class DebtorsValidatorTest {
         assertTrue(errors.containsError(createError(
                 PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE, PREVIOUS_TOTAL_PATH)));
 
+    }
+
+    @Test
+    @DisplayName("Errors returned when no data to validate")
+    void testErrorsWhenNoDataPresent() throws ServiceException, DataException {
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                DEBTORS_PATH_CURRENT)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                DEBTORS_PATH_PREVIOUS)));
     }
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {
