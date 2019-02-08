@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -52,9 +53,16 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             String transactionId = pathVariables.get("transactionId");
             String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
-            InternalApiClient apiClient;
+            if (passthroughHeader == null || passthroughHeader.isEmpty()) {
+                debugMap.put("message", "ERIC passthrough token header is empty");
+                LOGGER.errorRequest(request, null, debugMap);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return false;
+            }
+
+            ApiClient apiClient;
             try {
-                apiClient = apiClientService.getInternalApiClient(passthroughHeader);
+                apiClient = apiClientService.getApiClient(passthroughHeader);
             } catch (IOException e) {
 
                 LOGGER.errorRequest(request, e, debugMap);
@@ -64,7 +72,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
             Transaction transaction;
             try {
-                transaction = apiClient.privateTransaction().get("/private/transactions/" + transactionId).execute();
+                transaction = apiClient.transactions().get("/transactions/" + transactionId).execute();
             } catch (ApiErrorResponseException e) {
 
                 LOGGER.errorRequest(request, e, debugMap);
