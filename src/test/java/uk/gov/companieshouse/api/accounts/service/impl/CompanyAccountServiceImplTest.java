@@ -36,6 +36,7 @@ import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
 import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionPatch;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -83,19 +84,17 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private CompanyAccountTransformer companyAccountTransformer;
 
-    @BeforeEach
-    void setUp() throws IOException {
-        when(mockApiClientService.getInternalApiClient(anyString())).thenReturn(mockApiClient);
-        when(mockApiClient.privateTransaction()).thenReturn(mockTransactionResourceHandler);
-        when(mockTransactionResourceHandler.patch(anyString(), any(Transaction.class))).thenReturn(mockTransactionPatch);
-    }
-
     @Test
     @DisplayName("Tests the successful creation of an company account resource")
-    void createAccountWithSuccess() throws DataException, PatchException {
+    void createAccountWithSuccess() throws DataException, PatchException, IOException {
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
 
         CompanyAccount companyAccount = new CompanyAccount();
+
+        when(mockApiClientService.getInternalApiClient(anyString())).thenReturn(mockApiClient);
+        when(mockApiClient.privateTransaction()).thenReturn(mockTransactionResourceHandler);
+        when(mockTransactionResourceHandler.patch(anyString(), any(Transaction.class))).thenReturn(mockTransactionPatch);
+        when(request.getHeader("ERIC-Access-Token")).thenReturn("1111");
 
         ResponseObject response = companyAccountService.create(companyAccount, createDummyTransaction(TransactionStatus.OPEN), request);
 
@@ -144,9 +143,15 @@ public class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of an company account resource with a transaction patch failure")
     void createAccountWithTransactionPatchFailure()
-            throws DataException {
+            throws IOException, URIValidationException {
         when(request.getHeader(anyString())).thenReturn("");
         doReturn(companyAccountEntityMock).when(companyAccountTransformer).transform(any(CompanyAccount.class));
+
+        when(mockApiClientService.getInternalApiClient(anyString())).thenReturn(mockApiClient);
+        when(mockApiClient.privateTransaction()).thenReturn(mockTransactionResourceHandler);
+        when(mockTransactionResourceHandler.patch(anyString(), any(Transaction.class))).thenReturn(mockTransactionPatch);
+        when(mockTransactionPatch.execute()).thenThrow(new URIValidationException("uri is wrong"));
+        when(request.getHeader("ERIC-Access-Token")).thenReturn("1111");
 
         Executable executable = ()->{companyAccountService.create(companyAccountMock, createDummyTransaction(TransactionStatus.OPEN), request);};
 

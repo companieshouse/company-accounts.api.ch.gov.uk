@@ -24,6 +24,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -61,6 +62,9 @@ public class StocksServiceTest {
     private Transaction mockTransaction;
 
     @Mock
+    private TransactionLinks mockTransactionLinks;
+
+    @Mock
     private HttpServletRequest mockRequest;
 
     @Mock
@@ -82,6 +86,7 @@ public class StocksServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "self_link";
 
     @BeforeEach
     void setUp() {
@@ -102,6 +107,9 @@ public class StocksServiceTest {
 
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction,
                 "", mockRequest);
 
@@ -118,6 +126,9 @@ public class StocksServiceTest {
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers.any(Stocks.class));
         when(mockRepository.insert(stocksEntity)).thenThrow(mockDuplicateKeyException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction, "", mockRequest);
 
         assertNotNull(result);
@@ -133,6 +144,9 @@ public class StocksServiceTest {
                 .any(Stocks.class));
         when(mockRepository.insert(stocksEntity)).thenThrow(mockMongoException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class,
                 () -> service.create(mockStocks, mockTransaction, "", mockRequest));
     }
@@ -142,6 +156,9 @@ public class StocksServiceTest {
     void canUpdateStocks() throws DataException {
 
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Stocks> result = service.update(mockStocks, mockTransaction,
                 "", mockRequest);
@@ -157,6 +174,9 @@ public class StocksServiceTest {
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Stocks.class));
         when(mockRepository.save(stocksEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> service.update(mockStocks, mockTransaction, "", mockRequest));

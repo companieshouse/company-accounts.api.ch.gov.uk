@@ -36,6 +36,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.TangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,6 +59,9 @@ public class TangibleAssetsServiceTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private TransactionLinks transactionLinks;
 
     @Mock
     private HttpServletRequest request;
@@ -86,6 +90,9 @@ public class TangibleAssetsServiceTest {
         when(tangibleAssets.getLinks()).thenReturn(links);
         when(links.get(BasicLinkType.SELF.getLink())).thenReturn(SELF_LINK);
 
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -105,6 +112,9 @@ public class TangibleAssetsServiceTest {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.insert(tangibleAssetsEntity)).thenThrow(DuplicateKeyException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -126,6 +136,9 @@ public class TangibleAssetsServiceTest {
                 .thenReturn(GENERATED_ID);
         when(repository.insert(tangibleAssetsEntity)).thenThrow(MongoException.class);
 
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class, () ->
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
 
@@ -142,6 +155,9 @@ public class TangibleAssetsServiceTest {
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -161,6 +177,9 @@ public class TangibleAssetsServiceTest {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.save(tangibleAssetsEntity)).thenThrow(MongoException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () ->
                 tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));

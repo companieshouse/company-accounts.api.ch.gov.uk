@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.sdk.apimanager.ApiSdkManager;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Component
 public class TransactionInterceptor extends HandlerInterceptorAdapter {

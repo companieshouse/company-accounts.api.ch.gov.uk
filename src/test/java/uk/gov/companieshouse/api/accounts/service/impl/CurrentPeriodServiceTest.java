@@ -36,6 +36,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -50,6 +51,9 @@ public class CurrentPeriodServiceTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private TransactionLinks transactionLinks;
 
     @Mock
     private CurrentPeriodRepository currentPeriodRepository;
@@ -84,6 +88,8 @@ public class CurrentPeriodServiceTest {
     @InjectMocks
     private CurrentPeriodService currentPeriodService;
 
+    private static final String SELF_LINK = "self_link";
+
     public void setUpCreate() {
     }
 
@@ -93,6 +99,10 @@ public class CurrentPeriodServiceTest {
         setUpCreate();
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<CurrentPeriod> result = currentPeriodService
             .create(currentPeriod, transaction, "", request);
         assertNotNull(result);
@@ -107,6 +117,10 @@ public class CurrentPeriodServiceTest {
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(duplicateKeyException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = currentPeriodService.create(currentPeriod, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -121,6 +135,10 @@ public class CurrentPeriodServiceTest {
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         Executable executable = () -> {
             currentPeriodService.create(currentPeriod, transaction, "", request);
         };

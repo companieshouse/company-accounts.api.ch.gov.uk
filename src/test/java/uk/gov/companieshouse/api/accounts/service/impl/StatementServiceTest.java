@@ -41,6 +41,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StatementTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -71,6 +72,8 @@ public class StatementServiceTest {
     @Mock
     private Transaction transactionMock;
     @Mock
+    private TransactionLinks transactionLinksMock;
+    @Mock
     private Statement statementMock;
     @Mock
     private StatementTransformer statementTransformerMock;
@@ -88,6 +91,8 @@ public class StatementServiceTest {
     @InjectMocks
     private StatementService statementService;
 
+    private static final String SELF_LINK = "self_link";
+
     @BeforeAll
     void setUpBeforeAll() {
         statementEntity = createStatementEntity();
@@ -101,6 +106,9 @@ public class StatementServiceTest {
         when(companyAccountMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Statement> result =
             statementService.create(statementMock, transactionMock, "", requestMock);
@@ -118,6 +126,9 @@ public class StatementServiceTest {
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(DuplicateKeyException.class);
 
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<Statement> result =
             statementService.create(statementMock, transactionMock, "", requestMock);
 
@@ -134,6 +145,9 @@ public class StatementServiceTest {
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(MongoException.class);
 
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class,
             () -> statementService.create(statementMock, transactionMock, "", requestMock));
     }
@@ -143,6 +157,9 @@ public class StatementServiceTest {
     void shouldUpdateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Statement> result =
             statementService.update(statementMock, transactionMock, "", requestMock);
@@ -158,6 +175,9 @@ public class StatementServiceTest {
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(MongoException.class);
+
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
             () -> statementService.update(statementMock, transactionMock, "", requestMock));

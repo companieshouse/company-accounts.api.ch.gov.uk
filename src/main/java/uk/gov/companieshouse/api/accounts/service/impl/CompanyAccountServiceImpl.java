@@ -35,7 +35,7 @@ import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.sdk.apimanager.ApiSdkManager;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
