@@ -21,15 +21,6 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 @Component
 public class CreditorsAfterOneYearValidator extends BaseValidator implements CrossValidator<CreditorsAfterOneYear> {
 
-    @Value("${invalid.note}")
-    private String invalidNote;
-
-    @Value("${current.balancesheet.not.equal}")
-    private String currentBalanceSheetNotEqual;
-
-    @Value("${previous.balancesheet.not.equal}")
-    private String previousBalanceSheetNotEqual;
-
     private static final String CREDITORS_AFTER_PATH = "$.creditors_after_one_year";
 
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH =
