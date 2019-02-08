@@ -11,6 +11,7 @@ public enum ResourceName {
     DEBTORS("debtors"),
     STATEMENTS("statements"),
     CREDITORS_WITHIN_ONE_YEAR("creditors-within-one-year"),
+    CREDITORS_AFTER_ONE_YEAR("creditors-after-more-than-one-year"),
     TANGIBLE_ASSETS("tangible-assets");
 
     private String name;

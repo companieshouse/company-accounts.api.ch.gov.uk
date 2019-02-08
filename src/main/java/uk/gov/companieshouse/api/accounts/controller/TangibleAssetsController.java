@@ -23,27 +23,24 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
+import uk.gov.companieshouse.api.accounts.service.impl.TangibleAssetsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
+import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DebtorsController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/tangible-assets", produces = MediaType.APPLICATION_JSON_VALUE)
+public class TangibleAssetsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @Autowired
-    private DebtorsService debtorsService;
+    private TangibleAssetsService tangibleAssetsService;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -51,8 +48,14 @@ public class DebtorsController {
     @Autowired
     private ErrorMapper errorMapper;
 
+    private static final String TRANSACTION_ID = "transaction_id";
+
+    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
+
+    private static final String MESSAGE = "message";
+
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Debtors debtors,
+    public ResponseEntity create(@Valid @RequestBody TangibleAssets tangibleAssets,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -64,25 +67,23 @@ public class DebtorsController {
         }
 
         Transaction transaction =
-            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-        ResponseEntity responseEntity;
+                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Debtors> response = debtorsService
-                .create(debtors, transaction, companyAccountId, request);
+            ResponseObject<TangibleAssets> response =
+                    tangibleAssetsService
+                            .create(tangibleAssets, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
-                .map(response.getStatus(), response.getData(), response.getErrors());
+            return apiResponseMapper
+                    .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to create debtors resource");
+            final Map<String, Object> debugMap =
+                    createDebugMap(companyAccountId, transaction, "Failed to create tangible assets resource");
             LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            return apiResponseMapper.map(ex);
         }
-        return responseEntity;
     }
 
     @GetMapping
@@ -90,37 +91,34 @@ public class DebtorsController {
                               HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String debtorsId = debtorsService.generateID(companyAccountId);
-
-        ResponseEntity responseEntity;
+        String tangibleAssetsId = tangibleAssetsService.generateID(companyAccountId);
 
         try {
-            ResponseObject<Debtors> response = debtorsService
-                .findById(debtorsId, request);
+            ResponseObject<TangibleAssets> response =
+                    tangibleAssetsService
+                        .findById(tangibleAssetsId, request);
 
-            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to retrieve debtors resource");
+            final Map<String, Object> debugMap =
+                    createDebugMap(companyAccountId, transaction, "Failed to retrieve tangible assets resource");
             LOGGER.errorRequest(request, de, debugMap);
-            responseEntity = apiResponseMapper.map(de);
+            return apiResponseMapper.map(de);
         }
-
-        return responseEntity;
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid Debtors debtors,
+    public ResponseEntity update(@RequestBody @Valid TangibleAssets tangibleAssets,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFull.getLinks().get(SmallFullLinkType.DEBTORS_NOTE.getLink()) == null) {
+        if (smallFull.getLinks().get(SmallFullLinkType.TANGIBLE_ASSETS_NOTE.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -132,16 +130,17 @@ public class DebtorsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Debtors> response = debtorsService
-                .update(debtors, transaction, companyAccountId, request);
+            ResponseObject<TangibleAssets> response =
+                    tangibleAssetsService
+                            .update(tangibleAssets, transaction, companyAccountId, request);
 
             return apiResponseMapper
-                .map(response.getStatus(), response.getData(), response.getErrors());
+                    .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update debtors resource");
+            final Map<String, Object> debugMap =
+                    createDebugMap(companyAccountId, transaction, "Failed to update tangible assets resource");
             LOGGER.errorRequest(request, ex, debugMap);
             return apiResponseMapper.map(ex);
         }
@@ -149,24 +148,29 @@ public class DebtorsController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
-                                               HttpServletRequest request) {
+                                 HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Debtors> response = debtorsService.delete(companyAccountsId, request);
+            ResponseObject<TangibleAssets> response =
+                    tangibleAssetsService.delete(companyAccountsId, request);
 
-            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+            return apiResponseMapper
+                    .map(response.getStatus(), response.getData(), response.getErrors());
+
         } catch (DataException de) {
+
             final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                    "Failed to delete debtors resource");
+                    "Failed to delete tangible assets resource");
             LOGGER.errorRequest(request, de, debugMap);
             return apiResponseMapper.map(de);
         }
     }
 
     private Map<String, Object> createDebugMap(String companyAccountId, Transaction transaction, String message) {
+
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);

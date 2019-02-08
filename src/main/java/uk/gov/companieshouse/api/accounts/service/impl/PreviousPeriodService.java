@@ -128,7 +128,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> deleteById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<PreviousPeriod> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 
