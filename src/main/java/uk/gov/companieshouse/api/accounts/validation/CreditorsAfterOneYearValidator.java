@@ -21,6 +21,15 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 @Component
 public class CreditorsAfterOneYearValidator extends BaseValidator implements CrossValidator<CreditorsAfterOneYear> {
 
+    @Value("${invalid.note}")
+    private String invalidNote;
+
+    @Value("${current.balancesheet.not.equal}")
+    private String currentBalanceSheetNotEqual;
+
+    @Value("${previous.balancesheet.not.equal}")
+    private String previousBalanceSheetNotEqual;
+
     private static final String CREDITORS_AFTER_PATH = "$.creditors_after_one_year";
 
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH =
@@ -54,14 +63,16 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     }
 
     public Errors validateCreditorsAfterOneYear(@Valid CreditorsAfterOneYear creditorsAfterOneYear,
-                                                Transaction transaction, String companyAccountsId,
+                                                Transaction transaction, String companyAccountId,
                                                 HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
+        crossValidate(errors, request, companyAccountId, creditorsAfterOneYear);
+
         if (creditorsAfterOneYear.getCurrentPeriod() != null) {
-            validateCurrentPeriod(creditorsAfterOneYear.getCurrentPeriod(), errors);
-            crossValidateCurrentPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
+            CurrentPeriod creditorsAfterCurrentPeriod = creditorsAfterOneYear.getCurrentPeriod();
+            validateCurrentPeriod(creditorsAfterCurrentPeriod, errors);
         }
 
         if (creditorsAfterOneYear.getPreviousPeriod() != null) {
@@ -70,9 +81,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             try {
                 if (companyService.isMultipleYearFiler(transaction)) {
                     validatePreviousPeriod(creditorsAfterPreviousPeriod, errors);
-                    crossValidatePreviousPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
                 } else {
-                    addInconsistentDataError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
+                    validateInconsistentFilings(creditorsAfterPreviousPeriod, errors);
                 }
             } catch (ServiceException se) {
                 throw new DataException(se.getMessage(), se);
@@ -219,6 +229,13 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         return currentPeriodBalanceSheet == null ||
             currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets() == null ||
             currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsAfterOneYear() == null;
+    }
+
+    private void validateInconsistentFilings(PreviousPeriod creditorsAfterPreviousPeriod, Errors errors) {
+
+        if (creditorsAfterPreviousPeriod.getTotal() != null) {
+            addInconsistentDataError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+        }
     }
 
     private void validatePreviousPeriod(PreviousPeriod creditorsAfterPreviousPeriod, Errors errors) {
