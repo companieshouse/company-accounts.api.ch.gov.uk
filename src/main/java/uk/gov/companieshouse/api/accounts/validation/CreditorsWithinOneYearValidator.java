@@ -4,7 +4,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.mongodb.MongoException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -22,15 +21,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
 public class CreditorsWithinOneYearValidator extends BaseValidator implements CrossValidator<CreditorsWithinOneYear> {
-
-    @Value("${invalid.note}")
-    private String invalidNote;
-    
-    @Value("${current.balancesheet.not.equal}")
-    private String currentBalanceSheetNotEqual;
-
-    @Value("${previous.balancesheet.not.equal}")
-    private String previousBalanceSheetNotEqual;
 
     private static final String CREDITORS_WITHIN_PATH = "$.creditors_within_one_year";
     private static final String CREDITORS_WITHIN_CURRENT_PERIOD_PATH = CREDITORS_WITHIN_PATH +

@@ -28,6 +28,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class StocksController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody Stocks stocks,
+    public ResponseEntity create(@Valid @RequestBody Stocks stocks,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -80,7 +81,7 @@ public class StocksController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody Stocks stocks,
+    public ResponseEntity update(@Valid @RequestBody Stocks stocks,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
