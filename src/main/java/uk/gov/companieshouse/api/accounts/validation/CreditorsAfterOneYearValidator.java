@@ -54,30 +54,37 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     }
 
     public Errors validateCreditorsAfterOneYear(@Valid CreditorsAfterOneYear creditorsAfterOneYear,
-                                                Transaction transaction, String companyAccountId,
+                                                Transaction transaction, String companyAccountsId,
                                                 HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
-        crossValidate(errors, request, companyAccountId, creditorsAfterOneYear);
-
         if (creditorsAfterOneYear.getCurrentPeriod() != null) {
-            CurrentPeriod creditorsAfterCurrentPeriod = creditorsAfterOneYear.getCurrentPeriod();
-            validateCurrentPeriod(creditorsAfterCurrentPeriod, errors);
+            validateCurrentPeriod(creditorsAfterOneYear.getCurrentPeriod(), errors);
+            crossValidateCurrentPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
+        } else {
+            addMandatoryElementMissingError(errors, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
         }
 
-        if (creditorsAfterOneYear.getPreviousPeriod() != null) {
-            PreviousPeriod creditorsAfterPreviousPeriod = creditorsAfterOneYear.getPreviousPeriod();
+        try {
+            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean hasProvidedPreviousPeriod = (creditorsAfterOneYear.getPreviousPeriod() != null);
 
-            try {
-                if (companyService.isMultipleYearFiler(transaction)) {
-                    validatePreviousPeriod(creditorsAfterPreviousPeriod, errors);
-                } else {
-                    validateInconsistentFilings(creditorsAfterPreviousPeriod, errors);
-                }
-            } catch (ServiceException se) {
-                throw new DataException(se.getMessage(), se);
+            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                validatePreviousPeriod(creditorsAfterOneYear.getPreviousPeriod(), errors);
+                crossValidatePreviousPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
             }
+
+            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
+                addMandatoryElementMissingError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
+            }
+
+            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                addInconsistentDataError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
+            }
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
         }
 
         return errors;
