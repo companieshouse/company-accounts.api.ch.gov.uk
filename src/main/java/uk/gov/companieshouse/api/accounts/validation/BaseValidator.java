@@ -69,7 +69,7 @@ public class BaseValidator {
     }
 
     /**
-     * Add an inconsistent data error for the given location
+     * Add a mandatory element missing error for the given location
      *
      * @param errors
      * @param location
