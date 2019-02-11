@@ -2621,23 +2621,22 @@ ul.accounts-comps-ct {
                   <tr>
                     <th class="table-heading"></th>
                     {{if $employeesNote.average_number_of_employees.current_amount}}
-                    <th class="table-heading" id="employees-note-current-heading">{{$period.current_period_bs_date}}</th>
+                      <th class="table-heading" id="employees-note-current-heading">{{$period.current_period_bs_date}}</th>
                     {{else}}
-                    <th  class="table-heading">&#160;</th>
+                      <th  class="table-heading">&#160;</th>
                     {{end}}
 
                     {{if $employeesNote.average_number_of_employees.previous_amount}}
-                    <th class="table-heading" id="employees-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                      <th class="table-heading" id="employees-note-previous-heading">{{$period.previous_period_bs_date}}</th>
                     {{end}}
                   </tr>
-
 
                   <tr class="figures">
                     <td id="employeesNote-label">Average number of employees during the period</td>
                     <td id="employeesNote-curr-val" class="strong figure">
 
                       {{ if $employeesNote.average_number_of_employees.current_amount }}
-                       <ix:nonFraction contextRef="CY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{$employeesNote.average_number_of_employees.current_amount}}</ix:nonFraction>
+                        <ix:nonFraction contextRef="CY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{$employeesNote.average_number_of_employees.current_amount}}</ix:nonFraction>
                       {{end}}
 
                     </td>
