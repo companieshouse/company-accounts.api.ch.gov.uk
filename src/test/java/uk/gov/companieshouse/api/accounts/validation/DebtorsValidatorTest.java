@@ -1,6 +1,7 @@
 
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,13 +39,10 @@ import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 public class DebtorsValidatorTest {
 
     private static final String DEBTORS_PATH = "$.debtors";
+    private static final String DEBTORS_PATH_CURRENT = DEBTORS_PATH + ".current_period";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
+    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
-    private static final String PREVIOUS_PREPAYMENTS = DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
-    private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
-    private static final String PREVIOUS_GREATER_THAN_ONE_YEAR = DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
     private static final String INVALID_NOTE_VALUE = "invalid_note";
     private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
@@ -58,6 +56,10 @@ public class DebtorsValidatorTest {
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
             "value_not_equal_to_previous_period_on_balance_sheet";
+    private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
+            "mandatory_element_missing";
+
     private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
@@ -110,12 +112,6 @@ public class DebtorsValidatorTest {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
                 COMPANY_ACCOUNTS_ID, mockRequest);
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateNPreviousNullDebtorsBalanceSheetResponse()).when(mockPreviousPeriodService).findById(
-                COMPANY_ACCOUNTS_ID,
-                mockRequest);
-
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
@@ -163,12 +159,6 @@ public class DebtorsValidatorTest {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
                 COMPANY_ACCOUNTS_ID, mockRequest);
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-                COMPANY_ACCOUNTS_ID,
-                mockRequest);
-
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
         ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
@@ -180,11 +170,8 @@ public class DebtorsValidatorTest {
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_TRADE_DEBTORS)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_PREPAYMENTS)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_GREATER_THAN_ONE_YEAR)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_OTHER_DEBTORS)));
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, PREVIOUS_TOTAL_PATH)));
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE, DEBTORS_PATH_PREVIOUS)));
     }
 
     @Test
@@ -276,12 +263,6 @@ public class DebtorsValidatorTest {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
                 COMPANY_ACCOUNTS_ID, mockRequest);
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateNPreviousNullDebtorsBalanceSheetResponse()).when(mockPreviousPeriodService).findById(
-                COMPANY_ACCOUNTS_ID,
-                mockRequest);
-
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
@@ -300,12 +281,6 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID);
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
                 COMPANY_ACCOUNTS_ID, mockRequest);
-
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateNPreviousNullDebtorsBalanceSheetResponse()).when(mockPreviousPeriodService).findById(
-                COMPANY_ACCOUNTS_ID,
-                mockRequest);
 
         debtors.setCurrentPeriod(currentDebtors);
         ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
@@ -330,12 +305,6 @@ public class DebtorsValidatorTest {
                 COMPANY_ACCOUNTS_ID);
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
                 COMPANY_ACCOUNTS_ID, mockRequest);
-
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-                COMPANY_ACCOUNTS_ID,
-                mockRequest);
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
@@ -464,8 +433,11 @@ public class DebtorsValidatorTest {
     }
 
     @Test
-    @DisplayName("Assert empty note and populated balance sheet value throws error")
-    void testEmptyNoteMismatchedDebtorsValues() throws DataException, ServiceException {
+    @DisplayName("Assert empty note values and populated balance sheet values returns errors")
+    void testEmptyNoteValuesMismatchBalanceSheetValues() throws DataException, ServiceException {
+
+        debtors.setCurrentPeriod(new CurrentPeriod());
+        debtors.setPreviousPeriod(new PreviousPeriod());
 
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
                 COMPANY_ACCOUNTS_ID);
@@ -477,6 +449,8 @@ public class DebtorsValidatorTest {
         doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
                 COMPANY_ACCOUNTS_ID,
                 mockRequest);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
                 CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
@@ -492,6 +466,24 @@ public class DebtorsValidatorTest {
         assertTrue(errors.containsError(createError(
                 PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE, PREVIOUS_TOTAL_PATH)));
 
+    }
+
+    @Test
+    @DisplayName("Errors returned when no data to validate")
+    void testErrorsWhenNoDataPresent() throws ServiceException, DataException {
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                DEBTORS_PATH_CURRENT)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                DEBTORS_PATH_PREVIOUS)));
     }
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {

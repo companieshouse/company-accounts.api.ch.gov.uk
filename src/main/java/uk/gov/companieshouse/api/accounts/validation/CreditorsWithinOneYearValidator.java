@@ -31,8 +31,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".total";
     private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".total";
-    private static final String CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH =
-            CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
 
     private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
@@ -51,44 +49,36 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
-        
-        crossValidate(errors, request, companyAccountsId, creditorsWithinOneYear);
 
         if (creditorsWithinOneYear.getCurrentPeriod() != null) {
-
-            CurrentPeriod creditorsCurrentPeriod = creditorsWithinOneYear.getCurrentPeriod();
-
-            validateCurrentPeriod(creditorsCurrentPeriod, errors);
+            validateCurrentPeriod(creditorsWithinOneYear.getCurrentPeriod(), errors);
+            crossValidateCurrentPeriod(errors, request, creditorsWithinOneYear, companyAccountsId);
+        } else {
+            addMandatoryElementMissingError(errors, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
         }
 
-        if (creditorsWithinOneYear.getPreviousPeriod() != null) {
+        try {
+            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean hasProvidedPreviousPeriod = (creditorsWithinOneYear.getPreviousPeriod() != null);
 
-            PreviousPeriod creditorsPreviousPeriod = creditorsWithinOneYear.getPreviousPeriod();
-
-            try {
-
-                if (companyService.isMultipleYearFiler(transaction)) {
-
-                    validatePreviousPeriod(creditorsPreviousPeriod, errors);
-
-                } else {
-
-                    validateInconsistentFiling(creditorsPreviousPeriod, errors);
-                }
-            } catch (ServiceException e) {
-                throw new DataException(e.getMessage(), e);
+            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                validatePreviousPeriod(creditorsWithinOneYear.getPreviousPeriod(), errors);
+                crossValidatePreviousPeriod(errors, request, creditorsWithinOneYear, companyAccountsId);
             }
+
+            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
+                addMandatoryElementMissingError(errors, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
+            }
+
+            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                addInconsistentDataError(errors, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
+            }
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
         }
+
         return errors;
-    }
-
-    private void validateInconsistentFiling(@Valid PreviousPeriod creditorsPreviousPeriod,
-            Errors errors) {
-        if (creditorsPreviousPeriod.getTotal() != null) {
-
-            addInconsistentDataError(errors,
-                    CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
-        }
     }
 
     private void validatePreviousPeriod(@Valid PreviousPeriod creditorsPreviousPeriod,

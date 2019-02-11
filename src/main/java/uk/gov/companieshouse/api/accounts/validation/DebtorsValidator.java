@@ -23,14 +23,9 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
-    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH + ".current_period.total";
+    private static final String DEBTORS_PATH_CURRENT = DEBTORS_PATH + ".current_period";
+    private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static final String PREVIOUS_TRADE_DEBTORS = DEBTORS_PATH_PREVIOUS + ".trade_debtors";
-    private static final String PREVIOUS_PREPAYMENTS =
-            DEBTORS_PATH_PREVIOUS + ".prepayments_and_accrued_income";
-    private static final String PREVIOUS_OTHER_DEBTORS = DEBTORS_PATH_PREVIOUS + ".other_debtors";
-    private static final String PREVIOUS_GREATER_THAN_ONE_YEAR =
-            DEBTORS_PATH_PREVIOUS + ".greater_than_one_year";
 
     private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
@@ -51,32 +46,34 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         Errors errors = new Errors();
 
-        crossValidate(errors, request, companyAccountsId, debtors);
-
-        if (debtors != null) {
-
-            if (debtors.getCurrentPeriod() != null) {
-
-                validateCurrentPeriodDebtors(errors, debtors);
-
-            }
-
-            if (debtors.getPreviousPeriod() != null) {
-
-                try {
-                    if (companyService.isMultipleYearFiler(transaction)) {
-
-                        validatePreviousPeriodDebtors(errors, debtors);
-
-                    } else {
-
-                        validateInconsistentPeriodFiling(debtors, errors);
-                    }
-                } catch (ServiceException e) {
-                    throw new DataException(e.getMessage(), e);
-                }
-            }
+        if (debtors.getCurrentPeriod() != null) {
+            validateCurrentPeriodDebtors(errors, debtors);
+            crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
+        } else {
+            addMandatoryElementMissingError(errors, DEBTORS_PATH_CURRENT);
         }
+
+        try {
+            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean hasProvidedPreviousPeriod = (debtors.getPreviousPeriod() != null);
+
+            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                validatePreviousPeriodDebtors(errors, debtors);
+                crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
+            }
+
+            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
+                addMandatoryElementMissingError(errors, DEBTORS_PATH_PREVIOUS);
+            }
+
+            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
+                addInconsistentDataError(errors, DEBTORS_PATH_PREVIOUS);
+            }
+
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
+        }
+
         return errors;
     }
 
@@ -150,30 +147,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
             Long sum = traderDebtors + prepayments + otherDebtors;
 
             validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
-        }
-    }
-
-
-    private void validateInconsistentPeriodFiling(Debtors debtors, Errors errors) {
-
-        if (debtors.getPreviousPeriod().getTradeDebtors() != null) {
-            addInconsistentDataError(errors, PREVIOUS_TRADE_DEBTORS);
-        }
-
-        if (debtors.getPreviousPeriod().getGreaterThanOneYear() != null) {
-            addInconsistentDataError(errors, PREVIOUS_GREATER_THAN_ONE_YEAR);
-        }
-
-        if (debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null) {
-            addInconsistentDataError(errors, PREVIOUS_PREPAYMENTS);
-        }
-
-        if (debtors.getPreviousPeriod().getOtherDebtors() != null) {
-            addInconsistentDataError(errors, PREVIOUS_OTHER_DEBTORS);
-        }
-
-        if (debtors.getPreviousPeriod().getTotal() != null) {
-            addInconsistentDataError(errors, PREVIOUS_TOTAL_PATH);
         }
     }
 

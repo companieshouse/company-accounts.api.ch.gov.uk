@@ -25,6 +25,9 @@ public class BaseValidator {
     @Value("${previous.balancesheet.not.equal}")
     protected String previousBalanceSheetNotEqual;
 
+    @Value("${mandatory.element.missing}")
+    private String mandatoryElementMissing;
+
     /**
      * Validate the given total is correctly aggregated
      *
@@ -60,10 +63,22 @@ public class BaseValidator {
      * @param errors
      * @param location
      */
-    protected void addInconsistentDataError (Errors errors, String location) {
+    protected void addInconsistentDataError(Errors errors, String location) {
 
         addError(errors, inconsistentData, location);
     }
+
+    /**
+     * Add a mandatory element missing error for the given location
+     *
+     * @param errors
+     * @param location
+     */
+    protected void addMandatoryElementMissingError(Errors errors, String location) {
+
+        addError(errors, mandatoryElementMissing, location);
+    }
+
     /**
      * Add an error for the given location
      *
