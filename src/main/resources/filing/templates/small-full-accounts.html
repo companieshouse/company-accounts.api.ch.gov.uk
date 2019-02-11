@@ -2513,6 +2513,8 @@ ul.accounts-comps-ct {
         {{setValue "notes-page-count" 0}}
         {{if $additionalNotes := .small_full_accounts.additional_notes}}
 
+        <div id="AdditionalNotesSection" class="section-marker"></div>
+
           <!-- ACCOUNTING POLICIES START -->
           {{if $accountingPolicies := $additionalNotes.accounting_policies}}
             {{incValue "notes-page-count" }}
@@ -2585,8 +2587,6 @@ ul.accounts-comps-ct {
 
                 </li>
               </ul>
-
-              <div id="AdditionalNotesSection" class="section-marker"></div>
 
             </div>
 
@@ -2665,7 +2665,6 @@ ul.accounts-comps-ct {
                 {{ end}}
               </li>
             </ul>
-            <div id="AdditionalNotesSection" class="section-marker"></div>
           </div>
 
         {{end}}
