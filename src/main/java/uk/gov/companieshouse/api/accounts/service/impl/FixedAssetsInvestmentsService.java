@@ -142,7 +142,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
                 repository.deleteById(fixedAssetsInvestmentsId);
 
                 smallFullService.removeLink(companyAccountsId,
-                    SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE, request);
+                    SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
