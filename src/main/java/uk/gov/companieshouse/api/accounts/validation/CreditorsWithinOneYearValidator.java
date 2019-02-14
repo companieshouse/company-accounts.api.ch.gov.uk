@@ -31,8 +31,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".total";
     private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".total";
-    private static final String CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH =
-            CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
 
     private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
