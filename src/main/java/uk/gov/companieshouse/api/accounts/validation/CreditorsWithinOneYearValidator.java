@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
@@ -387,28 +388,36 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     }
 
     private boolean isCurrentPeriodNoteDataNull(CurrentPeriod currentPeriodCreditors) {
-        return currentPeriodCreditors == null || currentPeriodCreditors.getTotal() == null;
+
+        return Optional.ofNullable(currentPeriodCreditors)
+                .map(CurrentPeriod::getTotal)
+                .orElse(null) == null;
+
     }
 
     private boolean isCurrentPeriodBalanceSheetDataNull(
             BalanceSheet currentPeriodBalanceSheet) {
 
-        return currentPeriodBalanceSheet == null ||
-                currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets() == null ||
-                currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsDueWithinOneYear() == null;
+        return Optional.ofNullable(currentPeriodBalanceSheet)
+                .map(BalanceSheet::getOtherLiabilitiesOrAssets)
+                .map(OtherLiabilitiesOrAssets::getCreditorsDueWithinOneYear)
+                .orElse(null) == null;
+
     }
 
     private boolean isPreviousPeriodBalanceSheetDataNull(
             BalanceSheet previousPeriodBalanceSheet) {
 
-        return previousPeriodBalanceSheet == null ||
-                previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets() == null ||
-                previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsDueWithinOneYear() == null;
+        return Optional.ofNullable(previousPeriodBalanceSheet)
+                .map(BalanceSheet::getOtherLiabilitiesOrAssets)
+                .map(OtherLiabilitiesOrAssets::getCreditorsDueWithinOneYear)
+                .orElse(null) == null;
     }
 
     private boolean isPreviousPeriodNoteDataNull(PreviousPeriod previousPeriodNote) {
 
-        return previousPeriodNote == null ||
-                previousPeriodNote.getTotal() == null;
+        return Optional.ofNullable(previousPeriodNote)
+                .map(PreviousPeriod::getTotal)
+                .orElse(null) == null;
     }
 }
