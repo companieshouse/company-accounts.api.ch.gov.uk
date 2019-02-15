@@ -50,7 +50,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
             validateCurrentPeriod(stocks, errors);
             crossValidateCurrentPeriod(errors, request, stocks, companyAccountsId);
         } else {
-            addMandatoryElementMissingError(errors, CURRENT_PERIOD_PATH);
+            addError(errors, mandatoryElementMissing, CURRENT_PERIOD_PATH);
         }
 
         try {
@@ -63,11 +63,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
             }
 
             if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
-                addMandatoryElementMissingError(errors, PREVIOUS_PERIOD_PATH);
+                addError(errors, mandatoryElementMissing, PREVIOUS_PERIOD_PATH);
             }
 
             if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
-                addInconsistentDataError(errors, PREVIOUS_PERIOD_PATH);
+                addError(errors, unexpectedData, PREVIOUS_PERIOD_PATH);
             }
 
         } catch (ServiceException e) {
@@ -92,7 +92,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 (stocks.getCurrentPeriod().getPaymentsOnAccount() != null ||
                         stocks.getCurrentPeriod().getStocks() != null)) {
 
-            addError(errors, invalidNote, CURRENT_PERIOD_TOTAL_PATH);
+//            addError(errors, invalidNote, CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -101,7 +101,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 (stocks.getPreviousPeriod().getPaymentsOnAccount() != null ||
                         stocks.getPreviousPeriod().getStocks() != null)) {
 
-            addError(errors, invalidNote, PREVIOUS_PERIOD_TOTAL_PATH);
+//            addError(errors, invalidNote, PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -140,9 +140,10 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
     }
 
     @Override
-    public Errors crossValidate(Errors errors, HttpServletRequest request,
-                                String companyAccountsId, Stocks stocks)
-            throws DataException {
+    public Errors crossValidate(Stocks stocks,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
 
         crossValidateCurrentPeriod(errors, request, stocks, companyAccountsId);
         crossValidatePreviousPeriod(errors, request, stocks, companyAccountsId);

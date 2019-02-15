@@ -142,7 +142,7 @@ public class StocksValidatorTest {
         mockCurrentPeriodServiceValidCurrentPeriod();
         mockPreviousPeriodServiceValidPreviousPeriod();
 
-        errors = validator.crossValidate(errors, mockRequest, COMPANY_ACCOUNTS_ID, stocks);
+        errors = validator.crossValidate(stocks, mockRequest, COMPANY_ACCOUNTS_ID, errors);
 
         assertFalse(errors.hasErrors());
     }

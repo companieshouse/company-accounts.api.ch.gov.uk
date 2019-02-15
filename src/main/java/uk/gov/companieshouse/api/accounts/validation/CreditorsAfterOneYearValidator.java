@@ -63,7 +63,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             validateCurrentPeriod(creditorsAfterOneYear.getCurrentPeriod(), errors);
             crossValidateCurrentPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
         } else {
-            addMandatoryElementMissingError(errors, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
+            addError(errors, mandatoryElementMissing, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
         }
 
         try {
@@ -76,11 +76,11 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             }
 
             if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
-                addMandatoryElementMissingError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
+                addError(errors, mandatoryElementMissing, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
             }
 
             if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
-                addInconsistentDataError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
+                addError(errors, unexpectedData, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
             }
 
         } catch (ServiceException e) {
@@ -94,8 +94,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
      * @inheritDoc
      */
     @Override
-    public Errors crossValidate(Errors errors, HttpServletRequest request, String companyAccountsId,
-                                CreditorsAfterOneYear creditorsAfterOneYear) throws DataException {
+    public Errors crossValidate(CreditorsAfterOneYear creditorsAfterOneYear,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
 
         crossValidateCurrentPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
         crossValidatePreviousPeriod(errors, request, companyAccountsId, creditorsAfterOneYear);
@@ -229,13 +231,6 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets().getCreditorsAfterOneYear() == null;
     }
 
-    private void validateInconsistentFilings(PreviousPeriod creditorsAfterPreviousPeriod, Errors errors) {
-
-        if (creditorsAfterPreviousPeriod.getTotal() != null) {
-            addInconsistentDataError(errors, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
-        }
-    }
-
     private void validatePreviousPeriod(PreviousPeriod creditorsAfterPreviousPeriod, Errors errors) {
 
         if (creditorsAfterPreviousPeriod.getTotal() == null) {
@@ -266,7 +261,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             creditorsAfterPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts() != null ||
             creditorsAfterPreviousPeriod.getOtherCreditors() != null) {
 
-            addError(errors, invalidNote, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+//            addError(errors, invalidNote, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -298,7 +293,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private void addErrorIfDetailsNotProvided(CurrentPeriod creditorsAfterCurrentPeriod, Errors errors) {
 
         if (creditorsAfterCurrentPeriod.getDetails() == null) {
-            addError(errors, invalidNote, CREDITORS_AFTER_CURRENT_PERIOD_DETAILS_PATH);
+//            addError(errors, invalidNote, CREDITORS_AFTER_CURRENT_PERIOD_DETAILS_PATH);
         }
     }
 
@@ -309,7 +304,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             creditorsAfterCurrentPeriod.getOtherCreditors() != null ||
             creditorsAfterCurrentPeriod.getDetails() != null) {
 
-            addError(errors, invalidNote, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
+//            addError(errors, invalidNote, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 }

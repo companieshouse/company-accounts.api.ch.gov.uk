@@ -50,7 +50,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
             validateCurrentPeriodDebtors(errors, debtors);
             crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
         } else {
-            addMandatoryElementMissingError(errors, DEBTORS_PATH_CURRENT);
+            addError(errors, mandatoryElementMissing, DEBTORS_PATH_CURRENT);
         }
 
         try {
@@ -63,11 +63,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
             }
 
             if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
-                addMandatoryElementMissingError(errors, DEBTORS_PATH_PREVIOUS);
+                addError(errors, mandatoryElementMissing, DEBTORS_PATH_PREVIOUS);
             }
 
             if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
-                addInconsistentDataError(errors, DEBTORS_PATH_PREVIOUS);
+                addError(errors, unexpectedData, DEBTORS_PATH_PREVIOUS);
             }
 
         } catch (ServiceException e) {
@@ -98,7 +98,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                 debtors.getCurrentPeriod().getDetails() != null) &&
                 debtors.getCurrentPeriod().getTotal() == null) {
 
-            addError(errors, invalidNote, CURRENT_TOTAL_PATH);
+//            addError(errors, invalidNote, CURRENT_TOTAL_PATH);
         }
     }
 
@@ -110,7 +110,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                 debtors.getPreviousPeriod().getGreaterThanOneYear() != null) &&
                 debtors.getPreviousPeriod().getTotal() == null) {
 
-            addError(errors, invalidNote, PREVIOUS_TOTAL_PATH);
+//            addError(errors, invalidNote, PREVIOUS_TOTAL_PATH);
         }
     }
 
@@ -155,9 +155,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
      */
 
     @Override
-    public Errors crossValidate(Errors errors, HttpServletRequest request,
-            String companyAccountsId,
-            Debtors debtors) throws DataException {
+    public Errors crossValidate(Debtors debtors,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors)
+            throws DataException {
 
         crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
         crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);

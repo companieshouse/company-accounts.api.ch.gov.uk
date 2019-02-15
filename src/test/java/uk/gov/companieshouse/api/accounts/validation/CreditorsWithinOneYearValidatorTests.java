@@ -1,12 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-import javax.servlet.http.HttpServletRequest;
+import com.mongodb.MongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.mongodb.MongoException;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
@@ -32,6 +25,15 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CreditorsWithinOneYearValidatorTests {
@@ -45,9 +47,7 @@ public class CreditorsWithinOneYearValidatorTests {
             CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".total";
     private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".total";
-    private static final String CREDITORS_WITHIN_CURRENT_PERIOD_DETAILS_PATH =
-            CREDITORS_WITHIN_CURRENT_PERIOD_PATH + ".details";
-    
+
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
             "value_not_equal_to_current_period_on_balance_sheet";
@@ -57,15 +57,13 @@ public class CreditorsWithinOneYearValidatorTests {
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING_VALUE =
             "mandatory_element_missing";
-    
+    private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
+    private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
+
     private static final String COMPANY_ACCOUNTS_ID = "123abcefg";
 
-    private static final String INVALID_NOTE_VALUE = "invalid_note";
-    private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
-    private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
 
     private CreditorsWithinOneYear creditorsWithinOneYear;
     private Errors errors;
@@ -78,13 +76,13 @@ public class CreditorsWithinOneYearValidatorTests {
 
     @Mock
     private ServiceException mockServiceException;
-    
+
     @Mock
     private CurrentPeriodService mockCurrentPeriodService;
 
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
-    
+
     @Mock
     private HttpServletRequest mockRequest;
 
@@ -98,286 +96,94 @@ public class CreditorsWithinOneYearValidatorTests {
     }
 
     @Test
-    @DisplayName("Validation passes on valid single year creditors within resource")
-    void testSuccessfulSingleYearCreditorsWithinNote() throws DataException, ServiceException {
+    @DisplayName("Note validation and cross validation passes with valid note for first year filer")
+    void testSuccessfulFirstYearNoteValidationAndCrossValidation() throws DataException {
 
-        createValidCurrentPeriodCreditors();
+        createValidNoteCurrentPeriod();
 
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-    
+        mockValidBalanceSheetCurrentPeriod();
+
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
-
     }
 
     @Test
-    @DisplayName("Validation passes on valid multiple year filer creditors within resource")
-    void testSuccessfulMultipleYearCreditorsWithinNote() throws ServiceException, DataException {
+    @DisplayName("Note validation and cross validation passes with valid note for multiple year filer")
+    void testSuccessfulMultipleYearNoteValidationAndCrossValidation() throws ServiceException, DataException {
 
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
-        
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-  
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
-
     }
 
     @Test
-    @DisplayName("Error thrown when total field missing")
-    void testErrorThrownWhenMandatoryFieldsMissing() throws ServiceException,
-            DataException {
+    @DisplayName("Note validation passes with valid note for first year filer")
+    void testSuccessfulFirstYearNoteValidation() throws DataException {
 
-        CurrentPeriod currentPeriod = new CurrentPeriod();
-        currentPeriod.setTradeCreditors(1L);
-        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
-
-        PreviousPeriod previousPeriod = new PreviousPeriod();
-        previousPeriod.setOtherCreditors(5L);
-        creditorsWithinOneYear.setPreviousPeriod(previousPeriod);
-        
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-  
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-    
-        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(INVALID_NOTE_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
-    }
-
-    @Test
-    @DisplayName("Error thrown when total value incorrect")
-    void testErrorThrownWhenTotalIsIncorrect() throws ServiceException,
-            DataException {
-
-        CurrentPeriod currentPeriod = new CurrentPeriod();
-        currentPeriod.setTradeCreditors(1L);
-        currentPeriod.setTotal(2L);
-        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
-
-        PreviousPeriod previousPeriod = new PreviousPeriod();
-        previousPeriod.setTaxationAndSocialSecurity(5L);
-        previousPeriod.setTotal(50L);
-        creditorsWithinOneYear.setPreviousPeriod(previousPeriod);
-
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-  
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-        
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        createValidNoteCurrentPeriod();
 
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
-    }
-    
-    @Test
-    @DisplayName("Error thrown when current period balance sheet creditors is not provided but the note has a value")
-    void testErrorThrownWhenBalanceSheetValueNotProvidedButNoteValueIsProvided() throws ServiceException,
-            DataException {
-
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
-        
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertFalse(errors.hasErrors());
     }
 
     @Test
-    @DisplayName("Error thrown when single year filer creates previous period creditors")
-    void testErrorThrownWhenPreviousPeriodFiledOnSingleYearCompany() throws ServiceException,
-            DataException {
+    @DisplayName("Note validation passes with valid note for multiple year filer")
+    void testSuccessfulMultipleYearNoteValidation() throws ServiceException, DataException {
 
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
-
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-        
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
-
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_NAME, INCONSISTENT_DATA_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-
-        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
-    }
-
-    @Test
-    @DisplayName("Error thrown when no totals provided")
-    void testErrorThrownWhenNoTotalAndNoDetailsProvided() throws ServiceException,
-            DataException {
-
-        creditorsWithinOneYear.setCurrentPeriod(new CurrentPeriod());
-        creditorsWithinOneYear.setPreviousPeriod(new PreviousPeriod());
-        
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-  
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-
-        ReflectionTestUtils.setField(validator, INVALID_NOTE_NAME, INVALID_NOTE_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertFalse(errors.hasErrors());
     }
 
     @Test
-    @DisplayName("Data exception thrown when company service api call fails")
-    void testDataExceptionThrown() throws ServiceException,
-            DataException {
+    @DisplayName("Cross validation passes with valid note for first year filer")
+    void testSuccessfulCrossValidationForFirstYearFiler() throws DataException {
 
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
+        createValidNoteCurrentPeriod();
 
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-        
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        mockValidBalanceSheetCurrentPeriod();
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+        errors = validator.crossValidate(creditorsWithinOneYear, mockRequest, COMPANY_ACCOUNTS_ID, errors);
 
-        assertThrows(DataException.class,
-                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
-                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
-    }
-    
-    @Test
-    @DisplayName("Data exception thrown when mongo current balancesheet call fails")
-    void testDataExceptionThrownWhenCurrentBalanceSheetMongoCallFails() throws ServiceException,
-            DataException {
-
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
-        
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
-
-        assertThrows(DataException.class,
-                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
-                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
-    }
-    
-    @Test
-    @DisplayName("Data exception thrown when mongo previous balancesheet call fails")
-    void testDataExceptionThrownWhenPreviousBalanceSheetMongoCallFails() throws ServiceException,
-            DataException {
-
-        createValidCurrentPeriodCreditors();
-        createPreviousPeriodCreditors();
-        
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).findById(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-      
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        assertThrows(DataException.class,
-                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
-                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+        assertFalse(errors.hasErrors());
     }
 
     @Test
-    @DisplayName("Errors returned when no data to validate")
-    void testErrorsWhenNoDataPresent() throws ServiceException, DataException {
+    @DisplayName("Cross validation passes with valid note for multiple year filer")
+    void testSuccessfulCrossValidationForMultipleYearFiler() throws DataException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
+
+        errors = validator.crossValidate(creditorsWithinOneYear, mockRequest, COMPANY_ACCOUNTS_ID, errors);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Errors returned for empty note when balance sheet periods have values")
+    void testErrorsReturnedWhenNoDataPresentButBalanceSheetPeriodValuesProvided() throws ServiceException, DataException {
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
 
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
                 MANDATORY_ELEMENT_MISSING_VALUE);
@@ -393,20 +199,220 @@ public class CreditorsWithinOneYearValidatorTests {
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
     }
 
-    private void createPreviousPeriodCreditors() {
-        PreviousPeriod previousCreditors = new PreviousPeriod();
-        previousCreditors.setAccrualsAndDeferredIncome(2L);
-        previousCreditors.setBankLoansAndOverdrafts(2L);
-        previousCreditors.setFinanceLeasesAndHirePurchaseContracts(2L);
-        previousCreditors.setOtherCreditors(2L);
-        previousCreditors.setTaxationAndSocialSecurity(2L);
-        previousCreditors.setTradeCreditors(2L);
-        previousCreditors.setTotal(12L);
+    @Test
+    @DisplayName("Error returned for first year filer if previous period provided in note")
+    void testUnexpectedDataErrorReturnedForFirstYearFiler() throws ServiceException, DataException {
 
-        creditorsWithinOneYear.setPreviousPeriod(previousCreditors);
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        mockValidBalanceSheetCurrentPeriod();
+
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
+                UNEXPECTED_DATA_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
     }
-    
-    private void createValidCurrentPeriodCreditors() {
+
+    @Test
+    @DisplayName("Errors returned when total fields missing")
+    void testErrorsReturnedWhenMandatoryFieldsMissing() throws ServiceException,
+            DataException {
+
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setTradeCreditors(1L);
+        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setOtherCreditors(5L);
+        creditorsWithinOneYear.setPreviousPeriod(previousPeriod);
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(4, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Errors returned when total values incorrect")
+    void testErrorsReturnedWhenTotalValuesIncorrect() throws ServiceException,
+            DataException {
+
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setTradeCreditors(1L);
+        currentPeriod.setTotal(2L);
+        creditorsWithinOneYear.setCurrentPeriod(currentPeriod);
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setTaxationAndSocialSecurity(5L);
+        previousPeriod.setTotal(50L);
+        creditorsWithinOneYear.setPreviousPeriod(previousPeriod);
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(4, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Errors returned when balance sheet period values empty but note periods not empty")
+    void testErrorThrownWhenBalanceSheetPeriodValuesEmptyButNotPeriodsNotEmpty() throws ServiceException,
+            DataException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        mockBalanceSheetCurrentPeriodWithoutNoteValue();
+        mockBalanceSheetPreviousPeriodWithoutNoteValue();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
+                UNEXPECTED_DATA_VALUE);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
+    }
+
+    @Test
+    @DisplayName("Errors returned when no totals provided")
+    void testErrorsReturnedWhenNoTotalsProvided() throws ServiceException,
+            DataException {
+
+        creditorsWithinOneYear.setCurrentPeriod(new CurrentPeriod());
+        creditorsWithinOneYear.setPreviousPeriod(new PreviousPeriod());
+
+        mockValidBalanceSheetCurrentPeriod();
+        mockValidBalanceSheetPreviousPeriod();
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(4, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
+    }
+
+    @Test
+    @DisplayName("Data exception thrown when company service API call fails")
+    void testDataExceptionThrown() throws ServiceException {
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+
+        assertThrows(DataException.class,
+                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
+                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("Data exception thrown when mongo current balancesheet call fails")
+    void testDataExceptionThrownWhenCurrentBalanceSheetMongoCallFails() throws ServiceException,
+            DataException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+
+        assertThrows(DataException.class,
+                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
+                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("Data exception thrown when mongo previous balancesheet call fails")
+    void testDataExceptionThrownWhenPreviousBalanceSheetMongoCallFails() throws ServiceException,
+            DataException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        mockValidBalanceSheetCurrentPeriod();
+
+        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        assertThrows(DataException.class,
+                () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
+                        mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    private void createValidNoteCurrentPeriod() {
         CurrentPeriod creditorsCurrent = new CurrentPeriod();
         creditorsCurrent.setAccrualsAndDeferredIncome(1L);
         creditorsCurrent.setBankLoansAndOverdrafts(1L);
@@ -419,44 +425,93 @@ public class CreditorsWithinOneYearValidatorTests {
         creditorsWithinOneYear.setCurrentPeriod(creditorsCurrent);
     }
 
+    private void createValidNotePreviousPeriod() {
+        PreviousPeriod previousCreditors = new PreviousPeriod();
+        previousCreditors.setAccrualsAndDeferredIncome(2L);
+        previousCreditors.setBankLoansAndOverdrafts(2L);
+        previousCreditors.setFinanceLeasesAndHirePurchaseContracts(2L);
+        previousCreditors.setOtherCreditors(2L);
+        previousCreditors.setTaxationAndSocialSecurity(2L);
+        previousCreditors.setTradeCreditors(2L);
+        previousCreditors.setTotal(12L);
+
+        creditorsWithinOneYear.setPreviousPeriod(previousCreditors);
+    }
+
     private Error createError(String error, String path) {
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
-    
-    private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {
-      ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-              new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                      ResponseStatus.FOUND);
 
-      uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
-              new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
-      
-      OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
-      otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(6L);
-      BalanceSheet balanceSheet = new BalanceSheet();
-      balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
-      currentPeriodTest.setBalanceSheet(balanceSheet);
+    private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject(boolean includeNoteValue) {
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
+                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
+                        ResponseStatus.FOUND);
 
-      currentPeriodResponseObject.setData(currentPeriodTest);
-      return currentPeriodResponseObject;
-  }
+        uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
+                new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
 
-  private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generateValidPreviousPeriodResponseObject() {
-      ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
-              new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod>(
-                      ResponseStatus.FOUND);
+        BalanceSheet balanceSheet = new BalanceSheet();
 
-      uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
-              new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
-      
-      OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
-      otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(12L);
-      BalanceSheet balanceSheet = new BalanceSheet();
-      balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
-      previousPeriodTest.setBalanceSheet(balanceSheet);
+        if (includeNoteValue) {
+            OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+            otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(6L);
+            balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        }
 
-      previousPeriodResponseObject.setData(previousPeriodTest);
-      return previousPeriodResponseObject;
-  }
+        currentPeriodTest.setBalanceSheet(balanceSheet);
+
+        currentPeriodResponseObject.setData(currentPeriodTest);
+        return currentPeriodResponseObject;
+    }
+
+    private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generateValidPreviousPeriodResponseObject(boolean includeNoteValue) {
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
+                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod>(
+                        ResponseStatus.FOUND);
+
+        uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
+                new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
+
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        if (includeNoteValue) {
+            OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+            otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(12L);
+            balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+        }
+
+        previousPeriodTest.setBalanceSheet(balanceSheet);
+
+        previousPeriodResponseObject.setData(previousPeriodTest);
+        return previousPeriodResponseObject;
+    }
+
+    private void mockValidBalanceSheetCurrentPeriod() throws DataException {
+        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidCurrentPeriodResponseObject(true)).when(mockCurrentPeriodService).findById(
+                COMPANY_ACCOUNTS_ID, mockRequest);
+    }
+
+    private void mockValidBalanceSheetPreviousPeriod() throws DataException {
+        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).findById(
+                COMPANY_ACCOUNTS_ID, mockRequest);
+    }
+
+    private void mockBalanceSheetCurrentPeriodWithoutNoteValue() throws DataException {
+        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).findById(
+                COMPANY_ACCOUNTS_ID, mockRequest);
+    }
+
+    private void mockBalanceSheetPreviousPeriodWithoutNoteValue() throws DataException {
+        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
+                COMPANY_ACCOUNTS_ID);
+        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).findById(
+                COMPANY_ACCOUNTS_ID, mockRequest);
+    }
 }
