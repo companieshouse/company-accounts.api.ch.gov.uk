@@ -1,22 +1,25 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import com.mongodb.MongoException;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.Optional;
 
 @Component
 public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
@@ -46,236 +49,177 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         Errors errors = new Errors();
 
-        if (debtors.getCurrentPeriod() != null) {
-            validateCurrentPeriodDebtors(errors, debtors);
-            crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
+        boolean multipleYearFiler = getIsMultipleYearFiler(transaction);
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
+
+        CurrentPeriod currentPeriodNote = debtors.getCurrentPeriod();
+        PreviousPeriod previousPeriodNote = debtors.getPreviousPeriod();
+
+        validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
+
+        if (multipleYearFiler) {
+            validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else {
+            validatePreviousPeriodNotPresent(debtors.getPreviousPeriod(), errors);
+        }
+
+        return errors;
+    }
+
+    private void validateCurrentPeriod(CurrentPeriod currentPeriodNote, BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+
+        boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
+        boolean hasCurrentPeriodBalanceSheetNoteValue = !isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
+        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
+
+        if (!hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
+
+            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet, DEBTORS_PATH_CURRENT, errors)) {
+                validateCurrentPeriodFields(currentPeriodNote, errors);
+            }
+
+        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors)) {
+
+            if (hasCurrentPeriodNoteData) {
+                validateCurrentPeriodFields(currentPeriodNote, errors);
+            }
+
+            if (hasCurrentPeriodNoteData && hasCurrentPeriodBalanceSheetNoteValue) {
+                crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+            }
+        }
+    }
+
+    private void validatePreviousPeriod(PreviousPeriod previousPeriodNote, BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+
+        boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
+        boolean hasPreviousPeriodBalanceSheetNoteValue = !isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
+        boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
+
+        if (!hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
+
+            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet, DEBTORS_PATH_PREVIOUS, errors)) {
+                validatePreviousPeriodFields(previousPeriodNote, errors);
+            }
+
+        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors)) {
+
+            if (hasPreviousPeriodNoteData) {
+                validatePreviousPeriodFields(previousPeriodNote, errors);
+            }
+
+            if (hasPreviousPeriodNoteData && hasPreviousPeriodBalanceSheetNoteValue) {
+                crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
+            }
+        }
+    }
+
+    private void validatePreviousPeriodNotPresent(PreviousPeriod previousPeriodDebtors,
+                                                  Errors errors) {
+
+        if (previousPeriodDebtors != null) {
+            addError(errors, unexpectedData, DEBTORS_PATH_PREVIOUS);
+        }
+    }
+
+    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
+       String errorPath, Errors errors) {
+
+        if (hasCurrentPeriodBalanceSheet) {
+            addError(errors, unexpectedData, errorPath);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void validateCurrentPeriodFields(CurrentPeriod debtorsCurrentPeriod, Errors errors) {
+        if (debtorsCurrentPeriod.getTotal() == null) {
+            addError(errors, mandatoryElementMissing, CURRENT_TOTAL_PATH);
+        } else {
+            validateCurrentPeriodTotalCalculation(debtorsCurrentPeriod, errors);
+        }
+    }
+
+    private void validatePreviousPeriodFields(@Valid PreviousPeriod debtorsPreviousPeriod, Errors errors) {
+
+        if (debtorsPreviousPeriod.getTotal() == null) {
+            addError(errors, mandatoryElementMissing, PREVIOUS_TOTAL_PATH);
+        } else {
+            validatePreviousPeriodTotalCalculation(debtorsPreviousPeriod, errors);
+        }
+    }
+
+    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetValue,
+                                                boolean hasCurrentPeriodNoteData,
+                                                Errors errors) {
+
+        if (hasCurrentPeriodBalanceSheetValue && !hasCurrentPeriodNoteData) {
             addError(errors, mandatoryElementMissing, DEBTORS_PATH_CURRENT);
+            return false;
+        } else if (!hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
+            addError(errors, unexpectedData, DEBTORS_PATH_CURRENT);
+            return false;
         }
 
-        try {
-            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
-            boolean hasProvidedPreviousPeriod = (debtors.getPreviousPeriod() != null);
+        return true;
+    }
 
-            if (isMultipleYearFiler && hasProvidedPreviousPeriod) {
-                validatePreviousPeriodDebtors(errors, debtors);
-                crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
-            }
+    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetValue,
+                                                 boolean hasPreviousPeriodNoteData,
+                                                 Errors errors) {
 
-            if (isMultipleYearFiler && !hasProvidedPreviousPeriod) {
-                addError(errors, mandatoryElementMissing, DEBTORS_PATH_PREVIOUS);
-            }
-
-            if (!isMultipleYearFiler && hasProvidedPreviousPeriod) {
-                addError(errors, unexpectedData, DEBTORS_PATH_PREVIOUS);
-            }
-
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
+        if (hasPreviousPeriodBalanceSheetValue && !hasPreviousPeriodNoteData) {
+            addError(errors, mandatoryElementMissing, DEBTORS_PATH_PREVIOUS);
+            return false;
+        } else if (!hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
+            addError(errors, unexpectedData, DEBTORS_PATH_PREVIOUS);
+            return false;
         }
 
-        return errors;
+        return true;
     }
 
-    private void validatePreviousPeriodDebtors(Errors errors, Debtors debtors) {
+    private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod debtorsCurrentPeriod, Errors errors) {
 
-        validateRequiredPreviousPeriodTotalFieldNotNull(debtors, errors);
-        validatePreviousPeriodTotalIsCorrect(debtors, errors);
+        Long tradeDebtors =
+            Optional.ofNullable(debtorsCurrentPeriod.getTradeDebtors()).orElse(0L);
+        Long prepaymentsAndAccruedIncome =
+            Optional.ofNullable(debtorsCurrentPeriod.getPrepaymentsAndAccruedIncome()).orElse(0L);
+        Long otherDebtors =
+            Optional.ofNullable(debtorsCurrentPeriod.getOtherDebtors()).orElse(0L);
+
+        Long total = debtorsCurrentPeriod.getTotal();
+        Long sum =
+            tradeDebtors + prepaymentsAndAccruedIncome + otherDebtors;
+
+        validateAggregateTotal(total, sum, CURRENT_TOTAL_PATH, errors);
     }
 
+    private void validatePreviousPeriodTotalCalculation(@Valid PreviousPeriod debtorsPreviousPeriod, Errors errors) {
 
-    private void validateCurrentPeriodDebtors(Errors errors, Debtors debtors) {
-        validateRequiredCurrentPeriodTotalFieldNotNull(debtors, errors);
-        validateCurrentPeriodTotalIsCorrect(debtors, errors);
+        Long tradeDebtors =
+            Optional.ofNullable(debtorsPreviousPeriod.getTradeDebtors()).orElse(0L);
+        Long prepaymentsAndAccruedIncome =
+            Optional.ofNullable(debtorsPreviousPeriod.getPrepaymentsAndAccruedIncome()).orElse(0L);
+        Long otherDebtors =
+            Optional.ofNullable(debtorsPreviousPeriod.getOtherDebtors()).orElse(0L);
+
+        Long total = debtorsPreviousPeriod.getTotal();
+        Long sum =
+            tradeDebtors + prepaymentsAndAccruedIncome + otherDebtors;
+
+        validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
     }
 
-    private void validateRequiredCurrentPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
+    private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
+                                                      String companyAccountsId) throws DataException {
 
-        if ((debtors.getCurrentPeriod().getTradeDebtors() != null ||
-                debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome() != null ||
-                debtors.getCurrentPeriod().getOtherDebtors() != null ||
-                debtors.getCurrentPeriod().getGreaterThanOneYear() != null ||
-                debtors.getCurrentPeriod().getDetails() != null) &&
-                debtors.getCurrentPeriod().getTotal() == null) {
-
-//            addError(errors, invalidNote, CURRENT_TOTAL_PATH);
-        }
-    }
-
-    private void validateRequiredPreviousPeriodTotalFieldNotNull(Debtors debtors, Errors errors) {
-
-        if ((debtors.getPreviousPeriod().getTradeDebtors() != null ||
-                debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome() != null ||
-                debtors.getPreviousPeriod().getOtherDebtors() != null ||
-                debtors.getPreviousPeriod().getGreaterThanOneYear() != null) &&
-                debtors.getPreviousPeriod().getTotal() == null) {
-
-//            addError(errors, invalidNote, PREVIOUS_TOTAL_PATH);
-        }
-    }
-
-    private void validateCurrentPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
-
-        if (debtors.getCurrentPeriod().getTotal() != null) {
-            Long traderDebtors =
-                    Optional.ofNullable(debtors.getCurrentPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments =
-                    Optional.ofNullable(debtors.getCurrentPeriod().getPrepaymentsAndAccruedIncome())
-                            .orElse(0L);
-            Long otherDebtors =
-                    Optional.ofNullable(debtors.getCurrentPeriod().getOtherDebtors()).orElse(0L);
-
-            Long total = debtors.getCurrentPeriod().getTotal();
-            Long sum = traderDebtors + prepayments + otherDebtors;
-
-            validateAggregateTotal(total, sum, CURRENT_TOTAL_PATH, errors);
-        }
-    }
-
-    private void validatePreviousPeriodTotalIsCorrect(Debtors debtors, Errors errors) {
-
-        if (debtors.getPreviousPeriod().getTotal() != null) {
-            Long traderDebtors =
-                    Optional.ofNullable(debtors.getPreviousPeriod().getTradeDebtors()).orElse(0L);
-            Long prepayments =
-                    Optional.ofNullable(debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome())
-                            .orElse(0L);
-            Long otherDebtors =
-                    Optional.ofNullable(debtors.getPreviousPeriod().getOtherDebtors()).orElse(0L);
-
-            Long total = debtors.getPreviousPeriod().getTotal();
-            Long sum = traderDebtors + prepayments + otherDebtors;
-
-            validateAggregateTotal(total, sum, PREVIOUS_TOTAL_PATH, errors);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-
-    @Override
-    public Errors crossValidate(Debtors debtors,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors)
-            throws DataException {
-
-        crossValidateCurrentPeriod(errors, request, debtors, companyAccountsId);
-        crossValidatePreviousPeriod(errors, request, companyAccountsId, debtors);
-
-        return errors;
-    }
-
-    private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request,
-            String companyAccountsId,
-            Debtors debtors) throws DataException {
-
-        ResponseObject<PreviousPeriod> previousPeriodResponseObject =
-                getPreviousPeriodResponseObject(request, companyAccountsId);
-
-        checkIfPreviousNoteIsNullAndBalanceNot(errors, debtors, previousPeriodResponseObject);
-        checkIsPrevousBalanceNullAndNoteNot(errors, debtors, previousPeriodResponseObject);
-        checkIfPreviousBalanceAndNoteValuesAreEqual(errors, debtors, previousPeriodResponseObject);
-    }
-
-    private void checkIfPreviousBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
-            ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
-        if (! isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-                (! isDebtorsNotePreviousTotalNull(debtors))
-
-                && (! debtors.getPreviousPeriod().getTotal().equals(
-                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors()))) {
-
-            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        }
-    }
-
-    private void checkIsPrevousBalanceNullAndNoteNot(Errors errors, Debtors debtors,
-            ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
-        if (isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject) &&
-                (! isDebtorsNotePreviousTotalNull(debtors))) {
-
-            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        }
-    }
-
-    private void checkIfPreviousNoteIsNullAndBalanceNot(Errors errors, Debtors debtors,
-            ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
-        if (isDebtorsNotePreviousTotalNull(debtors) &&
-                (! isPreviousPeriodBalanceSheetDebtorsNull(previousPeriodResponseObject))) {
-
-            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
-        }
-    }
-
-    private ResponseObject<PreviousPeriod> getPreviousPeriodResponseObject(
-            HttpServletRequest request, String companyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<PreviousPeriod> previousPeriodResponseObject;
-
-        try {
-            previousPeriodResponseObject =
-                    previousPeriodService.findById(previousPeriodId, request);
-        } catch (MongoException e) {
-
-            throw new DataException(e.getMessage(), e);
-        }
-        return previousPeriodResponseObject;
-    }
-
-    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request,
-            Debtors debtors,
-            String companyAccountsId) throws DataException {
-
-        ResponseObject<CurrentPeriod> currentPeriodResponseObject =
-                getCurrentPeriodResponseObject(request, companyAccountsId);
-
-        checkIfCurrentNoteIsNullAndBalanceSheetNot(errors, debtors, currentPeriodResponseObject);
-        checkIfCurrentBalanceSheetIsNullAndNoteNot(errors, debtors, currentPeriodResponseObject);
-        checkIfCurrentBalanceAndNoteValuesAreEqual(errors, debtors, currentPeriodResponseObject);
-    }
-
-    private void checkIfCurrentBalanceAndNoteValuesAreEqual(Errors errors, Debtors debtors,
-            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
-
-        if (! (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject)) &&
-                (! isDebtorsNoteCurrentTotalNull(debtors))
-
-                && ! (debtors.getCurrentPeriod().getTotal().equals(currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                .getDebtors()))) {
-
-            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
-        }
-    }
-
-    private void checkIfCurrentBalanceSheetIsNullAndNoteNot(Errors errors, Debtors debtors,
-            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
-        if (isCurrentPeriodBalanceSheetDebtorsNull(currentPeriodResponseObject) &&
-                (! isDebtorsNoteCurrentTotalNull(debtors))) {
-
-            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
-        }
-    }
-
-    private void checkIfCurrentNoteIsNullAndBalanceSheetNot(Errors errors, Debtors debtors,
-            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
-        if (isDebtorsNoteCurrentTotalNull(debtors) &&
-                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() != null &&
-                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors() != null) {
-
-            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
-        }
-    }
-
-    private ResponseObject<CurrentPeriod> getCurrentPeriodResponseObject(HttpServletRequest request,
-            String companyAccountsId) throws DataException {
         String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
 
-        ResponseObject<CurrentPeriod> currentPeriodResponseObject;
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
 
         try {
 
@@ -284,36 +228,164 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             throw new DataException(e.getMessage(), e);
         }
-        return currentPeriodResponseObject;
+        if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
+            return currentPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+            return null;
+        }
     }
 
-    private boolean isDebtorsNoteCurrentTotalNull(Debtors debtors) {
-        return debtors.getCurrentPeriod() == null || debtors.getCurrentPeriod().getTotal() == null;
+    private BalanceSheet getPreviousPeriodBalanceSheet(
+        HttpServletRequest request, String companyAccountsId) throws DataException {
+        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
+
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
+
+        try {
+            previousPeriodResponseObject =
+                previousPeriodService.findById(previousPeriodId, request);
+        } catch (MongoException e) {
+
+            throw new DataException(e.getMessage(), e);
+        }
+        if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
+            return previousPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+            return null;
+        }
     }
 
-    private boolean isCurrentPeriodBalanceSheetDebtorsNull(
-            ResponseObject<CurrentPeriod> currentPeriodResponseObject) {
-
-        return currentPeriodResponseObject.getData() == null ||
-                currentPeriodResponseObject.getData().getBalanceSheet() == null ||
-                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
-                currentPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors() == null;
+    private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
+        try {
+            return companyService.isMultipleYearFiler(transaction);
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
+        }
     }
 
-    private boolean isPreviousPeriodBalanceSheetDebtorsNull(
-            ResponseObject<PreviousPeriod> previousPeriodResponseObject) {
+    @Override
+    public Errors crossValidate(Debtors debtors, HttpServletRequest request, String companyAccountsId,
+        Errors errors) throws DataException {
 
-        return previousPeriodResponseObject.getData() == null ||
-                previousPeriodResponseObject.getData().getBalanceSheet() == null ||
-                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets() == null ||
-                previousPeriodResponseObject.getData().getBalanceSheet().getCurrentAssets()
-                        .getDebtors() == null;
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
+
+        crossValidateCurrentPeriodFields(debtors.getCurrentPeriod(), currentPeriodBalanceSheet, errors);
+        crossValidatePreviousPeriodFields(debtors.getPreviousPeriod(), previousPeriodBalanceSheet, errors);
+
+        return errors;
     }
 
-    private boolean isDebtorsNotePreviousTotalNull(Debtors debtors) {
+    private void crossValidateCurrentPeriodFields(CurrentPeriod currentPeriodDebtors,
+        BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
-        return debtors.getPreviousPeriod() == null ||
-                debtors.getPreviousPeriod().getTotal() == null;
+        checkIfCurrentNoteIsNullAndBalanceSheetNot(currentPeriodDebtors, currentPeriodBalanceSheet, errors);
+        checkIfCurrentBalanceSheetIsNullAndNoteNot(currentPeriodDebtors, currentPeriodBalanceSheet, errors);
+        checkIfCurrentBalanceAndNoteValuesAreEqual(currentPeriodDebtors, currentPeriodBalanceSheet, errors);
+    }
+
+    private void checkIfCurrentNoteIsNullAndBalanceSheetNot(CurrentPeriod currentPeriodNote,
+        BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+
+        if (isCurrentPeriodNoteDataNull(currentPeriodNote) &&
+            !isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)) {
+
+            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentBalanceSheetIsNullAndNoteNot(CurrentPeriod currentPeriodNote,
+        BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+
+        if (isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet) &&
+            !isCurrentPeriodNoteDataNull(currentPeriodNote)) {
+
+            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfCurrentBalanceAndNoteValuesAreEqual(CurrentPeriod currentPeriodNote,
+        BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+
+        if (!isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)
+            && !isCurrentPeriodNoteDataNull(currentPeriodNote)
+            && !(currentPeriodNote.getTotal().equals(currentPeriodBalanceSheet.getCurrentAssets()
+            .getDebtors()))) {
+
+            addError(errors, currentBalanceSheetNotEqual, CURRENT_TOTAL_PATH);
+        }
+    }
+
+    private void crossValidatePreviousPeriodFields(PreviousPeriod previousPeriodNote,
+        BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+
+        checkIfPreviousNoteIsNullAndBalanceNot(previousPeriodNote, previousPeriodBalanceSheet, errors);
+        checkIsPreviousBalanceNullAndNoteNot(previousPeriodNote, previousPeriodBalanceSheet, errors);
+        checkIfPreviousBalanceAndNoteValuesAreEqual(previousPeriodNote, previousPeriodBalanceSheet, errors);
+    }
+
+    private void checkIfPreviousNoteIsNullAndBalanceNot(PreviousPeriod previousPeriodNote,
+        BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+
+        if (isPreviousPeriodNoteDataNull(previousPeriodNote) &&
+            (!isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet))) {
+
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
+        }
+    }
+
+    private void checkIsPreviousBalanceNullAndNoteNot(PreviousPeriod previousPeriodNote,
+        BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+
+        if (isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet) &&
+            (!isPreviousPeriodNoteDataNull(previousPeriodNote))) {
+
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
+        }
+    }
+
+    private void checkIfPreviousBalanceAndNoteValuesAreEqual(PreviousPeriod previousPeriodNote,
+        BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+
+        if (!isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet) &&
+            (!isPreviousPeriodNoteDataNull(previousPeriodNote))
+            && (!previousPeriodNote.getTotal().equals(
+            previousPeriodBalanceSheet.getCurrentAssets()
+                .getDebtors()))) {
+
+            addError(errors, previousBalanceSheetNotEqual, PREVIOUS_TOTAL_PATH);
+        }
+    }
+
+    private boolean isCurrentPeriodNoteDataNull(CurrentPeriod currentPeriodDebtors) {
+
+        return Optional.ofNullable(currentPeriodDebtors)
+            .map(CurrentPeriod::getTotal)
+            .orElse(null) == null;
+    }
+
+    private boolean isPreviousPeriodNoteDataNull(PreviousPeriod previousPeriodNote) {
+
+        return Optional.ofNullable(previousPeriodNote)
+            .map(PreviousPeriod::getTotal)
+            .orElse(null) == null;
+    }
+
+    private boolean isCurrentPeriodBalanceSheetDataNull(
+        BalanceSheet currentPeriodBalanceSheet) {
+
+        return Optional.ofNullable(currentPeriodBalanceSheet)
+            .map(BalanceSheet::getCurrentAssets)
+            .map(CurrentAssets::getDebtors)
+            .orElse(null) == null;
+    }
+
+    private boolean isPreviousPeriodBalanceSheetDataNull(
+        BalanceSheet previousPeriodBalanceSheet) {
+
+        return Optional.ofNullable(previousPeriodBalanceSheet)
+            .map(BalanceSheet::getCurrentAssets)
+            .map(CurrentAssets::getDebtors)
+            .orElse(null) == null;
     }
 }
