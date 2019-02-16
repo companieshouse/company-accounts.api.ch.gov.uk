@@ -1,57 +1,97 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
+import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Component
 public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     @Autowired
-    private TransactionManager transactionManager;
+    private ApiClientService apiClientService;
 
     /**
-     * Pre handle method to validate the request before it reaches the controller. Check if the url
-     * has an existing transaction and save it in the request's attribute. If transaction is not
-     * found then return 404
+     * Pre handle method to validate the request before it reaches the
+     * controller. Check if the url has an existing transaction and save it in
+     * the request's attribute. If transaction is not found then return 404
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
 
         try {
             Map<String, String> pathVariables = (Map) request
-                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                    .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
             String transactionId = pathVariables.get("transactionId");
-            ResponseEntity<Transaction> transaction = transactionManager
-                .getTransaction(transactionId, request.getHeader("X-Request-Id"));
+            String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
-            request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction.getBody());
+            if (passthroughHeader == null || passthroughHeader.isEmpty()) {
+                debugMap.put("message", "ERIC passthrough token header is empty");
+                LOGGER.errorRequest(request, null, debugMap);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return false;
+            }
+
+            ApiClient apiClient;
+            try {
+                apiClient = apiClientService.getApiClient(passthroughHeader);
+            } catch (IOException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return false;
+            }
+
+            Transaction transaction;
+            try {
+                transaction = apiClient.transactions().get("/transactions/" + transactionId).execute();
+            } catch (ApiErrorResponseException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
+                response.setStatus(e.getStatusCode());
+                return false;
+            } catch (URIValidationException e) {
+
+                LOGGER.errorRequest(request, e, debugMap);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return false;
+            }
+
+            request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction);
+
             return true;
-        } catch (HttpClientErrorException httpClientErrorException) {
-            LOGGER.errorRequest(request, httpClientErrorException, debugMap);
-            response.setStatus(httpClientErrorException.getStatusCode().value());
+        } catch (HttpClientErrorException e) {
+
+            LOGGER.errorRequest(request, e, debugMap);
+            response.setStatus(e.getStatusCode().value());
             return false;
         }
     }

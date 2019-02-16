@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorRequest;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionServiceProperties;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -40,13 +40,13 @@ public class DocumentGeneratorCaller {
     private String documentGeneratorEndPoint;
 
     private RestTemplate restTemplate;
-    private TransactionServiceProperties transactionServiceProperties;
+
+    private EnvironmentReader environmentReader;
 
     @Autowired
-    DocumentGeneratorCaller(RestTemplate restTemplate,
-        TransactionServiceProperties transactionServiceProperties) {
+    DocumentGeneratorCaller(RestTemplate restTemplate, EnvironmentReader environmentReader) {
         this.restTemplate = restTemplate;
-        this.transactionServiceProperties = transactionServiceProperties;
+        this.environmentReader = environmentReader;
     }
 
     public DocumentGeneratorResponse callDocumentGeneratorService(String accountsResourceUri) {
@@ -136,7 +136,7 @@ public class DocumentGeneratorCaller {
      * @return Returns the api key if set, otherwise throw an exception
      */
     private String getApiKey() {
-        String apiKey = transactionServiceProperties.getApiKey();
+        String apiKey = environmentReader.getMandatoryString("CHS_API_KEY");
         if (apiKey.isEmpty()) {
             throw new IllegalArgumentException(
                 "DocumentGeneratorCaller: API Key property has not been set");
