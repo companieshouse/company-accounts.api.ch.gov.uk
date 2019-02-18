@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -308,13 +307,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
 
-        try {
-            previousPeriodResponseObject =
-                    previousPeriodService.findById(previousPeriodId, request);
-        } catch (MongoException e) {
+        previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
 
-            throw new DataException(e.getMessage(), e);
-        }
         if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
             return previousPeriodResponseObject.getData().getBalanceSheet();
         } else {
@@ -373,13 +367,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
 
-        try {
+        currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
 
-            currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
-        } catch (MongoException e) {
-
-            throw new DataException(e.getMessage(), e);
-        }
         if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
             return currentPeriodResponseObject.getData().getBalanceSheet();
         } else {
