@@ -30,10 +30,11 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -48,6 +49,9 @@ public class ApprovalServiceTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private TransactionLinks transactionLinks;
 
     @Mock
     private ApprovalRepository approvalRepository;
@@ -79,12 +83,18 @@ public class ApprovalServiceTest {
     @InjectMocks
     private ApprovalService approvalService;
 
+    private static final String SELF_LINK = "self_link";
+
 
     @Test
     @DisplayName("Tests the successful creation of an Approval resource")
     public void canCreateAnApproval() throws DataException {
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
         doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<Approval> result = approvalService
             .create(approval, transaction, "", request);
         assertNotNull(result);
@@ -98,6 +108,10 @@ public class ApprovalServiceTest {
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(duplicateKeyException);
         doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = approvalService.create(approval, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -111,6 +125,10 @@ public class ApprovalServiceTest {
             .any(Approval.class));
         doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class,
             () -> approvalService.create(approval, transaction, "", request));
     }

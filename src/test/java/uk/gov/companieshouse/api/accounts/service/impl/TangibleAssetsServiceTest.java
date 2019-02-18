@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -30,12 +31,15 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.TangibleAssetsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.TangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+import uk.gov.companieshouse.api.accounts.validation.TangibleAssetsValidator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -46,6 +50,9 @@ public class TangibleAssetsServiceTest {
 
     @Mock
     private TangibleAssetsRepository repository;
+
+    @Mock
+    private TangibleAssetsValidator validator;
 
     @Mock
     private SmallFullService smallFullService;
@@ -60,6 +67,9 @@ public class TangibleAssetsServiceTest {
     private Transaction transaction;
 
     @Mock
+    private TransactionLinks transactionLinks;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -67,6 +77,9 @@ public class TangibleAssetsServiceTest {
 
     @Mock
     private Map<String, String> links;
+
+    @Mock
+    private Errors errors;
 
     @InjectMocks
     private TangibleAssetsService tangibleAssetsService;
@@ -79,12 +92,19 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the successful creation of a Tangible Assets resource")
     void createTangibleAssetsSuccess() throws DataException {
 
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(tangibleAssets.getLinks()).thenReturn(links);
         when(links.get(BasicLinkType.SELF.getLink())).thenReturn(SELF_LINK);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -101,10 +121,17 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Tangible Assets resource where the repository throws a duplicate key exception")
     void createTangibleAssetsDuplicateKeyException() throws DataException {
 
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.insert(tangibleAssetsEntity)).thenThrow(DuplicateKeyException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -121,10 +148,17 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Tangible Assets resource where the repository throws a Mongo exception")
     void createTangibleAssetsMongoException() throws DataException {
 
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.insert(tangibleAssetsEntity)).thenThrow(MongoException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () ->
                 tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
@@ -136,12 +170,35 @@ public class TangibleAssetsServiceTest {
     }
 
     @Test
+    @DisplayName("Tests the creation of a Tangible Assets resource where validation errors are present")
+    void createTangibleAssetsWithValidationErrors() throws DataException {
+
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<TangibleAssets> response =
+                tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(repository, never()).insert(any(TangibleAssetsEntity.class));
+        assertWhetherSmallFullServiceCalledToAddLink(false);
+    }
+
+    @Test
     @DisplayName("Tests the successful update of a Tangible Assets resource")
     void updateTangibleAssetsSuccess() throws DataException {
+
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<TangibleAssets> response =
                 tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -155,12 +212,19 @@ public class TangibleAssetsServiceTest {
 
     @Test
     @DisplayName("Tests the update of a Tangible Assets resource where the repository throws a Mongo exception")
-    void updateTangibleAssetsMongoException() {
+    void updateTangibleAssetsMongoException() throws DataException {
+
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.save(tangibleAssetsEntity)).thenThrow(MongoException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () ->
                 tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
@@ -168,6 +232,21 @@ public class TangibleAssetsServiceTest {
         assertMetaDataSetOnRestObject();
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the update of a Tangible Assets resource where validation errors are present")
+    void updateTangibleAssetsWithValidationErrors() throws DataException {
+
+        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<TangibleAssets> response =
+                tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(repository, never()).save(any(TangibleAssetsEntity.class));
     }
 
     @Test

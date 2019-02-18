@@ -25,9 +25,10 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+
 import uk.gov.companieshouse.api.accounts.validation.CreditorsAfterOneYearValidator;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
@@ -51,6 +52,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CreditorsAfterOneYearServiceTest {
@@ -66,6 +69,9 @@ public class CreditorsAfterOneYearServiceTest {
 
     @Mock
     private Transaction mockTransaction;
+
+    @Mock
+    private TransactionLinks mockTransactionLinks;
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -92,6 +98,7 @@ public class CreditorsAfterOneYearServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String CREDITORS_AFTER_ID = "creditorsAfterId";
+    private static final String SELF_LINK = "self_link";
 
 
     @BeforeAll
@@ -100,7 +107,7 @@ public class CreditorsAfterOneYearServiceTest {
         CreditorsAfterOneYearDataEntity dataEntity = new CreditorsAfterOneYearDataEntity();
 
         Map<String, String> links = new HashMap<>();
-        links.put(BasicLinkType.SELF.getLink(), "self_link");
+        links.put(BasicLinkType.SELF.getLink(), SELF_LINK);
         dataEntity.setLinks(links);
 
         creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
@@ -136,6 +143,9 @@ public class CreditorsAfterOneYearServiceTest {
 
         when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<CreditorsAfterOneYear> result =
                 mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
                 "", mockRequest);
@@ -160,6 +170,9 @@ public class CreditorsAfterOneYearServiceTest {
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockDuplicateKeyException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<CreditorsAfterOneYear> result =
                 mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
                         mockTransaction, "", mockRequest);
@@ -181,6 +194,9 @@ public class CreditorsAfterOneYearServiceTest {
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
@@ -239,8 +255,11 @@ public class CreditorsAfterOneYearServiceTest {
 
         when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
 
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService
-            .update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction,
+                "", mockRequest);
 
         assertNotNull(result);
         assertEquals(mockCreditorsAfterOneYear, result.getData());
@@ -258,6 +277,9 @@ public class CreditorsAfterOneYearServiceTest {
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.save(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
