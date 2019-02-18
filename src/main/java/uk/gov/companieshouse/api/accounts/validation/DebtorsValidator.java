@@ -49,7 +49,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         Errors errors = new Errors();
 
-        boolean multipleYearFiler = getIsMultipleYearFiler(transaction);
+        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
         BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
@@ -59,7 +59,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
-        if (multipleYearFiler) {
+        if (isMultipleYearFiler) {
             validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else {
             validatePreviousPeriodNotPresent(debtors.getPreviousPeriod(), errors);

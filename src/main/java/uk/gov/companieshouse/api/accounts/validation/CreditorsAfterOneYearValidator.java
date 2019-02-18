@@ -52,7 +52,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
         Errors errors = new Errors();
 
-        boolean multipleYearFiler = getIsMultipleYearFiler(transaction);
+        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
         BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
@@ -62,7 +62,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
         validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
-        if (multipleYearFiler) {
+        if (isMultipleYearFiler) {
             validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else {
             validatePreviousPeriodNotPresent(creditorsAfterOneYear.getPreviousPeriod(), errors);
