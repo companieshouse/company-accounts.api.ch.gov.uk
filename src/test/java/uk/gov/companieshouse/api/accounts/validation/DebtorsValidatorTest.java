@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.MongoException;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -81,9 +80,6 @@ public class DebtorsValidatorTest {
 
     @Mock
     private ServiceException mockServiceException;
-
-    @Mock
-    private MongoException mockMongoException;
 
     @Mock
     private CurrentPeriodService mockCurrentPeriodService;
@@ -392,7 +388,7 @@ public class DebtorsValidatorTest {
 
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
             COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
             () -> validator.validateDebtors(debtors,
@@ -411,7 +407,7 @@ public class DebtorsValidatorTest {
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
             COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 

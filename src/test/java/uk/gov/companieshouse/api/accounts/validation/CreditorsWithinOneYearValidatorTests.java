@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import com.mongodb.MongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -384,7 +383,7 @@ public class CreditorsWithinOneYearValidatorTests {
 
         when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
                 COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
@@ -403,7 +402,7 @@ public class CreditorsWithinOneYearValidatorTests {
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
                 COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new MongoException(""));
+        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
