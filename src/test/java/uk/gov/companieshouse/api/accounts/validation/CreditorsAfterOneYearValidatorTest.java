@@ -373,8 +373,8 @@ public class CreditorsAfterOneYearValidatorTest {
     }
 
     @Test
-    @DisplayName("Data exception thrown when mongo current balancesheet call fails")
-    void testDataExceptionThrownWhenCurrentBalanceSheetMongoCallFails() throws ServiceException,
+    @DisplayName("Data exception thrown when current balancesheet call fails")
+    void testDataExceptionThrownWhenCurrentBalanceSheetCallFails() throws ServiceException,
             DataException {
 
         createValidNoteCurrentPeriod();
@@ -390,8 +390,8 @@ public class CreditorsAfterOneYearValidatorTest {
     }
 
     @Test
-    @DisplayName("Data exception thrown when mongo previous balancesheet call fails")
-    void testDataExceptionThrownWhenPreviousBalanceSheetMongoCallFails() throws ServiceException,
+    @DisplayName("Data exception thrown when previous balancesheet call fails")
+    void testDataExceptionThrownWhenPreviousBalanceSheetCallFails() throws ServiceException,
             DataException {
 
         createValidNoteCurrentPeriod();
