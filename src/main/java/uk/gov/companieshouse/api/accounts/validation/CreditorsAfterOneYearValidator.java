@@ -365,36 +365,36 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
     private boolean isCurrentPeriodNoteDataNull(CurrentPeriod currentPeriodCreditors) {
 
-        return Optional.ofNullable(currentPeriodCreditors)
+        return !Optional.ofNullable(currentPeriodCreditors)
                 .map(CurrentPeriod::getTotal)
-                .orElse(null) == null;
+                .isPresent();
 
     }
 
     private boolean isCurrentPeriodBalanceSheetDataNull(
             BalanceSheet currentPeriodBalanceSheet) {
 
-        return Optional.ofNullable(currentPeriodBalanceSheet)
+        return !Optional.ofNullable(currentPeriodBalanceSheet)
                 .map(BalanceSheet::getOtherLiabilitiesOrAssets)
                 .map(OtherLiabilitiesOrAssets ::getCreditorsAfterOneYear)
-                .orElse(null) == null;
+                .isPresent();
 
     }
 
     private boolean isPreviousPeriodBalanceSheetDataNull(
             BalanceSheet previousPeriodBalanceSheet) {
 
-        return Optional.ofNullable(previousPeriodBalanceSheet)
+        return !Optional.ofNullable(previousPeriodBalanceSheet)
                 .map(BalanceSheet::getOtherLiabilitiesOrAssets)
                 .map(OtherLiabilitiesOrAssets::getCreditorsAfterOneYear)
-                .orElse(null) == null;
+                .isPresent();
     }
 
     private boolean isPreviousPeriodNoteDataNull(PreviousPeriod previousPeriodNote) {
 
-        return Optional.ofNullable(previousPeriodNote)
+        return !Optional.ofNullable(previousPeriodNote)
                 .map(PreviousPeriod::getTotal)
-                .orElse(null) == null;
+                .isPresent();
     }
 }
 

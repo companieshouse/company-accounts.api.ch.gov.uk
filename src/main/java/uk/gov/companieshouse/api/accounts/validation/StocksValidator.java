@@ -354,35 +354,35 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
     private boolean isCurrentPeriodNoteDataNull(CurrentPeriod currentPeriodCreditors) {
 
-        return Optional.ofNullable(currentPeriodCreditors)
+        return !Optional.ofNullable(currentPeriodCreditors)
             .map(CurrentPeriod::getTotal)
-            .orElse(null) == null;
+            .isPresent();
 
     }
 
     private boolean isCurrentPeriodBalanceSheetDataNull(
         BalanceSheet currentPeriodBalanceSheet) {
 
-        return Optional.ofNullable(currentPeriodBalanceSheet)
+        return !Optional.ofNullable(currentPeriodBalanceSheet)
             .map(BalanceSheet::getCurrentAssets)
             .map(CurrentAssets::getStocks)
-            .orElse(null) == null;
+            .isPresent();
 
     }
 
     private boolean isPreviousPeriodBalanceSheetDataNull(
         BalanceSheet previousPeriodBalanceSheet) {
 
-        return Optional.ofNullable(previousPeriodBalanceSheet)
+        return !Optional.ofNullable(previousPeriodBalanceSheet)
             .map(BalanceSheet::getCurrentAssets)
             .map(CurrentAssets::getStocks)
-            .orElse(null) == null;
+            .isPresent();
     }
 
     private boolean isPreviousPeriodNoteDataNull(PreviousPeriod previousPeriodNote) {
 
-        return Optional.ofNullable(previousPeriodNote)
+        return !Optional.ofNullable(previousPeriodNote)
             .map(PreviousPeriod::getTotal)
-            .orElse(null) == null;
+            .isPresent();
     }
 }
