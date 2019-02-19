@@ -69,7 +69,7 @@ public class DebtorsControllerTest {
     DebtorsController controller;
 
     @Test
-    @DisplayName("Debtors resource created successfully")
+    @DisplayName("debtors resource created successfully")
     void createDebtorsResource() throws DataException {
 
         when(mockBindingResult.hasErrors()).thenReturn(false);
