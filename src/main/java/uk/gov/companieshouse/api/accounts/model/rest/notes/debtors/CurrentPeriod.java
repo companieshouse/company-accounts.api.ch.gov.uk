@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
