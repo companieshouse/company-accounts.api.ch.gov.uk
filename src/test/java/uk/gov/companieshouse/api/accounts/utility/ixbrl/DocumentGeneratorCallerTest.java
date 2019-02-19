@@ -28,7 +28,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.DocumentGeneratorResponse;
 import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionServiceProperties;
+import uk.gov.companieshouse.environment.EnvironmentReader;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -47,13 +47,13 @@ class DocumentGeneratorCallerTest {
 
     @Mock
     private RestTemplate restTemplateMock;
+
     @Mock
-    private TransactionServiceProperties transactionServicePropertiesMock;
+    private EnvironmentReader environmentReaderMock;
 
     @BeforeEach
     void setUpBeforeEach() {
-        documentGeneratorCaller = new DocumentGeneratorCaller(restTemplateMock,
-            transactionServicePropertiesMock);
+        documentGeneratorCaller = new DocumentGeneratorCaller(restTemplateMock, environmentReaderMock);
     }
 
     @Test
@@ -121,7 +121,7 @@ class DocumentGeneratorCallerTest {
     }
 
     private void mockTransactionServiceProperties(String apiKeyValue) {
-        when(transactionServicePropertiesMock.getApiKey()).thenReturn(apiKeyValue);
+        when(environmentReaderMock.getMandatoryString(anyString())).thenReturn(apiKeyValue);
     }
 
     /**

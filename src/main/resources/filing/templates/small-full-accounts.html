@@ -2407,7 +2407,7 @@ ul.accounts-comps-ct {
                   {{if $profitAndLoss := $capitalAndReserves.profit_and_loss}}
 
                       <tr class="figures">
-                        <td id="profit-and-loss-label">Profit and loss:</td>
+                        <td id="profit-and-loss-label">Profit and loss account:</td>
 
                         <td class="figure noteIndex" id="uk-busEquityRetainedEarningsAccumulatedLosses_CY_ENDNoteIndexes"></td>
 
@@ -2597,7 +2597,10 @@ ul.accounts-comps-ct {
         <!-- NOTES END -->
 
         <!-- BALANCE SHEET NOTES START -->
-        {{if $balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
+
+        <div id="balance-sheet-notes-section">
+
+          {{if $balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
 
           <div id="BalanceSheetNotesSection" class="section-marker"></div>
 
@@ -2606,11 +2609,13 @@ ul.accounts-comps-ct {
           {{incValue "notes-page-count" }}
           {{setValue "tangible-notes-id" (getValue "notes-page-count" ) }}
           <div class="page">
+
               <div class="header">
                   <h1 class="text--center">
                       <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
                   </h1>
               </div>
+
 
               <h2 class="text--center">Notes to the Financial Statements</h2>
               <p class="text--center">
@@ -3181,10 +3186,10 @@ ul.accounts-comps-ct {
                       <ix:nonNumeric contextRef="CY" name="core:PropertyPlantEquipmentFree-textComment">{{$tangibleAssetsNote.additional_information}}</ix:nonNumeric>
                   </p>
               </div>
+
           </div>
 
           {{ end }}
-
           <!-- TANGIBLE ASSETS NOTE END -->
 
           <!-- DEBTORS NOTE START -->
@@ -3520,6 +3525,8 @@ ul.accounts-comps-ct {
           <!-- CREDITORS WITHIN ONE YEAR NOTE END -->
 
         {{end}}
+
+      </div>
         <!-- BALANCE SHEET NOTES END -->
 
         <!-- POST BALANCE SHEET EVENTS NOTE START -->

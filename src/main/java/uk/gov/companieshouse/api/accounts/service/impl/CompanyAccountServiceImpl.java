@@ -2,7 +2,10 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
+
+import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
@@ -21,15 +25,17 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
+import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.ApiErrorResponseException;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
@@ -38,11 +44,12 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     @Autowired
-    private TransactionManager transactionManager;
-    @Autowired
     private CompanyAccountRepository companyAccountRepository;
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
+
+    @Autowired
+    private ApiClientService apiClientService;
 
     /**
      * {@inheritDoc}
@@ -79,11 +86,13 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         }
 
         try {
-            transactionManager
-                .updateTransaction(transaction.getId(), request.getHeader("X-Request-Id"), companyAccountLink);
-        } catch (ApiErrorResponseException aere) {
-            PatchException patchException = new PatchException(
-                "Failed to patch transaction", aere);
+            InternalApiClient internalApiClient = apiClientService.getInternalApiClient(request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader()));
+            transaction.setResources(createResourceMap(companyAccountLink));
+
+            internalApiClient.privateTransaction().patch("/private/transactions/" + transaction.getId(), transaction).execute();
+        } catch (IOException | URIValidationException e) {
+
+            PatchException patchException = new PatchException("Failed to patch transaction", e);
             LOGGER.errorRequest(request, patchException, debugMap);
             throw patchException;
         }
@@ -116,7 +125,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink());
+        return transaction.getLinks().getSelf();
     }
 
     private void addEtag(CompanyAccount rest) {
@@ -149,5 +158,24 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         }
         CompanyAccount companyAccount = companyAccountTransformer.transform(companyAccountEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, companyAccount);
+    }
+
+    /**
+     * Creates the resources map for the patching of the transaction
+     *
+     * @param link - the link in which to add to the resource
+     */
+    private Map<String, Resource> createResourceMap(String link) {
+        Resource resource = new Resource();
+        resource.setKind(Kind.COMPANY_ACCOUNTS.getValue());
+
+        Map<String, String> links = new HashMap<>();
+        links.put(TransactionLinkType.RESOURCE.getLink(), link);
+        resource.setLinks(links);
+        resource.setUpdatedAt(LocalDateTime.now());
+
+        Map<String, Resource> resourceMap = new HashMap<>();
+        resourceMap.put(link, resource);
+        return resourceMap;
     }
 }

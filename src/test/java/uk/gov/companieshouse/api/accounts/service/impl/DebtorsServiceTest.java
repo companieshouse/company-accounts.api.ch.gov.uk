@@ -37,10 +37,11 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -74,6 +75,9 @@ public class DebtorsServiceTest {
     private Transaction mockTransaction;
 
     @Mock
+    private TransactionLinks mockTransactionLinks;
+
+    @Mock
     private DebtorsRepository mockRepository;
 
     @Mock
@@ -101,6 +105,7 @@ public class DebtorsServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String DEBTORS_ID = "debtorsId";
+    private static final String SELF_LINK = "self_link";
 
     @BeforeEach
     void setUp() {
@@ -122,6 +127,8 @@ public class DebtorsServiceTest {
         when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Debtors> result = service.create(mockDebtors, mockTransaction,
             "", mockRequest);
@@ -140,6 +147,9 @@ public class DebtorsServiceTest {
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(debtorsEntity)).thenThrow(mockDuplicateKeyException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = service.create(mockDebtors, mockTransaction, "",
             mockRequest);
 
@@ -157,6 +167,9 @@ public class DebtorsServiceTest {
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(debtorsEntity)).thenThrow(mockMongoException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class,
             () -> service.create(mockDebtors, mockTransaction, "", mockRequest));
     }
@@ -167,8 +180,10 @@ public class DebtorsServiceTest {
 
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
 
-
         when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Debtors> result = service.update(mockDebtors, mockTransaction,
             "", mockRequest);
@@ -186,6 +201,9 @@ public class DebtorsServiceTest {
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(Debtors.class));
         when(mockRepository.save(debtorsEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
             () -> service.update(mockDebtors, mockTransaction, "", mockRequest));
@@ -276,6 +294,9 @@ public class DebtorsServiceTest {
 
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
         when(mockErrors.hasErrors()).thenReturn(true);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Debtors> responseObject = service.update(mockDebtors, mockTransaction,
                 "", mockRequest);
