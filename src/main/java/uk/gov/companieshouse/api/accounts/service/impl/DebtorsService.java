@@ -132,7 +132,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException e) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find debtors", e);
+            DataException dataException = new DataException("Failed to find " + ResourceName.DEBTORS.getName(), e);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -162,7 +162,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", companyAccountsId);
-            DataException dataException = new DataException("Failed to delete debtors", me);
+            DataException dataException = new DataException("Failed to delete " + ResourceName.DEBTORS.getName(), me);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
