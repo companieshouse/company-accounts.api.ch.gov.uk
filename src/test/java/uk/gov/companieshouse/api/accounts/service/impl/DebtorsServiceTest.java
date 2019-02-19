@@ -43,14 +43,6 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-
-
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DebtorsServiceTest {
@@ -131,7 +123,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the duplicate key when creating a debtors resource")
+    @DisplayName("Tests the duplicate key when creating a Debtors resource")
     void createDebtorsDuplicateKey() throws DataException {
 
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
@@ -152,7 +144,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the mongo exception when creating debtors")
+    @DisplayName("Tests the mongo exception when creating Debtors")
     void createDebtorsMongoExceptionFailure() throws DataException {
 
         doReturn(debtorsEntity).when(mockTransformer).transform(ArgumentMatchers
@@ -168,7 +160,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful update of an debtors resource")
+    @DisplayName("Tests the successful update of a Debtors resource")
     void canUpdateADebtors() throws DataException {
 
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
@@ -186,7 +178,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the mongo exception when updating an debtors")
+    @DisplayName("Tests the mongo exception when updating a Debtors resource")
     void updateDebtorsMongoExceptionFailure() throws DataException {
 
         when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "",mockRequest)).thenReturn(mockErrors);
@@ -203,7 +195,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful find of an debtors resource")
+    @DisplayName("Tests the successful find of a Debtors resource")
     void findDebtors() throws DataException {
 
         when(mockRepository.findById(""))
@@ -217,7 +209,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests debtors response not found")
+    @DisplayName("Tests Debtors response not found")
     void findDebtorsResponseNotFound() throws DataException {
         debtorsEntity = null;
         when(mockRepository.findById(""))
@@ -230,7 +222,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests mongo exception thrown on find of an debtors resource")
+    @DisplayName("Tests mongo exception thrown on find of a Debtors resource")
     void findDebtorsMongoException() {
         when(mockRepository.findById("")).thenThrow(mockMongoException);
 
@@ -238,7 +230,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Test the successful delete of a debtors resource")
+    @DisplayName("Test the successful delete of a Debtors resource")
     void deleteDebtors() throws DataException {
         when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DEBTORS.getName()))
                 .thenReturn(DEBTORS_ID);
@@ -266,7 +258,7 @@ public class DebtorsServiceTest {
     }
 
     @Test
-    @DisplayName("Tests mongo exception thrown on deletion of a debtors resource")
+    @DisplayName("Tests mongo exception thrown on deletion of a Debtors resource")
     void deleteDebtorsMongoException() {
         when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DEBTORS.getName()))
                 .thenReturn(DEBTORS_ID);
