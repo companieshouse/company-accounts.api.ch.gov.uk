@@ -1,11 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -18,6 +13,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -25,8 +21,15 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CreditorsAfterOneYearValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @Service
 public class CreditorsAfterOneYearService implements ResourceService<CreditorsAfterOneYear> {
@@ -37,22 +40,32 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     private CreditorsAfterOneYearTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private CreditorsAfterOneYearValidator validator;
 
     @Autowired
     public CreditorsAfterOneYearService(CreditorsAfterOneYearRepository repository,
             CreditorsAfterOneYearTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService,
+            CreditorsAfterOneYearValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.validator = validator;
     }
 
     @Override
     public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -80,6 +93,13 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     @Override
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 

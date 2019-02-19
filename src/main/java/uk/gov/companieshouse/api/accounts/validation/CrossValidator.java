@@ -1,8 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface CrossValidator<T> {
 
