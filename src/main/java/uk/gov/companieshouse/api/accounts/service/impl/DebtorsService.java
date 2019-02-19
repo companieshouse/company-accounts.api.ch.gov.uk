@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -132,7 +132,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException e) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Debtors", e);
+            DataException dataException = new DataException("Failed to find debtors", e);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -162,7 +162,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", companyAccountsId);
-            DataException dataException = new DataException("Failed to delete Debtors", me);
+            DataException dataException = new DataException("Failed to delete debtors", me);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
