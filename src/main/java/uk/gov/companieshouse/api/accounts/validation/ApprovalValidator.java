@@ -13,8 +13,8 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 @Component
 public class ApprovalValidator extends BaseValidator {
 
-    private static String APPROVAL_PATH = "$.approval";
-    private static String DATE_PATH = APPROVAL_PATH + ".date";
+    private static final String APPROVAL_PATH = "$.approval";
+    private static final String DATE_PATH = APPROVAL_PATH + ".date";
 
     public Errors validateApproval(Approval approval, HttpServletRequest request) {
 
