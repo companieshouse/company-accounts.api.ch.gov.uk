@@ -16,6 +16,9 @@ public class BaseValidator {
     @Value("${inconsistent.data}")
     private String inconsistentData;
 
+    @Value("${unexpected.data}")
+    protected String unexpectedData;
+
     @Value("${invalid.note}")
     protected String invalidNote;
 

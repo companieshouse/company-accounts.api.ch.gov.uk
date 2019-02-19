@@ -15,16 +15,15 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
 import uk.gov.companieshouse.api.accounts.repository.EmployeesRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -180,12 +179,12 @@ public class EmployeesService implements ResourceService<Employees> {
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return
-                transaction.getLinks((TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.EMPLOYEES.getName();
     }
+
 
     public String getSelfLinkFromEmployeesEntity(EmployeesEntity entity) {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
