@@ -21,9 +21,6 @@ public class CurrentPeriodValidator extends BaseValidator {
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
-    @Value("${mandatory.element.missing}")
-    private String mandatoryElementMissing;
-
     private static final String BALANCE_SHEET_PATH = "$.current_period.balance_sheet";
     private static final String FIXED_ASSETS_PATH = BALANCE_SHEET_PATH + ".fixed_assets";
     private static final String FIXED_ASSETS_TOTAL_PATH = FIXED_ASSETS_PATH + ".total";
