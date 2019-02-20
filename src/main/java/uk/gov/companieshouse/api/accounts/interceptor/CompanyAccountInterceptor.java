@@ -19,8 +19,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Resources;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Resource;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -109,7 +109,7 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         CompanyAccount companyAccount = responseObject.getData();
 
         String accountsSelf = companyAccount.getLinks().get(BasicLinkType.SELF.getLink());
-        Map<String, Resources> resourcesList = transaction.getResources();
+        Map<String, Resource> resourcesList = transaction.getResources();
         if (!isLinkInResourceMap(resourcesList, accountsSelf)) {
             LOGGER.debugRequest(request,
                 "CompanyAccountInterceptor failed on preHandle: Failed to find the CompanyAccount self link in the Transactions links",
@@ -122,9 +122,9 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
-    private boolean isLinkInResourceMap(Map<String, Resources> resourcesList, String accountsSelf) {
-        for (Entry<String, Resources> entry : resourcesList.entrySet()) {
-            Resources resources = entry.getValue();
+    private boolean isLinkInResourceMap(Map<String, Resource> resourcesList, String accountsSelf) {
+        for (Entry<String, Resource> entry : resourcesList.entrySet()) {
+            Resource resources = entry.getValue();
             if (resources.getKind().equals(Kind.COMPANY_ACCOUNTS.getValue()) && resources.getLinks()
                 .get(TransactionLinkType.RESOURCE.getLink()).equals(accountsSelf)) {
                 return true;

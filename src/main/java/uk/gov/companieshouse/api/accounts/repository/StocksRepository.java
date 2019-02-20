@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 
 @Repository
-public interface StocksRepository  extends MongoRepository<StocksEntity, String> {
+public interface StocksRepository extends MongoRepository<StocksEntity, String> {
 }

@@ -15,15 +15,14 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
@@ -133,7 +132,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException e) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Debtors", e);
+            DataException dataException = new DataException("Failed to find " + ResourceName.DEBTORS.getName(), e);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -163,7 +162,7 @@ public class DebtorsService implements ResourceService<Debtors> {
         } catch (MongoException me) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("id", companyAccountsId);
-            DataException dataException = new DataException("Failed to delete Debtors", me);
+            DataException dataException = new DataException("Failed to delete " + ResourceName.DEBTORS.getName(), me);
             LOGGER.errorRequest(request, dataException, debugMap);
 
             throw dataException;
@@ -176,7 +175,7 @@ public class DebtorsService implements ResourceService<Debtors> {
 
     private String generateSelfLink (Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.DEBTORS.getName();
     }

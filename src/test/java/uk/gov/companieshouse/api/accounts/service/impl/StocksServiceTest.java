@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -18,12 +18,15 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.StocksRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -61,6 +64,9 @@ public class StocksServiceTest {
     private Transaction mockTransaction;
 
     @Mock
+    private TransactionLinks mockTransactionLinks;
+
+    @Mock
     private HttpServletRequest mockRequest;
 
     @Mock
@@ -78,10 +84,17 @@ public class StocksServiceTest {
     @Mock
     private KeyIdGenerator mockKeyIdGenerator;
 
+    @Mock
+    private StocksValidator mockValidator;
+
+    @Mock
+    private Errors mockErrors;
+
     private StocksEntity stocksEntity;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "self_link";
 
     @BeforeEach
     void setUp() {
@@ -100,7 +113,11 @@ public class StocksServiceTest {
     @DisplayName("Tests the successful creation of a stocks resource")
     void canCreateStocks() throws DataException {
 
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction,
                 "", mockRequest);
@@ -116,7 +133,11 @@ public class StocksServiceTest {
     void createStocksDuplicateKey() throws DataException {
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers.any(Stocks.class));
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(stocksEntity)).thenThrow(mockDuplicateKeyException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Stocks> result = service.create(mockStocks, mockTransaction, "", mockRequest);
 
@@ -127,11 +148,15 @@ public class StocksServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating stocks")
-    void createStocksMongoExceptionFailure() {
+    void createStocksMongoExceptionFailure() throws DataException {
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Stocks.class));
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
         when(mockRepository.insert(stocksEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> service.create(mockStocks, mockTransaction, "", mockRequest));
@@ -141,7 +166,12 @@ public class StocksServiceTest {
     @DisplayName("Tests the successful update of a stocks resource")
     void canUpdateStocks() throws DataException {
 
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
+
         when(mockTransformer.transform(mockStocks)).thenReturn(stocksEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Stocks> result = service.update(mockStocks, mockTransaction,
                 "", mockRequest);
@@ -152,11 +182,16 @@ public class StocksServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when updating a stocks resource")
-    void updateStocksMongoExceptionFailure() {
+    void updateStocksMongoExceptionFailure() throws DataException {
+
+        when(mockValidator.validateStocks(mockStocks, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
 
         doReturn(stocksEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Stocks.class));
         when(mockRepository.save(stocksEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> service.update(mockStocks, mockTransaction, "", mockRequest));

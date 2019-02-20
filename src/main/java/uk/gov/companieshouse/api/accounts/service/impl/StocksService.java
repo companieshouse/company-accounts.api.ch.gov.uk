@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
+import org.springframework.dao.DuplicateKeyException;
 import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,16 +10,17 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.StocksRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -37,6 +38,7 @@ public class StocksService implements ResourceService<Stocks> {
 
     private StocksRepository repository;
     private StocksTransformer transformer;
+    private StocksValidator validator;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
 
@@ -44,16 +46,24 @@ public class StocksService implements ResourceService<Stocks> {
     public StocksService (StocksRepository repository,
                           StocksTransformer transformer,
                           KeyIdGenerator keyIdGenerator,
-                          SmallFullService smallFullService) {
+                          SmallFullService smallFullService,
+                          StocksValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
+        this.validator = validator;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
     }
 
     @Override
     public ResponseObject<Stocks> create(Stocks rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateStocks(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -64,7 +74,7 @@ public class StocksService implements ResourceService<Stocks> {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
             LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId, entity.getId()));
-            return  new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
             DataException dataException = new DataException("Failed to insert "
                     + ResourceName.STOCKS.getName(), e);
@@ -80,6 +90,12 @@ public class StocksService implements ResourceService<Stocks> {
 
     @Override
     public ResponseObject<Stocks> update(Stocks rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateStocks(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -169,7 +185,7 @@ public class StocksService implements ResourceService<Stocks> {
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.STOCKS.getName();
