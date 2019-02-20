@@ -17,6 +17,8 @@ public class LoggingHelper {
     private static final String COMPANY_ACCOUNT_ID = "company_account_id";
     private static final String MESSAGE = "message";
 
+    private LoggingHelper() {}
+
     public static void logException(String companyAccountId,
                                     Transaction transaction,
                                     String message,
