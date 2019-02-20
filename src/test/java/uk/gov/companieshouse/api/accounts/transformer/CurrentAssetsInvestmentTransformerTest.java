@@ -48,26 +48,26 @@ public class CurrentAssetsInvestmentTransformerTest {
         currentAssetsInvestments.setKind(KIND);
         currentAssetsInvestments.setLinks(new HashMap<>());
 
-        CurrentAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = currentAssetsInvestmentsTransformer
+        CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = currentAssetsInvestmentsTransformer
             .transform(currentAssetsInvestments);
 
-        assertNotNull(fixedAssetsInvestmentsEntity);
-        assertEquals(DETAILS, fixedAssetsInvestmentsEntity.getData().getDetails());
-        assertEquals(new HashMap<>(), fixedAssetsInvestmentsEntity.getData().getLinks());
-        assertEquals(ETAG, fixedAssetsInvestmentsEntity.getData().getEtag());
-        assertEquals(KIND, fixedAssetsInvestmentsEntity.getData().getKind());
+        assertNotNull(currentAssetsInvestmentsEntity);
+        assertEquals(DETAILS, currentAssetsInvestmentsEntity.getData().getDetails());
+        assertEquals(new HashMap<>(), currentAssetsInvestmentsEntity.getData().getLinks());
+        assertEquals(ETAG, currentAssetsInvestmentsEntity.getData().getEtag());
+        assertEquals(KIND, currentAssetsInvestmentsEntity.getData().getKind());
     }
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     public void testTransformerWithEmptyEntityObject() {
 
-        CurrentAssetsInvestments fixedAssetsInvestments = currentAssetsInvestmentsTransformer
+        CurrentAssetsInvestments currentAssetsInvestments = currentAssetsInvestmentsTransformer
             .transform(new CurrentAssetsInvestmentsEntity());
 
-        assertNotNull(fixedAssetsInvestments);
-        assertNull(fixedAssetsInvestments.getEtag());
-        assertEquals(new HashMap<>(), fixedAssetsInvestments.getLinks());
+        assertNotNull(currentAssetsInvestments);
+        assertNull(currentAssetsInvestments.getEtag());
+        assertEquals(new HashMap<>(), currentAssetsInvestments.getLinks());
     }
 
     @Test
