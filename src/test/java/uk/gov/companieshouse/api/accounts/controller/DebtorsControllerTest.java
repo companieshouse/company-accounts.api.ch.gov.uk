@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -69,7 +69,7 @@ public class DebtorsControllerTest {
     DebtorsController controller;
 
     @Test
-    @DisplayName("Debtors resource created successfully")
+    @DisplayName("debtors resource created successfully")
     void createDebtorsResource() throws DataException {
 
         when(mockBindingResult.hasErrors()).thenReturn(false);

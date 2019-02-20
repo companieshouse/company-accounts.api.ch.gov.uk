@@ -56,8 +56,8 @@ public class TangibleAssetsValidatorTest {
     @InjectMocks
     private TangibleAssetsValidator validator;
 
-    private static final String INCONSISTENT_DATA_KEY = "inconsistentData";
-    private static final String INCONSISTENT_DATA = "inconsistent_data";
+    private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
+    private static final String UNEXPECTED_DATA = "unexpected.data";
 
     private static final String VALUE_REQUIRED_KEY = "valueRequired";
     private static final String VALUE_REQUIRED = "value_required";
@@ -125,12 +125,12 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_KEY, INCONSISTENT_DATA);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
     }
 
     @Test
@@ -149,12 +149,12 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_KEY, INCONSISTENT_DATA);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
     }
 
     @Test
@@ -170,12 +170,12 @@ public class TangibleAssetsValidatorTest {
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
 
-        ReflectionTestUtils.setField(validator, INCONSISTENT_DATA_KEY, INCONSISTENT_DATA);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCONSISTENT_DATA, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
