@@ -5,7 +5,6 @@ import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPL
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -22,7 +21,7 @@ public class LoggingHelper {
     public static void logException(String companyAccountId,
                                     Transaction transaction,
                                     String message,
-                                    DataException exception,
+                                    Exception exception,
                                     HttpServletRequest request) {
 
         LOGGER.errorRequest(request, exception, createDebugMap(companyAccountId, transaction, message));
