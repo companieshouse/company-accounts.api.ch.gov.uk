@@ -14,7 +14,8 @@ public enum SmallFullLinkType implements LinkType {
     PREVIOUS_PERIOD("previous_period"),
     STATEMENTS("statements"),
     STOCKS_NOTE("stocks_note"),
-    TANGIBLE_ASSETS_NOTE("tangible_assets_note");
+    TANGIBLE_ASSETS_NOTE("tangible_assets_note"),
+    CURRENT_ASSETS_INVESTMENTS_NOTE("current-assets-investments-note");
 
     private String link;
 

@@ -13,7 +13,8 @@ public enum ResourceName {
     CREDITORS_WITHIN_ONE_YEAR("creditors-within-one-year"),
     CREDITORS_AFTER_ONE_YEAR("creditors-after-more-than-one-year"),
     STOCKS("stocks"),
-    TANGIBLE_ASSETS("tangible-assets");
+    TANGIBLE_ASSETS("tangible-assets"),
+    CURRENT_ASSETS_INVESTMENTS("current-assets-investments");
 
     private String name;
 
