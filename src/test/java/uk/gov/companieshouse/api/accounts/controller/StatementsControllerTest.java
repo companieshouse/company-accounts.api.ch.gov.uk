@@ -185,6 +185,8 @@ public class StatementsControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful request to get Statements as exception occurs")
     void shouldNotGetStatementsStatementAsExceptionOccurs() throws DataException {
+        when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
+
         when(statementServiceMock.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STATEMENT_ID);
 
         DataException dataException = new DataException("string");

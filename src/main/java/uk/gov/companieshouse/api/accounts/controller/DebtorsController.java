@@ -27,6 +27,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -36,11 +37,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/debtors", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DebtorsController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @Autowired
     private DebtorsService debtorsService;
@@ -59,30 +55,24 @@ public class DebtorsController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction =
             (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Debtors> response = debtorsService
                 .create(debtors, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
-                .map(response.getStatus(), response.getData(), response.getErrors());
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to create debtors resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create debtors resource", ex, request);
+            return apiResponseMapper.map(ex);
         }
-        return responseEntity;
     }
 
     @GetMapping
@@ -94,23 +84,18 @@ public class DebtorsController {
 
         String debtorsId = debtorsService.generateID(companyAccountId);
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Debtors> response = debtorsService
                 .findById(debtorsId, request);
 
-            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
 
-        } catch (DataException de) {
+        } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to retrieve debtors resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            responseEntity = apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve debtors resource", ex, request);
+            return apiResponseMapper.map(ex);
         }
-
-        return responseEntity;
     }
 
     @PutMapping
@@ -140,9 +125,8 @@ public class DebtorsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update debtors resource");
-            LOGGER.errorRequest(request, ex, debugMap);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update debtors resource", ex, request);
             return apiResponseMapper.map(ex);
         }
     }
@@ -158,19 +142,12 @@ public class DebtorsController {
             ResponseObject<Debtors> response = debtorsService.delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-        } catch (DataException de) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                    "Failed to delete debtors resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
-        }
-    }
 
-    private Map<String, Object> createDebugMap(String companyAccountId, Transaction transaction, String message) {
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, message);
-        return debugMap;
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountsId, transaction,
+                    "Failed to delete debtors resource", ex, request);
+            return apiResponseMapper.map(ex);
+        }
     }
 }
