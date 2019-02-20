@@ -43,6 +43,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,6 +60,9 @@ public class EmployeesServiceTest {
 
     @Mock
     private Transaction mockTransaction;
+
+    @Mock
+    private TransactionLinks mockTransactionLinks;
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -82,6 +86,7 @@ public class EmployeesServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String EMPLOYEES_ID = "employeesId";
+    private static final String SELF_LINK = "self_link";
 
 
     @BeforeAll
@@ -102,6 +107,8 @@ public class EmployeesServiceTest {
     void canCreateEmployees() throws DataException {
 
         when(mockTransformer.transform(mockEmployees)).thenReturn(employeesEntity);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Employees> result =
                 mockEmployeesService.create(mockEmployees, mockTransaction,
@@ -121,6 +128,8 @@ public class EmployeesServiceTest {
         doReturn(employeesEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Employees.class));
         when(mockRepository.insert(employeesEntity)).thenThrow(mockDuplicateKeyException);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Employees> result =
                 mockEmployeesService.create(mockEmployees,
@@ -138,6 +147,8 @@ public class EmployeesServiceTest {
         when(mockTransformer.transform(any(Employees.class))).thenReturn(employeesEntity);
 
         when(mockRepository.insert(employeesEntity)).thenThrow(mockMongoException);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockEmployeesService.create(mockEmployees,
@@ -194,6 +205,8 @@ public class EmployeesServiceTest {
     void canUpdateEmployees() throws DataException {
 
         when(mockTransformer.transform(mockEmployees)).thenReturn(employeesEntity);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Employees> result = mockEmployeesService.update(mockEmployees, mockTransaction,
                 "", mockRequest);
@@ -209,6 +222,8 @@ public class EmployeesServiceTest {
         doReturn(employeesEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Employees.class));
         when(mockRepository.save(employeesEntity)).thenThrow(mockMongoException);
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockEmployeesService.update(mockEmployees, mockTransaction, "", mockRequest));

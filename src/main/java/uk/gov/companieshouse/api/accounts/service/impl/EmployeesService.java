@@ -180,9 +180,8 @@ public class EmployeesService implements ResourceService<Employees> {
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
-                + ResourceName.EMPLOYEES.getName();
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
+                + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.EMPLOYEES.getName();
     }
 
 
