@@ -14,7 +14,6 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -22,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
@@ -172,7 +171,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
             + ResourceName.PREVIOUS_PERIOD.getName();

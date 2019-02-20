@@ -19,9 +19,10 @@ import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
 import uk.gov.companieshouse.api.accounts.repository.AccountingPoliciesRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.AccountingPoliciesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -49,6 +50,9 @@ public class AccountingPoliciesServiceTest {
     private Transaction transaction;
 
     @Mock
+    private TransactionLinks transactionLinks;
+
+    @Mock
     private AccountingPoliciesRepository repository;
 
     @Mock
@@ -71,13 +75,15 @@ public class AccountingPoliciesServiceTest {
 
     private AccountingPoliciesEntity accountingPoliciesEntity;
 
+    private static final String SELF_LINK = "self_link";
+
     @BeforeEach
     void setUp() {
 
         AccountingPoliciesDataEntity dataEntity = new AccountingPoliciesDataEntity();
 
         Map<String, String> links = new HashMap<>();
-        links.put(BasicLinkType.SELF.getLink(), "self_link");
+        links.put(BasicLinkType.SELF.getLink(), SELF_LINK);
         dataEntity.setLinks(links);
 
         accountingPoliciesEntity = new AccountingPoliciesEntity();
@@ -89,6 +95,9 @@ public class AccountingPoliciesServiceTest {
     void canCreateAnAccountingPolicies() throws DataException {
 
         when(transformer.transform(accountingPolicies)).thenReturn(accountingPoliciesEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<AccountingPolicies> result = service.create(accountingPolicies, transaction,
                                                 "", request);
@@ -105,6 +114,9 @@ public class AccountingPoliciesServiceTest {
                 .any(AccountingPolicies.class));
         when(repository.insert(accountingPoliciesEntity)).thenThrow(duplicateKeyException);
 
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = service.create(accountingPolicies, transaction, "", request);
 
         assertNotNull(response);
@@ -120,6 +132,9 @@ public class AccountingPoliciesServiceTest {
                 .any(AccountingPolicies.class));
         when(repository.insert(accountingPoliciesEntity)).thenThrow(mongoException);
 
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         assertThrows(DataException.class,
                 () -> service.create(accountingPolicies, transaction, "", request));
     }
@@ -129,6 +144,9 @@ public class AccountingPoliciesServiceTest {
     void canUpdateAnAccountingPolicies() throws DataException {
 
         when(transformer.transform(accountingPolicies)).thenReturn(accountingPoliciesEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<AccountingPolicies> result = service.update(accountingPolicies, transaction,
                 "", request);
@@ -144,6 +162,9 @@ public class AccountingPoliciesServiceTest {
         doReturn(accountingPoliciesEntity).when(transformer).transform(ArgumentMatchers
                 .any(AccountingPolicies.class));
         when(repository.save(accountingPoliciesEntity)).thenThrow(mongoException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> service.update(accountingPolicies, transaction, "", request));

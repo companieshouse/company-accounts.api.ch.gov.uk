@@ -1423,11 +1423,11 @@
 
                       <tr class="figures">
                           <td id="creditors-after-label">Creditors: amounts falling due after more than one year:</td>
-                        {{ if .small_full_accounts.balance_sheet_notes.creditors_after_one_year }}
-                          <td class="figure noteIndex" id="uk-busCreditorsCreditorsAfterOneYear_CY_ENDNoteIndexes">{{getValue "creditors-after-one-year-notes-id"}}</td>
-                        {{else}}
-                          <td class="figure noteIndex">&#160;</td>
-                        {{end}}
+                          {{ if .small_full_accounts.balance_sheet_notes.creditors_after_one_year }}
+                              <td class="figure noteIndex" id="uk-busCreditorsCreditorsAfterOneYear_CY_ENDNoteIndexes">{{getValue "creditors-after-one-year-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
                         
                           <td id="creditors-after-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_after.current_amount}}
@@ -1601,7 +1601,7 @@
                   {{if $profitAndLoss := $capitalAndReserves.profit_and_loss}}
 
                       <tr class="figures">
-                        <td id="profit-and-loss-label">Profit and loss:</td>
+                        <td id="profit-and-loss-label">Profit and loss account:</td>
 
                         <td class="figure noteIndex" id="uk-busEquityRetainedEarningsAccumulatedLosses_CY_ENDNoteIndexes"></td>
 
