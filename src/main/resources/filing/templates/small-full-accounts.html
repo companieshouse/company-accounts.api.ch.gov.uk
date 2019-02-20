@@ -9,1105 +9,291 @@
     <title>
       {{$companyName}}
     </title>
-   <style type="text/css">
-            /*! normalize.css v2.0.1 | MIT License | git.io/normalize */
-
-/* ==========================================================================
-   HTML5 display definitions
-   ========================================================================== */
-
-html {
-    font-family: sans-serif; /* 1 */
-    -webkit-text-size-adjust: 100%; /* 2 */
-    -ms-text-size-adjust: 100%; /* 2 */
-    -webkit-print-color-adjust: exact; /* 3 */
-}
-
-/*
- * Corrects `block` display not defined in IE 8/9.
- */
-
-* {
-    white-space: normal;
-    position: relative;
-    zoom: 1;
-    z-index: 2;
-}
-
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-nav,
-section,
-summary {
-    display: block;
-}
-
-/*
- * Corrects `inline-block` display not defined in IE 8/9.
- */
-
-audio,
-canvas,
-video {
-    display: inline-block;
-
-}
-
-/*
- * Prevents modern browsers from displaying `audio` without controls.
- * Remove excess height in iOS 5 devices.
- */
-
-audio:not([controls]) {
-    display: none;
-    height: 0;
-}
-
-/*
- * Addresses styling for `hidden` attribute not present in IE 8/9.
- */
-
-[hidden] {
-    display: none;
-}
-
-/* ==========================================================================
-   Base
-   ========================================================================== */
-
-/*
- * 1. Sets default font family to sans-serif.
- * 2. Prevents iOS text size adjust after orientation change, without disabling
- *    user zoom.
- */
-html {
-    font-family: sans-serif; /* 1 */
-    -webkit-text-size-adjust: 100%; /* 2 */
-    -ms-text-size-adjust: 100%; /* 2 */
-}
-
-/*
- * Removes default margin.
- */
-body {
-    margin: 0;
-}
-
-/* ==========================================================================
-   Links
-   ========================================================================== */
-
-/*
- * Addresses `outline` inconsistency between Chrome and other browsers.
- */
-a:focus {
-    outline: thin dotted;
-}
-
-/*
- * Improves readability when focused and also mouse hovered in all browsers.
- */
-a:active,
-a:hover {
-    outline: 0;
-}
-
-/* ==========================================================================
-   Typography
-   ========================================================================== */
-body {
-    font-size: 13px;
-}
-
-/*
- * Addresses `h1` font sizes within `section` and `article` in Firefox 4+,
- * Safari 5, and Chrome.
- */
-h1 {
-    font-size: 2em;
-}
-
-/*
- * Addresses styling not present in IE 8/9, Safari 5, and Chrome.
- */
-abbr[title] {
-    border-bottom: 1px dotted;
-}
-
-/*
- * Addresses style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
- */
-b,
-strong {
-    font-weight: bold;
-}
-
-/*
- * Addresses styling not present in Safari 5 and Chrome.
- */
-
-dfn {
-    font-style: italic;
-}
-
-/*
- * Addresses styling not present in IE 8/9.
- */
-mark {
-    background: #ff0;
-    color: #000;
-}
-
-
-/*
- * Corrects font family set oddly in Safari 5 and Chrome.
- */
-code,
-kbd,
-pre,
-samp {
-    font-family: monospace, serif;
-    font-size: 1em;
-}
-
-/*
- * Improves readability of pre-formatted text in all browsers.
- */
-pre {
-    white-space: pre;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-/*
- * Sets consistent quote types.
- */
-q {
-    quotes: "\201C" "\201D" "\2018" "\2019";
-}
-
-/*
- * Addresses inconsistent and variable font size in all browsers.
- */
-small {
-    font-size: 80%;
-}
-
-/*
- * Prevents `sub` and `sup` affecting `line-height` in all browsers.
- */
-sub,
-sup {
-    font-size: 75%;
-    line-height: 0;
-    position: relative;
-    vertical-align: baseline;
-}
-
-sup {
-    top: -0.5em;
-}
-
-sub {
-    bottom: -0.25em;
-}
-
-/* ==========================================================================
-   Embedded content
-   ========================================================================== */
-
-/*
- * Removes border when inside `a` element in IE 8/9.
- */
-img {
-    border: 0;
-}
-
-/*
- * Corrects overflow displayed oddly in IE 9.
- */
-svg:not(:root) {
-    overflow: hidden;
-}
-
-/* ==========================================================================
-   Figures
-   ========================================================================== */
-
-/*
- * Addresses margin not present in IE 8/9 and Safari 5.
- */
-figure {
-    margin: 0;
-}
-
-/* ==========================================================================
-   Forms
-   ========================================================================== */
-
-/*
- * Define consistent border, margin, and padding.
- */
-fieldset {
-    border: 1px solid #c0c0c0;
-    margin: 0 2px;
-    padding: 0.35em 0.625em 0.75em;
-}
-
-/*
- * 1. Corrects color not being inherited in IE 8/9.
- * 2. Remove padding so people aren't caught out if they zero out fieldsets.
- */
-legend {
-    border: 0; /* 1 */
-    padding: 0; /* 2 */
-}
-
-/*
- * 1. Corrects font family not being inherited in all browsers.
- * 2. Corrects font size not being inherited in all browsers.
- * 3. Addresses margins set differently in Firefox 4+, Safari 5, and Chrome
- */
-button,
-input,
-select,
-textarea {
-    font-family: inherit; /* 1 */
-    font-size: 100%; /* 2 */
-    margin: 0; /* 3 */
-}
-
-/*
- * Addresses Firefox 4+ setting `line-height` on `input` using `!important` in
- * the UA stylesheet.
- */
-button,
-input {
-    line-height: normal;
-}
-
-/*
- * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
- *    and `video` controls.
- * 2. Corrects inability to style clickable `input` types in iOS.
- * 3. Improves usability and consistency of cursor style between image-type
- *    `input` and others.
- */
-button,
-html input[type="button"], /* 1 */
-input[type="reset"],
-input[type="submit"] {
-    -webkit-appearance: button; /* 2 */
-    cursor: pointer; /* 3 */
-}
-
-/*
- * Re-set default cursor for disabled elements.
- */
-button[disabled],
-input[disabled] {
-    cursor: default;
-}
-
-/*
- * 1. Addresses box sizing set to `content-box` in IE 8/9.
- * 2. Removes excess padding in IE 8/9.
- */
-input[type="checkbox"],
-input[type="radio"] {
-    box-sizing: border-box; /* 1 */
-    padding: 0; /* 2 */
-}
-
-/*
- * 1. Addresses `appearance` set to `searchfield` in Safari 5 and Chrome.
- * 2. Addresses `box-sizing` set to `border-box` in Safari 5 and Chrome
- *    (include `-moz` to future-proof).
- */
-input[type="search"] {
-    -webkit-appearance: textfield; /* 1 */
-    -moz-box-sizing: content-box;
-    -webkit-box-sizing: content-box; /* 2 */
-    box-sizing: content-box;
-}
-
-/*
- * Removes inner padding and search cancel button in Safari 5 and Chrome
- * on OS X.
- */
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-    -webkit-appearance: none;
-}
-
-/*
- * Removes inner padding and border in Firefox 4+.
- */
-button::-moz-focus-inner,
-input::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-}
-
-/*
- * 1. Removes default vertical scrollbar in IE 8/9.
- * 2. Improves readability and alignment in all browsers.
- */
-textarea {
-    overflow: auto; /* 1 */
-    vertical-align: top; /* 2 */
-}
-
-/* ==========================================================================
-   Tables
-   ========================================================================== */
-
-/*
- * Remove most spacing between table cells.
- */
-table {
-    border-spacing: 10px;
-}
-
-/*------------------------------------*\
-$HELPER
-\*------------------------------------*/
-/**
-* A series of helper classes to use arbitrarily. Only use a helper class if an
-* element/component doesn't already have a class to which you could apply this
-* styling, e.g. if you need to float `.main-nav` left then add `float:left;` to
-* that ruleset as opposed to adding the `.float--left` class to the markup.
-*
-* A lot of these classes carry `!important` as you will always want them to win
-* out over other selectors.
-*/
-/**
-* Add/remove floats
-*/
-.float--right {
-    float: right!important;
-}
-.float--left {
-    float: left !important;
-}
-.float--none {
-    float: none !important;
-}
-
-/**
-* Text alignment
-*/
-.text--left {
-    text-align: left !important;
-}
-.text--center {
-    text-align: center!important;
-}
-.text--right {
-    text-align: right !important;
-}
-/**
-* Add/remove margins
-*/
-.push {
-    margin: 0!important;
-}
-.push--top {
-    margin-top: 0!important;
-}
-.push--right {
-    margin-right: 0!important;
-}
-.push--bottom {
-    margin-bottom: 0!important;
-}
-.push--left {
-    margin-left: 0!important;
-}
-.push--ends {
-    margin-top: 0!important;
-    margin-bottom: 0!important;
-}
-.push--sides {
-    margin-right: 0!important;
-    margin-left: 0!important;
-}
-.push-half {
-    margin: 0!important;
-}
-.push-half--top {
-    margin-top: 0!important;
-}
-.push-half--right {
-    margin-right: 0!important;
-}
-.push-half--bottom {
-    margin-bottom: 0!important;
-}
-.push-half--left {
-    margin-left: 0!important;
-}
-.push-half--ends {
-    margin-top: 0!important;
-    margin-bottom: 0!important;
-}
-.push-half--sides {
-    margin-right: 0!important;
-    margin-left: 0!important;
-}
-.flush {
-    margin: 0!important;
-}
-.flush--top {
-    margin-top: 0!important;
-}
-.flush--right {
-    margin-right: 0!important;
-}
-.flush--bottom {
-    margin-bottom: 0!important;
-}
-.flush--left {
-    margin-left: 0!important;
-}
-.flush--ends {
-    margin-top: 0!important;
-    margin-bottom: 0!important;
-}
-.flush--sides {
-    margin-right: 0!important;
-    margin-left: 0!important;
-}
-
-/**
-* Add/remove paddings
-*/
-.soft {
-    padding: 0!important;
-}
-.soft--top {
-    padding-top: 0!important;
-}
-.soft--right {
-    padding-right: 0!important;
-}
-.soft--bottom {
-    padding-bottom: 0!important;
-}
-.soft--left {
-    padding-left: 0!important;
-}
-.soft--ends {
-    padding-top: 0!important;
-    padding-bottom: 0!important;
-}
-.soft--sides {
-    padding-right: 0!important;
-    padding-left: 0!important;
-}
-.soft-half {
-    padding: 0!important;
-}
-.soft-half--top {
-    padding-top: 0!important;
-}
-.soft-half--right {
-    padding-right: 0!important;
-}
-.soft-half--bottom {
-    padding-bottom: 0!important;
-}
-.soft-half--left {
-    padding-left: 0!important;
-}
-.soft-half--ends {
-    padding-top: 0!important;
-    padding-bottom: 0!important;
-}
-.soft-half--sides {
-    padding-right: 0!important;
-    padding-left: 0!important;
-}
-.hard {
-    padding: 0!important;
-}
-.hard--top {
-    padding-top: 0!important;
-}
-.hard--right {
-    padding-right: 0!important;
-}
-.hard--bottom {
-    padding-bottom: 0!important;
-}
-.hard--left {
-    padding-left: 0!important;
-}
-.hard--ends {
-    padding-top: 0!important;
-    padding-bottom: 0!important;
-}
-.hard--sides {
-    padding-right: 0!important;
-    padding-left: 0!important;
-}
-.inline-block {
-    display: inline-block !important;
-}
-
-/**
-* Add a help cursor to any element that gives the user extra information on
-* `:hover`.
-*/
-.informative {
-    cursor: help!important;
-}
-
-/**
-* Mute an object by reducing its opacity.
-*/
-.muted {
-    opacity: 0.5!important;
-    filter: alpha(opacity 50)!important;
-}
-
-/**
-* Align items to the right where they imply progression/movement forward, e.g.:
-*
-*
-*/
-.proceed {
-    text-align: right!important;
-}
-
-/**
-* Add a right-angled quote to links that imply movement, e.g.:
-*
-*
-*/
-.go:after {
-    content: "\00A0" "\00BB"!important;
-}
-
-/**
-* Apply capital case to an element (usually a `strong`).
-*/
-.caps {
-    text-transform: uppercase!important;
-}
-
-/**
-* Underline text
-*/
-.underline {
-    text-decoration: underline!important;
-}
-
-/**
- * Making 'strong' text stand out.
- */
-.strong {
-    font-weight: bold;
-}
-
-/**
- * JS and NON-JS specific behaviour.
- */
-.js .js-hidden {
-    display: none !important;
-}
-.no-js .js-visible {
-    display: none !important;
-}
-
-/**
- * Centers the content of the element.
- */
-.center {
-    text-align: center;
-}
-
-/**
- * Headings should be bold.
- */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-strong,
-b {
-    font-weight: bold;
-}
-
-/**
- * Increase the body size.
- */
-.body {
-    font-size: 160%;
-}
-
-.content {
-    line-height: 1.25;
-    font-family: 'nta', Arial, sans-serif;
-    font-size: 12px;
-    line-height: 1.31579;
-    font-weight: 400;
-    text-transform: none;
-    -webkit-font-smoothing: antialiased;
-    max-width: 1020px;
-    margin: 0 auto;
-}
-.content * {
-  box-sizing: border-box;
-}
-
-/**
- * Explicit class telling the browser to break words when don't fit in one line.
- */
-.word-break {
-    word-wrap: break-word;
-}
-
-
-/*** TYPOGRAPHY ***/
-h1 {
-    font-weight: bold;
-    font-size: 18px;
-}
-.ct-body h1 {
-    font-size: 14px;
-}
-
-h2 {
-    font-weight: bold;
-    font-size: 16px;
-}
-h3 {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.heading-large {
-    font-size: 24px;
-    line-height: 1.11111;
-    font-weight: 400;
-    text-transform: none;
-    font-weight: 700;
-    margin-bottom: 0.41667em;
-}
-
-h3.heading-small {
-    background-color: #2b8cc4;
-    color: #fff;
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    margin-bottom: 0;
-}
-h2.heading-small span {
-    display: block;
-}
-
-.heading-medium {
-    font-size: 19px;
-    line-height: 1.25;
-    font-weight: 400;
-    text-transform: none;
-    font-weight: 700;
-    margin-bottom: 0.5em;
-}
-
-.heading-small {
-    font-size: 14px;
-    line-height: 1.31579;
-    font-weight: 400;
-    text-transform: none;
-    font-weight: 700;
-    margin-bottom: 0.3125em;
-}
-
-p {
-    margin-top: 0.3125em;
-    margin-bottom: 1.25em;
-}
-p.accounts-upload {
-    font-size: 1.3em;
-}
-
-pre,
-code {
-    font-size: 13px;
-    line-height: 19px;
-    color: #0b0c0c;
-    background-color: #f8f8f8;
-    border: 1px solid #bfc1c3;
-    padding: 3px 7px;
-}
-
-.comps-body, .accounts-body {
-    font-family: 'Times New Roman';
-}
-
-.margin-large {
-    margin-top: 4em;
-}
-
-.margin-xx-large {
-    margin-top: 10em;
-}
-
-/*** LAYOUTS ***/
-
-.comps-body, .ct-body {
-  page-break-before:always;
-}
-details {
-    clear: both;
-}
-.page-number {
-    display: block;
-    text-align: right;
-}
-.header {
-    padding: 5px;
-}
-
-
-/*** GRID ***/
-
-.inner-block {
-    margin-left: 15px;
-    margin-right: 15px;
-}
-.grid-wrapper:after {
-    content: '';
-    display: block;
-    clear: both;
-}
-@media all {
-    .grid-wrapper {
-        margin-left: -15px;
-        margin-right: -15px;
-    }
-}
-.grid-divider {
-    border-bottom: 1px solid #bfc1c3;
-    margin-bottom: 20px;
-    margin-left: 15px;
-    margin-right: 15px;
-}
-.grid-divider:after {
-    content: "";
-    display: block;
-    clear: both;
-}
-@media all {
-    .grid-divider {
-        margin-left: 30px;
-        margin-right: 30px;
-    }
-}
-.grid {
-    float: left;
-    width: 100%;
-}
-@media all {
-    .grid-1-4 {
-        width: 25%;
-    }
-}
-@media all {
-    .grid-1-3 {
-        width: 33.33333%;
-    }
-}
-@media all {
-    .grid-1-2 {
-        width: 50%;
-    }
-}
-@media all {
-    .grid-2-3 {
-        width: 66.66667%;
-    }
-}
-@media all {
-    .grid-3-4 {
-        width: 75%;
-    }
-}
-.grid .inner-block {
-    padding: 0;
-}
-@media all {
-    .grid .inner-block {
-        margin: 0 15px;
-    }
-}
-.inner-block .grid-wrapper {
-    padding: 0;
-    margin-left: -15px;
-    margin-right: -15px;
-}
-.inner-block .grid-divider {
-    margin-left: 0;
-    margin-right: 0;
-}
-
-/*** TABLE ***/
-table {
-    font-family: Times New Roman;
-    width: 100%;
-    padding-bottom: 15px;
-}
-th {
-    font-weight: bold;
-    vertical-align: top;
-    text-align: left;
-}
-td {
-    vertical-align: top;
-    text-align: left;
-}
-
-.table-heading {
-    text-align: right;
-    font-style: italic
-}
-
-td.figure,
-td.total,
-td.total-no-top-border,
-td.grandtotal,
-td.total-no-top-border,
-td.grandtotal-no-top-border,
-th.figure {
-    vertical-align: middle;
-    text-align: right;
-    padding: 2px 5px;
-    white-space: nowrap;
-    width: 10%;
-}
-td.description {
-    width: 50%;
-}
-td.total {
-    border-top: black solid 1px;
-    border-bottom: black solid 1px;
-}
-td.total-no-top-border {
-    border-bottom: black solid 1px;
-}
-td.grandtotal-no-top-border {
-    border-bottom: black double 5px;
-}
-td.grandtotal {
-    border-top: black solid 1px;
-    border-bottom: black double 5px;
-}
-td.align-right {
-    text-align: right;
-}
-
-table.wrap th,
-table.wrap td {
-    white-space: normal;
-}
-
-@media print {
-    td.figure,
-    td.total,
-    td.total-no-top-border,
-    td.grandtotal,
-    td.total-no-top-border,
-    td.grandtotal-no-top-border,
-    th.figure {
-        width: 15%;
-    }
-}
-
-/** FIELD LEVEL ***/
-.field-number {
-  margin-right: 0.25em;
-  font-weight: 700;
-}
-
-/** LISTS **/
-details,
-summary {
-    display: block;
-}
-menu,
-ol,
-ul {
-    margin-top: 5px;
-    margin-bottom: 20px;
-    padding: 0;
-}
-ul,
-ol {
-    list-style-type: none;
-}
-
-ul.with-list-style {
-    font-size: 1.3em;
-    list-style: disc;
-    margin-left: 3em;
-}
-
-ul li {
-    margin-bottom: 5px;
-}
-.list-bullet {
-    list-style-type: disc;
-    margin-left: 20px;
-}
-.list--dashed {
-    padding-left: 1.5em;
-}
-.list--dashed li:before {
-    content: '-';
-    display: inline-block;
-    margin-left: -1.5em;
-    width: 1.5em;
-}
-
-.logo {
-  display: block;
-}
-
-ul.accounts-comps-ct {
-   margin-top: 240px;
-   text-align:center;
-   font-size:24px;
-}
-
-.page-break {
-    min-height: 400px;
-    page-break-before:always;
-}
-
-.iris_hr {
-    page-break-after: always;
-}
-
-.page-break-only {
-    page-break-before: always;
-}
-
-.no-page-break {
-  page-break-inside: avoid;
-}
-
-.page {
-    height: 261mm;
-    margin: 0 auto;
-    page-break-after: always;
-    position: relative;
-    width: 185mm;
-}
-
-.scaled .page {
-    height: 230mm;
-    width: 160mm;
-}
-
-@page {
-    size: A4;
-}
-
-@media print {
-    html, body {
-        height: 261mm;
-        width: 185mm;
-    }
-}
-
-@media screen {
-    .page {
-        margin-bottom: 5em
-    }
-}
-
-.section-marker {
-    left: 0;
-    position: absolute;
-    top: 0;
-}
-
-.page-footer {
-    box-sizing: border-box;
-    height: 100%;
-    left: 0;
-    padding-top: 135%;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-.draft .page-break,
-.draft #AccountsHeader {
-    zoom: expression(this.runtimeStyle.zoom="1", this.insertBefore(document.createElement("i"), this.firstChild).className="ie-after");
-}
-
-.draft .page:after,
-.draft .page-break:after,
-.draft #AccountsHeader:after {
-    content: "Draft";
-    color: #888;
-    display: block;
-    font-size: 128px;
-    left: 50%;
-    line-height: 1em;
-    margin: -64px 0 0 -210px;
-    opacity: 0.5;
-    position: absolute;
-    text-transform: uppercase;
-    top: 50%;
-    -moz-transform: rotate(-30deg);
-    -webkit-transform: rotate(-30deg);
-    -o-transform: rotate(-30deg);
-    -ms-transform: rotate(-30deg);
-    transform: rotate(-30deg);
-    z-index: 5;
-}
-
-.draft .page .ie-after,
-.draft .page-break .ie-after,
-.draft #AccountsHeader .ie-after {
-    color: #888;
-    display: block;
-    filter: alpha(opacity=50);
-    font-size: 128px;
-    left: 50%;
-    line-height: 1em;
-    margin: -64px 0 0 -210px;
-    position: absolute;
-    text-transform: uppercase;
-    top: 50%;
-    z-index: 5;
-    zoom: expression(this.runtimeStyle.zoom="1", this.innerHTML = "DRAFT");
-}
-
-.split-equally tr td,
-.split-equally tr td.figure,
-.split-equally tr td.total {
-    width: 50%;
-}
-
-.negative,
-.debit {
-    white-space: nowrap;
-}
-        </style>
+    <style type="text/css">
+	   body {
+	       font-size: 12px;
+	   }
+	
+	   /*
+	    * Addresses `h1` font sizes within `section` and `article` in Firefox 4+,
+	    * Safari 5, and Chrome.
+	    */
+	   h1 {
+	       font-size: 2em;
+	   }
+	
+	   /*
+	    * Addresses style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
+	    */
+	   b,
+	   strong {
+	       font-weight: bold;
+	   }
+	
+	
+	   /* ==========================================================================
+	      Tables
+	      ========================================================================== */
+	
+	   /*
+	    * Remove most spacing between table cells.
+	    */
+	   table {
+	       border-spacing: 10px;
+	   }
+	
+	   /**
+	   * Text alignment
+	   */
+	   .text--left {
+	       text-align: left !important;
+	   }
+	   .text--center {
+	       text-align: center!important;
+	   }
+	   .text--right {
+	       text-align: right !important;
+	   }
+	
+	   /**
+	    * Making 'strong' text stand out.
+	    */
+	   .strong {
+	       font-weight: bold;
+	   }
+	
+	   /**
+	    * Centers the content of the element.
+	    */
+	   .center {
+	       text-align: center;
+	   }
+	
+	   /**
+	    * Increase the body size.
+	    */
+	   .body {
+	       font-size: 100%;
+	   }
+	
+	   /*** TYPOGRAPHY ***/
+	   h1 {
+	       font-weight: bold;
+	       font-size: 16px;
+	   }
+	
+	   h2 {
+	       font-weight: bold;
+	       font-size: 14px;
+	   }
+	   h3 {
+	       font-weight: bold;
+	       font-size: 12px;
+	   }
+	
+	   p {
+	       margin-top: 0.3125em;
+	       margin-bottom: 1.25em;
+	   }
+	   p.accounts-upload {
+	       font-size: 1.3em;
+	   }
+	
+	   .accounts-body {
+	       font-family: 'SourceSansPro-Regular';
+	   }
+	
+	   .margin-large {
+	       margin-top: 4em;
+	   }
+	
+	   .margin-xx-large {
+	       margin-top: 10em;
+	   }
+	
+	   .header {
+	       padding: 5px;
+	   }
+	
+	   .text-area-display {
+	       white-space: pre-line;
+	   }
+	
+	
+	   /*** TABLE ***/
+	   table {
+	       font-family: 'SourceSansPro-Regular';
+	       font-size: 12px;
+	       width: 100%;
+	       padding-bottom: 15px;
+	   }
+	   th {
+	       font-weight: bold;
+	       vertical-align: top;
+	       text-align: left;
+	   }
+	   td {
+	       vertical-align: top;
+	       text-align: left;
+	   }
+	
+	   .table-heading {
+	       text-align: right;
+	       font-style: italic
+	   }
+	
+	   td.figure,
+	   td.total,
+	   td.total-no-top-border,
+	   td.grandtotal,
+	   td.total-no-top-border,
+	   td.grandtotal-no-top-border,
+	   th.figure {
+	       vertical-align: middle;
+	       text-align: right;
+	       white-space: nowrap;
+	       width: 14%;
+	   }
+	   td.description {
+	       width: 50%;
+	   }
+	   td.total {
+	       border-top: black solid 1px;
+	       border-bottom: black solid 1px;
+	   }
+	   td.total-no-top-border {
+	       border-bottom: black solid 1px;
+	   }
+	   td.grandtotal-no-top-border {
+	       border-bottom: black double 3px;
+	   }
+	   td.grandtotal {
+	       border-top: black solid 1px;
+	       border-bottom: black double 3px;
+	   }
+	   td.align-right {
+	       text-align: right;
+	   }
+	
+	   @media print {
+	       td.figure,
+	       td.total,
+	       td.total-no-top-border,
+	       td.grandtotal,
+	       td.total-no-top-border,
+	       td.grandtotal-no-top-border,
+	       th.figure {
+	           width: 15%;
+	       }
+	   }
+	
+	   ol,
+	   ul {
+	       margin-top: 5px;
+	       margin-bottom: 20px;
+	       padding: 0;
+	   }
+	   ul,
+	   ol {
+	       list-style-type: none;
+	   }
+	
+	   ul li {
+	       margin-bottom: 5px;
+	   }
+	
+	   .page-break {
+	       min-height: 400px;
+	       page-break-before:always;
+	   }
+	
+	   .page {
+	       min-height: 25cm;
+	       border-style: solid;
+	       border-width: 0px;
+	       page-break-after: always;
+	       margin: 0 auto;
+	       width: 170mm;
+	       position: relative;
+	   }
+	
+	   @page {
+	       size: A4;
+	   }
+	
+	   @media print {
+	       html, body {
+	           height: 257mm;
+	           margin: 0 auto;
+	           width: 170mm;
+	           font-size: 12px;
+	       }
+	   }
+	
+	   @media screen {
+	       .page {
+	           margin-bottom: 5em
+	       }
+	   }
+	
+	   .section-marker {
+	       left: 0;
+	       position: absolute;
+	       top: 0;
+	   }
+	
+	   .draft .page-break,
+	   .draft #AccountsHeader {
+	       zoom: expression(this.runtimeStyle.zoom="1", this.insertBefore(document.createElement("i"), this.firstChild).className="ie-after");
+	   }
+	
+	   .draft .page:after,
+	   .draft .page-break:after,
+	   .draft #AccountsHeader:after {
+	       content: "Draft";
+	       color: #888;
+	       display: block;
+	       font-size: 128px;
+	       left: 50%;
+	       line-height: 1em;
+	       margin: -64px 0 0 -210px;
+	       opacity: 0.5;
+	       position: absolute;
+	       text-transform: uppercase;
+	       top: 50%;
+	       -moz-transform: rotate(-30deg);
+	       -webkit-transform: rotate(-30deg);
+	       -o-transform: rotate(-30deg);
+	       -ms-transform: rotate(-30deg);
+	       transform: rotate(-30deg);
+	       z-index: 5;
+	   }
+	
+	   .draft .page .ie-after,
+	   .draft .page-break .ie-after,
+	   .draft #AccountsHeader .ie-after {
+	       color: #888;
+	       display: block;
+	       filter: alpha(opacity=50);
+	       font-size: 128px;
+	       left: 50%;
+	       line-height: 1em;
+	       margin: -64px 0 0 -210px;
+	       position: absolute;
+	       text-transform: uppercase;
+	       top: 50%;
+	       z-index: 5;
+	       zoom: expression(this.runtimeStyle.zoom="1", this.innerHTML = "DRAFT");
+	   }
+	
+	   .table-margin-bottom-spacing {
+	       margin-bottom: 12px;
+	   }
+
+       .negative, .debit {
+           white-space: nowrap;
+       }
+    </style>
   </head>
   <body xml:lang="en">
     {{doTwoPass}}
@@ -2027,8 +1213,13 @@ ul.accounts-comps-ct {
 
                       <tr class="figures">
                           <td id="stocks-label">Stocks:</td>
-                          <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes"></td>
-
+                          
+                          {{ if .small_full_accounts.balance_sheet_notes.stocks }}  
+                              <td class="figure noteIndex" id="uk-busTotalInventoriesCY_ENDNoteIndexes">{{getValue "stocks-notes-id"}}</td>
+                          {{else}}
+                              <td class="figure noteIndex">&#160;</td>
+                          {{end}}
+                        
                           <td id="stocks-curr-val" class="strong figure">
                             {{if isNotEmpty $stocks.current_amount}}
                                 <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
@@ -2160,7 +1351,7 @@ ul.accounts-comps-ct {
                               <td class="figure noteIndex" id="uk-busCreditorsCreditorsWithinOneYear_CY_ENDNoteIndexes">{{getValue "creditors-within-one-year-notes-id"}}</td>
                           {{else}}
                               <td class="figure noteIndex">&#160;</td>
-                          {{end}}
+                          {{end}}                          
 
                           <td id="creditors-within-curr-val" class="strong figure">
                               {{if isNotEmpty $creditors_within.current_amount}}
@@ -3190,6 +2381,114 @@ ul.accounts-comps-ct {
 
           <!-- TANGIBLE ASSETS NOTE END -->
 
+          <!-- STOCKS NOTE START -->
+          {{if $stocksNote := $balanceSheetNotes.stocks}}
+            {{incValue "notes-page-count" }}
+            {{setValue "stocks-notes-id" (getValue "notes-page-count") }}
+
+            <div class="page">
+              <div class="header">
+                <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+              </div>
+
+              <h2 class="text--center">Notes to the Financial Statements</h2>
+              <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+              </p>
+
+              <h2>{{getValue "notes-page-count"}}. Stocks</h2>
+
+              <table cellspacing="10" id="stocks-note-table">
+                <tbody>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $stocksNote.total.current_amount}}
+                    <th class="table-heading" id="stocks-note-current-heading">{{$period.current_period_bs_date}}</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $stocksNote.total.previous_amount}}
+                    <th class="table-heading" id="stocks-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+                  {{end}}
+                </tr>
+
+                <tr>
+                  <th class="table-heading"></th>
+                  {{if $stocksNote.total.current_amount}}
+                    <th class="table-heading" id="stocks-note-current-currency">£</th>
+                  {{else}}
+                    <th  class="table-heading">&#160;</th>
+                  {{end}}
+
+                  {{if $stocksNote.total.previous_amount}}
+                  <th class="table-heading" id="stocks-note-previous-currency">£</th>
+                  {{end}}
+                </tr>
+
+                {{if $stocks := $stocksNote.stocks}}
+                  <tr class="figures">
+                    <td id="stocks">Stocks</td>
+                    <td id="stocks-note-curr-val" class="strong figure">
+                      {{if isNotEmpty $stocks.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                    <td id="stocks-note-prev-val" class="figure">
+                      {{if isNotEmpty $stocks.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:OtherInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $stocks.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $paymentsOnAccount := $stocksNote.payments_on_account}}
+                  <tr class="figures">
+                    <td id="payments-on-account-label">Payments on account</td>
+                    <td id="payments-on-account-curr-val" class="strong figure">
+                      {{if isNotEmpty $paymentsOnAccount.current_amount}}
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:PaymentsOnAccountInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $paymentsOnAccount.current_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+
+                    <td id="payments-on-account-prev-val" class="figure">
+                      {{if isNotEmpty $paymentsOnAccount.previous_amount}}
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:PaymentsOnAccountInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $paymentsOnAccount.previous_amount}}</ix:nonFraction>
+                      {{end}}
+                    </td>
+                  </tr>
+                {{end}}
+
+                {{if $totalStocks := $stocksNote.total}}
+                  <tr class="figures">
+                    <td id="stocks-total-label">Total</td>
+                    {{if isNotEmpty $totalStocks.current_amount}}
+                    <td id="stocks-total-curr-val" class="strong total">
+                        <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalStocks.current_amount}}</ix:nonFraction>
+                    </td>
+                    {{else}}
+                      <td  class="figures">&#160;</td>
+                    {{end}}
+
+                    {{if isNotEmpty $totalStocks.previous_amount}}
+                    <td id="stocks-total-prev-val" class="total">
+                        <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalInventories" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $totalStocks.previous_amount}}</ix:nonFraction>
+                    </td>
+                    {{end}}
+                  </tr>
+                {{end}}
+
+                </tbody>
+              </table>
+
+            </div>
+
+          {{end}}
+          <!-- STOCKS NOTE END -->
+          
           <!-- DEBTORS NOTE START -->
           {{if $debtorsNote := $balanceSheetNotes.debtors}}
             {{incValue "notes-page-count" }}
