@@ -95,7 +95,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
         try {
             repository.save(entity);
         } catch (MongoException me) {
-            DataException dataException = new DataException("Failed to update" + 
+            DataException dataException = new DataException("Failed to update " + 
                 ResourceName.FIXED_ASSETS_INVESTMENTS.getName(), me);
             LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
                 companyAccountId, entity.getId()));

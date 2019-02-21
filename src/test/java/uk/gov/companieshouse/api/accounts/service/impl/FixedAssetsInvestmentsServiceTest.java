@@ -48,7 +48,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.FixedAssetsInvestmentsValidator;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -71,9 +70,6 @@ public class FixedAssetsInvestmentsServiceTest {
 
     @Mock
     private FixedAssetsInvestmentsRepository mockRepository;
-
-    @Mock
-    private FixedAssetsInvestmentsValidator mockFixedAssetsInvestmentsValidator;
 
     @Mock
     private DuplicateKeyException mockDuplicateKeyException;
