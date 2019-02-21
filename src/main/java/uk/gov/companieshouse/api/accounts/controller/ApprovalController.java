@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -23,20 +21,14 @@ import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.ApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
-import uk.gov.companieshouse.logging.util.LogContext;
-import uk.gov.companieshouse.logging.util.LogHelper;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/approval", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ApprovalController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String REQUEST_ID = "X-Request-Id";
 
     @Autowired
     private ApprovalService approvalService;
@@ -52,19 +44,9 @@ public class ApprovalController {
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-        LogContext logContext = LogHelper.createNewLogContext(request);
-        String requestId = request.getHeader(REQUEST_ID);
-
         if (bindingResult.hasErrors()) {
-
-            Errors errors = errorMapper
-                .mapBindingResultErrorsToErrorModel(bindingResult);
-
-            if (errors.hasErrors()) {
-                LOGGER.error("Approval validation failure", logContext);
-                logValidationFailureError(requestId, errors);
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-            }
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = (Transaction) request
@@ -73,13 +55,14 @@ public class ApprovalController {
         try {
             ResponseObject<Approval> responseObject = approvalService
                 .create(approval, transaction, companyAccountId, request);
+
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            LOGGER.errorRequest(request, ex, debugMap);
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create approval resource", ex, request);
             return apiResponseMapper.map(ex);
         }
 
@@ -93,27 +76,21 @@ public class ApprovalController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String approvalId = approvalService.generateID(companyAccountId);
-        ResponseObject<Approval> responseObject;
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = approvalService.findById(approvalId, request);
-        } catch (DataException de) {
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            ResponseObject<Approval> response = approvalService.findById(approvalId, request);
+
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve approval resource", ex, request);
+            return apiResponseMapper.map(ex);
         }
-
-        return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
-
-    }
-
-    private void logValidationFailureError(String requestId, Errors errors) {
-        HashMap<String, Object> logMap = new HashMap<>();
-        logMap.put("message", "Validation failure");
-        logMap.put("Errors: ", errors);
-        LOGGER.traceContext(requestId, "", logMap);
     }
 
 }

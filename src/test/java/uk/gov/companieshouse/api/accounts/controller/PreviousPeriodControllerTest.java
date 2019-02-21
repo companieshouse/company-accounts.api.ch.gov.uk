@@ -139,13 +139,11 @@ public class PreviousPeriodControllerTest {
     public void badRequestWhenBindingResultHasErrors() {
 
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errors.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult,
             COMPANY_ACCOUNT_ID, request);
 
-        assertTrue(bindingResult.hasErrors());
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -200,7 +198,6 @@ public class PreviousPeriodControllerTest {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errors.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
