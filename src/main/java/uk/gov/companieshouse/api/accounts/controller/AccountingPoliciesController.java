@@ -66,7 +66,7 @@ public class AccountingPoliciesController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create accounting policies resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -89,7 +89,7 @@ public class AccountingPoliciesController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve accounting policies resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -123,7 +123,7 @@ public class AccountingPoliciesController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update accounting policies resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 

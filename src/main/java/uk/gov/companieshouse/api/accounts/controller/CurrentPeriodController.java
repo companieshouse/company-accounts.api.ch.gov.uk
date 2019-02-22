@@ -65,7 +65,7 @@ public class CurrentPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create current period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -98,7 +98,7 @@ public class CurrentPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update current period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -121,7 +121,7 @@ public class CurrentPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve current period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

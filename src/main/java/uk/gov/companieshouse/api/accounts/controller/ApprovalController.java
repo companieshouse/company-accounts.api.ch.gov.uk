@@ -63,7 +63,7 @@ public class ApprovalController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create approval resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
 
     }
@@ -89,7 +89,7 @@ public class ApprovalController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve approval resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
