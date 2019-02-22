@@ -78,9 +78,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
             internalApiClient.privateTransaction().patch("/private/transactions/" + transaction.getId(), transaction).execute();
         } catch (IOException | URIValidationException e) {
-
-            PatchException patchException = new PatchException("Failed to patch transaction", e);
-            throw patchException;
+            throw new PatchException("Failed to patch transaction", e);
         }
 
         return new ResponseObject<>(ResponseStatus.CREATED, companyAccount);
