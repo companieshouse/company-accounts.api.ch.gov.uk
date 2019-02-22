@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.InternalApiClient;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -33,18 +32,14 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
-
     @Autowired
     private CompanyAccountRepository companyAccountRepository;
+
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
 
@@ -69,20 +64,12 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         companyAccountEntity.setId(id);
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", id);
-
         try {
             companyAccountRepository.insert(companyAccountEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-        } catch (MongoException me) {
-            DataException dataException = new DataException(
-                "Failed to insert company account entity", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         try {
@@ -93,7 +80,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         } catch (IOException | URIValidationException e) {
 
             PatchException patchException = new PatchException("Failed to patch transaction", e);
-            LOGGER.errorRequest(request, patchException, debugMap);
             throw patchException;
         }
 
@@ -145,12 +131,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         CompanyAccountEntity companyAccountEntity;
         try {
             companyAccountEntity = companyAccountRepository.findById(id).orElse(null);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Company Account", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         if (companyAccountEntity == null) {
