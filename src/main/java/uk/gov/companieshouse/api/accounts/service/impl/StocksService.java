@@ -21,20 +21,14 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 @Service
 public class StocksService implements ResourceService<Stocks> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private StocksRepository repository;
     private StocksTransformer transformer;
@@ -73,13 +67,9 @@ public class StocksService implements ResourceService<Stocks> {
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId, entity.getId()));
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                    + ResourceName.STOCKS.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId, entity.getId()));
-            throw dataException;
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.STOCKS_NOTE,
@@ -104,13 +94,8 @@ public class StocksService implements ResourceService<Stocks> {
 
         try {
             repository.save(entity);
-        } catch (MongoException me) {
-            DataException dataException =
-                    new DataException("Failed to update" + ResourceName.STOCKS.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountId, entity.getId()));
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -124,12 +109,7 @@ public class StocksService implements ResourceService<Stocks> {
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Stocks", e);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -153,13 +133,8 @@ public class StocksService implements ResourceService<Stocks> {
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", companyAccountsId);
-            DataException dataException = new DataException("Failed to delete Stocks", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
     }
 

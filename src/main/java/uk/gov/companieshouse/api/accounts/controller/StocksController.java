@@ -21,27 +21,17 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.StocksService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/stocks", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StocksController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @Autowired
     private StocksService stocksService;
@@ -73,10 +63,10 @@ public class StocksController {
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                    "Failed to create stocks resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create stocks resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -107,10 +97,9 @@ public class StocksController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                    "Failed to update stocks resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update stocks resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -123,23 +112,18 @@ public class StocksController {
 
         String stocksId = stocksService.generateID(companyAccountId);
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<Stocks> response = stocksService
                     .findById(stocksId, request);
 
-            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
 
-        } catch (DataException de) {
+        } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                    "Failed to retrieve stocks resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            responseEntity = apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve stocks resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
     }
 
     @DeleteMapping
@@ -153,22 +137,14 @@ public class StocksController {
             ResponseObject<Stocks> response = stocksService
                     .delete(companyAccountsId, request);
 
-            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-        } catch (DataException de) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                    "Failed to delete stocks resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            return apiResponseMapper
+                    .map(response.getStatus(), response.getData(), response.getErrors());
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountsId, transaction,
+                    "Failed to delete stocks resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-    }
-
-    private Map<String, Object> createDebugMap(String companyAccountId,
-                                               Transaction transaction, String message) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, message);
-        return debugMap;
     }
 }
