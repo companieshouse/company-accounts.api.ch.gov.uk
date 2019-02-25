@@ -19,11 +19,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler;
-import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
+import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
+import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionGet;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,13 +37,13 @@ public class TransactionInterceptorTest {
     private ApiClientService apiClientServiceMock;
 
     @Mock
-    private ApiClient internalApiClientMock;
+    private InternalApiClient internalApiClientMock;
 
     @Mock
-    private TransactionsResourceHandler transactionResourceHandlerMock;
+    private PrivateTransactionResourceHandler transactionResourceHandlerMock;
 
     @Mock
-    private TransactionsGet transactionGetMock;
+    private PrivateTransactionGet transactionGetMock;
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
@@ -62,8 +62,8 @@ public class TransactionInterceptorTest {
 
         httpServletResponseMock.setContentType("text/html");
 
-        when(apiClientServiceMock.getApiClient(anyString())).thenReturn(internalApiClientMock);
-        when(internalApiClientMock.transactions()).thenReturn(transactionResourceHandlerMock);
+        when(apiClientServiceMock.getInternalApiClient(anyString())).thenReturn(internalApiClientMock);
+        when(internalApiClientMock.privateTransaction()).thenReturn(transactionResourceHandlerMock);
         when(transactionResourceHandlerMock.get(anyString())).thenReturn(transactionGetMock);
         when(transactionGetMock.execute()).thenReturn(new Transaction());
     }
