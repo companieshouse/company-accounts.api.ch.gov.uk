@@ -211,6 +211,7 @@
 	       position: absolute;
 	       top: 0;
 	   }
+
 	   .draft .page-break,
 	   .draft #AccountsHeader {
 	       zoom: expression(this.runtimeStyle.zoom="1", this.insertBefore(document.createElement("i"), this.firstChild).className="ie-after");
@@ -258,6 +259,9 @@
        .negative, .debit {
            white-space: nowrap;
        }
+          * {
+	  	   position: relative;
+	   }
     </style>
 </head>
 <body xml:lang="en">
