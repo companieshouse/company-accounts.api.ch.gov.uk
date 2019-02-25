@@ -13,14 +13,8 @@ public class BaseValidator {
     @Value("${date.invalid}")
     protected String dateInvalid;
 
-    @Value("${inconsistent.data}")
-    private String inconsistentData;
-
     @Value("${unexpected.data}")
     protected String unexpectedData;
-
-    @Value("${invalid.note}")
-    protected String invalidNote;
 
     @Value("${current.balancesheet.not.equal}")
     protected String currentBalanceSheetNotEqual;

@@ -17,12 +17,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.EmployeesRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.EmployeesValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -36,17 +38,20 @@ public class EmployeesService implements ResourceService<Employees> {
     private EmployeesTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private EmployeesValidator employeesValidator;
 
     @Autowired
     public EmployeesService(EmployeesRepository repository,
             EmployeesTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService,
+            EmployeesValidator employeesValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.employeesValidator = employeesValidator;
     }
 
     @Override
@@ -54,6 +59,13 @@ public class EmployeesService implements ResourceService<Employees> {
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
+
+        Errors errors = employeesValidator.validateEmployees(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -85,6 +97,13 @@ public class EmployeesService implements ResourceService<Employees> {
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
+
+        Errors errors = employeesValidator.validateEmployees(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
