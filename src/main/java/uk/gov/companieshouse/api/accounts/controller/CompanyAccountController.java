@@ -53,21 +53,18 @@ public class CompanyAccountController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
         try {
             ResponseObject<CompanyAccount> responseObject = companyAccountService
                 .create(companyAccount, transaction, request);
-            responseEntity = apiResponseMapper
+            return apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
         } catch (PatchException | DataException ex) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
             LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
     }
 
     @GetMapping("/{companyAccountId}")

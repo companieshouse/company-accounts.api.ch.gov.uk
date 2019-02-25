@@ -133,12 +133,11 @@ public class TangibleAssetsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        DataException dataException = new DataException("");
-        doThrow(dataException).when(tangibleAssetsService)
+        doThrow(new DataException("")).when(tangibleAssetsService)
                 .create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
                 controller.create(tangibleAssets, bindingResult, COMPANY_ACCOUNTS_ID, request);
@@ -151,7 +150,7 @@ public class TangibleAssetsControllerTest {
         verify(tangibleAssetsService, times(1))
                 .create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1))
-                .map(dataException);
+                .getErrorResponse();
     }
 
     @Test
@@ -188,11 +187,10 @@ public class TangibleAssetsControllerTest {
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(tangibleAssetsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(GENERATED_ID);
 
-        DataException dataException = new DataException("");
-        doThrow(dataException).when(tangibleAssetsService).findById(GENERATED_ID, request);
+        doThrow(new DataException("")).when(tangibleAssetsService).findById(GENERATED_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response = controller.get(COMPANY_ACCOUNTS_ID, request);
 
@@ -203,7 +201,7 @@ public class TangibleAssetsControllerTest {
         verify(tangibleAssetsService, times(1))
                 .findById(GENERATED_ID, request);
         verify(apiResponseMapper, never()).mapGetResponse(any(), any());
-        verify(apiResponseMapper, times(1)).map(dataException);
+        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
 
     @Test
@@ -295,12 +293,11 @@ public class TangibleAssetsControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
-        doThrow(dataException).when(tangibleAssetsService)
+        doThrow(new DataException("")).when(tangibleAssetsService)
                 .update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
                 controller.update(tangibleAssets, bindingResult, COMPANY_ACCOUNTS_ID, request);
@@ -313,7 +310,7 @@ public class TangibleAssetsControllerTest {
         verify(tangibleAssetsService, times(1))
                 .update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1))
-                .map(dataException);
+                .getErrorResponse();
     }
 
     @Test
@@ -347,11 +344,10 @@ public class TangibleAssetsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        DataException dataException = new DataException("");
-        doThrow(dataException).when(tangibleAssetsService).delete(COMPANY_ACCOUNTS_ID, request);
+        doThrow(new DataException("")).when(tangibleAssetsService).delete(COMPANY_ACCOUNTS_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response = controller.delete(COMPANY_ACCOUNTS_ID, request);
 
@@ -360,6 +356,6 @@ public class TangibleAssetsControllerTest {
         assertNull(response.getBody());
 
         verify(tangibleAssetsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1)).map(dataException);
+        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
 }

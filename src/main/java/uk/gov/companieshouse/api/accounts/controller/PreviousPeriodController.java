@@ -64,7 +64,7 @@ public class PreviousPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create previous period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -87,7 +87,7 @@ public class PreviousPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve previous period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -120,7 +120,7 @@ public class PreviousPeriodController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update previous period resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

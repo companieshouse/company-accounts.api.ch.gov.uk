@@ -86,16 +86,16 @@ public class ApprovalControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful request to create Approval")
     void createApprovalError() throws DataException {
-        DataException exception = new DataException("string");
-        when(approvalService.create(any(), any(), any(), any())).thenThrow(exception);
-        when(apiResponseMapper.map(exception))
+
+        when(approvalService.create(any(), any(), any(), any())).thenThrow(new DataException(""));
+        when(apiResponseMapper.getErrorResponse())
             .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
 
         ResponseEntity response = approvalController
             .create(approval, bindingResult, "", request);
 
         verify(approvalService, times(1)).create(any(), any(), any(), any());
-        verify(apiResponseMapper, times(1)).map(exception);
+        verify(apiResponseMapper, times(1)).getErrorResponse();
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }

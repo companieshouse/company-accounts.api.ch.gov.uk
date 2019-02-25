@@ -65,7 +65,7 @@ public class DebtorsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create debtors resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -88,7 +88,7 @@ public class DebtorsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve debtors resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -121,7 +121,7 @@ public class DebtorsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update debtors resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -141,7 +141,7 @@ public class DebtorsController {
 
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete debtors resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

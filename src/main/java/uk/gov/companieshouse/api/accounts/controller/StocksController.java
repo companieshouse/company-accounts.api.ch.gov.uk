@@ -66,7 +66,7 @@ public class StocksController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create stocks resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -99,7 +99,7 @@ public class StocksController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update stocks resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -122,7 +122,7 @@ public class StocksController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve stocks resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -144,7 +144,7 @@ public class StocksController {
 
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete stocks resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

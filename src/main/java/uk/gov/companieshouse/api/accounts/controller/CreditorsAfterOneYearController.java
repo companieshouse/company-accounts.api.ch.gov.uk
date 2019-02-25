@@ -67,7 +67,7 @@ public class CreditorsAfterOneYearController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create creditors after one year resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -90,7 +90,7 @@ public class CreditorsAfterOneYearController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve creditors after one year resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -123,7 +123,7 @@ public class CreditorsAfterOneYearController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update creditors after one year resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -146,7 +146,7 @@ public class CreditorsAfterOneYearController {
 
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete creditors after one year resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }
