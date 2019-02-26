@@ -13,7 +13,6 @@
 	   body {
 	       font-size: 12px;
 	   }
-
 	   /*
 	    * Addresses `h1` font sizes within `section` and `article` in Firefox 4+,
 	    * Safari 5, and Chrome.
@@ -21,7 +20,6 @@
 	   h1 {
 	       font-size: 2em;
 	   }
-
 	   /*
 	    * Addresses style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
 	    */
@@ -29,19 +27,15 @@
 	   strong {
 	       font-weight: bold;
 	   }
-
-
 	   /* ==========================================================================
 	      Tables
 	      ========================================================================== */
-
 	   /*
 	    * Remove most spacing between table cells.
 	    */
 	   table {
 	       border-spacing: 10px;
 	   }
-
 	   /**
 	   * Text alignment
 	   */
@@ -54,34 +48,29 @@
 	   .text--right {
 	       text-align: right !important;
 	   }
-
 	   /**
 	    * Making 'strong' text stand out.
 	    */
 	   .strong {
 	       font-weight: bold;
 	   }
-
 	   /**
 	    * Centers the content of the element.
 	    */
 	   .center {
 	       text-align: center;
 	   }
-
 	   /**
 	    * Increase the body size.
 	    */
 	   .body {
 	       font-size: 100%;
 	   }
-
 	   /*** TYPOGRAPHY ***/
 	   h1 {
 	       font-weight: bold;
 	       font-size: 16px;
 	   }
-
 	   h2 {
 	       font-weight: bold;
 	       font-size: 14px;
@@ -90,7 +79,6 @@
 	       font-weight: bold;
 	       font-size: 12px;
 	   }
-
 	   p {
 	       margin-top: 0.3125em;
 	       margin-bottom: 1.25em;
@@ -98,28 +86,21 @@
 	   p.accounts-upload {
 	       font-size: 1.3em;
 	   }
-
 	   .accounts-body {
 	       font-family: 'SourceSansPro-Regular';
 	   }
-
 	   .margin-large {
 	       margin-top: 4em;
 	   }
-
 	   .margin-xx-large {
 	       margin-top: 10em;
 	   }
-
 	   .header {
 	       padding: 5px;
 	   }
-
 	   .text-area-display {
 	       white-space: pre-line;
 	   }
-
-
 	   /*** TABLE ***/
 	   table {
 	       font-family: 'SourceSansPro-Regular';
@@ -136,12 +117,10 @@
 	       vertical-align: top;
 	       text-align: left;
 	   }
-
 	   .table-heading {
 	       text-align: right;
 	       font-style: italic
 	   }
-
 	   td.figure,
 	   td.total,
 	   td.total-no-top-border,
@@ -174,7 +153,6 @@
 	   td.align-right {
 	       text-align: right;
 	   }
-
 	   @media print {
 	       td.figure,
 	       td.total,
@@ -186,7 +164,6 @@
 	           width: 15%;
 	       }
 	   }
-
 	   ol,
 	   ul {
 	       margin-top: 5px;
@@ -197,16 +174,13 @@
 	   ol {
 	       list-style-type: none;
 	   }
-
 	   ul li {
 	       margin-bottom: 5px;
 	   }
-
 	   .page-break {
 	       min-height: 400px;
 	       page-break-before:always;
 	   }
-
 	   .page {
 	       min-height: 25cm;
 	       border-style: solid;
@@ -216,11 +190,9 @@
 	       width: 170mm;
 	       position: relative;
 	   }
-
 	   @page {
 	       size: A4;
 	   }
-
 	   @media print {
 	       html, body {
 	           height: 257mm;
@@ -229,24 +201,20 @@
 	           font-size: 12px;
 	       }
 	   }
-
 	   @media screen {
 	       .page {
 	           margin-bottom: 5em
 	       }
 	   }
-
 	   .section-marker {
 	       left: 0;
 	       position: absolute;
 	       top: 0;
 	   }
-
 	   .draft .page-break,
 	   .draft #AccountsHeader {
 	       zoom: expression(this.runtimeStyle.zoom="1", this.insertBefore(document.createElement("i"), this.firstChild).className="ie-after");
 	   }
-
 	   .draft .page:after,
 	   .draft .page-break:after,
 	   .draft #AccountsHeader:after {
@@ -268,7 +236,6 @@
 	       transform: rotate(-30deg);
 	       z-index: 5;
 	   }
-
 	   .draft .page .ie-after,
 	   .draft .page-break .ie-after,
 	   .draft #AccountsHeader .ie-after {
@@ -285,11 +252,9 @@
 	       z-index: 5;
 	       zoom: expression(this.runtimeStyle.zoom="1", this.innerHTML = "DRAFT");
 	   }
-
 	   .table-margin-bottom-spacing {
 	       margin-bottom: 12px;
 	   }
-
        .negative, .debit {
            white-space: nowrap;
        }
@@ -1531,6 +1496,10 @@
         <!-- BALANCE SHEET - CAPITAL AND RESERVES -->
 
         {{if $capitalAndReserves := $balanceSheet.capital_and_reserve}}
+
+        <tr>
+          <th class="strong" id="capital-and-reserve-heading">Capital and reserves</th>
+        </tr>
 
         {{if $calledUpShareCapital := $capitalAndReserves.called_up_share_capital}}
 
