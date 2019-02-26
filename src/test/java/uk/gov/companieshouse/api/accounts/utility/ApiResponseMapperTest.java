@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -30,12 +29,6 @@ public class ApiResponseMapperTest {
 
     @Mock
     private Errors errors;
-
-    @Mock
-    private PatchException patchException;
-
-    @Mock
-    private IllegalArgumentException illegalArgumentException;
 
     @Mock
     private HttpServletRequest request;
@@ -77,17 +70,8 @@ public class ApiResponseMapperTest {
 
     @Test
     @DisplayName("Tests exception response")
-    void canMapException() {
-        ResponseEntity responseEntity = apiResponseMapper.map(patchException);
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Tests exception response default")
-    void canMapExceptionDefault() {
-        ResponseEntity responseEntity = apiResponseMapper.map(illegalArgumentException);
+    void canGetErrorResponse() {
+        ResponseEntity responseEntity = apiResponseMapper.getErrorResponse();
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());

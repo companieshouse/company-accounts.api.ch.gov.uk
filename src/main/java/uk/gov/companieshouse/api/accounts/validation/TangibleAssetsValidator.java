@@ -24,7 +24,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
 public class TangibleAssetsValidator extends BaseValidator implements CrossValidator<TangibleAssets> {
@@ -47,15 +47,6 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
 
     @Value("${value.required}")
     private String valueRequired;
-
-    @Value("${inconsistent.data}")
-    private String inconsistentData;
-
-    @Value("${current.balancesheet.not.equal}")
-    private String currentBalanceSheetNotEqual;
-
-    @Value("${previous.balancesheet.not.equal}")
-    private String previousBalanceSheetNotEqual;
 
     private static final String TANGIBLE_NOTE = "$.tangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
@@ -90,7 +81,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
             }
 
             validateTotalFieldsMatch(errors, tangibleAssets, isMultipleYearFiler);
-            crossValidate(errors, request, companyAccountsId, tangibleAssets);
+            crossValidate(tangibleAssets, request, companyAccountsId, errors);
 
         } catch (ServiceException e) {
 
@@ -739,19 +730,19 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
 
         if (tangibleAssetsResource.getCost() != null && tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, getJsonPath(subResource, COST_AT_PERIOD_START));
+            addError(errors, unexpectedData, getJsonPath(subResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getDepreciation() != null && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
 
-            addError(errors, inconsistentData, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
+            addError(errors, unexpectedData, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
 
-            addError(errors, inconsistentData, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+            addError(errors, unexpectedData, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             subResourceInvalid = true;
         }
 
@@ -954,8 +945,10 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     }
 
     @Override
-    public Errors crossValidate(Errors errors, HttpServletRequest request, String companyAccountsId,
-            TangibleAssets tangibleAssets) throws DataException {
+    public Errors crossValidate(TangibleAssets tangibleAssets,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
 
         crossValidateCurrentPeriod(errors, request, companyAccountsId, tangibleAssets);
         crossValidatePreviousPeriod(errors, request, companyAccountsId, tangibleAssets);
@@ -964,7 +957,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     }
 
     private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
-            TangibleAssets tangibleAssets) throws DataException {
+                                            TangibleAssets tangibleAssets) throws DataException {
 
         String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
 

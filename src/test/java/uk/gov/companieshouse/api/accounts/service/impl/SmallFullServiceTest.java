@@ -37,9 +37,10 @@ import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -53,6 +54,9 @@ public class SmallFullServiceTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private TransactionLinks transactionLinks;
 
     @Mock
     private SmallFullEntity smallFullEntity;
@@ -89,6 +93,7 @@ public class SmallFullServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "self_link";
 
     public void setUpCreate() {
     }
@@ -98,6 +103,10 @@ public class SmallFullServiceTest {
     public void createAccountSuccess() throws DataException {
         setUpCreate();
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", request);
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
@@ -110,6 +119,10 @@ public class SmallFullServiceTest {
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = smallFullService.create(smallFull, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -123,6 +136,10 @@ public class SmallFullServiceTest {
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         Executable executable = () -> {
             smallFullService.create(smallFull, transaction, "", request);
         };

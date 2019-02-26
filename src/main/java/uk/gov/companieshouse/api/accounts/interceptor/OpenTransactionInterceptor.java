@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionStatus;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
 
         if (transaction == null ||
             (!requestMethod.equals("GET") && !TransactionStatus.OPEN.getStatus()
-                .equals(transaction.getStatus()))) {
+                .equalsIgnoreCase(transaction.getStatus().getStatus()))) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
             debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");

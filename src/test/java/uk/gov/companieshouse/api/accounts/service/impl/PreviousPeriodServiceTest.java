@@ -29,10 +29,11 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -46,6 +47,9 @@ public class PreviousPeriodServiceTest {
 
     @Mock
     private Transaction transaction;
+
+    @Mock
+    private TransactionLinks transactionLinks;
 
     @Mock
     private PreviousPeriodRepository previousPeriodRepository;
@@ -80,12 +84,18 @@ public class PreviousPeriodServiceTest {
     @InjectMocks
     private PreviousPeriodService previousPeriodService;
 
+    private static final String SELF_LINK = "self_link";
+
 
     @Test
     @DisplayName("Tests the successful creation of a previousPeriod resource")
     public void canCreatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<PreviousPeriod> result = previousPeriodService
             .create(previousPeriod, transaction, "", request);
         assertNotNull(result);
@@ -100,6 +110,10 @@ public class PreviousPeriodServiceTest {
         when(previousPeriodRepository.insert(previousPeriodEntity))
             .thenThrow(duplicateKeyException);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject response = previousPeriodService.create(previousPeriod, transaction, "", request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -113,6 +127,9 @@ public class PreviousPeriodServiceTest {
             .any(PreviousPeriod.class));
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         when(previousPeriodRepository.insert(previousPeriodEntity)).thenThrow(mongoException);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, "", request));
     }
@@ -154,6 +171,10 @@ public class PreviousPeriodServiceTest {
     public void canUpdatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
         ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, "", request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
@@ -165,6 +186,9 @@ public class PreviousPeriodServiceTest {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, "", request));
     }

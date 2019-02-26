@@ -6,9 +6,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeri
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
 
 import java.util.HashMap;
 
