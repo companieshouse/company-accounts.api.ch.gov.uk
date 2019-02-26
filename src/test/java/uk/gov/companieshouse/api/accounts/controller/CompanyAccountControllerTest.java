@@ -121,8 +121,7 @@ public class CompanyAccountControllerTest {
                 .create(companyAccount, transactionMock, httpServletRequestMock);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
-        when(apiResponseMapper.map(any(DataException.class)))
-                .thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
                 .createCompanyAccount(companyAccount, httpServletRequestMock);

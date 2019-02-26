@@ -11,13 +11,11 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
@@ -28,14 +26,9 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StatementTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class StatementService implements ResourceService<Statement> {
-
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String PERIOD_END_ON_PLACE_HOLDER = "{period_end_on}";
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
@@ -80,20 +73,11 @@ public class StatementService implements ResourceService<Statement> {
 
         } catch (DuplicateKeyException ex) {
 
-            LOGGER.errorRequest(request, ex,
-                getDebugMap(transaction, companyAccountId, statementEntity.getId()));
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
 
         } catch (MongoException ex) {
 
-            DataException dataException = new DataException(
-                "Failed to insert " + ResourceName.STATEMENTS.getName(), ex);
-
-            LOGGER.errorRequest(request, dataException,
-                getDebugMap(transaction, companyAccountId, statementEntity.getId()));
-
-            throw dataException;
+            throw new DataException(ex);
         }
 
         smallFullService.addLink(companyAccountId,
@@ -122,13 +106,7 @@ public class StatementService implements ResourceService<Statement> {
 
         } catch (MongoException ex) {
 
-            DataException dataException = new DataException(
-                "Failed to update " + ResourceName.STATEMENTS.getName(), ex);
-
-            LOGGER.errorRequest(request, dataException,
-                getDebugMap(transaction, companyAccountId, statementEntity.getId()));
-
-            throw dataException;
+            throw new DataException(ex);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -145,13 +123,7 @@ public class StatementService implements ResourceService<Statement> {
 
         } catch (MongoException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-
-            DataException dataException = new DataException("Failed to find Statements", ex);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(ex);
         }
 
         if (statementEntity == null) {

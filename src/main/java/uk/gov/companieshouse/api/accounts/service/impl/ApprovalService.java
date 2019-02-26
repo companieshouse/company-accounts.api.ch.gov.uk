@@ -8,13 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -26,14 +24,9 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class ApprovalService implements ResourceService<Approval> {
-
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private ApprovalRepository approvalRepository;
 
@@ -63,18 +56,11 @@ public class ApprovalService implements ResourceService<Approval> {
     public ResponseObject<Approval> create(Approval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
         Errors errors = approvalValidator.validateApproval(rest, request);
 
         if (errors.hasErrors()) {
-            DataException dataException = new DataException(
-                "Failed to validate " + ResourceName.APPROVAL.getName());
-            LOGGER.errorRequest(request, dataException, debugMap);
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
-
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
@@ -84,18 +70,16 @@ public class ApprovalService implements ResourceService<Approval> {
 
         String id = generateID(companyAccountId);
         approvalEntity.setId(id);
-        debugMap.put("id", id);
 
         try {
+
             approvalRepository.insert(approvalEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorRequest(request, dke, debugMap);
+
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-        } catch (MongoException me) {
-            DataException dataException = new DataException(
-                "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+
+            throw new DataException(e);
         }
 
         smallFullService
@@ -113,20 +97,21 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Override
     public ResponseObject<Approval> findById(String id, HttpServletRequest request) throws DataException {
+
         ApprovalEntity approvalEntity;
+
         try {
+
             approvalEntity = approvalRepository.findById(id).orElse(null);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Approval", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+
+            throw new DataException(e);
         }
 
         if (approvalEntity == null) {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
+
         Approval approval = approvalTransformer.transform(approvalEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, approval);
     }

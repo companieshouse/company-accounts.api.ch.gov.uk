@@ -1,9 +1,10 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.Valid;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+
+import javax.validation.Valid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Debtors extends RestObject {

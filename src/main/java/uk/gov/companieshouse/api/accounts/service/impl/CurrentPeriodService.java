@@ -8,13 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -26,15 +24,10 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class CurrentPeriodService implements
     ResourceService<CurrentPeriod> {
-
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private CurrentPeriodRepository currentPeriodRepository;
 
@@ -65,35 +58,23 @@ public class CurrentPeriodService implements
         Transaction transaction, String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
         Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
 
         if (errors.hasErrors()) {
-            DataException dataException = new DataException(
-                "Failed to validate " + ResourceName.CURRENT_PERIOD.getName());
-            LOGGER.errorRequest(request, dataException, debugMap);
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
         populateMetadata(currentPeriod, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
-        String id = generateID(companyAccountId);
-        currentPeriodEntity.setId(id);
-        debugMap.put("id", id);
+        currentPeriodEntity.setId(generateID(companyAccountId));
 
         try {
             currentPeriodRepository.insert(currentPeriodEntity);
         } catch (DuplicateKeyException dke) {
-            LOGGER.errorRequest(request, dke, debugMap);
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-        } catch (MongoException me) {
-            DataException dataException = new DataException(
-                "Failed to insert " + ResourceName.SMALL_FULL.getName(), me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         smallFullService
@@ -107,32 +88,20 @@ public class CurrentPeriodService implements
     public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        String id = generateID(companyAccountId);
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-        debugMap.put("company_accounts_id", companyAccountId);
-        debugMap.put("id", id);
         Errors errors = currentPeriodValidator.validateCurrentPeriod(rest);
 
         if (errors.hasErrors()) {
-            DataException dataException = new DataException(
-                "Failed to validate " + ResourceName.CURRENT_PERIOD.getName());
-            LOGGER.errorRequest(request, dataException, debugMap);
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
         populateMetadata(rest, transaction, companyAccountId);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
-        currentPeriodEntity.setId(id);
+        currentPeriodEntity.setId(generateID(companyAccountId));
 
         try {
             currentPeriodRepository.save(currentPeriodEntity);
-        } catch (MongoException me) {
-            DataException dataException = new DataException(
-                "Failed to update " + ResourceName.CURRENT_PERIOD.getName(), me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -145,12 +114,8 @@ public class CurrentPeriodService implements
         CurrentPeriodEntity currentPeriodEntity;
         try {
             currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find Current period", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         if (currentPeriodEntity == null) {

@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +13,6 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -27,13 +24,9 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsWithinOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CreditorsWithinOneYearValidator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class CreditorsWithinOneYearService implements ResourceService<CreditorsWithinOneYear> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private CreditorsWithinOneYearRepository repository;
     private CreditorsWithinOneYearTransformer transformer;
@@ -75,15 +68,9 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId,
-                    entity.getId()));
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                    + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId
-                    , entity.getId()));
-            throw dataException;
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE,
@@ -112,13 +99,8 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
 
         try {
             repository.save(entity);
-        } catch (MongoException me) {
-            DataException dataException =
-                    new DataException("Failed to update" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountId, entity.getId()));
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -133,13 +115,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find creditors within one " +
-                    "year", e);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -165,15 +141,8 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-
-            debugMap.put("id", creditorsWithinOneYearId);
-            DataException dataException = new DataException("Failed to delete creditors within one year", me);
-
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
     }
 

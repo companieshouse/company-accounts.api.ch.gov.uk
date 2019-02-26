@@ -1,23 +1,14 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
-import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
-import uk.gov.companieshouse.charset.CharSet;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CurrentPeriod {
+public class PreviousPeriod {
 
-    private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MAX_RANGE = 99999999;
     private static final int MIN_RANGE = 0;
-
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("details")
-    private String details;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("greater_than_one_year")
@@ -37,14 +28,6 @@ public class CurrentPeriod {
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("trade_debtors")
     private Long tradeDebtors;
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
 
     public Long getGreaterThanOneYear() {
         return greaterThanOneYear;
