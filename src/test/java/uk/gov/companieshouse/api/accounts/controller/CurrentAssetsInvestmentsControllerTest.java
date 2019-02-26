@@ -110,7 +110,7 @@ public class CurrentAssetsInvestmentsControllerTest {
 
         ResponseEntity responseEntity =
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
             .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -210,7 +210,8 @@ public class CurrentAssetsInvestmentsControllerTest {
 
         ResponseEntity responseEntity =
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse())
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
             controller.update(mockCurrentAssetsInvestments, mockBindingResult,
@@ -259,7 +260,8 @@ public class CurrentAssetsInvestmentsControllerTest {
 
         ResponseEntity responseEntity =
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse())
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -306,7 +308,8 @@ public class CurrentAssetsInvestmentsControllerTest {
 
         ResponseEntity responseEntity =
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse())
+            .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 

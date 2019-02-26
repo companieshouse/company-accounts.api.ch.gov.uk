@@ -67,7 +67,7 @@ public class CurrentAssetsInvestmentsController {
             } catch (DataException ex) {
                 LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update currentAssetsInvestments resource", ex, request);
-                return apiResponseMapper.map(ex);
+                return apiResponseMapper.getErrorResponse();
             }
         }
 
@@ -99,7 +99,7 @@ public class CurrentAssetsInvestmentsController {
             } catch (DataException ex) {
                 LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update currentAssetsInvestments resource", ex, request);
-                return apiResponseMapper.map(ex);
+                return apiResponseMapper.getErrorResponse();
             }
         }
 
@@ -121,7 +121,7 @@ public class CurrentAssetsInvestmentsController {
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction,
                 "Failed to retrieve fixedAssetsInvestments resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -140,7 +140,7 @@ public class CurrentAssetsInvestmentsController {
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountsId, transaction,
                 "Failed to delete fixedAssetsInvestments resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }
