@@ -21,27 +21,17 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestment
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.FixedAssetsInvestmentsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/fixed-assets-investments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FixedAssetsInvestmentsController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @Autowired
     private FixedAssetsInvestmentsService fixedAssetsInvestmentsService;
@@ -76,10 +66,9 @@ public class FixedAssetsInvestmentsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update fixedAssetsInvestments resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                "Failed to create fixedAssetsInvestments resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -109,11 +98,9 @@ public class FixedAssetsInvestmentsController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update fixedAssetsInvestments resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                "Failed to update fixedAssetsInvestments resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -132,17 +119,15 @@ public class FixedAssetsInvestmentsController {
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
-        } catch (DataException de) {
-
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to retrieve fixedAssetsInvestments resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+        } catch (DataException ex) {
+            LoggingHelper.logException(companyAccountId, transaction,
+                "Failed to retrieve fixedAssetsInvestments resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
@@ -150,24 +135,13 @@ public class FixedAssetsInvestmentsController {
 
         try {
             ResponseObject<FixedAssetsInvestments> response =
-                    fixedAssetsInvestmentsService.delete(companyAccountsId, request);
+                    fixedAssetsInvestmentsService.delete(companyAccountId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-        } catch (DataException de) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                "Failed to delete fixedAssetsInvestments resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+        } catch (DataException ex) {
+            LoggingHelper.logException(companyAccountId, transaction,
+                "Failed to delete fixedAssetsInvestments resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-    }
-
-    private Map<String, Object> createDebugMap(String companyAccountId,
-                                               Transaction transaction, String message) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, message);
-        return debugMap;
     }
 }

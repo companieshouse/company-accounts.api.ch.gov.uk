@@ -45,7 +45,8 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
@@ -64,6 +65,9 @@ public class FixedAssetsInvestmentsServiceTest {
 
     @Mock
     private Transaction mockTransaction;
+    
+    @Mock
+    private TransactionLinks mockTransactionLinks;
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -90,6 +94,7 @@ public class FixedAssetsInvestmentsServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "self_link";
 
     @BeforeEach
     void setUp() {
@@ -110,6 +115,9 @@ public class FixedAssetsInvestmentsServiceTest {
 
         when(mockTransformer.transform(mockFixedAssetsInvestments)).thenReturn(fixedAssetsInvestmentsEntity);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+        
         ResponseObject<FixedAssetsInvestments> result = service.create(mockFixedAssetsInvestments, mockTransaction,
             "", mockRequest);
 
@@ -127,6 +135,9 @@ public class FixedAssetsInvestmentsServiceTest {
             .any(FixedAssetsInvestments.class));
         when(mockRepository.insert(fixedAssetsInvestmentsEntity)).thenThrow(mockDuplicateKeyException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+        
         ResponseObject<FixedAssetsInvestments> result = service.create(mockFixedAssetsInvestments, mockTransaction, "", mockRequest);
 
         assertNotNull(result);
@@ -142,6 +153,9 @@ public class FixedAssetsInvestmentsServiceTest {
             .any(FixedAssetsInvestments.class));
         when(mockRepository.insert(fixedAssetsInvestmentsEntity)).thenThrow(mockMongoException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+        
         assertThrows(DataException.class,
             () -> service.create(mockFixedAssetsInvestments, mockTransaction, "", mockRequest));
     }
@@ -151,7 +165,9 @@ public class FixedAssetsInvestmentsServiceTest {
     void canUpdateAFixedAssetsInvestments() throws DataException {
 
         when(mockTransformer.transform(mockFixedAssetsInvestments)).thenReturn(fixedAssetsInvestmentsEntity);
-
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+        
         ResponseObject<FixedAssetsInvestments> result = service.update(mockFixedAssetsInvestments, mockTransaction,
             "", mockRequest);
 
@@ -167,6 +183,9 @@ public class FixedAssetsInvestmentsServiceTest {
             .any(FixedAssetsInvestments.class));
         when(mockRepository.save(fixedAssetsInvestmentsEntity)).thenThrow(mockMongoException);
 
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
+        
         assertThrows(DataException.class,
             () -> service.update(mockFixedAssetsInvestments, mockTransaction, "", mockRequest));
     }

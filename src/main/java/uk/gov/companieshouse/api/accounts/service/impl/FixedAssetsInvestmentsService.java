@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,23 +13,18 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestments.FixedAssetsInvestments;
 import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class FixedAssetsInvestmentsService implements ResourceService<FixedAssetsInvestments> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private FixedAssetsInvestmentsRepository repository;
     private FixedAssetsInvestmentsTransformer transformer;
@@ -64,15 +57,9 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId,
-                entity.getId()));
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                + ResourceName.FIXED_ASSETS_INVESTMENTS.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId
-                , entity.getId()));
-            throw dataException;
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE,
@@ -94,13 +81,8 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
 
         try {
             repository.save(entity);
-        } catch (MongoException me) {
-            DataException dataException = new DataException("Failed to update " + 
-                ResourceName.FIXED_ASSETS_INVESTMENTS.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                companyAccountId, entity.getId()));
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -115,13 +97,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find " + 
-                ResourceName.FIXED_ASSETS_INVESTMENTS.getName(), e);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -147,16 +123,8 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-
-            debugMap.put("id", fixedAssetsInvestmentsId);
-            DataException dataException = new DataException("Failed to delete " + 
-                ResourceName.FIXED_ASSETS_INVESTMENTS.getName(), me);
-
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
     }
 
@@ -182,7 +150,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.FIXED_ASSETS_INVESTMENTS.getName();
