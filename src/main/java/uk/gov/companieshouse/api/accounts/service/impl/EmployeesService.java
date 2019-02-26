@@ -78,8 +78,6 @@ public class EmployeesService implements ResourceService<Employees> {
 
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                    + ResourceName.EMPLOYEES.getName(), e);
 
             throw new DataException(e);
         }
