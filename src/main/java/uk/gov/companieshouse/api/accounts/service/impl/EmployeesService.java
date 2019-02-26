@@ -75,15 +75,13 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId,
-                    entity.getId()));
+
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
             DataException dataException = new DataException("Failed to insert "
                     + ResourceName.EMPLOYEES.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId
-                    , entity.getId()));
-            throw dataException;
+
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.EMPLOYEES_NOTE,
@@ -113,12 +111,8 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             repository.save(entity);
         } catch (MongoException me) {
-            DataException dataException =
-                    new DataException("Failed to update" + ResourceName.EMPLOYEES.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountId, entity.getId()));
 
-            throw dataException;
+            throw new DataException(me);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -165,14 +159,8 @@ public class EmployeesService implements ResourceService<Employees> {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
 
-            debugMap.put("id", employeesId);
-            DataException dataException = new DataException("Failed to delete employees resource", me);
-
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(me);
         }
     }
 
