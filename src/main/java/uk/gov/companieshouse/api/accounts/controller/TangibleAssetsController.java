@@ -1,9 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +25,12 @@ import uk.gov.companieshouse.api.accounts.service.impl.TangibleAssetsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/tangible-assets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TangibleAssetsController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private TangibleAssetsService tangibleAssetsService;
@@ -48,12 +41,6 @@ public class TangibleAssetsController {
     @Autowired
     private ErrorMapper errorMapper;
 
-    private static final String TRANSACTION_ID = "transaction_id";
-
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-
-    private static final String MESSAGE = "message";
-
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody TangibleAssets tangibleAssets,
                                  BindingResult bindingResult,
@@ -62,7 +49,6 @@ public class TangibleAssetsController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
@@ -79,10 +65,9 @@ public class TangibleAssetsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap =
-                    createDebugMap(companyAccountId, transaction, "Failed to create tangible assets resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create tangible assets resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -102,12 +87,11 @@ public class TangibleAssetsController {
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
-        } catch (DataException de) {
+        } catch (DataException ex) {
 
-            final Map<String, Object> debugMap =
-                    createDebugMap(companyAccountId, transaction, "Failed to retrieve tangible assets resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve tangible assets resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -139,10 +123,9 @@ public class TangibleAssetsController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap =
-                    createDebugMap(companyAccountId, transaction, "Failed to update tangible assets resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update tangible assets resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -160,21 +143,11 @@ public class TangibleAssetsController {
             return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());
 
-        } catch (DataException de) {
+        } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                    "Failed to delete tangible assets resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountsId, transaction,
+                    "Failed to delete tangible assets resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-    }
-
-    private Map<String, Object> createDebugMap(String companyAccountId, Transaction transaction, String message) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, message);
-        return debugMap;
     }
 }

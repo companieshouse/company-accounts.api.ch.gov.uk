@@ -77,13 +77,11 @@ public class StatementsControllerTest {
     void shouldNotCreateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
 
-        DataException dataException = new DataException("string");
-
         when(statementServiceMock.create(any(Statement.class), any(Transaction.class), anyString(),
             any(HttpServletRequest.class)))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
-        when(apiResponseMapperMock.map(dataException))
+        when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
         ResponseEntity response =
@@ -91,7 +89,7 @@ public class StatementsControllerTest {
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
         verifyStatementServiceCreateCall();
-        verify(apiResponseMapperMock, times(1)).map(dataException);
+        verify(apiResponseMapperMock, times(1)).getErrorResponse();
     }
 
 
@@ -123,13 +121,11 @@ public class StatementsControllerTest {
     void shouldNotUpdateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
 
-        DataException dataException = new DataException("string");
-
         when(statementServiceMock.update(any(Statement.class), any(Transaction.class), anyString(),
             any(HttpServletRequest.class)))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
-        when(apiResponseMapperMock.map(dataException))
+        when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
         ResponseEntity response =
@@ -137,7 +133,7 @@ public class StatementsControllerTest {
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
         verifyStatementServiceUpdate();
-        verify(apiResponseMapperMock, times(1)).map(dataException);
+        verify(apiResponseMapperMock, times(1)).getErrorResponse();
     }
 
     @Test
@@ -185,13 +181,14 @@ public class StatementsControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful request to get Statements as exception occurs")
     void shouldNotGetStatementsStatementAsExceptionOccurs() throws DataException {
+        when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
+
         when(statementServiceMock.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STATEMENT_ID);
 
-        DataException dataException = new DataException("string");
         when(statementServiceMock.findById(STATEMENT_ID, requestMock))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
-        when(apiResponseMapperMock.map(dataException))
+        when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
         ResponseEntity response =
@@ -199,7 +196,7 @@ public class StatementsControllerTest {
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
         verifyStatementServiceGenerateAndFind(STATEMENT_ID);
-        verify(apiResponseMapperMock, times(1)).map(dataException);
+        verify(apiResponseMapperMock, times(1)).getErrorResponse();
     }
 
 

@@ -103,13 +103,12 @@ public class CreditorsWithinOneYearControllerTest {
         when(mockBindingResult.hasErrors()).thenReturn(false);
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsWithinOneYearService.create(mockCreditorsWithinOneYear, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -203,13 +202,12 @@ public class CreditorsWithinOneYearControllerTest {
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsWithinOneYearService.update(mockCreditorsWithinOneYear, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
                 controller.update(mockCreditorsWithinOneYear, mockBindingResult,
@@ -252,13 +250,12 @@ public class CreditorsWithinOneYearControllerTest {
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
         when(mockCreditorsWithinOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_WITHIN_ONE_YEAR_ID);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsWithinOneYearService.findById(CREDITORS_WITHIN_ONE_YEAR_ID, mockRequest))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -298,14 +295,12 @@ public class CreditorsWithinOneYearControllerTest {
 
         when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
-
         when(mockCreditorsWithinOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
