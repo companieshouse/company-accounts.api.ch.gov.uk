@@ -120,7 +120,7 @@ public class CurrentAssetsInvestmentsController {
 
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction,
-                "Failed to retrieve fixedAssetsInvestments resource", ex, request);
+                "Failed to retrieve currentAssetsInvestments resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -139,7 +139,7 @@ public class CurrentAssetsInvestmentsController {
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountsId, transaction,
-                "Failed to delete fixedAssetsInvestments resource", ex, request);
+                "Failed to delete currentAssetsInvestments resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
