@@ -51,7 +51,7 @@ public class StatementsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create statements resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -74,7 +74,7 @@ public class StatementsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update statements resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -97,7 +97,7 @@ public class StatementsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve statements resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

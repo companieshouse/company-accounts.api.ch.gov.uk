@@ -67,7 +67,7 @@ public class TangibleAssetsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create tangible assets resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -91,7 +91,7 @@ public class TangibleAssetsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve tangible assets resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -125,7 +125,7 @@ public class TangibleAssetsController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update tangible assets resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -147,7 +147,7 @@ public class TangibleAssetsController {
 
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete tangible assets resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 }

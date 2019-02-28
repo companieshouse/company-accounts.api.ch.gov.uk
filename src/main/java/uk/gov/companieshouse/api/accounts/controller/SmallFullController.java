@@ -53,7 +53,7 @@ public class SmallFullController {
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create small full resource", ex, request);
-            return apiResponseMapper.map(ex);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
