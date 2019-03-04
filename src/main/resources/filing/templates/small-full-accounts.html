@@ -1898,32 +1898,44 @@
                         <td id="tangible-cost-disposals">Disposals</td>
                         <td id="tangible-cost-disposals-land-and-building" class="strong figure">
                             {{if isNotEmpty $cost.disposals.land_and_buildings}}
-                            <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.land_and_buildings}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.land_and_buildings "("}}
+                            <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.land_and_buildings}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.land_and_buildings ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-cost-disposals-plant-and-machinery" class="strong figure">
                             {{if isNotEmpty $cost.disposals.plant_and_machinery}}
-                            <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.plant_and_machinery}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.plant_and_machinery "("}}
+                            <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.plant_and_machinery}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.plant_and_machinery ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-cost-disposals-fixtures-and-fitting" class="strong figure">
                             {{if isNotEmpty $cost.disposals.fixtures_and_fittings}}
-                            <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.fixtures_and_fittings "("}}
+                            <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.fixtures_and_fittings}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.fixtures_and_fittings ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-cost-disposals-office-equipment" class="strong figure">
                             {{if isNotEmpty $cost.disposals.office_equipment}}
-                            <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.office_equipment}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.office_equipment "("}}
+                            <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.office_equipment}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.office_equipment ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-cost-disposals-motor-vehicles" class="strong figure">
                             {{if isNotEmpty $cost.disposals.motor_vehicles}}
-                            <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.motor_vehicles}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.motor_vehicles "("}}
+                            <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.motor_vehicles}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.motor_vehicles ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-cost-disposals-total" class="strong figure">
                             {{if isNotEmpty $cost.disposals.total}}
-                            <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.total}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $cost.disposals.total "("}}
+                            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.total}}</ix:nonFraction>
+                            {{emitIfPositive $cost.disposals.total ")"}}
                             {{end}}
                         </td>
                     </tr>
@@ -2150,32 +2162,44 @@
                         <td id="tangible-depreciation-on-disposals">On disposals</td>
                         <td id="tangible-depreciation-on-disposals-land-and-building" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.land_and_buildings}}
-                            <span class="debit">(<ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.land_and_buildings}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.land_and_buildings "("}}
+                            <ix:nonFraction contextRef="LandAndBuildings_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.land_and_buildings}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.land_and_buildings ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-depreciation-on-disposals-plant-and-machinery" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.plant_and_machinery}}
-                            <span class="debit">(<ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.plant_and_machinery}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.plant_and_machinery "("}}
+                            <ix:nonFraction contextRef="PlantMachinery_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.plant_and_machinery}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.plant_and_machinery ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-depreciation-on-disposals-fixtures-and-fitting" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.fixtures_and_fittings}}
-                            <span class="debit">(<ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.fixtures_and_fittings}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.fixtures_and_fittings "("}}
+                            <ix:nonFraction contextRef="FurnitureFittingsToolsEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.fixtures_and_fittings}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.fixtures_and_fittings ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-depreciation-on-disposals-office-equipment" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.office_equipment}}
-                            <span class="debit">(<ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.office_equipment}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.office_equipment "("}}
+                            <ix:nonFraction contextRef="OfficeEquipment_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.office_equipment}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.office_equipment ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-depreciation-on-disposals-motor-vehicles" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.motor_vehicles}}
-                            <span class="debit">(<ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.motor_vehicles}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.motor_vehicles "("}}
+                            <ix:nonFraction contextRef="Vehicles_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.motor_vehicles}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.motor_vehicles ")"}}
                             {{end}}
                         </td>
                         <td id="tangible-depreciation-on-disposals-total" class="strong figure">
                             {{if isNotEmpty $depreciation.on_disposals.total}}
-                            <span class="debit">(<ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.total}}</ix:nonFraction>)</span>
+                            {{emitIfPositive $depreciation.on_disposals.total "("}}
+                            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInDepreciationImpairmentPropertyPlantEquipment" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $depreciation.on_disposals.total}}</ix:nonFraction>
+                            {{emitIfPositive $depreciation.on_disposals.total ")"}}
                             {{end}}
                         </td>
                     </tr>
