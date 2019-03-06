@@ -17,12 +17,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.EmployeesRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.EmployeesValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
@@ -36,17 +38,20 @@ public class EmployeesService implements ResourceService<Employees> {
     private EmployeesTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private EmployeesValidator employeesValidator;
 
     @Autowired
     public EmployeesService(EmployeesRepository repository,
             EmployeesTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService,
+            EmployeesValidator employeesValidator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.employeesValidator = employeesValidator;
     }
 
     @Override
@@ -54,6 +59,13 @@ public class EmployeesService implements ResourceService<Employees> {
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
+
+        Errors errors = employeesValidator.validateEmployees(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -63,15 +75,11 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId,
-                    entity.getId()));
+
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                    + ResourceName.EMPLOYEES.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId
-                    , entity.getId()));
-            throw dataException;
+
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.EMPLOYEES_NOTE,
@@ -86,6 +94,13 @@ public class EmployeesService implements ResourceService<Employees> {
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
+        Errors errors = employeesValidator.validateEmployees(rest, transaction);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         EmployeesEntity entity = transformer.transform(rest);
@@ -94,12 +109,8 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             repository.save(entity);
         } catch (MongoException me) {
-            DataException dataException =
-                    new DataException("Failed to update" + ResourceName.EMPLOYEES.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountId, entity.getId()));
 
-            throw dataException;
+            throw new DataException(me);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -114,12 +125,8 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find employees resource", e);
-            LOGGER.errorRequest(request, dataException, debugMap);
 
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -146,14 +153,8 @@ public class EmployeesService implements ResourceService<Employees> {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
 
-            debugMap.put("id", employeesId);
-            DataException dataException = new DataException("Failed to delete employees resource", me);
-
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(me);
         }
     }
 
@@ -183,6 +184,7 @@ public class EmployeesService implements ResourceService<Employees> {
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.EMPLOYEES.getName();
     }
+
 
     public String getSelfLinkFromEmployeesEntity(EmployeesEntity entity) {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());

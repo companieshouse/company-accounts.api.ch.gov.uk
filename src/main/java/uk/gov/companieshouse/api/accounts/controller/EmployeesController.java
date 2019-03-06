@@ -1,9 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +25,12 @@ import uk.gov.companieshouse.api.accounts.service.impl.EmployeesService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/employees", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EmployeesController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-    private static final String TRANSACTION_ID = "transaction_id";
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-    private static final String MESSAGE = "message";
 
     @Autowired
     private EmployeesService employeesService;
@@ -75,10 +65,9 @@ public class EmployeesController {
                 .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update employees resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create employees resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
     
@@ -109,10 +98,9 @@ public class EmployeesController {
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to update employees resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            return apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update debtors resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -133,10 +121,9 @@ public class EmployeesController {
 
         } catch (DataException de) {
 
-            final Map<String, Object> debugMap = createDebugMap(companyAccountId, transaction,
-                "Failed to retrieve employees resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve employees resource", de, request);
+            return apiResponseMapper.getErrorResponse();
         }
     }
 
@@ -153,20 +140,9 @@ public class EmployeesController {
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException de) {
-            final Map<String, Object> debugMap = createDebugMap(companyAccountsId, transaction,
-                "Failed to delete employees resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountsId, transaction,
+                    "Failed to delete debtors resource", de, request);
+            return apiResponseMapper.getErrorResponse();
         }
-    }
-
-    private Map<String, Object> createDebugMap(String companyAccountId,
-                                               Transaction transaction, String message) {
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put(TRANSACTION_ID, transaction.getId());
-        debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-        debugMap.put(MESSAGE, message);
-        return debugMap;
     }
 }

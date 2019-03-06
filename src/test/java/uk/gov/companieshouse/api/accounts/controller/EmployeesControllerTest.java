@@ -109,7 +109,7 @@ public class EmployeesControllerTest {
 
         ResponseEntity mockResponseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
                 .thenReturn(mockResponseEntity);
 
         ResponseEntity returnedResponse =
@@ -175,7 +175,7 @@ public class EmployeesControllerTest {
 
         ResponseEntity mockResponseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(mockResponseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(mockResponseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -224,7 +224,7 @@ public class EmployeesControllerTest {
 
         ResponseEntity mockResponseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(mockResponseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(mockResponseEntity);
 
         ResponseEntity returnedResponse =
                 controller.update(mockEmployees, mockBindingResult,
@@ -273,7 +273,7 @@ public class EmployeesControllerTest {
 
         ResponseEntity mockResponseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(mockResponseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(mockResponseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
