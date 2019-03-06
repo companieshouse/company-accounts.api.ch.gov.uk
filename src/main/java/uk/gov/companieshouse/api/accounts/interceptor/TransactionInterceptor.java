@@ -14,7 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import uk.gov.companieshouse.api.InternalApiClient;
+import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
@@ -52,9 +52,15 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             String transactionId = pathVariables.get("transactionId");
             String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
-            InternalApiClient apiClient;
+            debugMap.put("header_eric_access_token", passthroughHeader);
+            debugMap.put("header_eric_access_key_roles", request.getHeader("ERIC-Authorised-Key-Roles"));
+            debugMap.put("header_eric_identity_type", request.getHeader("ERIC-Identity-Type"));
+            debugMap.put("header_eric_identity", request.getHeader("ERIC-Identity"));
+            LOGGER.infoRequest(request, "TxInterceptor Debug Headers", debugMap);
+
+            ApiClient apiClient;
             try {
-                apiClient = apiClientService.getInternalApiClient(passthroughHeader);
+                apiClient = apiClientService.getApiClient(passthroughHeader);
             } catch (IOException e) {
 
                 LOGGER.errorRequest(request, e, debugMap);
@@ -64,7 +70,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
             Transaction transaction;
             try {
-                transaction = apiClient.privateTransaction().get("/private/transactions/" + transactionId).execute();
+                transaction = apiClient.transactions().get("/transactions/" + transactionId).execute();
             } catch (ApiErrorResponseException e) {
 
                 LOGGER.errorRequest(request, e, debugMap);
