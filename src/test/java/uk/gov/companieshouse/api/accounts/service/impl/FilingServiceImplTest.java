@@ -56,8 +56,10 @@ class FilingServiceImplTest {
             + "/company-accounts/" + ACCOUNTS_ID;
 
     private static final String PERIOD_END_ON_KEY           = "period_end_on";
-    private static final String PERIOD_END_ON_VALUE         = "2018-01-01";
-    private static final String ACCOUNT_DESCRIPTION         = "Small full accounts made up to 18 January 2018";
+    private static final String PERIOD_END_ON_VALUE         = "2018-01-18";
+    private static final LocalDate PERIOD_END_ON_VALUE_DATE = LocalDate.of(2018, 1, 18);
+    private static final String DOC_GEN_ACCOUNT_DESCRIPTION = "Small full accounts made up to {period_end_on}";
+    private static final String FINAL_ACCOUNT_DESCRIPTION   = "Small full accounts made up to 18 January 2018";
     private static final String ACCOUNTS_LINKS_RELATIONSHIP = "accounts";
 
     private FilingService             filingService;
@@ -115,8 +117,9 @@ class FilingServiceImplTest {
 
         when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(true);
 
-        doReturn(getLocalDate()).when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
-
+        doReturn(PERIOD_END_ON_VALUE_DATE).when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
+        doReturn("18 January 2018").when(accountsDatesHelperMock).convertLocalDateToDisplayDate(PERIOD_END_ON_VALUE_DATE);
+        
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyAllMockCalls();
@@ -242,10 +245,11 @@ class FilingServiceImplTest {
         Assert.assertNotNull(filing);
         assertEquals(COMPANY_NUMBER, filing.getCompanyNumber());
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(), filing.getDescriptionIdentifier());
-        assertEquals(ACCOUNT_DESCRIPTION, filing.getDescription());
+        assertEquals(FINAL_ACCOUNT_DESCRIPTION, filing.getDescription());
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getKind(), filing.getKind());
         Assert.assertNotNull(filing.getDescriptionValues());
         Assert.assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
+        assertEquals(PERIOD_END_ON_VALUE, filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
 
         Data data = filing.getData();
         Assert.assertNotNull(data);
@@ -292,7 +296,8 @@ class FilingServiceImplTest {
     }
 
     private void verifyAccountsDatesHelperMock() {
-        verify(accountsDatesHelperMock, times(1)).convertStringToDate(PERIOD_END_ON_VALUE);
+        verify(accountsDatesHelperMock, times(2)).convertStringToDate(PERIOD_END_ON_VALUE);
+        verify(accountsDatesHelperMock, times(1)).convertLocalDateToDisplayDate(PERIOD_END_ON_VALUE_DATE);
     }
 
     /**
@@ -304,7 +309,7 @@ class FilingServiceImplTest {
         account.setEtag("etagForTesting");
         account.setKind(ACCOUNTS_LINKS_RELATIONSHIP);
         account.setLinks(createAccountEntityLinks());
-        account.setPeriodEndOn(getLocalDate());
+        account.setPeriodEndOn(PERIOD_END_ON_VALUE_DATE);
 
         return account;
     }
@@ -345,7 +350,7 @@ class FilingServiceImplTest {
         response.setDescriptionIdentifier("small-full-accounts");
         response.setSize("999999");
         response.setLinks(createIxbrlLink(IXBRL_LOCATION));
-        response.setDescription(ACCOUNT_DESCRIPTION);
+        response.setDescription(DOC_GEN_ACCOUNT_DESCRIPTION);
         response.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
         return response;
@@ -381,7 +386,4 @@ class FilingServiceImplTest {
         return descriptionValues;
     }
 
-    private LocalDate getLocalDate() {
-        return LocalDate.of(2018, 1, 1);
-    }
 }
