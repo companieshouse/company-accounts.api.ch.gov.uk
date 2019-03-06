@@ -125,12 +125,8 @@ public class EmployeesService implements ResourceService<Employees> {
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find employees resource", e);
-            LOGGER.errorRequest(request, dataException, debugMap);
 
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
