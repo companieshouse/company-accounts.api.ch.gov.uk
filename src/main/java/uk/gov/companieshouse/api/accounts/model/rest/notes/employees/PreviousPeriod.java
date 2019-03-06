@@ -3,10 +3,15 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.employees;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Range;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PreviousPeriod {
 
+    private static final int MAX_RANGE = 99999;
+    private static final int MIN_RANGE = 0;
+
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("average_number_of_employees")
     private Long averageNumberOfEmployees;  
 

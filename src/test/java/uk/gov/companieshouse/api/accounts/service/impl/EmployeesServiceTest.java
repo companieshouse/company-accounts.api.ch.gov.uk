@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,12 +38,17 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.Employees
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.EmployeesRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.EmployeesValidator;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,6 +88,12 @@ public class EmployeesServiceTest {
     @Mock
     private SmallFullService mockSmallFullService;
 
+    @Mock
+    private Errors mockErrors;
+
+    @Mock
+    private EmployeesValidator mockValidator;
+
     private EmployeesEntity employeesEntity;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -107,6 +119,7 @@ public class EmployeesServiceTest {
     void canCreateEmployees() throws DataException {
 
         when(mockTransformer.transform(mockEmployees)).thenReturn(employeesEntity);
+        when(mockValidator.validateEmployees(mockEmployees, mockTransaction)).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
@@ -127,6 +140,7 @@ public class EmployeesServiceTest {
 
         doReturn(employeesEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Employees.class));
+        when(mockValidator.validateEmployees(mockEmployees, mockTransaction)).thenReturn(mockErrors);
         when(mockRepository.insert(employeesEntity)).thenThrow(mockDuplicateKeyException);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -145,7 +159,7 @@ public class EmployeesServiceTest {
     void createEmployeesMongoExceptionFailure() throws Exception {
 
         when(mockTransformer.transform(any(Employees.class))).thenReturn(employeesEntity);
-
+        when(mockValidator.validateEmployees(mockEmployees, mockTransaction)).thenReturn(mockErrors);
         when(mockRepository.insert(employeesEntity)).thenThrow(mockMongoException);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -190,7 +204,7 @@ public class EmployeesServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on deletion of an employees resource")
-    void deleteEmployeesMongoException() {
+    void deleteEmployeesMongoException() throws DataException {
         when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.EMPLOYEES.getName()))
                 .thenReturn(EMPLOYEES_ID);
         when(mockRepository.existsById(EMPLOYEES_ID)).thenReturn(true);
@@ -205,6 +219,7 @@ public class EmployeesServiceTest {
     void canUpdateEmployees() throws DataException {
 
         when(mockTransformer.transform(mockEmployees)).thenReturn(employeesEntity);
+        when(mockValidator.validateEmployees(mockEmployees, mockTransaction)).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
@@ -221,6 +236,7 @@ public class EmployeesServiceTest {
 
         doReturn(employeesEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(Employees.class));
+        when(mockValidator.validateEmployees(mockEmployees, mockTransaction)).thenReturn(mockErrors);
         when(mockRepository.save(employeesEntity)).thenThrow(mockMongoException);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -266,4 +282,43 @@ public class EmployeesServiceTest {
         ResponseObject<RestObject> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
         return responseObject.getStatus();
     }
+
+    @Test
+    @DisplayName("Test correct response when validation fails on update")
+    void validationFailsOnUpdate() throws DataException {
+
+
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location",
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockValidator.validateEmployees(
+                mockEmployees, mockTransaction)).thenReturn(errors);
+
+        ResponseObject<Employees> result = mockEmployeesService
+                .update(mockEmployees, mockTransaction, "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+        verify(mockSmallFullService, times(0)).addLink(anyString(),
+                any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+    }
+
+    @Test
+    @DisplayName("Test correct response when validation fails on create")
+    void validationFailsOnCreate() throws DataException {
+
+
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location",
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockValidator.validateEmployees(
+                mockEmployees, mockTransaction)).thenReturn(errors);
+
+        ResponseObject<Employees> result = mockEmployeesService
+                .create(mockEmployees, mockTransaction, "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+        verify(mockSmallFullService, times(0)).addLink(anyString(),
+                any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+    }
+
 }
