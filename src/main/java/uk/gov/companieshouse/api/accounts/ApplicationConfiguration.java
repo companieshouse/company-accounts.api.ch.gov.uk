@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.annotation.RequestScope;
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.accountsdates.impl.AccountsDatesHelperImpl;
 import uk.gov.companieshouse.charset.validation.CharSetValidation;
@@ -22,6 +23,7 @@ import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 public class ApplicationConfiguration {
 
     @Bean
+    @RequestScope
     public MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
         return MessageDigest.getInstance(MessageDigestAlgorithms.SHA_256);
     }
