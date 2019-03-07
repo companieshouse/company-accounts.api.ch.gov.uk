@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.model.filing.Filing;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)

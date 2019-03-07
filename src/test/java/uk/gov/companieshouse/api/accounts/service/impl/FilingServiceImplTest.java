@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
@@ -13,6 +12,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -34,7 +35,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
@@ -44,54 +45,48 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 @TestInstance(Lifecycle.PER_CLASS)
 class FilingServiceImplTest {
 
-    private static final String COMPANY_NUMBER = "9999999";
-    private static final String TRANSACTION_ID = "1234561-1234561-1234561";
-    private static final String ACCOUNTS_ID = "1234561";
-    private static final String SMALL_FULL_ID = "smallFullId";
-    private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
-    private static final String IXBRL_DATA = getIxbrlContent();
+    private static final String COMPANY_NUMBER                   = "9999999";
+    private static final String TRANSACTION_ID                   = "1234561-1234561-1234561";
+    private static final String ACCOUNTS_ID                      = "1234561";
+    private static final String SMALL_FULL_ID                    = "smallFullId";
+    private static final String IXBRL_LOCATION                   = "http://test/ixbrl_bucket_location";
+    private static final String IXBRL_DATA                       = getIxbrlContent();
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
-    private static final String ACCOUNTS_SELF_REF =
-        "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
+    private static final String ACCOUNTS_SELF_REF                = "/transactions/" + TRANSACTION_ID
+            + "/company-accounts/" + ACCOUNTS_ID;
 
-    private static final String PERIOD_END_ON_KEY = "period_end_on";
-    private static final String PERIOD_END_ON_VALUE = "2018-01-01";
-    private static final String ACCOUNT_DESCRIPTION = "Small full accounts made up to 18 January 2018";
+    private static final String PERIOD_END_ON_KEY           = "period_end_on";
+    private static final String PERIOD_END_ON_VALUE         = "2018-01-18";
+    private static final LocalDate PERIOD_END_ON_VALUE_DATE = LocalDate.of(2018, 1, 18);
+    private static final String DOC_GEN_ACCOUNT_DESCRIPTION = "Small full accounts made up to {period_end_on}";
+    private static final String FINAL_ACCOUNT_DESCRIPTION   = "Small full accounts made up to 18 January 2018";
     private static final String ACCOUNTS_LINKS_RELATIONSHIP = "accounts";
 
-    private FilingService filingService;
-    private CompanyAccount companyAccount;
-    private Transaction transaction;
+    private FilingService             filingService;
+    private CompanyAccount            companyAccount;
+    private Transaction               transaction;
     private DocumentGeneratorResponse documentGeneratorResponse;
 
     @Mock
-    private DocumentGeneratorCaller documentGeneratorCallerMock;
+    private DocumentGeneratorCaller            documentGeneratorCallerMock;
     @Mock
-    private EnvironmentReader environmentReaderMock;
+    private EnvironmentReader                  environmentReaderMock;
     @Mock
     private DocumentGeneratorResponseValidator docGeneratorResponseValidatorMock;
     @Mock
-    private AccountsDatesHelper accountsDatesHelperMock;
+    private AccountsDatesHelper                accountsDatesHelperMock;
     @Mock
-    private FileTransferTool fileTransferToolMock;
+    private FileTransferTool                   fileTransferToolMock;
     @Mock
-    private TnepValidationService tnepValidationServiceMock;
+    private TnepValidationService              tnepValidationServiceMock;
 
     private static String getIxbrlContent() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<html xmlns:ixt2=\"http://www.xbrl.org/inlineXBRL/transformation/2011-07-31\">\n"
-            + "  <head>\n"
-            + "    <meta content=\"application/xhtml+xml; charset=UTF-8\" http-equiv=\"content-type\" />\n"
-            + "    <title>\n"
-            + "            TEST COMPANY\n"
-            + "        </title>\n"
-            + "  <body xml:lang=\"en\">\n"
-            + "    <div class=\"accounts-body \">\n"
-            + "      <div id=\"your-account-type\" class=\"wholedoc\">\n"
-            + "      </div>\n"
-            + "    </div>\n"
-            + "   </body>\n"
-            + "</html>\n";
+                + "<html xmlns:ixt2=\"http://www.xbrl.org/inlineXBRL/transformation/2011-07-31\">\n" + "  <head>\n"
+                + "    <meta content=\"application/xhtml+xml; charset=UTF-8\" http-equiv=\"content-type\" />\n"
+                + "    <title>\n" + "            TEST COMPANY\n" + "        </title>\n" + "  <body xml:lang=\"en\">\n"
+                + "    <div class=\"accounts-body \">\n" + "      <div id=\"your-account-type\" class=\"wholedoc\">\n"
+                + "      </div>\n" + "    </div>\n" + "   </body>\n" + "</html>\n";
     }
 
     @BeforeEach
@@ -99,12 +94,9 @@ class FilingServiceImplTest {
         transaction = createTransaction();
         companyAccount = createAccount();
 
-        filingService = new FilingServiceImpl(documentGeneratorCallerMock,
-            environmentReaderMock,
-            docGeneratorResponseValidatorMock,
-            accountsDatesHelperMock,
-            fileTransferToolMock,
-            tnepValidationServiceMock);
+        filingService = new FilingServiceImpl(documentGeneratorCallerMock, environmentReaderMock,
+                docGeneratorResponseValidatorMock, accountsDatesHelperMock, fileTransferToolMock,
+                tnepValidationServiceMock);
     }
 
     @Test
@@ -112,27 +104,23 @@ class FilingServiceImplTest {
     void shouldGenerateFiling() {
         documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doReturn(documentGeneratorResponse)
-            .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
+                .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
-        doReturn(true)
-            .when(docGeneratorResponseValidatorMock)
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+        doReturn(true).when(docGeneratorResponseValidatorMock)
+                .isDocumentGeneratorResponseValid(documentGeneratorResponse);
 
-        doReturn(false).when(environmentReaderMock)
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+        doReturn(false).when(environmentReaderMock).getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
             .thenReturn(IXBRL_DATA);
 
         when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(true);
 
-        doReturn(getLocalDate())
-            .when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
-
-        Filing filing = filingService
-            .generateAccountFiling(transaction, companyAccount);
+        doReturn(PERIOD_END_ON_VALUE_DATE).when(accountsDatesHelperMock).convertStringToDate(PERIOD_END_ON_VALUE);
+        doReturn("18 January 2018").when(accountsDatesHelperMock).convertLocalDateToDisplayDate(PERIOD_END_ON_VALUE_DATE);
+        
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyAllMockCalls();
         verifyFilingData(filing);
@@ -151,8 +139,7 @@ class FilingServiceImplTest {
     @DisplayName("Tests the filing not generated when document generator response fails")
     void shouldNotGenerateFilingAsDocumentGeneratorResponseIsNull() {
 
-        doReturn(null).when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doReturn(null).when(documentGeneratorCallerMock).callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
@@ -166,13 +153,11 @@ class FilingServiceImplTest {
 
         documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doReturn(documentGeneratorResponse)
-            .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
+                .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
-        doReturn(false)
-            .when(docGeneratorResponseValidatorMock)
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+        doReturn(false).when(docGeneratorResponseValidatorMock)
+                .isDocumentGeneratorResponseValid(documentGeneratorResponse);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
@@ -187,9 +172,8 @@ class FilingServiceImplTest {
 
         documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doThrow(IllegalArgumentException.class)
-            .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doThrow(IllegalArgumentException.class).when(documentGeneratorCallerMock)
+                .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
@@ -202,22 +186,18 @@ class FilingServiceImplTest {
     void shouldNotGenerateFilingAsFileTransferToolCallFailsToDownloadIxbrl() {
         documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doReturn(documentGeneratorResponse)
-            .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
+                .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
-        doReturn(true)
-            .when(docGeneratorResponseValidatorMock)
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+        doReturn(true).when(docGeneratorResponseValidatorMock)
+                .isDocumentGeneratorResponseValid(documentGeneratorResponse);
 
-        doReturn(false).when(environmentReaderMock)
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+        doReturn(false).when(environmentReaderMock).getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
 
         when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
             .thenReturn(null);
 
-        Filing filing = filingService
-            .generateAccountFiling(transaction, companyAccount);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyDocumentGeneratorCallerMock();
         verifyEnviromentReaderMockForDisableIxbrlVariable();
@@ -232,24 +212,20 @@ class FilingServiceImplTest {
     void shouldNotGenerateFilingAsTnepValidationHasFailed() {
         documentGeneratorResponse = createDocumentGeneratorResponse();
 
-        doReturn(documentGeneratorResponse)
-            .when(documentGeneratorCallerMock)
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        doReturn(documentGeneratorResponse).when(documentGeneratorCallerMock)
+                .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
 
-        doReturn(true)
-            .when(docGeneratorResponseValidatorMock)
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+        doReturn(true).when(docGeneratorResponseValidatorMock)
+                .isDocumentGeneratorResponseValid(documentGeneratorResponse);
 
-        when(environmentReaderMock.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR))
-            .thenReturn(false);
+        when(environmentReaderMock.getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)).thenReturn(false);
 
         when(fileTransferToolMock.downloadFileFromLocation(IXBRL_LOCATION))
             .thenReturn(IXBRL_DATA);
 
         when(tnepValidationServiceMock.validate(IXBRL_DATA, IXBRL_LOCATION)).thenReturn(false);
 
-        Filing filing = filingService
-            .generateAccountFiling(transaction, companyAccount);
+        Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
 
         verifyDocumentGeneratorCallerMock();
         verifyEnviromentReaderMockForDisableIxbrlVariable();
@@ -268,12 +244,12 @@ class FilingServiceImplTest {
     private void verifyFilingData(Filing filing) {
         Assert.assertNotNull(filing);
         assertEquals(COMPANY_NUMBER, filing.getCompanyNumber());
-        assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(),
-            filing.getDescriptionIdentifier());
-        assertEquals(ACCOUNT_DESCRIPTION, filing.getDescription());
+        assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(), filing.getDescriptionIdentifier());
+        assertEquals(FINAL_ACCOUNT_DESCRIPTION, filing.getDescription());
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getKind(), filing.getKind());
         Assert.assertNotNull(filing.getDescriptionValues());
         Assert.assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
+        assertEquals(PERIOD_END_ON_VALUE, filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
 
         Data data = filing.getData();
         Assert.assertNotNull(data);
@@ -299,18 +275,15 @@ class FilingServiceImplTest {
     }
 
     private void verifyDocumentGeneratorCallerMock() {
-        verify(documentGeneratorCallerMock, times(1))
-            .callDocumentGeneratorService(ACCOUNTS_SELF_REF);
+        verify(documentGeneratorCallerMock, times(1)).callDocumentGeneratorService(ACCOUNTS_SELF_REF);
     }
 
     private void verifyDocumentGeneratorResponseValidatorMock() {
-        verify(docGeneratorResponseValidatorMock, times(1))
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse);
+        verify(docGeneratorResponseValidatorMock, times(1)).isDocumentGeneratorResponseValid(documentGeneratorResponse);
     }
 
     private void verifyEnviromentReaderMockForDisableIxbrlVariable() {
-        verify(environmentReaderMock, times(1))
-            .getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
+        verify(environmentReaderMock, times(1)).getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR);
     }
 
     private void verifyfileTransferToolMock() {
@@ -323,8 +296,8 @@ class FilingServiceImplTest {
     }
 
     private void verifyAccountsDatesHelperMock() {
-        verify(accountsDatesHelperMock, times(1))
-            .convertStringToDate(PERIOD_END_ON_VALUE);
+        verify(accountsDatesHelperMock, times(2)).convertStringToDate(PERIOD_END_ON_VALUE);
+        verify(accountsDatesHelperMock, times(1)).convertLocalDateToDisplayDate(PERIOD_END_ON_VALUE_DATE);
     }
 
     /**
@@ -336,7 +309,7 @@ class FilingServiceImplTest {
         account.setEtag("etagForTesting");
         account.setKind(ACCOUNTS_LINKS_RELATIONSHIP);
         account.setLinks(createAccountEntityLinks());
-        account.setPeriodEndOn(getLocalDate());
+        account.setPeriodEndOn(PERIOD_END_ON_VALUE_DATE);
 
         return account;
     }
@@ -348,13 +321,10 @@ class FilingServiceImplTest {
         Map<String, String> dataLinks = new HashMap<>();
 
         dataLinks.put(BasicLinkType.SELF.getLink(),
-            String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
+                String.format("/transactions/%s/company-accounts/%s", TRANSACTION_ID, ACCOUNTS_ID));
 
-        dataLinks.put(CompanyAccountLinkType.SMALL_FULL.getLink(),
-            String.format("/transactions/%s/company-accounts/%s/small-full/%s",
-                TRANSACTION_ID,
-                ACCOUNTS_ID,
-                SMALL_FULL_ID));
+        dataLinks.put(CompanyAccountLinkType.SMALL_FULL.getLink(), String.format(
+                "/transactions/%s/company-accounts/%s/small-full/%s", TRANSACTION_ID, ACCOUNTS_ID, SMALL_FULL_ID));
 
         return dataLinks;
     }
@@ -370,7 +340,8 @@ class FilingServiceImplTest {
     }
 
     /**
-     * Create a Document Generator Response with all needed information to generate the filing.
+     * Create a Document Generator Response with all needed information to
+     * generate the filing.
      */
     private DocumentGeneratorResponse createDocumentGeneratorResponse() {
 
@@ -379,9 +350,8 @@ class FilingServiceImplTest {
         response.setDescriptionIdentifier("small-full-accounts");
         response.setSize("999999");
         response.setLinks(createIxbrlLink(IXBRL_LOCATION));
-        response.setDescription(ACCOUNT_DESCRIPTION);
-        response
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
+        response.setDescription(DOC_GEN_ACCOUNT_DESCRIPTION);
+        response.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
         return response;
     }
@@ -389,7 +359,8 @@ class FilingServiceImplTest {
     /**
      * Create links object containing the ixbrl location.
      *
-     * @param ixbrlLocation Ixbrl location to be set in the links
+     * @param ixbrlLocation
+     *            Ixbrl location to be set in the links
      * @return
      */
     private Links createIxbrlLink(String ixbrlLocation) {
@@ -402,8 +373,10 @@ class FilingServiceImplTest {
     /**
      * Create the description values map with the key and value passed in
      *
-     * @param keyId key name to use it in the map
-     * @param keyValue key value to use in the map
+     * @param keyId
+     *            key name to use it in the map
+     * @param keyValue
+     *            key value to use in the map
      * @return
      */
     private Map<String, String> createDescriptionValues(String keyId, String keyValue) {
@@ -413,7 +386,4 @@ class FilingServiceImplTest {
         return descriptionValues;
     }
 
-    private LocalDate getLocalDate() {
-        return LocalDate.of(2018, 1, 1);
-    }
 }

@@ -1,8 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface CrossValidator<T> {
 
@@ -15,7 +16,6 @@ public interface CrossValidator<T> {
      *
      * @return the errors object containing all errors added whilst validating
      */
-    Errors crossValidate(Errors errors, HttpServletRequest request, String CompanyAccountsId,
-                         T t) throws DataException;
+    Errors crossValidate(T t, HttpServletRequest request, String companyAccountsId, Errors errors) throws DataException;
 
 }
