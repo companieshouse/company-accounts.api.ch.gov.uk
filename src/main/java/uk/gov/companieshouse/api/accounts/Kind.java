@@ -7,14 +7,15 @@ public enum Kind {
     APPROVAL("small-full-accounts#approval"),
     CURRENT_PERIOD("small-full-accounts#current-period"),
     PREVIOUS_PERIOD("small-full-accounts#previous-period"),
-    POLICY_NOTE("small-full-accounts#policy-note"),
-    CREDITORS_AFTER_ONE_YEAR_NOTE("small-full-accounts#creditors-after-one-year-note"),
-    CREDITORS_DUE_WITHIN_ONE_YEAR_NOTE("small-full-accounts#creditors-due-within-one-year-note"),
-    DEBTORS_NOTE("small-full-accounts#debtors-note"),
-    INTANGIBLE_ASSETS_NOTE("small-full-accounts#intangible-assets-note"),
+    POLICY_NOTE("small-full-accounts-note#accounting-policy"),
+    CREDITORS_AFTER_ONE_YEAR_NOTE("small-full-accounts-note#creditors-after-one-year"),
+    CREDITORS_DUE_WITHIN_ONE_YEAR_NOTE("small-full-accounts-note#creditors-within-one-year"),
+    DEBTORS_NOTE("small-full-accounts-note#debtors"),
+    INTANGIBLE_ASSETS_NOTE("small-full-accounts-note#intangible-assets"),
     SMALL_FULL_STATEMENT("small-full-accounts#statements"),
-    STOCKS_NOTE("small-full-accounts#stocks-note"),
-    TANGIBLE_ASSETS_NOTE("small-full-accounts-note#tangible-assets");
+    STOCKS_NOTE("small-full-accounts-note#stocks"),
+    TANGIBLE_ASSETS_NOTE("small-full-accounts-note#tangible-assets"),
+    EMPLOYEES_NOTE("small-full-accounts-note#employees");
 
     private String value;
 
