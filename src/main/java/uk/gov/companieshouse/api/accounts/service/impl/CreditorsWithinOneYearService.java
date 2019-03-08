@@ -53,13 +53,8 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
+        Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
-        Errors errors = validator.validateIfEmptyResource(rest, request, companyAccountId);
-
-        if (!errors.hasErrors()) {
-
-            errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
-        }
         if (errors.hasErrors()) {
 
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
