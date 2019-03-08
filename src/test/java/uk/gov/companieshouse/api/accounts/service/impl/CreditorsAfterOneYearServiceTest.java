@@ -1,6 +1,24 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,33 +43,12 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-
 import uk.gov.companieshouse.api.accounts.validation.CreditorsAfterOneYearValidator;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,6 +118,7 @@ public class CreditorsAfterOneYearServiceTest {
         Errors errors = new Errors();
         errors.addError(new Error("test.message.key", "location",
             LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(new Errors());
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -133,11 +131,29 @@ public class CreditorsAfterOneYearServiceTest {
     }
 
     @Test
+    @DisplayName("Tests for validation error with empty note resource")
+    void validationErrorWhenEmptyresourceSubmitted() throws DataException {
+
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location",
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService
+                .create(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+        verify(mockSmallFullService, times(0)).addLink(anyString(),
+                any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+    }
+
+    @Test
     @DisplayName("Tests the successful creation of a creditors after one year resource")
     void canCreateCreditorsAfterOneYear() throws DataException {
 
         Errors errors = new Errors();
 
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -163,6 +179,7 @@ public class CreditorsAfterOneYearServiceTest {
 
         Errors errors = new Errors();
 
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -187,6 +204,8 @@ public class CreditorsAfterOneYearServiceTest {
     void createCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
 
         Errors errors = new Errors();
+
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
 
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
@@ -250,6 +269,8 @@ public class CreditorsAfterOneYearServiceTest {
 
         Errors errors = new Errors();
 
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
+
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -270,6 +291,8 @@ public class CreditorsAfterOneYearServiceTest {
     void updateCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
 
         Errors errors = new Errors();
+
+        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
 
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);

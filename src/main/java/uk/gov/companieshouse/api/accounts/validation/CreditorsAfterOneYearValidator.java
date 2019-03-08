@@ -37,11 +37,32 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public CreditorsAfterOneYearValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
+    public CreditorsAfterOneYearValidator(CompanyService companyService,
+            CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
         this.companyService = companyService;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
+    }
+
+    public Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+
+        Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
+                (creditorsAfterOneYear.getCurrentPeriod() == null &&
+                        creditorsAfterOneYear.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, CREDITORS_AFTER_PATH);
+        }
+
+        return errors;
     }
 
     public Errors validateCreditorsAfterOneYear(@Valid CreditorsAfterOneYear creditorsAfterOneYear,
@@ -53,8 +74,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
 
         CurrentPeriod currentPeriodNote = creditorsAfterOneYear.getCurrentPeriod();
         PreviousPeriod previousPeriodNote = creditorsAfterOneYear.getPreviousPeriod();
@@ -70,26 +93,31 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         return errors;
     }
 
-    private void validateCurrentPeriod(CurrentPeriod currentPeriodNote, BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+    private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
+            BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
-        boolean hasCurrentPeriodBalanceSheetNoteValue = !isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
+        boolean hasCurrentPeriodBalanceSheetNoteValue =
+                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
         boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
 
-        if (!hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
+        if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
 
-            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet, CREDITORS_AFTER_CURRENT_PERIOD_PATH, errors)) {
+            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
+                    CREDITORS_AFTER_CURRENT_PERIOD_PATH, errors)) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
             }
 
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors)) {
+        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
+                hasCurrentPeriodNoteData, errors)) {
 
             if (hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
             }
 
             if (hasCurrentPeriodNoteData && hasCurrentPeriodBalanceSheetNoteValue) {
-                crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+                crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet,
+                        errors);
             }
         }
     }
@@ -106,26 +134,31 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         return true;
     }
 
-    private void validatePreviousPeriod(PreviousPeriod previousPeriodNote, BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+    private void validatePreviousPeriod(PreviousPeriod previousPeriodNote,
+            BalanceSheet previousPeriodBalanceSheet, Errors errors) {
 
         boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
-        boolean hasPreviousPeriodBalanceSheetNoteValue = !isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
+        boolean hasPreviousPeriodBalanceSheetNoteValue =
+                ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
         boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
 
-        if (!hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
+        if (! hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
 
-            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH, errors)) {
+            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet,
+                    CREDITORS_AFTER_PREVIOUS_PERIOD_PATH, errors)) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
             }
 
-        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors)) {
+        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue,
+                hasPreviousPeriodNoteData, errors)) {
 
             if (hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
             }
 
             if (hasPreviousPeriodNoteData && hasPreviousPeriodBalanceSheetNoteValue) {
-                crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
+                crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
+                        errors);
             }
         }
     }
@@ -177,10 +210,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             boolean hasCurrentPeriodNoteData,
             Errors errors) {
 
-        if (hasCurrentPeriodBalanceSheetValue && !hasCurrentPeriodNoteData) {
+        if (hasCurrentPeriodBalanceSheetValue && ! hasCurrentPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
             return false;
-        } else if (!hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
+        } else if (! hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
             addError(errors, unexpectedData, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
             return false;
         }
@@ -192,10 +225,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             boolean hasPreviousPeriodNoteData,
             Errors errors) {
 
-        if (hasPreviousPeriodBalanceSheetValue && !hasPreviousPeriodNoteData) {
+        if (hasPreviousPeriodBalanceSheetValue && ! hasPreviousPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
             return false;
-        } else if (!hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
+        } else if (! hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
             addError(errors, unexpectedData, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
             return false;
         }
@@ -234,11 +267,15 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             String companyAccountsId,
             Errors errors) throws DataException {
 
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
 
-        crossValidateCurrentPeriodFields(creditorsAfterOneYear.getCurrentPeriod(), currentPeriodBalanceSheet, errors);
-        crossValidatePreviousPeriodFields(creditorsAfterOneYear.getPreviousPeriod(), previousPeriodBalanceSheet, errors);
+        crossValidateCurrentPeriodFields(creditorsAfterOneYear.getCurrentPeriod(),
+                currentPeriodBalanceSheet, errors);
+        crossValidatePreviousPeriodFields(creditorsAfterOneYear.getPreviousPeriod(),
+                previousPeriodBalanceSheet, errors);
 
         return errors;
     }
@@ -247,22 +284,26 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             BalanceSheet previousPeriodBalanceSheet,
             Errors errors) {
 
-        checkIfPreviousNoteIsNullAndBalanceNot(previousPeriodNote, previousPeriodBalanceSheet, errors);
-        checkIsPreviousBalanceNullAndNoteNot(previousPeriodNote, previousPeriodBalanceSheet, errors);
-        checkIfPreviousBalanceAndNoteValuesAreEqual(previousPeriodNote, previousPeriodBalanceSheet, errors);
+        checkIfPreviousNoteIsNullAndBalanceNot(previousPeriodNote, previousPeriodBalanceSheet,
+                errors);
+        checkIsPreviousBalanceNullAndNoteNot(previousPeriodNote, previousPeriodBalanceSheet,
+                errors);
+        checkIfPreviousBalanceAndNoteValuesAreEqual(previousPeriodNote,
+                previousPeriodBalanceSheet, errors);
     }
 
     private void checkIfPreviousBalanceAndNoteValuesAreEqual(PreviousPeriod previousPeriodNote,
             BalanceSheet previousPeriodBalanceSheet,
             Errors errors) {
 
-        if (!isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet) &&
-                (!isPreviousPeriodNoteDataNull(previousPeriodNote))
-                && (!previousPeriodNote.getTotal().equals(
+        if (! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet) &&
+                (! isPreviousPeriodNoteDataNull(previousPeriodNote))
+                && (! previousPeriodNote.getTotal().equals(
                 previousPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
                         .getCreditorsAfterOneYear()))) {
 
-            addError(errors, previousBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+            addError(errors, previousBalanceSheetNotEqual,
+                    CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -271,9 +312,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             Errors errors) {
 
         if (isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet) &&
-                (!isPreviousPeriodNoteDataNull(previousPeriodNote))) {
+                (! isPreviousPeriodNoteDataNull(previousPeriodNote))) {
 
-            addError(errors, previousBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+            addError(errors, previousBalanceSheetNotEqual,
+                    CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -282,9 +324,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             Errors errors) {
 
         if (isPreviousPeriodNoteDataNull(previousPeriodNote) &&
-                (!isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet))) {
+                (! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet))) {
 
-            addError(errors, previousBalanceSheetNotEqual, CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
+            addError(errors, previousBalanceSheetNotEqual,
+                    CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -307,21 +350,25 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             BalanceSheet currentPeriodBalanceSheet,
             Errors errors) {
 
-        checkIfCurrentNoteIsNullAndBalanceSheetNot(currentPeriodCreditors, currentPeriodBalanceSheet, errors);
-        checkIfCurrentBalanceSheetIsNullAndNoteNot(currentPeriodCreditors, currentPeriodBalanceSheet, errors);
-        checkIfCurrentBalanceAndNoteValuesAreEqual(currentPeriodCreditors, currentPeriodBalanceSheet, errors);
+        checkIfCurrentNoteIsNullAndBalanceSheetNot(currentPeriodCreditors,
+                currentPeriodBalanceSheet, errors);
+        checkIfCurrentBalanceSheetIsNullAndNoteNot(currentPeriodCreditors,
+                currentPeriodBalanceSheet, errors);
+        checkIfCurrentBalanceAndNoteValuesAreEqual(currentPeriodCreditors,
+                currentPeriodBalanceSheet, errors);
     }
 
     private void checkIfCurrentBalanceAndNoteValuesAreEqual(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet,
             Errors errors) {
 
-        if (!isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)
-                && !isCurrentPeriodNoteDataNull(currentPeriodNote)
-                && !(currentPeriodNote.getTotal().equals(currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
+        if (! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)
+                && ! isCurrentPeriodNoteDataNull(currentPeriodNote)
+                && ! (currentPeriodNote.getTotal().equals(currentPeriodBalanceSheet.getOtherLiabilitiesOrAssets()
                 .getCreditorsAfterOneYear()))) {
 
-            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
+            addError(errors, currentBalanceSheetNotEqual,
+                    CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -330,9 +377,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             Errors errors) {
 
         if (isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet) &&
-                !isCurrentPeriodNoteDataNull(currentPeriodNote)) {
+                ! isCurrentPeriodNoteDataNull(currentPeriodNote)) {
 
-            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
+            addError(errors, currentBalanceSheetNotEqual,
+                    CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -341,9 +389,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             Errors errors) {
 
         if (isCurrentPeriodNoteDataNull(currentPeriodNote) &&
-                !isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)) {
+                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet)) {
 
-            addError(errors, currentBalanceSheetNotEqual, CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
+            addError(errors, currentBalanceSheetNotEqual,
+                    CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH);
         }
     }
 
@@ -365,8 +414,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
     private boolean isCurrentPeriodNoteDataNull(CurrentPeriod currentPeriodCreditors) {
 
-        return !Optional.ofNullable(currentPeriodCreditors)
-                .map(CurrentPeriod::getTotal)
+        return ! Optional.ofNullable(currentPeriodCreditors)
+                .map(CurrentPeriod :: getTotal)
                 .isPresent();
 
     }
@@ -374,9 +423,9 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private boolean isCurrentPeriodBalanceSheetDataNull(
             BalanceSheet currentPeriodBalanceSheet) {
 
-        return !Optional.ofNullable(currentPeriodBalanceSheet)
-                .map(BalanceSheet::getOtherLiabilitiesOrAssets)
-                .map(OtherLiabilitiesOrAssets ::getCreditorsAfterOneYear)
+        return ! Optional.ofNullable(currentPeriodBalanceSheet)
+                .map(BalanceSheet :: getOtherLiabilitiesOrAssets)
+                .map(OtherLiabilitiesOrAssets :: getCreditorsAfterOneYear)
                 .isPresent();
 
     }
@@ -384,16 +433,16 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private boolean isPreviousPeriodBalanceSheetDataNull(
             BalanceSheet previousPeriodBalanceSheet) {
 
-        return !Optional.ofNullable(previousPeriodBalanceSheet)
-                .map(BalanceSheet::getOtherLiabilitiesOrAssets)
-                .map(OtherLiabilitiesOrAssets::getCreditorsAfterOneYear)
+        return ! Optional.ofNullable(previousPeriodBalanceSheet)
+                .map(BalanceSheet :: getOtherLiabilitiesOrAssets)
+                .map(OtherLiabilitiesOrAssets :: getCreditorsAfterOneYear)
                 .isPresent();
     }
 
     private boolean isPreviousPeriodNoteDataNull(PreviousPeriod previousPeriodNote) {
 
-        return !Optional.ofNullable(previousPeriodNote)
-                .map(PreviousPeriod::getTotal)
+        return ! Optional.ofNullable(previousPeriodNote)
+                .map(PreviousPeriod :: getTotal)
                 .isPresent();
     }
 }

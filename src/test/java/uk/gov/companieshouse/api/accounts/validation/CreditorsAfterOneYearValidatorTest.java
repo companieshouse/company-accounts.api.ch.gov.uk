@@ -55,6 +55,9 @@ public class CreditorsAfterOneYearValidatorTest {
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING_VALUE =
             "mandatory_element_missing";
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE =
+            "empty_resource";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
@@ -408,6 +411,23 @@ public class CreditorsAfterOneYearValidatorTest {
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,
                         mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("Empty resource error thrown when periods and note resources are empty")
+    void testErrorThrownWhenEmptyResourceSubmitted() throws DataException {
+
+        CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateIfEmptyResource(creditorsAfterOneYear, mockRequest, "");
+
+        assertTrue(errors.hasErrors());
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                CREDITORS_AFTER_PATH)));
+
     }
 
     private void createValidNoteCurrentPeriod() {

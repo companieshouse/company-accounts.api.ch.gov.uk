@@ -53,13 +53,17 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateIfEmptyResource(rest, request, companyAccountId);
+
+        if (!errors.hasErrors()) {
+            errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        }
 
         if (errors.hasErrors()) {
 
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
 
+        }
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         CreditorsAfterOneYearEntity entity = transformer.transform(rest);
@@ -73,7 +77,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             throw new DataException(e);
         }
 
-        smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE,
+        smallFullService.addLink(companyAccountId,
+                SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE,
                 getSelfLinkFromCreditorsAfterOneYearEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
@@ -83,7 +88,11 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateIfEmptyResource(rest, request, companyAccountId);
+
+        if (!errors.hasErrors()) {
+            errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        }
 
         if (errors.hasErrors()) {
 
@@ -133,7 +142,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             if (repository.existsById(creditorsAfterOneYearId)) {
                 repository.deleteById(creditorsAfterOneYearId);
                 smallFullService
-                        .removeLink(companyAccountsId, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE, request);
+                        .removeLink(companyAccountsId,
+                                SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
