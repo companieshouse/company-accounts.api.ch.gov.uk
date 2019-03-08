@@ -53,11 +53,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateIfEmptyResource(rest, request, companyAccountId);
-
-        if (!errors.hasErrors()) {
-            errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
-        }
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -88,11 +84,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateIfEmptyResource(rest, request, companyAccountId);
-
-        if (!errors.hasErrors()) {
-            errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
-        }
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 

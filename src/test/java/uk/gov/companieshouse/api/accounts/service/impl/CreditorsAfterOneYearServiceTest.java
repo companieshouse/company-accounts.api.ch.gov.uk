@@ -118,7 +118,7 @@ public class CreditorsAfterOneYearServiceTest {
         Errors errors = new Errors();
         errors.addError(new Error("test.message.key", "location",
             LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(new Errors());
+
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -131,29 +131,11 @@ public class CreditorsAfterOneYearServiceTest {
     }
 
     @Test
-    @DisplayName("Tests for validation error with empty note resource")
-    void validationErrorWhenEmptyresourceSubmitted() throws DataException {
-
-        Errors errors = new Errors();
-        errors.addError(new Error("test.message.key", "location",
-                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
-
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService
-                .create(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest);
-
-        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
-        verify(mockSmallFullService, times(0)).addLink(anyString(),
-                any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
-    }
-
-    @Test
     @DisplayName("Tests the successful creation of a creditors after one year resource")
     void canCreateCreditorsAfterOneYear() throws DataException {
 
         Errors errors = new Errors();
 
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -179,7 +161,6 @@ public class CreditorsAfterOneYearServiceTest {
 
         Errors errors = new Errors();
 
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -204,8 +185,6 @@ public class CreditorsAfterOneYearServiceTest {
     void createCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
 
         Errors errors = new Errors();
-
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
 
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
@@ -269,8 +248,6 @@ public class CreditorsAfterOneYearServiceTest {
 
         Errors errors = new Errors();
 
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
-
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
@@ -291,8 +268,6 @@ public class CreditorsAfterOneYearServiceTest {
     void updateCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
 
         Errors errors = new Errors();
-
-        when(mockValidator.validateIfEmptyResource(mockCreditorsAfterOneYear, mockRequest, "")).thenReturn(errors);
 
         when(mockValidator.validateCreditorsAfterOneYear(
             mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);

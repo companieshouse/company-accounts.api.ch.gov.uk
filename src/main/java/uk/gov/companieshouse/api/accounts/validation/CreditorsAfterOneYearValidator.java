@@ -45,7 +45,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
+    private Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
         Errors errors = new Errors();
@@ -70,7 +70,11 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = new Errors();
+        Errors errors = validateIfEmptyResource( creditorsAfterOneYear, request,  companyAccountsId);
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 

@@ -110,6 +110,21 @@ public class CreditorsAfterOneYearValidatorTest {
     }
 
     @Test
+    @DisplayName("Validation fails when empty periods and empty note resource")
+    void testValidationAgainstEmptyResource() throws DataException {
+
+        CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateCreditorsAfterOneYear(creditorsAfterOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                CREDITORS_AFTER_PATH)));
+    }
+
+    @Test
     @DisplayName("Note validation and cross validation passes with valid note for multiple year filer")
     void testSuccessfulMultipleYearNoteValidationAndCrossValidation() throws ServiceException, DataException {
 
@@ -368,6 +383,11 @@ public class CreditorsAfterOneYearValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
+        Errors errors = new Errors();
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
@@ -406,28 +426,9 @@ public class CreditorsAfterOneYearValidatorTest {
                 COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,
                         mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
-    }
-
-    @Test
-    @DisplayName("Empty resource error thrown when periods and note resources are empty")
-    void testErrorThrownWhenEmptyResourceSubmitted() throws DataException {
-
-        CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
-
-        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
-                EMPTY_RESOURCE_VALUE);
-
-        errors = validator.validateIfEmptyResource(creditorsAfterOneYear, mockRequest, "");
-
-        assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
-                CREDITORS_AFTER_PATH)));
-
     }
 
     private void createValidNoteCurrentPeriod() {

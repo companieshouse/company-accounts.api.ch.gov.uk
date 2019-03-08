@@ -45,6 +45,26 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         this.previousPeriodService = previousPeriodService;
     }
 
+    public Errors validateIfEmptyResource(CreditorsWithinOneYear creditorsWithinOneYear,
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+
+        Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
+                (creditorsWithinOneYear.getCurrentPeriod() == null &&
+                        creditorsWithinOneYear.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, CREDITORS_WITHIN_PATH);
+        }
+
+        return errors;
+    }
+
     public Errors validateCreditorsWithinOneYear(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
                                                  Transaction transaction,
                                                  String companyAccountsId,
