@@ -52,12 +52,6 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             String transactionId = pathVariables.get("transactionId");
             String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
-            debugMap.put("header_eric_access_token", passthroughHeader);
-            debugMap.put("header_eric_access_key_roles", request.getHeader("ERIC-Authorised-Key-Roles"));
-            debugMap.put("header_eric_identity_type", request.getHeader("ERIC-Identity-Type"));
-            debugMap.put("header_eric_identity", request.getHeader("ERIC-Identity"));
-            LOGGER.infoRequest(request, "TxInterceptor Debug Headers", debugMap);
-
             ApiClient apiClient;
             try {
                 apiClient = apiClientService.getApiClient(passthroughHeader);
