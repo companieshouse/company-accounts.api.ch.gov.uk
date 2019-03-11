@@ -32,8 +32,6 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Service
 public class EmployeesService implements ResourceService<Employees> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
-
     private EmployeesRepository repository;
     private EmployeesTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
