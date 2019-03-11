@@ -50,7 +50,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                                  HttpServletRequest request) throws DataException {
 
 
-        Errors errors = new Errors();
+        Errors errors = validateIfEmptyResource(stocks, request, companyAccountsId);
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
@@ -66,6 +70,26 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
             validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else {
             validatePreviousPeriodNotPresent(stocks.getPreviousPeriod(), errors);
+        }
+
+        return errors;
+    }
+
+    private Errors validateIfEmptyResource(Stocks stocks,
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+
+        Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
+                (stocks.getCurrentPeriod() == null &&
+                        stocks.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, STOCKS_PATH);
         }
 
         return errors;
