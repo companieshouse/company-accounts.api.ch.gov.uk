@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +24,9 @@ import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.EmployeesValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class EmployeesService implements ResourceService<Employees> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private EmployeesRepository repository;
     private EmployeesTransformer transformer;
