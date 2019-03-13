@@ -87,9 +87,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
             if (hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-            if (hasCurrentPeriodNoteData && hasCurrentPeriodBalanceSheetNoteValue) {
                 crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
             }
         }
@@ -123,9 +120,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
             if (hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
-
-            if (hasPreviousPeriodNoteData && hasPreviousPeriodBalanceSheetNoteValue) {
                 crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
             }
         }
