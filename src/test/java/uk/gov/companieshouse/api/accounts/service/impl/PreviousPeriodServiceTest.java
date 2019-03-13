@@ -91,7 +91,7 @@ public class PreviousPeriodServiceTest {
     @DisplayName("Tests the successful creation of a previousPeriod resource")
     public void canCreatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
-        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -109,7 +109,7 @@ public class PreviousPeriodServiceTest {
             .any(PreviousPeriod.class));
         when(previousPeriodRepository.insert(previousPeriodEntity))
             .thenThrow(duplicateKeyException);
-        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -122,10 +122,10 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a previous period")
-    void createSmallfullMongoExceptionFailure() {
+    void createSmallfullMongoExceptionFailure() throws DataException {
         doReturn(previousPeriodEntity).when(previousPeriodTransformer).transform(ArgumentMatchers
             .any(PreviousPeriod.class));
-        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.insert(previousPeriodEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -170,7 +170,7 @@ public class PreviousPeriodServiceTest {
     @DisplayName("PUT - Success - Previous Period")
     public void canUpdatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
-        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -182,9 +182,9 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
-    public void canUpdatePreviousPeriodFailureMongoException() {
+    public void canUpdatePreviousPeriodFailureMongoException() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
-        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod)).thenReturn(errors);
+        when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
