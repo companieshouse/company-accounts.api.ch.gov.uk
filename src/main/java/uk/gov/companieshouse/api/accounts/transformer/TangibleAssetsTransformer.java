@@ -25,138 +25,64 @@ public class TangibleAssetsTransformer implements GenericTransformer<TangibleAss
 
         if (entity.getFixturesAndFittings() != null) {
 
-            TangibleAssetsResourceEntity fixturesAndFittings = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getFixturesAndFittings(), fixturesAndFittings);
-
-            if (entity.getFixturesAndFittings().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getFixturesAndFittings().getCost(), cost);
-                fixturesAndFittings.setCost(cost);
-            }
-
-            if (entity.getFixturesAndFittings().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getFixturesAndFittings().getDepreciation(), depreciation);
-                fixturesAndFittings.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setFixturesAndFittings(fixturesAndFittings);
+            tangibleAssetsDataEntity.setFixturesAndFittings(
+                    mapRestResourceToEntityResource(entity.getFixturesAndFittings()));
         }
 
         if (entity.getLandAndBuildings() != null) {
 
-            TangibleAssetsResourceEntity landAndBuildings = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getLandAndBuildings(), landAndBuildings);
-
-            if (entity.getLandAndBuildings().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getLandAndBuildings().getCost(), cost);
-                landAndBuildings.setCost(cost);
-            }
-
-            if (entity.getLandAndBuildings().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getLandAndBuildings().getDepreciation(), depreciation);
-                landAndBuildings.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setLandAndBuildings(landAndBuildings);
+            tangibleAssetsDataEntity.setLandAndBuildings(
+                    mapRestResourceToEntityResource(entity.getLandAndBuildings()));
         }
 
         if (entity.getMotorVehicles() != null) {
 
-            TangibleAssetsResourceEntity motorVehicles = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getMotorVehicles(), motorVehicles);
-
-            if (entity.getMotorVehicles().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getMotorVehicles().getCost(), cost);
-                motorVehicles.setCost(cost);
-            }
-
-            if (entity.getMotorVehicles().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getMotorVehicles().getDepreciation(), depreciation);
-                motorVehicles.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setMotorVehicles(motorVehicles);
+            tangibleAssetsDataEntity.setMotorVehicles(
+                    mapRestResourceToEntityResource(entity.getMotorVehicles()));
         }
 
         if (entity.getOfficeEquipment() != null) {
 
-            TangibleAssetsResourceEntity officeEquipment = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getOfficeEquipment(), officeEquipment);
-
-            if (entity.getOfficeEquipment().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getOfficeEquipment().getCost(), cost);
-                officeEquipment.setCost(cost);
-            }
-
-            if (entity.getOfficeEquipment().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getOfficeEquipment().getDepreciation(), depreciation);
-                officeEquipment.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setOfficeEquipment(officeEquipment);
+            tangibleAssetsDataEntity.setOfficeEquipment(
+                    mapRestResourceToEntityResource(entity.getOfficeEquipment()));
         }
 
         if (entity.getPlantAndMachinery() != null) {
 
-            TangibleAssetsResourceEntity plantAndMachinery = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getPlantAndMachinery(), plantAndMachinery);
-
-            if (entity.getPlantAndMachinery().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getPlantAndMachinery().getCost(), cost);
-                plantAndMachinery.setCost(cost);
-            }
-
-            if (entity.getPlantAndMachinery().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getPlantAndMachinery().getDepreciation(), depreciation);
-                plantAndMachinery.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setPlantAndMachinery(plantAndMachinery);
+            tangibleAssetsDataEntity.setPlantAndMachinery(
+                    mapRestResourceToEntityResource(entity.getPlantAndMachinery()));
         }
 
         if (entity.getTotal() != null) {
 
-            TangibleAssetsResourceEntity total = new TangibleAssetsResourceEntity();
-            BeanUtils.copyProperties(entity.getTotal(), total);
-
-            if (entity.getTotal().getCost() != null) {
-
-                CostEntity cost = new CostEntity();
-                BeanUtils.copyProperties(entity.getTotal().getCost(), cost);
-                total.setCost(cost);
-            }
-
-            if (entity.getTotal().getDepreciation() != null) {
-
-                DepreciationEntity depreciation = new DepreciationEntity();
-                BeanUtils.copyProperties(entity.getTotal().getDepreciation(), depreciation);
-                total.setDepreciation(depreciation);
-            }
-
-            tangibleAssetsDataEntity.setTotal(total);
+            tangibleAssetsDataEntity.setTotal(
+                    mapRestResourceToEntityResource(entity.getTotal()));
         }
 
         tangibleAssetsEntity.setData(tangibleAssetsDataEntity);
         return tangibleAssetsEntity;
+    }
+
+    private TangibleAssetsResourceEntity mapRestResourceToEntityResource(TangibleAssetsResource restResource) {
+
+        TangibleAssetsResourceEntity entityResource = new TangibleAssetsResourceEntity();
+        BeanUtils.copyProperties(restResource, entityResource);
+
+        if (restResource.getCost() != null) {
+
+            CostEntity cost = new CostEntity();
+            BeanUtils.copyProperties(restResource.getCost(), cost);
+            entityResource.setCost(cost);
+        }
+
+        if (restResource.getDepreciation() != null) {
+
+            DepreciationEntity depreciation = new DepreciationEntity();
+            BeanUtils.copyProperties(restResource.getDepreciation(), depreciation);
+            entityResource.setDepreciation(depreciation);
+        }
+
+        return entityResource;
     }
 
     @Override
@@ -169,136 +95,62 @@ public class TangibleAssetsTransformer implements GenericTransformer<TangibleAss
 
         if (dataEntity.getFixturesAndFittings() != null) {
 
-            TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getFixturesAndFittings(), fixturesAndFittings);
-
-            if (dataEntity.getFixturesAndFittings().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getFixturesAndFittings().getCost(), cost);
-                fixturesAndFittings.setCost(cost);
-            }
-
-            if (dataEntity.getFixturesAndFittings().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getFixturesAndFittings().getDepreciation(), depreciation);
-                fixturesAndFittings.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setFixturesAndFittings(fixturesAndFittings);
+            tangibleAssets.setFixturesAndFittings(
+                    mapEntityResourceToRestResource(dataEntity.getFixturesAndFittings()));
         }
 
         if (dataEntity.getLandAndBuildings() != null) {
 
-            TangibleAssetsResource landAndBuildings = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getLandAndBuildings(), landAndBuildings);
-
-            if (dataEntity.getLandAndBuildings().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getLandAndBuildings().getCost(), cost);
-                landAndBuildings.setCost(cost);
-            }
-
-            if (dataEntity.getLandAndBuildings().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getLandAndBuildings().getDepreciation(), depreciation);
-                landAndBuildings.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setLandAndBuildings(landAndBuildings);
+            tangibleAssets.setLandAndBuildings(
+                    mapEntityResourceToRestResource(dataEntity.getLandAndBuildings()));
         }
 
         if (dataEntity.getMotorVehicles() != null) {
 
-            TangibleAssetsResource motorVehicles = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getMotorVehicles(), motorVehicles);
-
-            if (dataEntity.getMotorVehicles().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getMotorVehicles().getCost(), cost);
-                motorVehicles.setCost(cost);
-            }
-
-            if (dataEntity.getMotorVehicles().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getMotorVehicles().getDepreciation(), depreciation);
-                motorVehicles.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setMotorVehicles(motorVehicles);
+            tangibleAssets.setMotorVehicles(
+                    mapEntityResourceToRestResource(dataEntity.getMotorVehicles()));
         }
 
         if (dataEntity.getOfficeEquipment() != null) {
 
-            TangibleAssetsResource officeEquipment = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getOfficeEquipment(), officeEquipment);
-
-            if (dataEntity.getOfficeEquipment().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getOfficeEquipment().getCost(), cost);
-                officeEquipment.setCost(cost);
-            }
-
-            if (dataEntity.getOfficeEquipment().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getOfficeEquipment().getDepreciation(), depreciation);
-                officeEquipment.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setOfficeEquipment(officeEquipment);
+            tangibleAssets.setOfficeEquipment(
+                    mapEntityResourceToRestResource(dataEntity.getOfficeEquipment()));
         }
 
         if (dataEntity.getPlantAndMachinery() != null) {
 
-            TangibleAssetsResource plantAndMachinery = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getPlantAndMachinery(), plantAndMachinery);
-
-            if (dataEntity.getPlantAndMachinery().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getPlantAndMachinery().getCost(), cost);
-                plantAndMachinery.setCost(cost);
-            }
-
-            if (dataEntity.getPlantAndMachinery().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getPlantAndMachinery().getDepreciation(), depreciation);
-                plantAndMachinery.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setPlantAndMachinery(plantAndMachinery);
+            tangibleAssets.setPlantAndMachinery(
+                    mapEntityResourceToRestResource(dataEntity.getPlantAndMachinery()));
         }
 
         if (dataEntity.getTotal() != null) {
 
-            TangibleAssetsResource total = new TangibleAssetsResource();
-            BeanUtils.copyProperties(dataEntity.getTotal(), total);
-
-            if (dataEntity.getTotal().getCost() != null) {
-
-                Cost cost = new Cost();
-                BeanUtils.copyProperties(dataEntity.getTotal().getCost(), cost);
-                total.setCost(cost);
-            }
-
-            if (dataEntity.getTotal().getDepreciation() != null) {
-
-                Depreciation depreciation = new Depreciation();
-                BeanUtils.copyProperties(dataEntity.getTotal().getDepreciation(), depreciation);
-                total.setDepreciation(depreciation);
-            }
-
-            tangibleAssets.setTotal(total);
+            tangibleAssets.setTotal(
+                    mapEntityResourceToRestResource(dataEntity.getTotal()));
         }
 
         return tangibleAssets;
+    }
+
+    private TangibleAssetsResource mapEntityResourceToRestResource(TangibleAssetsResourceEntity entityResource) {
+
+        TangibleAssetsResource restResource = new TangibleAssetsResource();
+        BeanUtils.copyProperties(entityResource, restResource);
+
+        if (entityResource.getCost() != null) {
+
+            Cost cost = new Cost();
+            BeanUtils.copyProperties(entityResource.getCost(), cost);
+            restResource.setCost(cost);
+        }
+
+        if (entityResource.getDepreciation() != null) {
+
+            Depreciation depreciation = new Depreciation();
+            BeanUtils.copyProperties(entityResource.getDepreciation(), depreciation);
+            restResource.setDepreciation(depreciation);
+        }
+
+        return restResource;
     }
 }
