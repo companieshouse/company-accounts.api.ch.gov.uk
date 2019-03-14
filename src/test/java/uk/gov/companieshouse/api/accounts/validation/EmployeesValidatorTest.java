@@ -34,6 +34,10 @@ public class EmployeesValidatorTest {
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE =
+            "empty_resource";
+
     @Mock
     CompanyService mockCompanyService;
 
@@ -63,6 +67,22 @@ public class EmployeesValidatorTest {
         errors = validator.validateEmployees(employees, mockTransaction);
 
         assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Note validation when empty note submitted")
+    void testEmptyResourceValidation() throws DataException, ServiceException {
+        Employees employees = new Employees();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateEmployees(employees, mockTransaction);
+
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                EMPLOYEES_PATH)));
     }
 
     @Test
