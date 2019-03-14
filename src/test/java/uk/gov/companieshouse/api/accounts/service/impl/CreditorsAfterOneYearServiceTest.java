@@ -1,23 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,12 +20,39 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneye
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+
+import uk.gov.companieshouse.api.accounts.validation.CreditorsAfterOneYearValidator;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,6 +69,9 @@ public class CreditorsAfterOneYearServiceTest {
 
     @Mock
     private Transaction mockTransaction;
+
+    @Mock
+    private TransactionLinks mockTransactionLinks;
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -78,10 +91,14 @@ public class CreditorsAfterOneYearServiceTest {
     @Mock
     private SmallFullService mockSmallFullService;
 
+    @Mock
+    private CreditorsAfterOneYearValidator mockValidator;
+
     private CreditorsAfterOneYearEntity creditorsAfterOneYearEntity;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String CREDITORS_AFTER_ID = "creditorsAfterId";
+    private static final String SELF_LINK = "self_link";
 
 
     @BeforeAll
@@ -90,7 +107,7 @@ public class CreditorsAfterOneYearServiceTest {
         CreditorsAfterOneYearDataEntity dataEntity = new CreditorsAfterOneYearDataEntity();
 
         Map<String, String> links = new HashMap<>();
-        links.put(BasicLinkType.SELF.getLink(), "self_link");
+        links.put(BasicLinkType.SELF.getLink(), SELF_LINK);
         dataEntity.setLinks(links);
 
         creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
@@ -98,10 +115,36 @@ public class CreditorsAfterOneYearServiceTest {
     }
 
     @Test
+    @DisplayName("Tests for validation error response during creation of a creditors after one year resource")
+    void validationErrorDuringCreateCreditorsWithinOneYear() throws DataException {
+
+        Errors errors = new Errors();
+        errors.addError(new Error("test.message.key", "location",
+            LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
+
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService
+            .create(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, result.getStatus());
+        verify(mockSmallFullService, times(0)).addLink(anyString(),
+            any(SmallFullLinkType.class), anyString(), any(HttpServletRequest.class));
+    }
+
+    @Test
     @DisplayName("Tests the successful creation of a creditors after one year resource")
     void canCreateCreditorsAfterOneYear() throws DataException {
 
+        Errors errors = new Errors();
+
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
+
         when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CreditorsAfterOneYear> result =
                 mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
@@ -118,9 +161,17 @@ public class CreditorsAfterOneYearServiceTest {
     @DisplayName("Tests the duplicate key when creating a creditors after one year resource")
     void createCreditorsAfterOneYearDuplicateKey() throws DataException {
 
+        Errors errors = new Errors();
+
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
+
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockDuplicateKeyException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CreditorsAfterOneYear> result =
                 mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
@@ -133,11 +184,19 @@ public class CreditorsAfterOneYearServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating creditors after one year")
-    void createCreditorsAfterOneYearMongoExceptionFailure() {
+    void createCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
+
+        Errors errors = new Errors();
+
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
 
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.insert(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear,
@@ -185,10 +244,19 @@ public class CreditorsAfterOneYearServiceTest {
         assertThrows(DataException.class, () -> mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
+    @Test
     @DisplayName("Tests the successful update of a creditors after one year resource")
     void canUpdateACreditorsAfterOneYear() throws DataException {
 
+        Errors errors = new Errors();
+
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
+
         when(mockTransformer.transform(mockCreditorsAfterOneYear)).thenReturn(creditorsAfterOneYearEntity);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction,
                 "", mockRequest);
@@ -201,9 +269,17 @@ public class CreditorsAfterOneYearServiceTest {
     @DisplayName("Tests the mongo exception when updating a creditors after one year")
     void updateCreditorsAfterOneYearMongoExceptionFailure() throws DataException {
 
+        Errors errors = new Errors();
+
+        when(mockValidator.validateCreditorsAfterOneYear(
+            mockCreditorsAfterOneYear, mockTransaction, "", mockRequest)).thenReturn(errors);
+
         doReturn(creditorsAfterOneYearEntity).when(mockTransformer).transform(ArgumentMatchers
                 .any(CreditorsAfterOneYear.class));
         when(mockRepository.save(creditorsAfterOneYearEntity)).thenThrow(mockMongoException);
+
+        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
+        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
                 () -> mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction, "", mockRequest));
@@ -219,6 +295,8 @@ public class CreditorsAfterOneYearServiceTest {
 
         ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.findById("", mockRequest);
 
+        assertNotNull(result);
+        assertEquals(mockCreditorsAfterOneYear, result.getData());
     }
 
     @Test

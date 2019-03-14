@@ -22,12 +22,12 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DebtorsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
@@ -69,7 +69,7 @@ public class DebtorsControllerTest {
     DebtorsController controller;
 
     @Test
-    @DisplayName("Debtors resource created successfully")
+    @DisplayName("debtors resource created successfully")
     void createDebtorsResource() throws DataException {
 
         when(mockBindingResult.hasErrors()).thenReturn(false);
@@ -101,12 +101,11 @@ public class DebtorsControllerTest {
         when(mockBindingResult.hasErrors()).thenReturn(false);
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockDebtorsService.create(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
             .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -163,12 +162,11 @@ public class DebtorsControllerTest {
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
         when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
-        DataException dataException = new DataException("");
         when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -240,12 +238,11 @@ public class DebtorsControllerTest {
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
         when(mockDebtorsService.update(mockDebtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
             controller.update(mockDebtors, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
@@ -284,12 +281,11 @@ public class DebtorsControllerTest {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockDebtorsService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
-            .thenThrow(dataException);
+            .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 

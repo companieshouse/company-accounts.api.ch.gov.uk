@@ -29,7 +29,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
@@ -121,8 +121,7 @@ public class CompanyAccountControllerTest {
                 .create(companyAccount, transactionMock, httpServletRequestMock);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(null);
-        when(apiResponseMapper.map(any(DataException.class)))
-                .thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response = companyAccountController
                 .createCompanyAccount(companyAccount, httpServletRequestMock);

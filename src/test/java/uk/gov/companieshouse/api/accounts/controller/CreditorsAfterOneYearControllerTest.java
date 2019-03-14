@@ -27,7 +27,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CreditorsAfterOneYearService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
@@ -103,13 +103,12 @@ public class CreditorsAfterOneYearControllerTest {
         when(mockBindingResult.hasErrors()).thenReturn(false);
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsAfterOneYearService.create(mockCreditorsAfterOneYear, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -168,14 +167,12 @@ public class CreditorsAfterOneYearControllerTest {
 
         when(mockRequest.getAttribute(anyString())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
-
         when(mockCreditorsAfterOneYearService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -218,13 +215,12 @@ public class CreditorsAfterOneYearControllerTest {
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsAfterOneYearService.update(mockCreditorsAfterOneYear, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
                 controller.update(mockCreditorsAfterOneYear, mockBindingResult,
@@ -267,13 +263,12 @@ public class CreditorsAfterOneYearControllerTest {
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
         when(mockCreditorsAfterOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_AFTER_ONE_YEAR_ID);
 
-        DataException dataException = new DataException("");
         when(mockCreditorsAfterOneYearService.findById(CREDITORS_AFTER_ONE_YEAR_ID, mockRequest))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 

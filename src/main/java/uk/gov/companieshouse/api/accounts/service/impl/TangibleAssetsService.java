@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +13,6 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -23,17 +20,13 @@ import uk.gov.companieshouse.api.accounts.repository.TangibleAssetsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.TangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.TangibleAssetsValidator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @Service
 public class TangibleAssetsService implements ResourceService<TangibleAssets> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private TangibleAssetsRepository repository;
     private TangibleAssetsTransformer transformer;
@@ -71,18 +64,10 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
 
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountsId,
-                    entity.getId()));
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
 
-            DataException dataException =
-                    new DataException("Failed to insert " + ResourceName.TANGIBLE_ASSETS.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountsId, entity.getId()));
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountsId, SmallFullLinkType.TANGIBLE_ASSETS_NOTE,
@@ -108,14 +93,9 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
         try {
 
             repository.save(entity);
-        } catch (MongoException me) {
+        } catch (MongoException e) {
 
-            DataException dataException =
-                    new DataException("Failed to update " + ResourceName.TANGIBLE_ASSETS.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountsId, entity.getId()));
-
-            throw dataException;
+            throw new DataException(e);
         }
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
@@ -131,14 +111,7 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-
-            DataException dataException =
-                    new DataException("Failed to find " + ResourceName.TANGIBLE_ASSETS.getName(), e);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -166,16 +139,9 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
 
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
+        } catch (MongoException e) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", companyAccountsId);
-
-            DataException dataException =
-                    new DataException("Failed to delete " + ResourceName.TANGIBLE_ASSETS.getName(), me);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
     }
 
@@ -192,7 +158,7 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.TANGIBLE_ASSETS.getName();

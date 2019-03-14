@@ -1,11 +1,10 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -19,12 +18,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transaction.TransactionManager;
+import uk.gov.companieshouse.api.ApiClient;
+import uk.gov.companieshouse.api.InternalApiClient;
+import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
+import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionGet;
+import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler;
+import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -34,7 +37,16 @@ public class TransactionInterceptorTest {
     private TransactionInterceptor transactionInterceptor;
 
     @Mock
-    private TransactionManager transactionManagerMock;
+    private ApiClientService apiClientServiceMock;
+
+    @Mock
+    private ApiClient apiClientMock;
+
+    @Mock
+    private TransactionsResourceHandler transactionResourceHandlerMock;
+
+    @Mock
+    private TransactionsGet transactionGetMock;
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
@@ -43,49 +55,27 @@ public class TransactionInterceptorTest {
     private HttpServletResponse httpServletResponseMock;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws URIValidationException, IOException {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
 
         when(httpServletRequestMock.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE))
             .thenReturn(pathVariables);
-        when(httpServletRequestMock.getHeader("X-Request-Id")).thenReturn("1111");
+        when(httpServletRequestMock.getHeader("ERIC-Access-Token")).thenReturn("1111");
 
         httpServletResponseMock.setContentType("text/html");
+
+        when(apiClientServiceMock.getApiClient(anyString())).thenReturn(apiClientMock);
+        when(apiClientMock.transactions()).thenReturn(transactionResourceHandlerMock);
+        when(transactionResourceHandlerMock.get(anyString())).thenReturn(transactionGetMock);
+        when(transactionGetMock.execute()).thenReturn(new Transaction());
     }
 
     @Test
     @DisplayName("Tests the interceptor with an existing transaction")
     void testPreHandleExistingTransaction() {
 
-        when(transactionManagerMock.getTransaction(anyString(), anyString()))
-            .thenReturn(createDummyTransaction());
-
         assertTrue(transactionInterceptor
             .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
-    }
-
-    @Test
-    @DisplayName("Tests the interceptor with a non-existing transaction")
-    void testPreHandleWithNonExistingTransaction() {
-
-        when(transactionManagerMock.getTransaction(anyString(), anyString()))
-            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        assertFalse(transactionInterceptor
-            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
-
-        verify(httpServletResponseMock).setStatus(HttpStatus.NOT_FOUND.value());
-    }
-
-
-    /**
-     * creates dummy transaction.
-     *
-     * @return ResponseEntity<> with the desired transaction
-     */
-    private ResponseEntity<Transaction> createDummyTransaction() {
-        Transaction transaction = new Transaction();
-        return new ResponseEntity<>(transaction, HttpStatus.BAD_REQUEST);
     }
 }

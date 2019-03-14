@@ -1,9 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +22,14 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.AccountingPoliciesService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/accounting-policy", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountingPoliciesController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private AccountingPoliciesService accountingPoliciesService;
@@ -46,12 +39,6 @@ public class AccountingPoliciesController {
 
     @Autowired
     private ErrorMapper errorMapper;
-
-    private static final String TRANSACTION_ID = "transaction_id";
-
-    private static final String COMPANY_ACCOUNT_ID = "company_account_id";
-
-    private static final String MESSAGE = "message";
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody AccountingPolicies accountingPolicies,
@@ -68,26 +55,19 @@ public class AccountingPoliciesController {
         Transaction transaction =
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<AccountingPolicies> response = accountingPoliciesService
                     .create(accountingPolicies, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
+            return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to create accounting policies resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create accounting policies resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
     }
 
     @GetMapping
@@ -99,25 +79,18 @@ public class AccountingPoliciesController {
 
         String accountingPoliciesId = accountingPoliciesService.generateID(companyAccountId);
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<AccountingPolicies> response = accountingPoliciesService
                     .findById(accountingPoliciesId, request);
 
-            responseEntity = apiResponseMapper.mapGetResponse(response.getData(), request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
 
-        } catch (DataException de) {
+        } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to retrieve accounting policies resource");
-            LOGGER.errorRequest(request, de, debugMap);
-            responseEntity = apiResponseMapper.map(de);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve accounting policies resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
     }
 
     @PutMapping
@@ -139,26 +112,19 @@ public class AccountingPoliciesController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<AccountingPolicies> response = accountingPoliciesService
                     .update(accountingPolicies, transaction, companyAccountId, request);
 
-            responseEntity = apiResponseMapper
+            return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put(TRANSACTION_ID, transaction.getId());
-            debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
-            debugMap.put(MESSAGE, "Failed to update accounting policies resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update accounting policies resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
     }
 
 }

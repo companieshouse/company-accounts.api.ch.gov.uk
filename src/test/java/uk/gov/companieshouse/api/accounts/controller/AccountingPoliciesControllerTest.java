@@ -28,7 +28,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.AccountingPoliciesService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
@@ -116,12 +116,11 @@ public class AccountingPoliciesControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        DataException dataException = new DataException("");
         when(accountingPoliciesService.create(accountingPolicies, transaction, COMPANY_ACCOUNTS_ID, request))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException))
+        when(apiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -164,12 +163,11 @@ public class AccountingPoliciesControllerTest {
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountingPoliciesService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(ACCOUNTING_POLICIES_ID);
 
-        DataException dataException = new DataException("");
         when(accountingPoliciesService.findById(ACCOUNTING_POLICIES_ID, request))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
 
@@ -247,12 +245,11 @@ public class AccountingPoliciesControllerTest {
         when(smallFullLinks.get(SmallFullLinkType.ACCOUNTING_POLICY_NOTE.getLink())).thenReturn("");
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
         when(accountingPoliciesService.update(accountingPolicies, transaction, COMPANY_ACCOUNTS_ID, request))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
                 controller.update(accountingPolicies, bindingResult, COMPANY_ACCOUNTS_ID, request);

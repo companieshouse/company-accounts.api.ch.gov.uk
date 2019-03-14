@@ -20,7 +20,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.StocksService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
@@ -103,12 +103,11 @@ public class StocksControllerTest {
         when(mockBindingResult.hasErrors()).thenReturn(false);
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockStocksService.create(mockStocks, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException))
+        when(mockApiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
@@ -196,12 +195,11 @@ public class StocksControllerTest {
         mockTransactionAndLinks();
         when(mockBindingResult.hasErrors()).thenReturn(false);
 
-        DataException dataException = new DataException("");
         when(mockStocksService.update(mockStocks, mockTransaction,
-                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(dataException);
+                COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
                 controller.update(mockStocks, mockBindingResult, COMPANY_ACCOUNTS_ID, mockRequest);
@@ -243,12 +241,11 @@ public class StocksControllerTest {
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
         when(mockStocksService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STOCKS_ID);
 
-        DataException dataException = new DataException("");
         when(mockStocksService.findById(STOCKS_ID, mockRequest))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, mockRequest);
 
@@ -288,12 +285,11 @@ public class StocksControllerTest {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
 
-        DataException dataException = new DataException("");
         when(mockStocksService.delete(COMPANY_ACCOUNTS_ID, mockRequest))
-                .thenThrow(dataException);
+                .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(mockApiResponseMapper.map(dataException)).thenReturn(responseEntity);
+        when(mockApiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, mockRequest);
 

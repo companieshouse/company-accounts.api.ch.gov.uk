@@ -1,11 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -15,44 +10,55 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CreditorsAfterOneYearTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.api.accounts.validation.CreditorsAfterOneYearValidator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CreditorsAfterOneYearService implements ResourceService<CreditorsAfterOneYear> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     private CreditorsAfterOneYearRepository repository;
     private CreditorsAfterOneYearTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private CreditorsAfterOneYearValidator validator;
 
     @Autowired
     public CreditorsAfterOneYearService(CreditorsAfterOneYearRepository repository,
             CreditorsAfterOneYearTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService,
+            CreditorsAfterOneYearValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.validator = validator;
     }
 
     @Override
     public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -62,13 +68,9 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-            LOGGER.errorRequest(request, e, getDebugMap(transaction, companyAccountId, entity.getId()));
-            return  new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
+            return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-            DataException dataException = new DataException("Failed to insert "
-                    + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName(), e);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction, companyAccountId, entity.getId()));
-            throw dataException;
+            throw new DataException(e);
         }
 
         smallFullService.addLink(companyAccountId, SmallFullLinkType.CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE,
@@ -81,6 +83,13 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
+        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         CreditorsAfterOneYearEntity entity = transformer.transform(rest);
@@ -88,13 +97,9 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
         try {
             repository.save(entity);
-        } catch (MongoException me) {
-            DataException dataException =
-                    new DataException("Failed to update" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName(), me);
-            LOGGER.errorRequest(request, dataException, getDebugMap(transaction,
-                    companyAccountId, entity.getId()));
+        } catch (MongoException e) {
 
-            throw dataException;
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -107,13 +112,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", id);
-            DataException dataException = new DataException("Failed to find creditors after one " +
-                    "year", e);
-            LOGGER.errorRequest(request, dataException, debugMap);
-
-            throw dataException;
+            throw new DataException(e);
         }
 
         if (entity == null) {
@@ -139,13 +138,9 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("id", companyAccountsId);
-            DataException dataException = new DataException("Failed to delete Creditors after one year", me);
-            LOGGER.errorRequest(request, dataException, debugMap);
+        } catch (MongoException e) {
 
-            throw dataException;
+            throw new DataException(e);
         }
     }
 
@@ -172,7 +167,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-        return transaction.getLinks().get(TransactionLinkType.SELF.getLink()) + "/"
+        return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName();
