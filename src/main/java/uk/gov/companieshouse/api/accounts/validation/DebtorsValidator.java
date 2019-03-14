@@ -83,9 +83,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             if (hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-            if (hasCurrentPeriodNoteData && hasCurrentPeriodBalanceSheetNoteValue) {
                 crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
             }
         }
@@ -107,9 +104,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
             if (hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
-
-            if (hasPreviousPeriodNoteData && hasPreviousPeriodBalanceSheetNoteValue) {
                 crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
             }
         }

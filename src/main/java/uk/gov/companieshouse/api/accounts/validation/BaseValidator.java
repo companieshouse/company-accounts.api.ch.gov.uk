@@ -26,15 +26,15 @@ public class BaseValidator {
     protected String mandatoryElementMissing;
 
     @Value("${empty.resource}")
-    protected String emptyResource;
+    private String emptyResource;
 
     /**
      * Validate the given total is correctly aggregated
      *
-     * @param total
-     * @param expectedTotal
-     * @param location
-     * @param errors
+     * @param total actual total of the number fields
+     * @param expectedTotal expected total of the number fields
+     * @param location location json path location of the error
+     * @param errors errors errors object that holds any errors from submission
      */
     protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
             Errors errors) {
@@ -50,9 +50,9 @@ public class BaseValidator {
     /**
      * Add an error for the given location
      *
-     * @param errors
-     * @param messageKey
-     * @param location
+     * @param errors errors errors object that holds any errors from submission
+     * @param messageKey relevent message key for the given error
+     * @param location location json path location of the error
      */
     protected void addError(Errors errors, String messageKey, String location) {
         errors.addError(new Error(messageKey, location, LocationType.JSON_PATH.getValue(),
@@ -62,8 +62,8 @@ public class BaseValidator {
     /**
      * Add an empty resource error for the given location
      *
-     * @param errors
-     * @param location
+     * @param errors errors object that holds any errors from submission
+     * @param location json path location of the error
      */
     public Errors addEmptyResourceError(Errors errors, String location) {
         addError(errors, emptyResource, location);
