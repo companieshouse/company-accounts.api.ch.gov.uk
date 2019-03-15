@@ -107,14 +107,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 validateCurrentPeriodFields(currentPeriodNote, errors);
             }
 
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors)) {
-
-            if (hasCurrentPeriodNoteData) {
+        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
                 crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
             }
         }
-    }
 
     private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
                                                     String errorPath,
@@ -140,14 +137,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 validatePreviousPeriodFields(previousPeriodNote, errors);
             }
 
-        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors)) {
-
-            if (hasPreviousPeriodNoteData) {
+        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
                 crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
             }
         }
-    }
 
     private void validatePreviousPeriodNotPresent(PreviousPeriod previousPeriod,
                                                   Errors errors) {

@@ -70,7 +70,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = validateIfEmptyResource( creditorsAfterOneYear, request,  companyAccountsId);
+        Errors errors = validateIfEmptyResource(creditorsAfterOneYear, request, companyAccountsId);
 
         if (errors.hasErrors()) {
             return errors;
@@ -113,13 +113,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             }
 
         } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
-                hasCurrentPeriodNoteData, errors)) {
-
-            if (hasCurrentPeriodNoteData) {
-                validateCurrentPeriodFields(currentPeriodNote, errors);
-                crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet,
-                        errors);
-            }
+                hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
+            validateCurrentPeriodFields(currentPeriodNote, errors);
+            crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet,
+                    errors);
         }
     }
 
@@ -151,13 +148,10 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
             }
 
         } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue,
-                hasPreviousPeriodNoteData, errors)) {
-
-            if (hasPreviousPeriodNoteData) {
-                validatePreviousPeriodFields(previousPeriodNote, errors);
-                crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
-                        errors);
-            }
+                hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
+            validatePreviousPeriodFields(previousPeriodNote, errors);
+            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
+                    errors);
         }
     }
 
