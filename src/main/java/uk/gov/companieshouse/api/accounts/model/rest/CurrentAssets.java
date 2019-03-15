@@ -24,6 +24,10 @@ public class CurrentAssets {
     @JsonProperty("cash_at_bank_and_in_hand")
     private Long cashAtBankAndInHand;
 
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("investments")
+    private Long investments;
+
     @NotNull
     @JsonProperty("total")
     private Long total;
@@ -50,6 +54,14 @@ public class CurrentAssets {
 
     public void setCashAtBankAndInHand(Long cashAtBankAndInHand) {
         this.cashAtBankAndInHand = cashAtBankAndInHand;
+    }
+
+    public Long getInvestments() {
+        return investments;
+    }
+
+    public void setInvestments(Long investments) {
+        this.investments = investments;
     }
 
     public Long getTotal() {
