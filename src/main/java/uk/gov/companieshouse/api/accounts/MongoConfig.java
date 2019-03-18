@@ -21,9 +21,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration
 public class MongoConfig {
 
-    @Autowired
-    private MongoDbConnectionPoolConfig connectionPoolConfig;
-
     /**
      * _class maps to the model class in mongoDB (i.e. _class : uk.gov.companieshouse.Transaction)
      * when using spring data mongo it by default adds a _class key to your collection to be able to
@@ -48,7 +45,7 @@ public class MongoConfig {
      * @return A {@link MongoClientOptions} .
      */
     @Bean
-    public MongoClientOptions mongoClientOptions() {
+    public MongoClientOptions mongoClientOptions(MongoDbConnectionPoolConfig connectionPoolConfig) {
         return MongoClientOptions.builder()
             .minConnectionsPerHost(connectionPoolConfig.getMinSize())
             .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS())
