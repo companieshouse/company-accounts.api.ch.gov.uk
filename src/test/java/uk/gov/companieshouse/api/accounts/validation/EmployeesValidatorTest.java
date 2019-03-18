@@ -60,10 +60,11 @@ public class EmployeesValidatorTest {
 
     @Test
     @DisplayName("Note validation with valid note for first year filer")
-    void testSuccessfulFirstYearNoteValidation() throws DataException {
+    void testSuccessfulFirstYearNoteValidation() throws DataException, ServiceException {
 
         createValidNoteCurrentPeriod();
 
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
         errors = validator.validateEmployees(employees, mockTransaction);
 
         assertFalse(errors.hasErrors());
