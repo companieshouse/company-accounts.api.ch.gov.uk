@@ -42,11 +42,35 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         this.previousPeriodService = previousPeriodService;
     }
 
+    private Errors validateIfEmptyResource(Debtors debtors,
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+
+        Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
+                (debtors.getCurrentPeriod() == null &&
+                        debtors.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, DEBTORS_PATH);
+        }
+
+        return errors;
+    }
+
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = new Errors();
+        Errors errors = validateIfEmptyResource(debtors, request, companyAccountsId);
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
