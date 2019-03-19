@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.Debtors;
+package uk.gov.companieshouse.api.accounts.model.rest.notes.debtors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,10 +11,11 @@ import uk.gov.companieshouse.charset.CharSet;
 public class CurrentPeriod {
 
     private static final int MAX_FIELD_LENGTH = 20000;
+    private static final int MIN_FIELD_LENGTH = 1;
     private static final int MAX_RANGE = 99999999;
     private static final int MIN_RANGE = 0;
 
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("details")
     private String details;

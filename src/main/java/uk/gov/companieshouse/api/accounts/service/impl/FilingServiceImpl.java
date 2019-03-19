@@ -1,14 +1,16 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.api.accounts.AccountsType;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -20,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Document
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.FilingService;
 import uk.gov.companieshouse.api.accounts.service.TnepValidationService;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.filetransfer.FileTransferTool;
 import uk.gov.companieshouse.api.accounts.utility.ixbrl.DocumentGeneratorCaller;
 import uk.gov.companieshouse.api.accounts.validation.ixbrl.DocumentGeneratorResponseValidator;
@@ -28,32 +30,28 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-
 @Service
 public class FilingServiceImpl implements FilingService {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    private static final String LOG_MESSAGE_KEY = "message";
+    private static final String LOG_MESSAGE_KEY                  = "message";
     private static final String DISABLE_IXBRL_VALIDATION_ENV_VAR = "DISABLE_IXBRL_VALIDATION";
-    private static final String LINK_RELATIONSHIP = "accounts";
-    private static final String PERIOD_END_ON = "period_end_on";
+    private static final String LINK_RELATIONSHIP                = "accounts";
+    private static final String PERIOD_END_ON                    = "period_end_on";
 
-    private final DocumentGeneratorCaller documentGeneratorCaller;
-    private final EnvironmentReader environmentReader;
+    private final DocumentGeneratorCaller            documentGeneratorCaller;
+    private final EnvironmentReader                  environmentReader;
     private final DocumentGeneratorResponseValidator documentGeneratorResponseValidator;
-    private final AccountsDatesHelper accountsDatesHelper;
-    private final FileTransferTool fileTransferTool;
-    private final TnepValidationService tnepValidationService;
+    private final AccountsDatesHelper                accountsDatesHelper;
+    private final FileTransferTool                   fileTransferTool;
+    private final TnepValidationService              tnepValidationService;
 
     @Autowired
-    public FilingServiceImpl(DocumentGeneratorCaller documentGeneratorCaller,
-        EnvironmentReader environmentReader,
-        DocumentGeneratorResponseValidator documentGeneratorResponseValidator,
-        AccountsDatesHelper accountsDatesHelper,
-        FileTransferTool fileTransferTool,
-        TnepValidationService tnepValidationService) {
+    public FilingServiceImpl(DocumentGeneratorCaller documentGeneratorCaller, EnvironmentReader environmentReader,
+            DocumentGeneratorResponseValidator documentGeneratorResponseValidator,
+            AccountsDatesHelper accountsDatesHelper, FileTransferTool fileTransferTool,
+            TnepValidationService tnepValidationService) {
 
         this.documentGeneratorCaller = documentGeneratorCaller;
         this.environmentReader = environmentReader;
@@ -67,8 +65,7 @@ public class FilingServiceImpl implements FilingService {
      * {@inheritDoc}
      */
     @Override
-    public Filing generateAccountFiling(Transaction transaction,
-        CompanyAccount companyAccount) {
+    public Filing generateAccountFiling(Transaction transaction, CompanyAccount companyAccount) {
 
         AccountsType accountType = getAccountType(companyAccount);
         if (accountType != null) {
@@ -79,7 +76,8 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Get account type by checking the account type link within the account's data.
+     * Get account type by checking the account type link within the account's
+     * data.
      */
     private AccountsType getAccountType(CompanyAccount companyAccount) {
         Map<String, String> links = companyAccount.getLinks();
@@ -98,18 +96,16 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generate the filing for the account type passed in.
      *
-     * @return {@link Filing} - null or filing with the filing information (e.g. ixbrl location,
-     * accounts name, etc)
+     * @return {@link Filing} - null or filing with the filing information (e.g.
+     *         ixbrl location, accounts name, etc)
      */
     private Filing generateAccountFiling(Transaction transaction, CompanyAccount companyAccount,
-        AccountsType accountsType) {
+            AccountsType accountsType) {
 
-        DocumentGeneratorResponse documentGeneratorResponse =
-            getDocumentGeneratorResponse(companyAccount);
+        DocumentGeneratorResponse documentGeneratorResponse = getDocumentGeneratorResponse(companyAccount);
 
-        if (documentGeneratorResponse != null &&
-            isDocumentGeneratorResponseValid(documentGeneratorResponse) &&
-            isValidIxbrl(documentGeneratorResponse.getLinks().getLocation())) {
+        if (documentGeneratorResponse != null && isDocumentGeneratorResponseValid(documentGeneratorResponse)
+                && isValidIxbrl(documentGeneratorResponse.getLinks().getLocation())) {
 
             return createAccountFiling(transaction, accountsType, documentGeneratorResponse);
         }
@@ -118,8 +114,8 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Calls the document generator to obtain the information needed to build the filing object:
-     * e.g. ixbrl location, description and period end date.
+     * Calls the document generator to obtain the information needed to build
+     * the filing object: e.g. ixbrl location, description and period end date.
      *
      * @return The location where the service has stored the generated ixbrl.
      */
@@ -127,12 +123,11 @@ public class FilingServiceImpl implements FilingService {
 
         Map<String, Object> logMap = new HashMap<>();
 
-        String companyAccountsURI =
-            companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
+        String companyAccountsURI = companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
 
         try {
             DocumentGeneratorResponse documentGeneratorResponse = documentGeneratorCaller
-                .callDocumentGeneratorService(companyAccountsURI);
+                    .callDocumentGeneratorService(companyAccountsURI);
 
             if (documentGeneratorResponse != null) {
                 return documentGeneratorResponse;
@@ -152,17 +147,19 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Downloads the ixbrl content and call the tnep validation service if the download was
-     * successful. The tnep validation service needs the location and the data to performs the
-     * validation. This validation is driven by the environment and it can be disable.
+     * Downloads the ixbrl content and call the tnep validation service if the
+     * download was successful. The tnep validation service needs the location
+     * and the data to performs the validation. This validation is driven by the
+     * environment and it can be disable.
      *
-     * @param fileLocation - location of the file that needs to be validated.
+     * @param fileLocation
+     *            - location of the file that needs to be validated.
      * @return true is valid ixbrl.
      */
     private boolean isValidIxbrl(String fileLocation) {
 
         boolean isIxbrlValid = false;
-        if (!environmentReader.getMandatoryBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
+        if (!environmentReader.getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
             String ixbrlData = downloadIxbrlFromLocation(fileLocation);
 
             if (ixbrlData != null) {
@@ -176,12 +173,16 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Generates the filing based on the Filing model.
      *
-     * @param transaction - transaction information
-     * @param accountsType - Account type information: account type, ixbrl's template name, account
-     * @param documentGeneratorResponse - the location where the ixbrl is stored.
+     * @param transaction
+     *            - transaction information
+     * @param accountsType
+     *            - Account type information: account type, ixbrl's template
+     *            name, account
+     * @param documentGeneratorResponse
+     *            - the location where the ixbrl is stored.
      */
     private Filing createAccountFiling(Transaction transaction, AccountsType accountsType,
-        DocumentGeneratorResponse documentGeneratorResponse) {
+            DocumentGeneratorResponse documentGeneratorResponse) {
 
         Filing filing = new Filing();
 
@@ -189,28 +190,68 @@ public class FilingServiceImpl implements FilingService {
         filing.setDescriptionIdentifier(accountsType.getAccountType());
         filing.setKind(accountsType.getKind());
         filing.setDescriptionValues(documentGeneratorResponse.getDescriptionValues());
-        filing.setDescription(documentGeneratorResponse.getDescription());
+        filing.setDescription(populateDescription(documentGeneratorResponse.getDescription(),
+            documentGeneratorResponse.getDescriptionValues()));
         filing.setData(createFilingData(documentGeneratorResponse));
 
         return filing;
     }
 
     /**
-     * Retrieve the period end date from the document generator response, and set the date in the
-     * expected format YYYY-mm-dd.
+     * Populate the description by reformatting the period_end_on from
+     * "yyyy-MM-dd" to "d MMMM yyyy" if it is present as a parameter and
+     * then update all placeholders in the description string
      *
-     * @param response information from the document generator call.
+     * @param description
+     * @param originalParameters
+     * @return description
+     */
+    private String populateDescription(final String description, final Map<String, String> originalParameters) {
+        
+        if(originalParameters.containsKey(PERIOD_END_ON)) {
+            Map<String, String> copyOfParameters = new HashMap<>(originalParameters);
+            String periodEndOnValue = copyOfParameters.get(PERIOD_END_ON);
+            
+            LocalDate periodEndOnDate = accountsDatesHelper.convertStringToDate(periodEndOnValue);
+            String displayDate = accountsDatesHelper.convertLocalDateToDisplayDate(periodEndOnDate);
+            
+            copyOfParameters.put(PERIOD_END_ON, displayDate);
+            
+            return populateParameters(description, copyOfParameters);
+        } else {
+            return populateParameters(description, originalParameters);
+        }
+        
+    }
+    
+    /**
+     * Populate the parameters in the description
+     *
+     * @param description
+     * @param parameters
+     * @return description
+     */
+    private String populateParameters(Object description, Map<String, String> parameters) {
+        StrSubstitutor sub = new StrSubstitutor(parameters, "{", "}");
+        return sub.replace(description);
+    }
+    
+    /**
+     * Retrieve the period end date from the document generator response, and
+     * set the date in the expected format YYYY-mm-dd.
+     *
+     * @param response
+     *            information from the document generator call.
      * @return period end dated formatted
      */
     private LocalDate getPeriodEndDateFormatted(DocumentGeneratorResponse response) {
 
-        return accountsDatesHelper
-            .convertStringToDate(response.getDescriptionValues().get(PERIOD_END_ON));
+        return accountsDatesHelper.convertStringToDate(response.getDescriptionValues().get(PERIOD_END_ON));
     }
 
     /**
-     * Get the filing data, it contains period end date and the links (ixbrl location and
-     * relationship link).
+     * Get the filing data, it contains period end date and the links (ixbrl
+     * location and relationship link).
      *
      * @return {@link Data}
      */
@@ -223,9 +264,11 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Get the Link containing the ixbrl location and the relationship link e.g. accounts.
+     * Get the Link containing the ixbrl location and the relationship link e.g.
+     * accounts.
      *
-     * @param ixbrlLocation - the location where ixbrl is stored
+     * @param ixbrlLocation
+     *            - the location where ixbrl is stored
      * @return {@link List < Link >}
      */
     private List<Link> createFilingLinks(String ixbrlLocation) {
@@ -237,10 +280,12 @@ public class FilingServiceImpl implements FilingService {
     }
 
     /**
-     * Call document generator response to validate response. It needs to contain: Description,
-     * period end on (within description values) and the ixbrl location are needed.
+     * Call document generator response to validate response. It needs to
+     * contain: Description, period end on (within description values) and the
+     * ixbrl location are needed.
      *
-     * @param response document generator response.
+     * @param response
+     *            document generator response.
      * @return true if the response contains all the needed information.
      */
     private boolean isDocumentGeneratorResponseValid(DocumentGeneratorResponse response) {
@@ -250,7 +295,8 @@ public class FilingServiceImpl implements FilingService {
     /**
      * Calls the fileTransferTool to download file from public location.
      *
-     * @param location - the ixbrl location, which is a public location.
+     * @param location
+     *            - the ixbrl location, which is a public location.
      * @return the actual ixbrl content. Or null if download fails.
      */
     private String downloadIxbrlFromLocation(String location) {

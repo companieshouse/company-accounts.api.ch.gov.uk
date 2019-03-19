@@ -1,9 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
-
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +22,14 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PreviousPeriodController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @Autowired
     private PreviousPeriodService previousPeriodService;
@@ -54,34 +47,25 @@ public class PreviousPeriodController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
-            if (errors.hasErrors()) {
-                LOGGER.error("Previous period validation failure");
-                logValidationFailureError(request, errors);
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-            }
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = getTransactionFromRequest(request);
-        ResponseEntity responseEntity;
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<PreviousPeriod> responseObject = previousPeriodService
                 .create(previousPeriod, transaction, companyAccountId, request);
-            responseEntity = apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
+
+            return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            debugMap.put("company_account_id", companyAccountId);
-            debugMap.put("message", "Failed to create previous period resource");
-            LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
-        }
 
-        return responseEntity;
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create previous period resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
+        }
     }
 
     @GetMapping
@@ -92,19 +76,19 @@ public class PreviousPeriodController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         String previousPeriodId = previousPeriodService.generateID(companyAccountId);
-        ResponseObject<PreviousPeriod> responseObject;
-
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
 
         try {
-            responseObject = previousPeriodService.findById(previousPeriodId, request);
-        } catch (DataException de) {
-            LOGGER.errorRequest(request, de, debugMap);
-            return apiResponseMapper.map(de);
-        }
+            ResponseObject<PreviousPeriod> response =
+                    previousPeriodService.findById(previousPeriodId, request);
 
-        return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve previous period resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
+        }
     }
 
     @PutMapping
@@ -119,43 +103,24 @@ public class PreviousPeriodController {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
-            if (errors.hasErrors()) {
-                LOGGER.error("Previous period validation failure");
-                logValidationFailureError(request, errors);
-                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-            }
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity;
-
         try {
             ResponseObject<PreviousPeriod> responseObject = previousPeriodService
                 .update(previousPeriod, transaction, companyAccountId, request);
-            responseEntity = apiResponseMapper
+
+            return apiResponseMapper
                 .map(responseObject.getStatus(), null, responseObject.getErrors());
 
         } catch (DataException ex) {
-            final Map<String, Object> debugMap = new HashMap<>();
-            debugMap.put("transaction_id", transaction.getId());
-            LOGGER.errorRequest(request, ex, debugMap);
-            responseEntity = apiResponseMapper.map(ex);
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update previous period resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
         }
-
-        return responseEntity;
-    }
-
-    private Transaction getTransactionFromRequest(HttpServletRequest request) {
-        return (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-    }
-
-    void logValidationFailureError(HttpServletRequest request, Errors errors) {
-        HashMap<String, Object> logMap = new HashMap<>();
-        logMap.put("message", "Validation failure");
-        logMap.put("Errors: ", errors);
-        LOGGER.traceRequest(request, "", logMap);
     }
 }
