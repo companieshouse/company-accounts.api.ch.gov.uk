@@ -30,7 +30,8 @@ public class EmployeesValidator extends BaseValidator {
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
-        if (! isMultipleYearFiler && employees.getPreviousPeriod() != null) {
+        if (! isMultipleYearFiler && employees.getPreviousPeriod() != null &&
+                employees.getPreviousPeriod().getAverageNumberOfEmployees() != null) {
             addError(errors, unexpectedData, EMPLOYEES_PREVIOUS_PERIOD_PATH);
         }
 
