@@ -25,21 +25,24 @@ public class BaseValidator {
     @Value("${mandatory.element.missing}")
     protected String mandatoryElementMissing;
 
+    @Value("${empty.resource}")
+    private String emptyResource;
+
     /**
      * Validate the given total is correctly aggregated
      *
-     * @param total
-     * @param expectedTotal
-     * @param location
-     * @param errors
+     * @param total actual total of the number fields
+     * @param expectedTotal expected total of the number fields
+     * @param location location json path location of the error
+     * @param errors errors errors object that holds any errors from submission
      */
     protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
-        Errors errors) {
+            Errors errors) {
         if (expectedTotal == null) {
-            if (total != null && !total.equals(0L)) {
+            if (total != null && ! total.equals(0L)) {
                 addError(errors, incorrectTotal, location);
             }
-        } else if (total == null || !total.equals(expectedTotal)) {
+        } else if (total == null || ! total.equals(expectedTotal)) {
             addError(errors, incorrectTotal, location);
         }
     }
@@ -47,13 +50,25 @@ public class BaseValidator {
     /**
      * Add an error for the given location
      *
-     * @param errors
-     * @param messageKey
-     * @param location
+     * @param errors errors errors object that holds any errors from submission
+     * @param messageKey relevent message key for the given error
+     * @param location location json path location of the error
      */
     protected void addError(Errors errors, String messageKey, String location) {
         errors.addError(new Error(messageKey, location, LocationType.JSON_PATH.getValue(),
-            ErrorType.VALIDATION.getType()));
+                ErrorType.VALIDATION.getType()));
+    }
+
+    /**
+     * Add an empty resource error for the given location
+     *
+     * @param errors errors object that holds any errors from submission
+     * @param location json path location of the error
+     */
+    public Errors addEmptyResourceError(Errors errors, String location) {
+        addError(errors, emptyResource, location);
+
+        return errors;
     }
 }
 
