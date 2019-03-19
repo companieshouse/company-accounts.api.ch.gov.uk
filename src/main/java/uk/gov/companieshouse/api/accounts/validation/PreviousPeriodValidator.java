@@ -137,7 +137,10 @@ public class PreviousPeriodValidator extends BaseValidator {
         if (previousPeriod.getBalanceSheet().getFixedAssets() != null) {
             fixedAssetsTotal = Optional.ofNullable(previousPeriod.getBalanceSheet().getFixedAssets().getTotal()).orElse(0L);
         }
-        Long calculatedTotal = fixedAssetsTotal + netCurrentAssets;
+
+        Long calledUpShareCapital = Optional.ofNullable(previousPeriod.getBalanceSheet().getCalledUpShareCapitalNotPaid()).orElse(0L);
+
+        Long calculatedTotal = fixedAssetsTotal + netCurrentAssets + calledUpShareCapital;
 
         Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
         validateAggregateTotal(totalAssetsLessCurrentLiabilities, calculatedTotal, OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH, errors);
