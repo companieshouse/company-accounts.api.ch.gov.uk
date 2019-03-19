@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
 
 import com.mongodb.MongoClientOptions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDbFactory;
@@ -20,9 +19,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  */
 @Configuration
 public class MongoConfig {
-
-    @Autowired
-    private MongoDbConnectionPoolConfig connectionPoolConfig;
 
     /**
      * _class maps to the model class in mongoDB (i.e. _class : uk.gov.companieshouse.Transaction)
@@ -48,7 +44,7 @@ public class MongoConfig {
      * @return A {@link MongoClientOptions} .
      */
     @Bean
-    public MongoClientOptions mongoClientOptions() {
+    public MongoClientOptions mongoClientOptions(MongoDbConnectionPoolConfig connectionPoolConfig) {
         return MongoClientOptions.builder()
             .minConnectionsPerHost(connectionPoolConfig.getMinSize())
             .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS())

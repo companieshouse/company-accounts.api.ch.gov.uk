@@ -60,6 +60,9 @@ public class DebtorsValidatorTest {
             "mandatory_element_missing";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE =
+            "empty_resource";
 
     private static final long INVALID_TOTAL = 200L;
 
@@ -225,6 +228,21 @@ public class DebtorsValidatorTest {
     }
 
     @Test
+    @DisplayName("Validation fails when empty periods and empty note resource")
+    void testValidationAgainstEmptyResource() throws DataException {
+
+        Debtors debtors = new Debtors();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                DEBTORS_PATH)));
+    }
+
+    @Test
     @DisplayName("Errors returned when total fields missing")
     void testErrorsReturnedWhenMandatoryFieldsMissing() throws ServiceException,
         DataException {
@@ -371,6 +389,11 @@ public class DebtorsValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
+        Errors errors = new Errors();
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
@@ -406,10 +429,8 @@ public class DebtorsValidatorTest {
         mockValidBalanceSheetCurrentPeriod();
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
+                COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         assertThrows(DataException.class,
             () -> validator.validateDebtors(debtors,
