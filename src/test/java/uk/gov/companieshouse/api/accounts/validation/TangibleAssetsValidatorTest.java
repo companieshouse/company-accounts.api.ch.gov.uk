@@ -71,8 +71,7 @@ public class TangibleAssetsValidatorTest {
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL = "value_not_equal_to_previous_period_on_balance_sheet";
 
-    private static final String CURRENT_PERIOD_ID = "currentPeriodId";
-    private static final String PREVIOUS_PERIOD_ID = "previousPeriodId";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Test
     @DisplayName("First year filer - provides only additional info in note")
@@ -85,7 +84,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -102,7 +101,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -127,7 +126,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
@@ -151,7 +150,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
@@ -172,7 +171,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
@@ -196,7 +195,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -220,7 +219,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -241,7 +240,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
@@ -263,7 +262,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
@@ -289,7 +288,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
@@ -315,7 +314,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -336,7 +335,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
@@ -362,7 +361,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
@@ -387,7 +386,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
@@ -417,7 +416,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
@@ -441,7 +440,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -465,7 +464,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -491,7 +490,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
@@ -522,7 +521,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
@@ -548,7 +547,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -575,7 +574,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
@@ -609,7 +608,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
@@ -637,7 +636,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
@@ -665,7 +664,7 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
@@ -721,13 +720,13 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(2L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(10, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.additions")));
@@ -798,13 +797,13 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(3L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createPreviousPeriodResponseObject(1L));
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(13, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_start")));
@@ -856,15 +855,15 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -904,15 +903,15 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(100L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -955,16 +954,16 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1008,16 +1007,16 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(100L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createPreviousPeriodResponseObject(100L));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1058,13 +1057,13 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(5L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -1106,13 +1105,13 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.find("", request))
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createCurrentPeriodResponseObject(5L));
 
-        when(previousPeriodService.find("", request))
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createPreviousPeriodResponseObject(0L));
 
-        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
+        Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
