@@ -75,7 +75,6 @@ public class TangibleAssetsControllerTest {
     private TangibleAssetsController controller;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String GENERATED_ID = "generatedId";
     private static final String TANGIBLE_ASSETS_LINK = "tangibleAssetsLink";
 
     @Test
@@ -158,10 +157,9 @@ public class TangibleAssetsControllerTest {
     void getTangibleAssetsSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(tangibleAssetsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(GENERATED_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, tangibleAssets);
-        when(tangibleAssetsService.findById(GENERATED_ID, request))
+        when(tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
@@ -175,7 +173,7 @@ public class TangibleAssetsControllerTest {
         assertEquals(tangibleAssets, response.getBody());
 
         verify(tangibleAssetsService, times(1))
-                .findById(GENERATED_ID, request);
+                .find(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1))
                 .mapGetResponse(responseObject.getData(), request);
     }
@@ -185,9 +183,8 @@ public class TangibleAssetsControllerTest {
     void getTangibleAssetsServiceThrowsDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(tangibleAssetsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(GENERATED_ID);
 
-        doThrow(new DataException("")).when(tangibleAssetsService).findById(GENERATED_ID, request);
+        doThrow(new DataException("")).when(tangibleAssetsService).find(COMPANY_ACCOUNTS_ID, request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
@@ -199,7 +196,7 @@ public class TangibleAssetsControllerTest {
         assertNull(response.getBody());
 
         verify(tangibleAssetsService, times(1))
-                .findById(GENERATED_ID, request);
+                .find(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, never()).mapGetResponse(any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
     }

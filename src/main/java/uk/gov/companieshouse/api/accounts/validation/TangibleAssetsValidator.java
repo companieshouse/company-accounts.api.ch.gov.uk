@@ -929,10 +929,8 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
                                             TangibleAssets tangibleAssets) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject =
-                currentPeriodService.findById(currentPeriodId, request);
+                currentPeriodService.find(companyAccountsId, request);
         CurrentPeriod currentPeriod = currentPeriodResponseObject.getData();
 
         Long currentPeriodTangible =
@@ -960,10 +958,8 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
             TangibleAssets tangibleAssets) throws DataException {
 
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
-
         ResponseObject<PreviousPeriod> previousPeriodResponseObject =
-                previousPeriodService.findById(previousPeriodId, request);
+                previousPeriodService.find(companyAccountsId, request);
         PreviousPeriod previousPeriod = previousPeriodResponseObject.getData();
 
         Long previousPeriodTangible =

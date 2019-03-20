@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class EmployeesControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String EMPLOYEES_ID = "employeesId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -240,11 +239,10 @@ public class EmployeesControllerTest {
     void getEmployeesSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockEmployeesService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(EMPLOYEES_ID);
 
         ResponseObject mockResponseObject = new ResponseObject(ResponseStatus.FOUND,
                 mockEmployees);
-        when(mockEmployeesService.findById(EMPLOYEES_ID, mockRequest))
+        when(mockEmployeesService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenReturn(mockResponseObject);
 
         ResponseEntity mockResponseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -265,10 +263,9 @@ public class EmployeesControllerTest {
     void getEmployeesDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockEmployeesService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(EMPLOYEES_ID);
 
         DataException dataException = new DataException("");
-        when(mockEmployeesService.findById(EMPLOYEES_ID, mockRequest))
+        when(mockEmployeesService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenThrow(dataException);
 
         ResponseEntity mockResponseEntity =

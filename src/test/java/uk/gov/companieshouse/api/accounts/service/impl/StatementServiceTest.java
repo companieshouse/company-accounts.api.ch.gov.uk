@@ -80,7 +80,7 @@ public class StatementServiceTest {
     @Mock
     private StatementRepository statementRepositoryMock;
     @Mock
-    private KeyIdGenerator KeyIdGeneratorMock;
+    private KeyIdGenerator keyIdGeneratorMock;
     @Mock
     private SmallFullService smallFullServiceMock;
     @Mock
@@ -92,6 +92,7 @@ public class StatementServiceTest {
     private StatementService statementService;
 
     private static final String SELF_LINK = "self_link";
+    private static final String RESOURCE_ID = "resourceId";
 
     @BeforeAll
     void setUpBeforeAll() {
@@ -186,13 +187,15 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the successful find of an an Statement resource")
     void shouldFindStatementResource() throws DataException {
-        when(statementRepositoryMock.findById(anyString()))
+        when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
+                .thenReturn(RESOURCE_ID);
+        when(statementRepositoryMock.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(statementEntity));
 
         Statement statement = createStatement();
         when(statementTransformerMock.transform(any(StatementEntity.class))).thenReturn(statement);
 
-        ResponseObject<Statement> result = statementService.findById(anyString(), requestMock);
+        ResponseObject<Statement> result = statementService.find(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertNotNull(result);
         assertEquals(statement, result.getData());
@@ -202,10 +205,12 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the unsuccessful find of an an Statement resource")
     void shouldNotFindStatementResource() throws DataException {
-        when(statementRepositoryMock.findById(anyString()))
+        when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
+                .thenReturn(RESOURCE_ID);
+        when(statementRepositoryMock.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(null));
 
-        ResponseObject<Statement> result = statementService.findById(anyString(), requestMock);
+        ResponseObject<Statement> result = statementService.find(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertNotNull(result);
         assertNull(result.getData());
@@ -214,12 +219,14 @@ public class StatementServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception thrown on find a Statement resource")
-    void shouldThrowMongoExceptionWhenFindingById() throws DataException {
-        when(statementRepositoryMock.findById(anyString()))
+    void shouldThrowMongoExceptionWhenFindingById() {
+        when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
+                .thenReturn(RESOURCE_ID);
+        when(statementRepositoryMock.findById(RESOURCE_ID))
             .thenThrow(MongoException.class);
 
         assertThrows(DataException.class,
-            () -> statementService.findById(anyString(), requestMock));
+            () -> statementService.find(COMPANY_ACCOUNTS_ID, requestMock));
     }
 
     private StatementEntity createStatementEntity() {

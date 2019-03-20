@@ -16,12 +16,10 @@ public interface ResourceService<T extends RestObject> {
         HttpServletRequest request)
         throws DataException;
 
-    ResponseObject<T> findById(String id, HttpServletRequest request)
+    ResponseObject<T> find(String companyAccountsId, HttpServletRequest request)
         throws DataException;
 
     ResponseObject<T> delete(String companyAccountsId, HttpServletRequest request)
         throws DataException;
-
-    String generateID(String companyAccountId);
 
 }

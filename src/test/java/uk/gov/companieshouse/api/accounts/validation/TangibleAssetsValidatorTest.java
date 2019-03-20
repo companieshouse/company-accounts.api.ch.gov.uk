@@ -721,12 +721,10 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(2L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
@@ -800,12 +798,10 @@ public class TangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(3L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(createPreviousPeriodResponseObject(1L));
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
@@ -860,12 +856,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
@@ -910,12 +904,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(100L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
@@ -963,12 +955,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
@@ -1018,12 +1008,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(100L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(createPreviousPeriodResponseObject(100L));
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
@@ -1070,12 +1058,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(5L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);
@@ -1120,12 +1106,10 @@ public class TangibleAssetsValidatorTest {
 
         tangibleAssets.setTotal(total);
 
-        when(currentPeriodService.generateID("")).thenReturn(CURRENT_PERIOD_ID);
-        when(currentPeriodService.findById(CURRENT_PERIOD_ID, request))
+        when(currentPeriodService.find("", request))
                 .thenReturn(createCurrentPeriodResponseObject(5L));
 
-        when(previousPeriodService.generateID("")).thenReturn(PREVIOUS_PERIOD_ID);
-        when(previousPeriodService.findById(PREVIOUS_PERIOD_ID, request))
+        when(previousPeriodService.find("", request))
                 .thenReturn(createPreviousPeriodResponseObject(0L));
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, "", request);

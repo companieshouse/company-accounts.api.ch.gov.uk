@@ -87,13 +87,13 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> findById(String id, HttpServletRequest request)
+    public ResponseObject<PreviousPeriod> find(String companyAccountsId, HttpServletRequest request)
         throws DataException {
 
         PreviousPeriodEntity previousPeriodEntity;
 
         try {
-            previousPeriodEntity = previousPeriodRepository.findById(id).orElse(null);
+            previousPeriodEntity = previousPeriodRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -133,8 +133,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
-    @Override
-    public String generateID(String value) {
+    private String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 

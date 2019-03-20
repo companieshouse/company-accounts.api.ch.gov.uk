@@ -9,9 +9,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.security.MessageDigest;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
@@ -58,9 +59,6 @@ public class PreviousPeriodServiceTest {
     private SmallFullService smallFullService;
 
     @Mock
-    private MessageDigest messageDigest;
-
-    @Mock
     private PreviousPeriodValidator previousPeriodValidator;
 
     @Mock
@@ -85,7 +83,15 @@ public class PreviousPeriodServiceTest {
     private PreviousPeriodService previousPeriodService;
 
     private static final String SELF_LINK = "self_link";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String RESOURCE_ID = "resourceId";
 
+    @BeforeEach
+    public void setUp() {
+        when(keyIdGenerator
+                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.PREVIOUS_PERIOD.getName()))
+                        .thenReturn(RESOURCE_ID);
+    }
 
     @Test
     @DisplayName("Tests the successful creation of a previousPeriod resource")
@@ -97,7 +103,7 @@ public class PreviousPeriodServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<PreviousPeriod> result = previousPeriodService
-            .create(previousPeriod, transaction, "", request);
+            .create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
     }
@@ -114,7 +120,7 @@ public class PreviousPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = previousPeriodService.create(previousPeriod, transaction, "", request);
+        ResponseObject response = previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -131,16 +137,16 @@ public class PreviousPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, "", request));
+        assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Tests the successful find of a previous period resource")
     public void findPreviousPeriod() throws DataException {
-        when(previousPeriodRepository.findById("")).thenReturn(Optional.of(previousPeriodEntity));
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
         when(previousPeriodTransformer.transform(previousPeriodEntity)).thenReturn(previousPeriod);
 
-        ResponseObject<PreviousPeriod> result = previousPeriodService.findById("", request);
+        ResponseObject<PreviousPeriod> result = previousPeriodService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
@@ -149,8 +155,8 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("Tests the unsuccessful find of a previous period resource")
     public void findPreviousPeriodNotFound() throws DataException {
-        when(previousPeriodRepository.findById("")).thenReturn(Optional.empty());
-        ResponseObject<PreviousPeriod> result = previousPeriodService.findById("", request);
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
+        ResponseObject<PreviousPeriod> result = previousPeriodService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.NOT_FOUND, result.getStatus());
@@ -160,8 +166,8 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of a previous period resource")
     public void findPreviousPeriodMongoException() {
-        when(previousPeriodRepository.findById("")).thenThrow(mongoException);
-        Executable executable = () -> previousPeriodService.findById("", request);
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
+        Executable executable = () -> previousPeriodService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertThrows(DataException.class, executable);
     }
@@ -175,7 +181,7 @@ public class PreviousPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, "", request);
+        ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
     }
@@ -190,6 +196,6 @@ public class PreviousPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, "", request));
+        assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 }
