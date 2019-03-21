@@ -7,6 +7,9 @@ public class FixedAssetsEntity {
     @Field("tangible")
     private Long tangible;
 
+    @Field("investments")
+    private Long investments;
+
     @Field("total")
     private Long total;
 
@@ -16,6 +19,14 @@ public class FixedAssetsEntity {
 
     public void setTangible(Long tangible) {
         this.tangible = tangible;
+    }
+
+    public Long getInvestments() {
+        return investments;
+    }
+
+    public void setInvestments(Long investments) {
+        this.investments = investments;
     }
 
     public Long getTotal() {

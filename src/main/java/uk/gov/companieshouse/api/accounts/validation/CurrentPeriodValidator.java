@@ -93,11 +93,11 @@ public class CurrentPeriodValidator extends BaseValidator {
         FixedAssets fixedAssets = currentPeriod.getBalanceSheet().getFixedAssets();
         if (fixedAssets != null) {
 
-            Long tangible = fixedAssets.getTangible();
+            Long tangible = Optional.ofNullable(fixedAssets.getTangible()).orElse(0L);
+            Long investments = Optional.ofNullable(fixedAssets.getInvestments()).orElse(0L);
             Long fixedAssetsTotal = fixedAssets.getTotal();
 
-            // Will calculate the total of all fixedassets fields as they are added to the balance sheet
-            Long calculatedTotal = tangible;
+            Long calculatedTotal = tangible + investments;
 
             validateAggregateTotal(fixedAssetsTotal, calculatedTotal, FIXED_ASSETS_TOTAL_PATH, errors);
         }
