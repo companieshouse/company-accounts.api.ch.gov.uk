@@ -15,10 +15,12 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestments.FixedAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.validation.FixedAssetsInvestmentsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
@@ -30,17 +32,19 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
     private FixedAssetsInvestmentsTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private FixedAssetsInvestmentsValidator validator;
 
     @Autowired
     public FixedAssetsInvestmentsService(FixedAssetsInvestmentsRepository repository,
             FixedAssetsInvestmentsTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService) {
+            SmallFullService smallFullService, FixedAssetsInvestmentsValidator validator) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.validator = validator;
     }
 
     @Override
@@ -48,6 +52,14 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateFixedAssetsInvestments(request, rest, transaction,
+                companyAccountId);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -74,6 +86,13 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
+        Errors errors = validator.validateFixedAssetsInvestments(request, rest, transaction,
+                companyAccountId);
+
+        if (errors.hasErrors()) {
+
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         FixedAssetsInvestmentsEntity entity = transformer.transform(rest);
@@ -109,7 +128,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
 
     @Override
     public ResponseObject<FixedAssetsInvestments> delete(String companyAccountsId,
-                                                             HttpServletRequest request) throws DataException {
+            HttpServletRequest request) throws DataException {
 
         String fixedAssetsInvestmentsId = generateID(companyAccountsId);
 
@@ -118,7 +137,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
                 repository.deleteById(fixedAssetsInvestmentsId);
 
                 smallFullService.removeLink(companyAccountsId,
-                    SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE, request);
+                        SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
