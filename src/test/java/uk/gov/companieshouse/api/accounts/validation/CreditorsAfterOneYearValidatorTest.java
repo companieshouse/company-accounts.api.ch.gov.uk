@@ -55,6 +55,9 @@ public class CreditorsAfterOneYearValidatorTest {
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING_VALUE =
             "mandatory_element_missing";
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE =
+            "empty_resource";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
@@ -104,6 +107,21 @@ public class CreditorsAfterOneYearValidatorTest {
         errors = validator.validateCreditorsAfterOneYear(creditorsAfterOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Validation fails when empty periods and empty note resource")
+    void testValidationAgainstEmptyResource() throws DataException {
+
+        CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateCreditorsAfterOneYear(creditorsAfterOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                CREDITORS_AFTER_PATH)));
     }
 
     @Test
@@ -365,6 +383,11 @@ public class CreditorsAfterOneYearValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
+        Errors errors = new Errors();
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
@@ -402,8 +425,6 @@ public class CreditorsAfterOneYearValidatorTest {
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
                 COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsAfterOneYear(creditorsAfterOneYear,

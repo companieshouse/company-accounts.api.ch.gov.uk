@@ -3034,6 +3034,40 @@
 
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
+      
+      <!-- FIXED ASSETS INVESTMENTS NOTE START -->
+      {{if $fixedAssetsInvestments := $balanceSheetNotes.fixed_assets_investments}}
+      {{incValue "notes-page-count" }}
+      {{setValue "fixed-assets-investments-notes-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+          <div class="header">
+              <h1 class="text--center">
+                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+              </h1>
+          </div>
+
+          <h2 class="text--center">Notes to the Financial Statements</h2>
+          <p class="text--center">
+              <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+          </p>
+
+          <h2>{{getValue "notes-page-count"}}. Fixed assets investments note</h2>
+
+          {{if $fixedAssetsInvestments.details}}
+          <div class="text-area-display" id="fixed-assets-investments-free-text-note">
+
+              <p class="text-area-display">
+                  {{$fixedAssetsInvestments.details}}
+              </p>
+
+          </div>
+          {{end}}
+            
+      </div>
+
+      {{end}}
+      <!-- FIXED ASSETS INVESTMENTS NOTE END -->      
 
       {{end}}
     </div>
