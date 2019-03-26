@@ -42,12 +42,8 @@ public class DebtorsValidatorTest {
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static final String INVALID_NOTE_VALUE = "invalid_note";
-    private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
-    private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
     private static final String COMPANY_ACCOUNTS_ID = "123abc";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
@@ -63,8 +59,6 @@ public class DebtorsValidatorTest {
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE =
             "empty_resource";
-
-    private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
     private Errors errors;
@@ -89,9 +83,6 @@ public class DebtorsValidatorTest {
 
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
-
-    @Mock
-    private ResponseObject mockResponseObject;
 
     private DebtorsValidator validator;
 
