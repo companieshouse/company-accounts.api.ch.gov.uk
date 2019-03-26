@@ -1787,13 +1787,13 @@
 
             <tr>
               <th class="table-heading"></th>
-              {{if $employeesNote.average_number_of_employees.current_amount}}
+              {{if isNotEmpty $employeesNote.average_number_of_employees.current_amount}}
               <th class="table-heading" id="employees-note-current-heading">{{$period.current_period_bs_date}}</th>
               {{else}}
               <th  class="table-heading">&#160;</th>
               {{end}}
 
-              {{if $employeesNote.average_number_of_employees.previous_amount}}
+              {{if isNotEmpty $employeesNote.average_number_of_employees.previous_amount}}
               <th class="table-heading" id="employees-note-previous-heading">{{$period.previous_period_bs_date}}</th>
               {{end}}
             </tr>
