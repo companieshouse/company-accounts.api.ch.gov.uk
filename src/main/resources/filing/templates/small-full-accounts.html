@@ -1798,24 +1798,26 @@
               {{end}}
             </tr>
 
+            {{if or (isNotEmpty $employeesNote.average_number_of_employees.previous_amount) (isNotEmpty $employeesNote.average_number_of_employees.current_amount)}}
             <tr class="figures">
               <td id="employeesNote-label">Average number of employees during the period</td>
               <td id="employeesNote-curr-val" class="strong figure">
 
-                {{ if $employeesNote.average_number_of_employees.current_amount }}
-                <ix:nonFraction contextRef="CY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{$employeesNote.average_number_of_employees.current_amount}}</ix:nonFraction>
+                {{ if isNotEmpty $employeesNote.average_number_of_employees.current_amount }}
+                <ix:nonFraction contextRef="CY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $employeesNote.average_number_of_employees.current_amount}}</ix:nonFraction>
                 {{end}}
 
               </td>
 
               <td id="employeesNote-prev-val" class="figure">
 
-                {{ if $employeesNote.average_number_of_employees.previous_amount }}
-                <ix:nonFraction contextRef="PY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{$employeesNote.average_number_of_employees.previous_amount}}</ix:nonFraction>
+                {{ if isNotEmpty $employeesNote.average_number_of_employees.previous_amount }}
+                <ix:nonFraction contextRef="PY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $employeesNote.average_number_of_employees.previous_amount}}</ix:nonFraction>
                 {{end}}
 
               </td>
             </tr>
+            {{end}}
 
             </tbody>
           </table>
