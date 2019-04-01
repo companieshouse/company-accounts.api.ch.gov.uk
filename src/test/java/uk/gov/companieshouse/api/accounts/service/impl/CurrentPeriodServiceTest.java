@@ -4,14 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.security.MessageDigest;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,8 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -62,9 +60,6 @@ public class CurrentPeriodServiceTest {
     private SmallFullService smallFullService;
 
     @Mock
-    private MessageDigest messageDigest;
-
-    @Mock
     private CurrentPeriodEntity currentPeriodEntity;
 
     @Mock
@@ -89,14 +84,20 @@ public class CurrentPeriodServiceTest {
     private CurrentPeriodService currentPeriodService;
 
     private static final String SELF_LINK = "self_link";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String RESOURCE_ID = "resourceId";
 
-    public void setUpCreate() {
+    @BeforeEach
+    public void setUp() {
+        when(keyIdGenerator
+                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CURRENT_PERIOD.getName()))
+                        .thenReturn(RESOURCE_ID);
     }
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws DataException {
-        setUpCreate();
+
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
 
@@ -104,7 +105,7 @@ public class CurrentPeriodServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CurrentPeriod> result = currentPeriodService
-            .create(currentPeriod, transaction, "", request);
+            .create(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }
@@ -112,7 +113,7 @@ public class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a current period resource")
     public void createSmallfullDuplicateKey() throws DataException {
-        setUpCreate();
+
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
@@ -121,7 +122,7 @@ public class CurrentPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = currentPeriodService.create(currentPeriod, transaction, "", request);
+        ResponseObject response = currentPeriodService.create(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -129,8 +130,8 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a current period")
-    void createSmallfullMongoExceptionFailure() throws DataException {
-        setUpCreate();
+    void createSmallfullMongoExceptionFailure() {
+
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
@@ -140,7 +141,7 @@ public class CurrentPeriodServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         Executable executable = () -> {
-            currentPeriodService.create(currentPeriod, transaction, "", request);
+            currentPeriodService.create(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -148,21 +149,21 @@ public class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the successful find of a currentPeriod resource")
     public void findCurrentPeriod() throws DataException {
-        when(currentPeriodRepository.findById(""))
+        when(currentPeriodRepository.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(currentPeriodEntity));
         when(currentPeriodTransformer.transform(currentPeriodEntity)).thenReturn(currentPeriod);
         ResponseObject<CurrentPeriod> result = currentPeriodService
-            .findById("", request);
+            .find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(currentPeriod, result.getData());
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a currentPeriod resource")
-    public void findCurrentPeriodMongoException() throws DataException {
-        when(currentPeriodRepository.findById("")).thenThrow(mongoException);
+    public void findCurrentPeriodMongoException()  {
+        when(currentPeriodRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
         Executable executable = () -> {
-            currentPeriodService.findById("", request);
+            currentPeriodService.find(COMPANY_ACCOUNTS_ID, request);
         };
         assertThrows(DataException.class, executable);
     }

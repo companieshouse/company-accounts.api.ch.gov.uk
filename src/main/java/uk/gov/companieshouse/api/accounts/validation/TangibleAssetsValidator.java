@@ -662,32 +662,12 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
                 subResourceInvalid = true;
             }
 
-            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+            subResourceInvalid = isCostMultipleYearSubResourceInvalid(errors, tangibleAssetsResource.getCost(),
+                subResource, subResourceInvalid);
 
-                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_START));
-                subResourceInvalid = true;
-            }
+            subResourceInvalid = isDepreciationMultipleYearSubResourceInvalid(errors, tangibleAssetsResource.getDepreciation(),
+                subResource, subResourceInvalid);
 
-            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
-
-                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
-                subResourceInvalid = true;
-            }
-
-            if (tangibleAssetsResource.getDepreciation() != null && hasDepreciationFieldsSet(tangibleAssetsResource)) {
-
-                if (tangibleAssetsResource.getDepreciation().getAtPeriodStart() == null) {
-
-                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
-                    subResourceInvalid = true;
-                }
-
-                if (tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
-
-                    addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
-                    subResourceInvalid = true;
-                }
-            }
         } else {
 
             if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
@@ -728,18 +708,12 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
 
-            if (tangibleAssetsResource.getCost() == null || tangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+            subResourceInvalid = isCostSingleYearSubResourceInvalid(errors, tangibleAssetsResource.getCost(),
+                subResource, subResourceInvalid);
 
-                addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
-                subResourceInvalid = true;
-            }
-
-            if (tangibleAssetsResource.getDepreciation() != null && hasDepreciationFieldsSet(tangibleAssetsResource)
-                    && tangibleAssetsResource.getDepreciation().getAtPeriodEnd() == null) {
-
-                addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
-                subResourceInvalid = true;
-            }
+            subResourceInvalid = isDepreciationSingleYearSubResourceInvalid(errors,
+                tangibleAssetsResource.getDepreciation(), subResource,
+                subResourceInvalid);
         } else {
 
             if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
@@ -755,12 +729,67 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         }
     }
 
-    private boolean hasDepreciationFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
+    private boolean isCostSingleYearSubResourceInvalid(Errors errors,
+        Cost cost, TangibleSubResource subResource,
+        boolean subResourceInvalid) {
 
-        return Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
-                            tangibleAssetsResource.getDepreciation().getOnDisposals(),
-                            tangibleAssetsResource.getDepreciation().getOtherAdjustments())
-                .anyMatch(Objects::nonNull);
+        if (cost == null || cost.getAtPeriodEnd() == null) {
+
+            addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+        return subResourceInvalid;
+    }
+
+    private boolean isCostMultipleYearSubResourceInvalid(Errors errors,
+        Cost cost, TangibleSubResource subResource,
+        boolean subResourceInvalid) {
+        if (cost == null || cost.getAtPeriodStart() == null) {
+
+            addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_START));
+            subResourceInvalid = true;
+        }
+
+        subResourceInvalid = isCostSingleYearSubResourceInvalid(errors, cost, subResource, subResourceInvalid);
+
+        return subResourceInvalid;
+    }
+
+    private boolean isDepreciationSingleYearSubResourceInvalid(Errors errors,
+        Depreciation depreciation, TangibleSubResource subResource,
+        boolean subResourceInvalid) {
+        if (depreciation != null && hasDepreciationFieldsSet(depreciation)
+            && depreciation.getAtPeriodEnd() == null) {
+
+            addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+        return subResourceInvalid;
+    }
+
+    private boolean isDepreciationMultipleYearSubResourceInvalid(Errors errors,
+        Depreciation depreciation, TangibleSubResource subResource,
+        boolean subResourceInvalid) {
+        if (depreciation != null && hasDepreciationFieldsSet(depreciation)) {
+
+            if (depreciation.getAtPeriodStart() == null) {
+
+                addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
+                subResourceInvalid = true;
+            }
+
+            subResourceInvalid = isDepreciationSingleYearSubResourceInvalid(errors, depreciation, subResource, subResourceInvalid);
+
+        }
+        return subResourceInvalid;
+    }
+
+    private boolean hasDepreciationFieldsSet(Depreciation depreciation) {
+
+        return Stream.of(depreciation.getChargeForYear(),
+            depreciation.getOnDisposals(),
+            depreciation.getOtherAdjustments())
+            .anyMatch(Objects::nonNull);
     }
 
     private boolean hasSingleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
@@ -929,10 +958,8 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
                                             TangibleAssets tangibleAssets) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject =
-                currentPeriodService.findById(currentPeriodId, request);
+                currentPeriodService.find(companyAccountsId, request);
         CurrentPeriod currentPeriod = currentPeriodResponseObject.getData();
 
         Long currentPeriodTangible =
@@ -948,22 +975,20 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
                         .map(TangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
                         .orElse(null);
 
-        if (currentPeriodTangible != null || currentNetBookValueTotal != null) {
-
-            if ((currentPeriodTangible != null && currentNetBookValueTotal == null) || currentPeriodTangible == null ||
-                    (!currentPeriodTangible.equals(currentNetBookValueTotal))) {
-                addError(errors, currentBalanceSheetNotEqual, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
-            }
+        if ((currentPeriodTangible != null || currentNetBookValueTotal != null) && (
+            (currentPeriodTangible != null && currentNetBookValueTotal == null)
+                || currentPeriodTangible == null ||
+                (!currentPeriodTangible.equals(currentNetBookValueTotal)))) {
+            addError(errors, currentBalanceSheetNotEqual,
+                getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
     private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
             TangibleAssets tangibleAssets) throws DataException {
 
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
-
         ResponseObject<PreviousPeriod> previousPeriodResponseObject =
-                previousPeriodService.findById(previousPeriodId, request);
+                previousPeriodService.find(companyAccountsId, request);
         PreviousPeriod previousPeriod = previousPeriodResponseObject.getData();
 
         Long previousPeriodTangible =
@@ -979,12 +1004,12 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
                     .map(TangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
                     .orElse(null);
 
-        if (previousPeriodTangible != null || previousNetBookValueTotal != null) {
-
-            if ((previousPeriodTangible != null && previousNetBookValueTotal == null) || previousPeriodTangible == null ||
-                    (!previousPeriodTangible.equals(previousNetBookValueTotal))) {
-                addError(errors, previousBalanceSheetNotEqual, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
-            }
+        if ((previousPeriodTangible != null || previousNetBookValueTotal != null) && (
+            (previousPeriodTangible != null && previousNetBookValueTotal == null)
+                || previousPeriodTangible == null ||
+                (!previousPeriodTangible.equals(previousNetBookValueTotal)))) {
+            addError(errors, previousBalanceSheetNotEqual,
+                getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 

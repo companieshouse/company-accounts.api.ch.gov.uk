@@ -42,12 +42,8 @@ public class DebtorsValidatorTest {
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static final String INVALID_NOTE_VALUE = "invalid_note";
-    private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
-    private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
     private static final String COMPANY_ACCOUNTS_ID = "123abc";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
@@ -63,8 +59,6 @@ public class DebtorsValidatorTest {
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE =
             "empty_resource";
-
-    private static final long INVALID_TOTAL = 200L;
 
     private Debtors debtors;
     private Errors errors;
@@ -89,9 +83,6 @@ public class DebtorsValidatorTest {
 
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
-
-    @Mock
-    private ResponseObject mockResponseObject;
 
     private DebtorsValidator validator;
 
@@ -409,9 +400,7 @@ public class DebtorsValidatorTest {
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
+        when(mockCurrentPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
             () -> validator.validateDebtors(debtors,
@@ -428,9 +417,7 @@ public class DebtorsValidatorTest {
 
         mockValidBalanceSheetCurrentPeriod();
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
+        when(mockPreviousPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
             () -> validator.validateDebtors(debtors,
@@ -462,30 +449,22 @@ public class DebtorsValidatorTest {
     }
 
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject(true)).when(mockCurrentPeriodService).findById(
+        doReturn(generateValidCurrentPeriodResponseObject(true)).when(mockCurrentPeriodService).find(
             COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockValidBalanceSheetPreviousPeriod() throws DataException {
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).findById(
+        doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).find(
             COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockBalanceSheetCurrentPeriodWithoutNoteValue() throws DataException {
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).findById(
+        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).find(
             COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockBalanceSheetPreviousPeriodWithoutNoteValue() throws DataException {
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).findById(
+        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).find(
             COMPANY_ACCOUNTS_ID, mockRequest);
     }
 

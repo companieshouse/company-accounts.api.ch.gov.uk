@@ -97,10 +97,9 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
-        String smallFullId = smallFullService.generateID(companyAccountId);
         ResponseObject<SmallFull> responseObject;
         try {
-            responseObject = smallFullService.findById(smallFullId, request);
+            responseObject = smallFullService.find(companyAccountId, request);
         } catch (DataException de) {
             LOGGER.errorRequest(request, de, debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

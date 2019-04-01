@@ -85,11 +85,9 @@ public class StatementsController {
         Transaction transaction =
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String statementId = statementService.generateID(companyAccountId);
-
         try {
             ResponseObject<Statement> responseObject =
-                statementService.findById(statementId, request);
+                statementService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
 

@@ -1,8 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import org.springframework.dao.DuplicateKeyException;
 import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -10,58 +13,45 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.repository.StocksRepository;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestments.FixedAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
-public class StocksService implements ResourceService<Stocks> {
+public class FixedAssetsInvestmentsService implements ResourceService<FixedAssetsInvestments> {
 
-    private StocksRepository repository;
-    private StocksTransformer transformer;
-    private StocksValidator validator;
+    private FixedAssetsInvestmentsRepository repository;
+    private FixedAssetsInvestmentsTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
 
     @Autowired
-    public StocksService (StocksRepository repository,
-                          StocksTransformer transformer,
-                          KeyIdGenerator keyIdGenerator,
-                          SmallFullService smallFullService,
-                          StocksValidator validator) {
+    public FixedAssetsInvestmentsService(FixedAssetsInvestmentsRepository repository,
+            FixedAssetsInvestmentsTransformer transformer,
+            KeyIdGenerator keyIdGenerator,
+            SmallFullService smallFullService) {
 
         this.repository = repository;
         this.transformer = transformer;
-        this.validator = validator;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
     }
 
     @Override
-    public ResponseObject<Stocks> create(Stocks rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
-        Errors errors = validator.validateStocks(rest, transaction, companyAccountId, request);
-
-        if (errors.hasErrors()) {
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
+    public ResponseObject<FixedAssetsInvestments> create(FixedAssetsInvestments rest,
+            Transaction transaction,
+            String companyAccountId,
+            HttpServletRequest request) throws DataException {
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        StocksEntity entity = transformer.transform(rest);
+        FixedAssetsInvestmentsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -72,24 +62,21 @@ public class StocksService implements ResourceService<Stocks> {
             throw new DataException(e);
         }
 
-        smallFullService.addLink(companyAccountId, SmallFullLinkType.STOCKS_NOTE,
-                getSelfLinkFromStocksEntity(entity), request);
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE,
+                getSelfLinkFromFixedAssetsInvestmentsEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<Stocks> update(Stocks rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
-        Errors errors = validator.validateStocks(rest, transaction, companyAccountId, request);
-
-        if (errors.hasErrors()) {
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
+    public ResponseObject<FixedAssetsInvestments> update(FixedAssetsInvestments rest,
+            Transaction transaction,
+            String companyAccountId,
+            HttpServletRequest request) throws DataException {
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        StocksEntity entity = transformer.transform(rest);
+        FixedAssetsInvestmentsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -102,9 +89,10 @@ public class StocksService implements ResourceService<Stocks> {
     }
 
     @Override
-    public ResponseObject<Stocks> find(String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<FixedAssetsInvestments> find(String companyAccountsId,
+            HttpServletRequest request) throws DataException {
 
-        StocksEntity entity;
+        FixedAssetsInvestmentsEntity entity;
 
         try {
             entity = repository.findById(generateID(companyAccountsId)).orElse(null);
@@ -120,15 +108,17 @@ public class StocksService implements ResourceService<Stocks> {
     }
 
     @Override
-    public ResponseObject<Stocks> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<FixedAssetsInvestments> delete(String companyAccountsId,
+                                                             HttpServletRequest request) throws DataException {
 
-        String stocksId = generateID(companyAccountsId);
+        String fixedAssetsInvestmentsId = generateID(companyAccountsId);
 
         try {
-            if (repository.existsById(stocksId)) {
-                repository.deleteById(stocksId);
-                smallFullService
-                        .removeLink(companyAccountsId, SmallFullLinkType.STOCKS_NOTE, request);
+            if (repository.existsById(fixedAssetsInvestmentsId)) {
+                repository.deleteById(fixedAssetsInvestmentsId);
+
+                smallFullService.removeLink(companyAccountsId,
+                    SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
@@ -139,15 +129,15 @@ public class StocksService implements ResourceService<Stocks> {
     }
 
     private String generateID(String companyAccountId) {
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.STOCKS.getName());
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName());
     }
 
-    private void setMetadataOnRestObject(Stocks rest, Transaction transaction,
-                                         String companyAccountsId) {
+    private void setMetadataOnRestObject(FixedAssetsInvestments rest, Transaction transaction,
+            String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.STOCKS_NOTE.getValue());
+        rest.setKind(Kind.FIXED_ASSETS_INVESTMENTS_NOTE.getValue());
     }
 
     private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
@@ -162,10 +152,10 @@ public class StocksService implements ResourceService<Stocks> {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
-                + ResourceName.STOCKS.getName();
+                + ResourceName.FIXED_ASSETS_INVESTMENTS.getName();
     }
 
-    public String getSelfLinkFromStocksEntity(StocksEntity entity) {
+    public String getSelfLinkFromFixedAssetsInvestmentsEntity(FixedAssetsInvestmentsEntity entity) {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 }

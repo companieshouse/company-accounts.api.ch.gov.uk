@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class CreditorsAfterOneYearControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String CREDITORS_AFTER_ONE_YEAR_ID = "creditorsAfterOneYearId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -236,11 +235,10 @@ public class CreditorsAfterOneYearControllerTest {
     void getCreditorsAfterOneYearSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockCreditorsAfterOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_AFTER_ONE_YEAR_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
                 mockCreditorsAfterOneYear);
-        when(mockCreditorsAfterOneYearService.findById(CREDITORS_AFTER_ONE_YEAR_ID, mockRequest))
+        when(mockCreditorsAfterOneYearService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -261,9 +259,8 @@ public class CreditorsAfterOneYearControllerTest {
     void getCreditorsAfterOneYearDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockCreditorsAfterOneYearService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CREDITORS_AFTER_ONE_YEAR_ID);
 
-        when(mockCreditorsAfterOneYearService.findById(CREDITORS_AFTER_ONE_YEAR_ID, mockRequest))
+        when(mockCreditorsAfterOneYearService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity =

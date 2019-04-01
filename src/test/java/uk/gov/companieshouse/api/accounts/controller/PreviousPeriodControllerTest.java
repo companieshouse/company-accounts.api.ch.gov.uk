@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -12,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,6 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -37,32 +34,21 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PreviousPeriodControllerTest {
 
-    public static final String X_REQUEST_ID = "X-Request-Id";
-    public static final String TRANSACTION_STRING = "transaction";
-    public static final String TEST = "test";
-    public static final String CREATE = "create";
-    public static final String FIND = "find";
-    public static final String SELF = "self";
     public static final String COMPANY_ACCOUNT_ID = "12345";
 
     @Mock
     private HttpServletRequest request;
 
     @Mock
-    private BindingResult result;
-
-    @Mock
     private PreviousPeriod previousPeriod;
 
     @Mock
     private Transaction transaction;
-
-    @Mock
-    private CompanyAccountEntity companyAccountEntity;
 
     @Mock
     private PreviousPeriodService previousPeriodService;
@@ -81,9 +67,6 @@ public class PreviousPeriodControllerTest {
 
     @Mock
     private BindingResult bindingResult;
-
-    @Mock
-    private Map<String, String> links;
 
     @InjectMocks
     private PreviousPeriodController previousPeriodController;
@@ -148,12 +131,11 @@ public class PreviousPeriodControllerTest {
     @Test
     @DisplayName("Test the successful retrieval of a previous period resource")
     public void canRetrievePreviousPeriod() throws DataException {
-        doReturn("find").when(previousPeriodService).generateID("123456");
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
 
-        when(previousPeriodService.findById(anyString(), any(HttpServletRequest.class)))
+        when(previousPeriodService.find(anyString(), any(HttpServletRequest.class)))
             .thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
         when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
 
@@ -206,12 +188,11 @@ public class PreviousPeriodControllerTest {
     @Test
     @DisplayName("Test the unsuccessful retrieval of a previous period resource")
     public void canRetrievePreviousPeriodFailed() throws DataException {
-        doReturn("find").when(previousPeriodService).generateID("123456");
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(null);
-        when(previousPeriodService.findById(anyString(), any(HttpServletRequest.class)))
+        when(previousPeriodService.find(anyString(), any(HttpServletRequest.class)))
             .thenThrow(new DataException(""));
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 

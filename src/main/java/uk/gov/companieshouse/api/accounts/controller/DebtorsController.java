@@ -76,11 +76,9 @@ public class DebtorsController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String debtorsId = debtorsService.generateID(companyAccountId);
-
         try {
             ResponseObject<Debtors> response = debtorsService
-                .findById(debtorsId, request);
+                .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
