@@ -89,13 +89,13 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
     }
 
     @Override
-    public ResponseObject<FixedAssetsInvestments> findById(String id,
+    public ResponseObject<FixedAssetsInvestments> find(String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
         FixedAssetsInvestmentsEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -128,8 +128,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName());
     }
 

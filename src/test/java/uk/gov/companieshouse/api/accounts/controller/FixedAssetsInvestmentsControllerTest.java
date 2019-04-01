@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class FixedAssetsInvestmentsControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String FIXED_ASSETS_INVESTMENTS_ID = "fixedAssetsInvestmentsId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -225,11 +224,10 @@ public class FixedAssetsInvestmentsControllerTest {
     void getFixedAssetsInvestmentsSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockFixedAssetsInvestmentsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(FIXED_ASSETS_INVESTMENTS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
                 mockFixedAssetsInvestments);
-        when(mockFixedAssetsInvestmentsService.findById(FIXED_ASSETS_INVESTMENTS_ID, mockRequest))
+        when(mockFixedAssetsInvestmentsService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -250,10 +248,9 @@ public class FixedAssetsInvestmentsControllerTest {
     void getFixedAssetsInvestmentsDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockFixedAssetsInvestmentsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(FIXED_ASSETS_INVESTMENTS_ID);
 
         DataException dataException = new DataException("");
-        when(mockFixedAssetsInvestmentsService.findById(FIXED_ASSETS_INVESTMENTS_ID, mockRequest))
+        when(mockFixedAssetsInvestmentsService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenThrow(dataException);
 
         ResponseEntity responseEntity =

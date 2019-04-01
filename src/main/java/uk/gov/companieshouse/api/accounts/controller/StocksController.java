@@ -110,11 +110,9 @@ public class StocksController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String stocksId = stocksService.generateID(companyAccountId);
-
         try {
             ResponseObject<Stocks> response = stocksService
-                    .findById(stocksId, request);
+                    .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

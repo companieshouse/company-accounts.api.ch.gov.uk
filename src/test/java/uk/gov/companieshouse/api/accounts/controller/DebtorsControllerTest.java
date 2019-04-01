@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class DebtorsControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String DEBTORS_ID = "debtorsId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -54,7 +53,7 @@ public class DebtorsControllerTest {
     private ApiResponseMapper mockApiResponseMapper;
 
     @Mock
-    DebtorsService mockDebtorsService;
+    private DebtorsService mockDebtorsService;
 
     @Mock
     private SmallFull mockSmallFull;
@@ -135,11 +134,10 @@ public class DebtorsControllerTest {
     void getDebtorsSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
             mockDebtors);
-        when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
+        when(mockDebtorsService.find(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -160,9 +158,8 @@ public class DebtorsControllerTest {
     void getDebtorsDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockDebtorsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(DEBTORS_ID);
 
-        when(mockDebtorsService.findById(DEBTORS_ID, mockRequest))
+        when(mockDebtorsService.find(COMPANY_ACCOUNTS_ID, mockRequest))
             .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -107,11 +107,11 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<CreditorsAfterOneYear> find(String companyAccountsId, HttpServletRequest request) throws DataException {
         CreditorsAfterOneYearEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -146,8 +146,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName());
     }
 

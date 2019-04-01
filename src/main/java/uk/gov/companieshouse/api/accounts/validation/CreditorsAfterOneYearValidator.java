@@ -325,11 +325,9 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
 
     private BalanceSheet getPreviousPeriodBalanceSheet(
             HttpServletRequest request, String companyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
-
-        previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject
+                = previousPeriodService.find(companyAccountsId, request);
 
         if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
             return previousPeriodResponseObject.getData().getBalanceSheet();
@@ -391,11 +389,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
             String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
-
-        currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject
+                = currentPeriodService.find(companyAccountsId, request);
 
         if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
             return currentPeriodResponseObject.getData().getBalanceSheet();

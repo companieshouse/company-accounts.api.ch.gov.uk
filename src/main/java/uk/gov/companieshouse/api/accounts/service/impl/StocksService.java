@@ -102,12 +102,12 @@ public class StocksService implements ResourceService<Stocks> {
     }
 
     @Override
-    public ResponseObject<Stocks> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Stocks> find(String companyAccountsId, HttpServletRequest request) throws DataException {
 
         StocksEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -138,8 +138,7 @@ public class StocksService implements ResourceService<Stocks> {
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.STOCKS.getName());
     }
 

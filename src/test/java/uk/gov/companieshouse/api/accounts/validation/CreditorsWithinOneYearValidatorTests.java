@@ -385,9 +385,7 @@ public class CreditorsWithinOneYearValidatorTests {
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        when(mockCurrentPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
+        when(mockCurrentPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
@@ -404,9 +402,7 @@ public class CreditorsWithinOneYearValidatorTests {
 
         mockValidBalanceSheetCurrentPeriod();
 
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
+        when(mockPreviousPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
                 () -> validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
@@ -489,30 +485,22 @@ public class CreditorsWithinOneYearValidatorTests {
     }
 
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject(true)).when(mockCurrentPeriodService).findById(
+        doReturn(generateValidCurrentPeriodResponseObject(true)).when(mockCurrentPeriodService).find(
                 COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockValidBalanceSheetPreviousPeriod() throws DataException {
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).findById(
+        doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).find(
                 COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockBalanceSheetCurrentPeriodWithoutNoteValue() throws DataException {
-        when(mockCurrentPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).findById(
+        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).find(
                 COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockBalanceSheetPreviousPeriodWithoutNoteValue() throws DataException {
-        when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-                COMPANY_ACCOUNTS_ID);
-        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).findById(
+        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).find(
                 COMPANY_ACCOUNTS_ID, mockRequest);
     }
 }

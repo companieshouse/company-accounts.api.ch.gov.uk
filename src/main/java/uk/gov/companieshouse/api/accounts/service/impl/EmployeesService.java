@@ -111,13 +111,13 @@ public class EmployeesService implements ResourceService<Employees> {
     }
 
     @Override
-    public ResponseObject<Employees> findById(String id,
+    public ResponseObject<Employees> find(String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
         EmployeesEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
 
             throw new DataException(e);
@@ -152,8 +152,7 @@ public class EmployeesService implements ResourceService<Employees> {
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.EMPLOYEES.getName());
     }
 

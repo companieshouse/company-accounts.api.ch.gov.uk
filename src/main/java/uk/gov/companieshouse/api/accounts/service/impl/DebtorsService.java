@@ -105,11 +105,11 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> findById (String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Debtors> find(String companyAccountsId, HttpServletRequest request) throws DataException {
         DebtorsEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -140,8 +140,8 @@ public class DebtorsService implements ResourceService<Debtors> {
             throw new DataException(e);
         }
     }
-    @Override
-    public String generateID(String companyAccountId) {
+
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
     }
 

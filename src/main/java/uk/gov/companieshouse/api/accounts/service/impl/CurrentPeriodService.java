@@ -108,12 +108,12 @@ public class CurrentPeriodService implements
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> findById(String id, HttpServletRequest request)
+    public ResponseObject<CurrentPeriod> find(String companyAccountsId, HttpServletRequest request)
         throws DataException {
 
         CurrentPeriodEntity currentPeriodEntity;
         try {
-            currentPeriodEntity = currentPeriodRepository.findById(id).orElse(null);
+            currentPeriodEntity = currentPeriodRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -130,8 +130,7 @@ public class CurrentPeriodService implements
         return null;
     }
 
-    @Override
-    public String generateID(String value) {
+    private String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 

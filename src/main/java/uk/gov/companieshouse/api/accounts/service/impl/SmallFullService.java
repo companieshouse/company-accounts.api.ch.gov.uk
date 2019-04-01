@@ -81,11 +81,11 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<SmallFull> find(String companyAccountsId, HttpServletRequest request) throws DataException {
 
         SmallFullEntity smallFullEntity;
         try {
-            smallFullEntity = smallFullRepository.findById(id).orElse(null);
+            smallFullEntity = smallFullRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -136,8 +136,7 @@ public class SmallFullService implements
         }
     }
 
-    @Override
-    public String generateID(String value) {
+    private String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.SMALL_FULL.getName());
     }
 
