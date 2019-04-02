@@ -45,6 +45,14 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && (currentPeriodNote.getTotal() == null) && isCreditorsNumericFieldsNull(currentPeriodNote));
+    }
+
+    private boolean isCreditorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getBankLoansAndOverdrafts() == null && currentPeriodNote.getBankLoansAndOverdrafts() == null && currentPeriodNote.getOtherCreditors() == null;
+    }
+
     private Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -105,7 +113,9 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
                 ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
         boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
 
+
         if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
+
 
             if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
                     CREDITORS_AFTER_CURRENT_PERIOD_PATH, errors)) {

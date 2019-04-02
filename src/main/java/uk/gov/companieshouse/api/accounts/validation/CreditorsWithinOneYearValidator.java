@@ -46,6 +46,14 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && creditorsNumberFieldsAreNull(currentPeriodNote));
+    }
+
+    private boolean creditorsNumberFieldsAreNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getTotal() == null && currentPeriodNote.getTradeCreditors() == null && currentPeriodNote.getAccrualsAndDeferredIncome() == null && currentPeriodNote.getOtherCreditors() == null && currentPeriodNote.getTaxationAndSocialSecurity()==null && currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts()==null && currentPeriodNote.getBankLoansAndOverdrafts()==null;
+    }
+
     private Errors validateIfEmptyResource(CreditorsWithinOneYear creditorsWithinOneYear,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
