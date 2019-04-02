@@ -298,23 +298,4 @@ public class DebtorsServiceTest {
 
         assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
     }
-
-    @Test
-    @DisplayName("Tests ")
-    void test() throws DataException {
-
-        when(mockTransformer.transform(mockDebtors)).thenReturn(debtorsEntity);
-        when(debtorsValidator.validateIfOnlyDetails(mockDebtorsCurrentPeriod)).thenReturn(true);
-        when(debtorsValidator.validateDebtors(mockDebtors, mockTransaction, "", mockRequest)).thenReturn(mockErrors);
-
-        when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
-        when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject<Debtors> result = service.create(mockDebtors, mockTransaction,
-                "", mockRequest);
-
-        assertNull(mockDebtors.getCurrentPeriod());
-
-
-    }
 }
