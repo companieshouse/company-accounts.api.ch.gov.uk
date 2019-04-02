@@ -42,6 +42,10 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && (currentPeriodNote.getTotal() == null && currentPeriodNote.getOtherDebtors() == null && currentPeriodNote.getPrepaymentsAndAccruedIncome() == null && currentPeriodNote.getTradeDebtors() == null));
+    }
+
     private Errors validateIfEmptyResource(Debtors debtors,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -65,6 +69,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
+
 
         Errors errors = validateIfEmptyResource(debtors, request, companyAccountsId);
 
@@ -93,15 +98,17 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return errors;
     }
 
+
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
         boolean hasCurrentPeriodBalanceSheetNoteValue =
                 ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
-        boolean hasCurrentPeriodNoteData = currentPeriodNote!=null && (currentPeriodNote.getTradeDebtors()!=null || currentPeriodNote.getPrepaymentsAndAccruedIncome() !=null || currentPeriodNote.getOtherDebtors()!=null || currentPeriodNote.getTotal()!=null);
+        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
 
         if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
+
             if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
                     DEBTORS_PATH_CURRENT, errors)) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
@@ -120,8 +127,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
         boolean hasPreviousPeriodBalanceSheetNoteValue =
                 ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
-        boolean hasPreviousPeriodNoteData = previousPeriodNote != null && (previousPeriodNote.getTradeDebtors()!=null || previousPeriodNote.getPrepaymentsAndAccruedIncome() !=null || previousPeriodNote.getOtherDebtors()!=null || previousPeriodNote.getTotal()!=null);
-        ;
+        boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
 
         if (! hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
 
