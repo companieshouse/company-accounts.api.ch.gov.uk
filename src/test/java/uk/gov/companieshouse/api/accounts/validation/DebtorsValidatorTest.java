@@ -355,25 +355,18 @@ public class DebtorsValidatorTest {
         mockValidBalanceSheetPreviousPeriod();
 
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-            CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-            PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(4, errors.getErrorCount());
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            CURRENT_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
-            CURRENT_TOTAL_PATH)));
+                DEBTORS_PATH_CURRENT)));
+
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            PREVIOUS_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
-            PREVIOUS_TOTAL_PATH)));
+                DEBTORS_PATH_PREVIOUS)));
     }
 
     @Test
