@@ -46,11 +46,15 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
     }
 
     public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && (currentPeriodNote.getTotal() == null) && isCreditorsNumericFieldsNull(currentPeriodNote));
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null &&
+                (currentPeriodNote.getTotal() == null) && isCreditorsNumericFieldsNull(currentPeriodNote));
     }
 
     private boolean isCreditorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
-        return currentPeriodNote.getBankLoansAndOverdrafts() == null && currentPeriodNote.getBankLoansAndOverdrafts() == null && currentPeriodNote.getOtherCreditors() == null;
+        return currentPeriodNote.getBankLoansAndOverdrafts() == null &&
+                currentPeriodNote.getOtherCreditors() == null &&
+                currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts() == null &&
+                currentPeriodNote.getTotal() == null;
     }
 
     private Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
