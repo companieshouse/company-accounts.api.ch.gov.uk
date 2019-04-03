@@ -107,13 +107,13 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
     }
 
     @Override
-    public ResponseObject<CreditorsWithinOneYear> findById(String id,
+    public ResponseObject<CreditorsWithinOneYear> find(String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
         CreditorsWithinOneYearEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -146,8 +146,7 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName());
     }
 

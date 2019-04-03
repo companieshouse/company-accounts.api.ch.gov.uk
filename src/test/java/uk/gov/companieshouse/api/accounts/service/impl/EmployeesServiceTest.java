@@ -249,11 +249,13 @@ public class EmployeesServiceTest {
     @DisplayName("Tests the successful find of an employees resource")
     void findEmployees() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.EMPLOYEES.getName()))
+                .thenReturn(EMPLOYEES_ID);
+        when(mockRepository.findById(EMPLOYEES_ID))
                 .thenReturn(Optional.ofNullable(employeesEntity));
         when(mockTransformer.transform(employeesEntity)).thenReturn(mockEmployees);
 
-        ResponseObject<Employees> result = mockEmployeesService.findById("", mockRequest);
+        ResponseObject<Employees> result = mockEmployeesService.find(COMPANY_ACCOUNTS_ID, mockRequest);
         assertNotNull(result);
     }
 
@@ -261,10 +263,12 @@ public class EmployeesServiceTest {
     @DisplayName("Tests when employees resource not found")
     void findEmployeesResponseNotFound() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.EMPLOYEES.getName()))
+                .thenReturn(EMPLOYEES_ID);
+        when(mockRepository.findById(EMPLOYEES_ID))
                 .thenReturn(Optional.ofNullable(null));
 
-        ResponseObject<Employees> result = mockEmployeesService.findById("", mockRequest);
+        ResponseObject<Employees> result = mockEmployeesService.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -274,8 +278,10 @@ public class EmployeesServiceTest {
     @DisplayName("Tests mongo exception thrown on find of an employees resource")
     void findEmployeesMongoException() {
 
-        when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> mockEmployeesService.findById("", mockRequest));
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.EMPLOYEES.getName()))
+                .thenReturn(EMPLOYEES_ID);
+        when(mockRepository.findById(EMPLOYEES_ID)).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> mockEmployeesService.find(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     private ResponseStatus responseStatusNotFound() {

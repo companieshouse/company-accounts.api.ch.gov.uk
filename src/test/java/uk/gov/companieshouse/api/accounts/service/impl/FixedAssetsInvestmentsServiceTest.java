@@ -196,11 +196,14 @@ public class FixedAssetsInvestmentsServiceTest {
     @DisplayName("Tests the successful find of a fixed assets investments resource")
     void findFixedAssetsInvestments() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID))
             .thenReturn(Optional.ofNullable(fixedAssetsInvestmentsEntity));
         when(mockTransformer.transform(fixedAssetsInvestmentsEntity)).thenReturn(mockFixedAssetsInvestments);
 
-        ResponseObject<FixedAssetsInvestments> result = service.findById("", mockRequest);
+        ResponseObject<FixedAssetsInvestments> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(mockFixedAssetsInvestments, result.getData());
@@ -212,10 +215,13 @@ public class FixedAssetsInvestmentsServiceTest {
 
         fixedAssetsInvestmentsEntity = null;
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID))
             .thenReturn(Optional.ofNullable(fixedAssetsInvestmentsEntity));
 
-        ResponseObject<FixedAssetsInvestments> result = service.findById("", mockRequest);
+        ResponseObject<FixedAssetsInvestments> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -225,8 +231,11 @@ public class FixedAssetsInvestmentsServiceTest {
     @DisplayName("Tests mongo exception thrown on find of a fixed assets investments resource")
     void findFixedAssetsInvestmentsMongoException() {
 
-        when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> service.findById("", mockRequest));
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID)).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> service.find(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test

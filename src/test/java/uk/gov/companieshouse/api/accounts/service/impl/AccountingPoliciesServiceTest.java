@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountingPoliciesDataEntity;
@@ -76,6 +77,8 @@ public class AccountingPoliciesServiceTest {
     private AccountingPoliciesEntity accountingPoliciesEntity;
 
     private static final String SELF_LINK = "self_link";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String RESOURCE_ID = "resourceId";
 
     @BeforeEach
     void setUp() {
@@ -88,6 +91,10 @@ public class AccountingPoliciesServiceTest {
 
         accountingPoliciesEntity = new AccountingPoliciesEntity();
         accountingPoliciesEntity.setData(dataEntity);
+
+        when(keyIdGenerator
+                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.ACCOUNTING_POLICIES.getName()))
+                        .thenReturn(RESOURCE_ID);
     }
 
     @Test
@@ -100,7 +107,7 @@ public class AccountingPoliciesServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<AccountingPolicies> result = service.create(accountingPolicies, transaction,
-                                                "", request);
+                                                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(result);
         assertEquals(accountingPolicies, result.getData());
@@ -117,7 +124,7 @@ public class AccountingPoliciesServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = service.create(accountingPolicies, transaction, "", request);
+        ResponseObject response = service.create(accountingPolicies, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -136,7 +143,7 @@ public class AccountingPoliciesServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-                () -> service.create(accountingPolicies, transaction, "", request));
+                () -> service.create(accountingPolicies, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -149,7 +156,7 @@ public class AccountingPoliciesServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<AccountingPolicies> result = service.update(accountingPolicies, transaction,
-                "", request);
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(result);
         assertEquals(accountingPolicies, result.getData());
@@ -167,18 +174,18 @@ public class AccountingPoliciesServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-                () -> service.update(accountingPolicies, transaction, "", request));
+                () -> service.update(accountingPolicies, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Tests the successful find of an AccountingPolicies resource")
     void findAccountingPolicies() throws DataException {
 
-        when(repository.findById(""))
+        when(repository.findById(RESOURCE_ID))
                 .thenReturn(Optional.ofNullable(accountingPoliciesEntity));
         when(transformer.transform(accountingPoliciesEntity)).thenReturn(accountingPolicies);
 
-        ResponseObject<AccountingPolicies> result = service.findById("", request);
+        ResponseObject<AccountingPolicies> result = service.find(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(result);
         assertEquals(accountingPolicies, result.getData());
@@ -187,8 +194,8 @@ public class AccountingPoliciesServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of an AccountingPolicies resource")
     void findAccountingPoliciesMongoException() {
-        when(repository.findById("")).thenThrow(mongoException);
+        when(repository.findById(RESOURCE_ID)).thenThrow(mongoException);
 
-        assertThrows(DataException.class, () -> service.findById("", request));
+        assertThrows(DataException.class, () -> service.find(COMPANY_ACCOUNTS_ID, request));
     }
 }
