@@ -15,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsWithinOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -53,6 +54,12 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriod = rest.getCurrentPeriod();
+        if (validator.validateIfOnlyDetails(currentPeriod)) {
+            rest.setCurrentPeriod(null);
+        }
+
         Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
@@ -84,6 +91,12 @@ public class CreditorsWithinOneYearService implements ResourceService<CreditorsW
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
+
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriod = rest.getCurrentPeriod();
+        if (validator.validateIfOnlyDetails(currentPeriod)) {
+            rest.setCurrentPeriod(null);
+        }
 
         Errors errors = validator.validateCreditorsWithinOneYear(rest, transaction, companyAccountId, request);
 
