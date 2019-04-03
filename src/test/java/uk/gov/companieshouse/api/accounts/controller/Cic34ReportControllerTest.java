@@ -22,10 +22,10 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.CIC34Report;
+import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.CIC34ReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.Cic34ReportService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CIC34ReportControllerTest {
+public class Cic34ReportControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -46,13 +46,13 @@ public class CIC34ReportControllerTest {
     private CompanyAccount companyAccount;
 
     @Mock
-    private CIC34Report cic34Report;
+    private Cic34Report cic34Report;
 
     @Mock
     private BindingResult bindingResult;
 
     @Mock
-    private CIC34ReportService service;
+    private Cic34ReportService service;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -67,7 +67,7 @@ public class CIC34ReportControllerTest {
     private Map<String, String> companyAccountsLinks;
 
     @InjectMocks
-    private CIC34ReportController controller;
+    private Cic34ReportController controller;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String CIC34_REPORT_LINK = "cic34ReportLink";

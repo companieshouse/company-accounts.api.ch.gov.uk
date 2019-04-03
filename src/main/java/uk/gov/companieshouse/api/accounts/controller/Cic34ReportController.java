@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.CIC34Report;
+import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.CIC34ReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.Cic34ReportService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -30,10 +30,10 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic34-report", produces = MediaType.APPLICATION_JSON_VALUE)
-public class CIC34ReportController {
+public class Cic34ReportController {
 
     @Autowired
-    private CIC34ReportService cic34ReportService;
+    private Cic34ReportService cic34ReportService;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -42,7 +42,7 @@ public class CIC34ReportController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody CIC34Report cic34Report,
+    public ResponseEntity create(@Valid @RequestBody Cic34Report cic34Report,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -56,7 +56,7 @@ public class CIC34ReportController {
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CIC34Report> response = cic34ReportService
+            ResponseObject<Cic34Report> response = cic34ReportService
                     .create(cic34Report, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
@@ -77,7 +77,7 @@ public class CIC34ReportController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CIC34Report> response =
+            ResponseObject<Cic34Report> response =
                     cic34ReportService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
@@ -91,7 +91,7 @@ public class CIC34ReportController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid CIC34Report cic34Report,
+    public ResponseEntity update(@RequestBody @Valid Cic34Report cic34Report,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -109,7 +109,7 @@ public class CIC34ReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CIC34Report> response =
+            ResponseObject<Cic34Report> response =
                     cic34ReportService.update(cic34Report, transaction, companyAccountId, request);
 
             return apiResponseMapper
@@ -131,7 +131,7 @@ public class CIC34ReportController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CIC34Report> response = cic34ReportService.delete(companyAccountsId, request);
+            ResponseObject<Cic34Report> response = cic34ReportService.delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
