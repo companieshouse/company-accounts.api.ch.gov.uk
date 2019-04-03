@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.HashMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.companieshouse.api.accounts.model.entity.CIC34ReportDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CIC34ReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CIC34Report;
+import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
 
-public class CIC34ReportTransformerTest {
+public class Cic34ReportTransformerTest {
 
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
@@ -19,13 +19,13 @@ public class CIC34ReportTransformerTest {
     private static final String DIRECTORS_REMUNERATION = "directorsRemuneration";
     private static final String TRANSFER_OF_ASSETS = "transferOfAssets";
 
-    private CIC34ReportTransformer transformer = new CIC34ReportTransformer();
+    private Cic34ReportTransformer transformer = new Cic34ReportTransformer();
 
     @Test
     @DisplayName("Tests the CIC34 report transformer maps a populated REST object to a database entity")
     public void testRestToEntityTransformerWithPopulatedObject() {
 
-        CIC34Report cic34Report = new CIC34Report();
+        Cic34Report cic34Report = new Cic34Report();
 
         cic34Report.setEtag(ETAG);
         cic34Report.setKind(KIND);
@@ -35,10 +35,10 @@ public class CIC34ReportTransformerTest {
         cic34Report.setTransferOfAssets(TRANSFER_OF_ASSETS);
         cic34Report.setLinks(new HashMap<>());
 
-        CIC34ReportEntity cic34ReportEntity = transformer.transform(cic34Report);
+        Cic34ReportEntity cic34ReportEntity = transformer.transform(cic34Report);
         assertNotNull(cic34ReportEntity);
 
-        CIC34ReportDataEntity cic34ReportDataEntity = cic34ReportEntity.getData();
+        Cic34ReportDataEntity cic34ReportDataEntity = cic34ReportEntity.getData();
 
         assertEquals(ETAG, cic34ReportDataEntity.getEtag());
         assertEquals(KIND, cic34ReportDataEntity.getKind());
@@ -53,8 +53,8 @@ public class CIC34ReportTransformerTest {
     @DisplayName("Tests the CIC34 report transformer maps a populated database entity to a REST object")
     public void testEntityToRestTransformerWithPopulatedObject() {
 
-        CIC34ReportEntity cic34ReportEntity = new CIC34ReportEntity();
-        CIC34ReportDataEntity cic34ReportDataEntity = new CIC34ReportDataEntity();
+        Cic34ReportEntity cic34ReportEntity = new Cic34ReportEntity();
+        Cic34ReportDataEntity cic34ReportDataEntity = new Cic34ReportDataEntity();
 
         cic34ReportDataEntity.setEtag(ETAG);
         cic34ReportDataEntity.setKind(KIND);
@@ -65,7 +65,7 @@ public class CIC34ReportTransformerTest {
         cic34ReportDataEntity.setLinks(new HashMap<>());
         cic34ReportEntity.setData(cic34ReportDataEntity);
 
-        CIC34Report cic34Report = transformer.transform(cic34ReportEntity);
+        Cic34Report cic34Report = transformer.transform(cic34ReportEntity);
 
         assertNotNull(cic34Report);
         assertEquals(ETAG, cic34Report.getEtag());
