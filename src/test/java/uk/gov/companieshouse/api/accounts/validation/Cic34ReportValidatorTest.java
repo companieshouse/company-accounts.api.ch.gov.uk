@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CIC34ReportValidatorTest {
+public class Cic34ReportValidatorTest {
 
     @Mock
     private Transaction transaction;
@@ -32,7 +32,7 @@ public class CIC34ReportValidatorTest {
     private CompanyService companyService;
 
     @InjectMocks
-    private CIC34ReportValidator validator;
+    private Cic34ReportValidator validator;
 
     private static final String CIC34_REPORT_PATH = "$.cic34_report";
 

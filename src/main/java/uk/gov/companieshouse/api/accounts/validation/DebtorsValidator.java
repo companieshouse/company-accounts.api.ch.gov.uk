@@ -42,6 +42,17 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
+                && isDebtorsNumericFieldsNull(currentPeriodNote));
+    }
+
+    boolean isDebtorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getTotal() == null && currentPeriodNote.getOtherDebtors() == null
+                && currentPeriodNote.getPrepaymentsAndAccruedIncome() == null
+                && currentPeriodNote.getTradeDebtors() == null;
+    }
+
     private Errors validateIfEmptyResource(Debtors debtors,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -92,6 +103,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         return errors;
     }
+
 
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {

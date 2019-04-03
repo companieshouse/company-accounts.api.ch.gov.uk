@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.entity;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class CIC34ReportDataEntity extends BaseDataEntity {
+public class Cic34ReportDataEntity extends BaseDataEntity {
 
     @Field("company_activities_and_impact")
     private String companyActivitiesAndImpact;

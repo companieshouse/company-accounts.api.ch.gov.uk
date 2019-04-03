@@ -9,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class CIC34ReportValidator extends BaseValidator {
+public class Cic34ReportValidator extends BaseValidator {
 
     @Autowired
     private CompanyService companyService;
