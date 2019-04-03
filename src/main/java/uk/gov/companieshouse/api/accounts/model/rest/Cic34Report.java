@@ -9,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
 @JsonInclude(Include.NON_NULL)
-public class CIC34Report extends RestObject {
+public class Cic34Report extends RestObject {
 
     private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MIN_FIELD_LENGTH = 1;
@@ -69,7 +69,7 @@ public class CIC34Report extends RestObject {
 
     @Override
     public String toString() {
-        return "CIC34Report {" +
+        return "Cic34Report {" +
                 "companyActivitiesAndImpact='" + companyActivitiesAndImpact + "'" +
                 ", consultationWithStakeholders='" + consultationWithStakeholders + "'" +
                 ", directorsRemuneration='" + directorsRemuneration + "'" +
