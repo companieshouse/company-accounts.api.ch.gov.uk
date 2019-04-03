@@ -43,7 +43,14 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     }
 
     public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && (currentPeriodNote.getTotal() == null && currentPeriodNote.getOtherDebtors() == null && currentPeriodNote.getPrepaymentsAndAccruedIncome() == null && currentPeriodNote.getTradeDebtors() == null));
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
+                && isDebtorsNumericFieldsNull(currentPeriodNote));
+    }
+
+    boolean isDebtorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getTotal() == null && currentPeriodNote.getOtherDebtors() == null
+                && currentPeriodNote.getPrepaymentsAndAccruedIncome() == null
+                && currentPeriodNote.getTradeDebtors() == null;
     }
 
     private Errors validateIfEmptyResource(Debtors debtors,
@@ -69,7 +76,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
     public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
-
 
         Errors errors = validateIfEmptyResource(debtors, request, companyAccountsId);
 

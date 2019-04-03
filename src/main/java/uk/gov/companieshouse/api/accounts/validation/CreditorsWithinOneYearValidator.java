@@ -47,7 +47,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     }
 
     public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null && creditorsNumberFieldsAreNull(currentPeriodNote));
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
+                && creditorsNumberFieldsAreNull(currentPeriodNote));
     }
 
     private boolean creditorsNumberFieldsAreNull(CurrentPeriod currentPeriodNote) {
