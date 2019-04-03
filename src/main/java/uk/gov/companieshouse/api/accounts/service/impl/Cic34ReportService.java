@@ -13,31 +13,31 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CIC34ReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CIC34Report;
-import uk.gov.companieshouse.api.accounts.repository.CIC34ReportRepository;
+import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
+import uk.gov.companieshouse.api.accounts.repository.Cic34ReportRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.CIC34ReportTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.Cic34ReportTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class CIC34ReportService implements ResourceService<CIC34Report> {
+public class Cic34ReportService implements ResourceService<Cic34Report> {
 
-    private CIC34ReportRepository repository;
+    private Cic34ReportRepository repository;
 
-    private CIC34ReportTransformer transformer;
+    private Cic34ReportTransformer transformer;
 
     private CompanyAccountService companyAccountService;
 
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public CIC34ReportService(CIC34ReportRepository repository,
-                              CIC34ReportTransformer transformer,
+    public Cic34ReportService(Cic34ReportRepository repository,
+                              Cic34ReportTransformer transformer,
                               CompanyAccountService companyAccountService,
                               KeyIdGenerator keyIdGenerator) {
 
@@ -48,12 +48,12 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     }
 
     @Override
-    public ResponseObject<CIC34Report> create(CIC34Report rest, Transaction transaction,
+    public ResponseObject<Cic34Report> create(Cic34Report rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CIC34ReportEntity entity = transformer.transform(rest);
+        Cic34ReportEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -73,12 +73,12 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     }
 
     @Override
-    public ResponseObject<CIC34Report> update(CIC34Report rest, Transaction transaction,
+    public ResponseObject<Cic34Report> update(Cic34Report rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CIC34ReportEntity entity = transformer.transform(rest);
+        Cic34ReportEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -93,10 +93,10 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     }
 
     @Override
-    public ResponseObject<CIC34Report> find(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<Cic34Report> find(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        CIC34ReportEntity entity;
+        Cic34ReportEntity entity;
 
         try {
             entity = repository.findById(generateID(companyAccountsId)).orElse(null);
@@ -114,7 +114,7 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     }
 
     @Override
-    public ResponseObject<CIC34Report> delete(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<Cic34Report> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
         String cic34ReportId = generateID(companyAccountsId);
@@ -134,7 +134,7 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
         }
     }
 
-    private void populateMetadataOnRestObject(CIC34Report cic34Report, Transaction transaction, String companyAccountsId) {
+    private void populateMetadataOnRestObject(Cic34Report cic34Report, Transaction transaction, String companyAccountsId) {
 
         initLinks(cic34Report, transaction, companyAccountsId);
         cic34Report.setEtag(GenerateEtagUtil.generateEtag());
@@ -152,13 +152,13 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
                 + ResourceName.CIC34_REPORT.getName();
     }
 
-    private void initLinks(CIC34Report cic34Report, Transaction transaction, String companyAccountsId) {
+    private void initLinks(Cic34Report cic34Report, Transaction transaction, String companyAccountsId) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
         cic34Report.setLinks(map);
     }
 
-    private String getSelfLink(CIC34Report cic34Report) {
+    private String getSelfLink(Cic34Report cic34Report) {
 
         return cic34Report.getLinks().get(BasicLinkType.SELF.getLink());
     }

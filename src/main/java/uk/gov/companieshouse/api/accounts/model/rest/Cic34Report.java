@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
-public class CIC34Report extends RestObject {
+public class Cic34Report extends RestObject {
 
     @JsonProperty("company_activities_and_impact")
     private String companyActivitiesAndImpact;
@@ -53,7 +53,7 @@ public class CIC34Report extends RestObject {
 
     @Override
     public String toString() {
-        return "CIC34Report {" +
+        return "Cic34Report {" +
                 "companyActivitiesAndImpact='" + companyActivitiesAndImpact + "'" +
                 ", consultationWithStakeholders='" + consultationWithStakeholders + "'" +
                 ", directorsRemuneration='" + directorsRemuneration + "'" +
