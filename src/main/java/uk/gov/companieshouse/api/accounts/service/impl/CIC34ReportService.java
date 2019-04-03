@@ -15,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CIC34ReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CIC34Report;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CIC34ReportRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -22,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CIC34ReportTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CIC34ReportValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
@@ -31,6 +33,8 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
 
     private CIC34ReportTransformer transformer;
 
+    private CIC34ReportValidator validator;
+
     private CompanyAccountService companyAccountService;
 
     private KeyIdGenerator keyIdGenerator;
@@ -38,11 +42,13 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     @Autowired
     public CIC34ReportService(CIC34ReportRepository repository,
                               CIC34ReportTransformer transformer,
+                              CIC34ReportValidator validator,
                               CompanyAccountService companyAccountService,
                               KeyIdGenerator keyIdGenerator) {
 
         this.repository = repository;
         this.transformer = transformer;
+        this.validator = validator;
         this.companyAccountService = companyAccountService;
         this.keyIdGenerator = keyIdGenerator;
     }
@@ -50,6 +56,11 @@ public class CIC34ReportService implements ResourceService<CIC34Report> {
     @Override
     public ResponseObject<CIC34Report> create(CIC34Report rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCIC34ReportSubmission(transaction);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
