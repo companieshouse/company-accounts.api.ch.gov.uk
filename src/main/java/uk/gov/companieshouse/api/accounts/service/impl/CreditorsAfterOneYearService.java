@@ -12,6 +12,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -53,6 +54,12 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriod = rest.getCurrentPeriod();
+        if (validator.validateIfOnlyDetails(currentPeriod)) {
+            rest.setCurrentPeriod(null);
+        }
+
         Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
@@ -83,6 +90,12 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     @Override
     public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
             Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriod = rest.getCurrentPeriod();
+        if (validator.validateIfOnlyDetails(currentPeriod)) {
+            rest.setCurrentPeriod(null);
+        }
 
         Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
 
