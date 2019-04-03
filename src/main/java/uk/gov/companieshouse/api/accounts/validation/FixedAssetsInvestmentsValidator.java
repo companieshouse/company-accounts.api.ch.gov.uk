@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -13,6 +11,9 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Component
 public class FixedAssetsInvestmentsValidator extends BaseValidator {
@@ -59,11 +60,9 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator {
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
             String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
 
-        currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
 
         if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
             return currentPeriodResponseObject.getData().getBalanceSheet();
@@ -74,11 +73,10 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator {
 
     private BalanceSheet getPreviousPeriodBalanceSheet(
             HttpServletRequest request, String companyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
 
-        previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
+        previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
 
         if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
             return previousPeriodResponseObject.getData().getBalanceSheet();
