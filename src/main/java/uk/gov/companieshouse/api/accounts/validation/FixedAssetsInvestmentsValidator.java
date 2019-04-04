@@ -41,8 +41,8 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator {
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
                 companyAccountsId);
 
-        if (hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) ||
-                hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet) &&
+        if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) ||
+            hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
                 fixedAssetsNote.getDetails() == null) {
             addError(errors, mandatoryElementMissing, FIXED_ASSETS_DETAILS_PATH);
         }
