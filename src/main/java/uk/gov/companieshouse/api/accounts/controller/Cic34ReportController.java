@@ -96,7 +96,9 @@ public class Cic34ReportController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount =
+                (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+
         if (companyAccount.getLinks().get(CompanyAccountLinkType.CIC34_REPORT.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
