@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 
 @JsonInclude(Include.NON_NULL)
 public class Cic34Report extends RestObject {
@@ -52,12 +53,5 @@ public class Cic34Report extends RestObject {
     }
 
     @Override
-    public String toString() {
-        return "Cic34Report {" +
-                "companyActivitiesAndImpact='" + companyActivitiesAndImpact + "'" +
-                ", consultationWithStakeholders='" + consultationWithStakeholders + "'" +
-                ", directorsRemuneration='" + directorsRemuneration + "'" +
-                ", transferOfAssets='" + transferOfAssets + "'" +
-                "}";
-    }
+    public String toString() { return new Gson().toJson(this); }
 }
