@@ -23,4 +23,6 @@ public interface CompanyAccountService {
 
     void addLink(String id, CompanyAccountLinkType linkType, String link);
 
+    void removeLink(String id, CompanyAccountLinkType linkType);
+
 }
