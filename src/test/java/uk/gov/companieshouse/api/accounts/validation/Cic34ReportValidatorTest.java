@@ -74,8 +74,7 @@ public class Cic34ReportValidatorTest {
     }
 
     private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
-    }
 
+        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
+    }
 }

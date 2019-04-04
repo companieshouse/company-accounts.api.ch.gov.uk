@@ -151,7 +151,6 @@ public class CompanyServiceImplTests {
         when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(false);
 
         assertFalse(companyService.isCIC(mockTransaction));
-
     }
 
     private CompanyProfileApi generateMultipleYearFiler() {
