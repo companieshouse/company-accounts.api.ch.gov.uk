@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
+import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -18,9 +19,5 @@ public class Cic34ReportEntity extends BaseEntity {
     }
 
     @Override
-    public String toString() {
-        return "Cic34ReportEntity {" +
-                "data=" + data +
-                "}";
-    }
+    public String toString() { return new Gson().toJson(this); }
 }
