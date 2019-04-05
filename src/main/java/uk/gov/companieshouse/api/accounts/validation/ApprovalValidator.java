@@ -23,7 +23,7 @@ public class ApprovalValidator extends BaseValidator {
         CompanyAccount companyAccount = (CompanyAccount) request
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
-        LocalDate periodEndDate = companyAccount.getPeriodEndOn();
+        LocalDate periodEndDate = companyAccount.getNextAccounts().getPeriodEndOn();
         LocalDate approvalDate = approval.getDate();
 
         if (approvalDate.isBefore(periodEndDate) || approvalDate.isEqual(periodEndDate)) {

@@ -33,6 +33,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
@@ -70,6 +71,8 @@ public class StatementServiceTest {
     @Mock
     private CompanyAccount companyAccountMock;
     @Mock
+    private AccountingPeriod accountingPeriodMock;
+    @Mock
     private Transaction transactionMock;
     @Mock
     private TransactionLinks transactionLinksMock;
@@ -104,7 +107,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the successful creation of a Statement resource")
     void shouldCreateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
 
@@ -123,6 +127,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the duplicate key when creating a Statement resource")
     void shouldNotCreateStatementHttpDuplicateKeyError() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(DuplicateKeyException.class);
@@ -142,6 +148,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the mongo exception when creating a Statement resource")
     void shouldThrowMongoExceptionWhenCreating() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(MongoException.class);
@@ -157,6 +165,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the successful update of a Statement resource")
     void shouldUpdateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
@@ -173,6 +183,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the mongo exception when updating a Statement resource")
     void shouldThrowMongoExceptionWhenUpdating() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
             .thenThrow(MongoException.class);
