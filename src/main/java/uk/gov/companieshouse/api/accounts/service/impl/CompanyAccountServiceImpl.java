@@ -59,8 +59,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
      */
     @Override
     public ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
-        Transaction transaction, HttpServletRequest request)
-        throws PatchException, DataException {
+            Transaction transaction, HttpServletRequest request)
+            throws PatchException, DataException {
 
         try {
             String id = generateID();
@@ -125,8 +125,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     public void addLink(String id, CompanyAccountLinkType linkType, String link) {
 
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
-            .orElseThrow(() -> new MongoException(
-                "Failed to add link to Company account entity"));
+                .orElseThrow(() -> new MongoException(
+                        "Failed to add link to Company account entity"));
 
         CompanyAccountDataEntity companyAccountDataEntity = companyAccountEntity.getData();
         Map<String, String> map = companyAccountDataEntity.getLinks();
@@ -136,9 +136,21 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         companyAccountRepository.save(companyAccountEntity);
     }
 
+    @Override
+    public void removeLink(String id, CompanyAccountLinkType linkType) {
+
+        CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
+                .orElseThrow(() -> new MongoException(
+                        "Failed to find company accounts entity with id " + id +
+                                " from which to remove link: " + linkType.getLink()));
+
+        companyAccountEntity.getData().getLinks().remove(linkType.getLink());
+        companyAccountRepository.save(companyAccountEntity);
+    }
+
     private void setMetadataOnRestObject(CompanyAccount rest,
-                                         Transaction transaction,
-                                         String companyAccountsId) {
+            Transaction transaction,
+            String companyAccountsId) {
 
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
@@ -154,7 +166,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private String createSelfLink(Transaction transaction, String id) {
         return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName()
-            + "/" + id;
+                + "/" + id;
     }
 
     private String getTransactionSelfLink(Transaction transaction) {

@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
@@ -99,6 +101,9 @@ public class CompanyAccountServiceImplTest {
 
     @Mock
     private PrivateTransactionPatch privateTransactionPatch;
+
+    @Mock
+    private Map<String, String> companyAccountsLinks;
 
     private static final String COMPANY_NUMBER = "companyNumber";
 
@@ -431,6 +436,39 @@ public class CompanyAccountServiceImplTest {
         assertThrows(MongoException.class, () ->
                 companyAccountService.addLink(
                         COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.TRANSACTION, TRANSACTION_SELF_LINK));
+    }
+
+    @Test
+    @DisplayName("Remove link - success path")
+    void removeLinkSuccessPath() {
+
+        when(repository.findById(COMPANY_ACCOUNTS_ID))
+                .thenReturn(Optional.ofNullable(companyAccountEntity));
+
+        when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
+
+        when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountsLinks);
+
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+
+        assertAll(() -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
+
+        verify(companyAccountsLinks, times(1)).remove(linkType.getLink());
+        verify(repository, times(1)).save(companyAccountEntity);
+    }
+
+    @Test
+    @DisplayName("Remove link - company account not found")
+    void removeLinkCompanyAccountNotFound() {
+
+        CompanyAccountEntity companyAccountEntityMock = null;
+
+        when(repository.findById(COMPANY_ACCOUNTS_ID))
+                .thenReturn(Optional.ofNullable(companyAccountEntityMock));
+
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+
+        assertThrows(MongoException.class, () -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
     }
 
     private CompanyProfileApi createCompanyProfile(boolean hasNextAccounts, boolean hasLastAccounts) {
