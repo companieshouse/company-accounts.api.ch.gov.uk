@@ -31,7 +31,7 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator {
     }
 
     public Errors validateFixedAssetsInvestments(@Valid HttpServletRequest request,
-            FixedAssetsInvestments fixedAssetsNote, Transaction transaction,
+            FixedAssetsInvestments fixedAssetsNote,
             String companyAccountsId) throws DataException {
 
         Errors errors = new Errors();
