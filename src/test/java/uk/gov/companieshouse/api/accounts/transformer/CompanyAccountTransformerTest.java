@@ -78,6 +78,8 @@ public class CompanyAccountTransformerTest {
         assertNotNull(nextAccountsEntity);
         assertEquals(NEXT_ACCOUNTS_PERIOD_START_ON, nextAccountsEntity.getPeriodStartOn());
         assertEquals(NEXT_ACCOUNTS_PERIOD_END_ON, nextAccountsEntity.getPeriodEndOn());
+
+        assertNull(companyAccountDataEntity.getLastAccounts());
     }
 
     @Test

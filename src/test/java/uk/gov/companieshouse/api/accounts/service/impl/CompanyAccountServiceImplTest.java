@@ -478,13 +478,11 @@ public class CompanyAccountServiceImplTest {
         CompanyAccountApi accounts = new CompanyAccountApi();
 
         if (hasNextAccounts) {
-            NextAccountsApi nextAccounts = new NextAccountsApi();
-            accounts.setNextAccounts(nextAccounts);
+            accounts.setNextAccounts(new NextAccountsApi());
         }
 
         if (hasLastAccounts) {
-            LastAccountsApi lastAccounts = new LastAccountsApi();
-            accounts.setLastAccounts(lastAccounts);
+            accounts.setLastAccounts(new LastAccountsApi());
         }
 
         companyProfile.setAccounts(accounts);
