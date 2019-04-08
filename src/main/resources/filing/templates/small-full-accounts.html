@@ -1148,6 +1148,27 @@
         </tr>
 
         <tr class = "figures">
+          <td id = "fixed-assets-investments-label">Investments:</td>
+          {{if .small_full_accounts.balance_sheet_notes.fixed_assets_investments}}
+          <td class="figure noteIndex" id="uk-busInvestmentsFixedAssetsCY_ENDNoteIndexes">{{getValue "fixed-assets-investments-notes-id" }}</td>
+          {{else}}
+          <td class="figure noteIndex" id="uk-busInvestmentsFixedAssetsCY_ENDNoteIndexes1">&#160;</td>
+          {{end}}
+
+          <td id="investments-curr" class="strong figure">
+            {{if isNotEmpty $fixedAssets.investments.current_amount}}
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="investments-prev" class="text--right">
+            {{if isNotEmpty $fixedAssets.investments.previous_amount}}
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class = "figures">
           <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
 
           <td class="figure noteIndex" id="uk-busFixedAssetsCY_ENDNoteIndexes"></td>
