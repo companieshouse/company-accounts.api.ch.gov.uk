@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -10,10 +12,6 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @Component
 public class FixedAssetsInvestmentsValidator extends BaseValidator {
@@ -45,6 +43,12 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator {
             hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
                 fixedAssetsNote.getDetails() == null) {
             addError(errors, mandatoryElementMissing, FIXED_ASSETS_DETAILS_PATH);
+        }
+
+        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
+                !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
+                fixedAssetsNote.getDetails() != null) {
+            addError(errors, unexpectedData, FIXED_ASSETS_DETAILS_PATH);
         }
         return errors;
     }
