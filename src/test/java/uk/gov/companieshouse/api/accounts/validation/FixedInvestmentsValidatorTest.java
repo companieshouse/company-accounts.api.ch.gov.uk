@@ -32,6 +32,8 @@ public class FixedInvestmentsValidatorTest {
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
     private static final String FIXED_ASSETS_DETAILS_PATH = "$.fixed_assets_investments.details";
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING_VALUE =
             "mandatory_element_missing";
@@ -60,7 +62,7 @@ public class FixedInvestmentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Valid note submitted")
+    @DisplayName("Valid note submitted successfully")
     void testValidNote() throws DataException {
 
         mockValidBalanceSheetCurrentPeriod();
@@ -73,7 +75,7 @@ public class FixedInvestmentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Note submitted with no balance sheet values")
+    @DisplayName("Error thrown when note submitted with no balance sheet values")
     void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException,
             ServiceException {
 
@@ -91,7 +93,7 @@ public class FixedInvestmentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Empty note when balance sheet values")
+    @DisplayName("Error thrown when empty note submitted when balance sheet values")
     void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException, ServiceException {
 
         mockValidBalanceSheetCurrentPeriod();
@@ -103,6 +105,22 @@ public class FixedInvestmentsValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                FIXED_ASSETS_DETAILS_PATH)));
+
+    }
+
+    @Test
+    @DisplayName("Error thrown when empty resource submitted")
+    void testValidationEmptyResource() throws DataException, ServiceException {
+
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+
+        assertTrue(errors.hasErrors());
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
                 FIXED_ASSETS_DETAILS_PATH)));
 
     }
