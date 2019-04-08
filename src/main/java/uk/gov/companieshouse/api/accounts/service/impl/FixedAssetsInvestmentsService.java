@@ -53,7 +53,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateFixedAssetsInvestments(request, rest, transaction,
+        Errors errors = validator.validateFixedAssetsInvestments(request, rest,
                 companyAccountId);
 
         if (errors.hasErrors()) {
@@ -86,7 +86,7 @@ public class FixedAssetsInvestmentsService implements ResourceService<FixedAsset
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateFixedAssetsInvestments(request, rest, transaction,
+        Errors errors = validator.validateFixedAssetsInvestments(request, rest,
                 companyAccountId);
 
         if (errors.hasErrors()) {
