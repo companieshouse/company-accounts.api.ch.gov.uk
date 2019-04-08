@@ -96,6 +96,17 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         companyAccountRepository.save(companyAccountEntity);
     }
 
+    @Override
+    public void removeLink(String id, CompanyAccountLinkType linkType) {
+
+        CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
+                .orElseThrow(() -> new MongoException(
+                        "Failed to find company accounts entity with id " + id +
+                                " from which to remove link: " + linkType.getLink()));
+        companyAccountEntity.getData().getLinks().remove(linkType.getLink());
+        companyAccountRepository.save(companyAccountEntity);
+    }
+
     private void addLinks(CompanyAccount companyAccount, String companyAccountLink, Transaction transaction) {
         Map<String, String> map = new HashMap<>();
         map.put(CompanyAccountLinkType.SELF.getLink(), companyAccountLink);

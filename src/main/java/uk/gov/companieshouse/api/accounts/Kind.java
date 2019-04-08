@@ -16,7 +16,8 @@ public enum Kind {
     STOCKS_NOTE("small-full-accounts-note#stocks"),
     TANGIBLE_ASSETS_NOTE("small-full-accounts-note#tangible-assets"),
     FIXED_ASSETS_INVESTMENTS_NOTE("small-full-accounts-note#fixed-assets-investments"),
-    EMPLOYEES_NOTE("small-full-accounts-note#employees");
+    EMPLOYEES_NOTE("small-full-accounts-note#employees"),
+    CIC34_REPORT("cic34-report#cic34-report");
 
     private String value;
 

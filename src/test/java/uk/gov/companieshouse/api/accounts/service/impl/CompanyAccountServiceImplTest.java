@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -9,11 +10,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
+import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
@@ -53,6 +59,7 @@ public class CompanyAccountServiceImplTest {
     private static final String SELF_LINK = "self";
     private static final String TRANSACTION_LINK = "transaction";
     private static final String MOCK_TRANSACTION_SELF_LINK = "selfLinkTest";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Mock
     private ApiClientService mockApiClientService;
@@ -77,6 +84,12 @@ public class CompanyAccountServiceImplTest {
 
     @Mock
     private CompanyAccountEntity companyAccountEntityMock;
+
+    @Mock
+    private CompanyAccountDataEntity companyAccountDataEntityMock;
+
+    @Mock
+    private Map<String, String> linksMock;
 
     @Mock
     private CompanyAccountRepository companyAccountRepository;
@@ -158,6 +171,39 @@ public class CompanyAccountServiceImplTest {
         assertThrows(PatchException.class, executable);
 
         verify(companyAccountRepository).insert(companyAccountEntityMock);
+    }
+
+    @Test
+    @DisplayName("Tests the successful removal of a company accounts link")
+    void removeLinkSuccess() {
+
+        when(companyAccountRepository.findById(COMPANY_ACCOUNTS_ID))
+                .thenReturn(Optional.ofNullable(companyAccountEntityMock));
+
+        when(companyAccountEntityMock.getData()).thenReturn(companyAccountDataEntityMock);
+
+        when(companyAccountDataEntityMock.getLinks()).thenReturn(linksMock);
+
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+
+        assertAll(() -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
+
+        verify(linksMock, times(1)).remove(linkType.getLink());
+        verify(companyAccountRepository, times(1)).save(companyAccountEntityMock);
+    }
+
+    @Test
+    @DisplayName("Tests the removal of a company accounts link where the company accounts entity is not found")
+    void removeLinkCompanyAccountsNotFound() {
+
+        CompanyAccountEntity companyAccountEntityMock = null;
+
+        when(companyAccountRepository.findById(COMPANY_ACCOUNTS_ID))
+                .thenReturn(Optional.ofNullable(companyAccountEntityMock));
+
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+
+        assertThrows(MongoException.class, () -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
     }
 
     /**
