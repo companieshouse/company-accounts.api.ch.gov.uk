@@ -1,30 +1,21 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
+import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class CompanyAccountDataEntity extends BaseDataEntity {
 
-    @Field("next_accounts")
-    private AccountingPeriodEntity nextAccounts;
+    @NotNull
+    @Field("period_end_on")
+    private LocalDate periodEndOn;
 
-    @Field("last_accounts")
-    private AccountingPeriodEntity lastAccounts;
-
-    public AccountingPeriodEntity getNextAccounts() {
-        return nextAccounts;
+    public LocalDate getPeriodEndOn() {
+        return periodEndOn;
     }
 
-    public void setNextAccounts(
-            AccountingPeriodEntity nextAccounts) {
-        this.nextAccounts = nextAccounts;
+    public void setPeriodEndOn(LocalDate periodEndOn) {
+        this.periodEndOn = periodEndOn;
     }
 
-    public AccountingPeriodEntity getLastAccounts() {
-        return lastAccounts;
-    }
-
-    public void setLastAccounts(
-            AccountingPeriodEntity lastAccounts) {
-        this.lastAccounts = lastAccounts;
-    }
 }
