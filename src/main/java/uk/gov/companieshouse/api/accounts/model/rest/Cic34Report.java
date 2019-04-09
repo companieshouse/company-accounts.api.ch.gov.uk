@@ -13,7 +13,6 @@ import com.google.gson.Gson;
 public class Cic34Report extends RestObject {
 
     private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MIN_FIELD_LENGTH = 1;
 
     @NotBlank
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
@@ -21,17 +20,20 @@ public class Cic34Report extends RestObject {
     @JsonProperty("company_activities_and_impact")
     private String companyActivitiesAndImpact;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @NotBlank
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("consultation_with_stakeholders")
     private String consultationWithStakeholders;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @NotBlank
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("directors_remuneration")
     private String directorsRemuneration;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @NotBlank
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("transfer_of_assets")
     private String transferOfAssets;
