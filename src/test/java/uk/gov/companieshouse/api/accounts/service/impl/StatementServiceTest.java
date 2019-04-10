@@ -33,6 +33,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
@@ -54,10 +55,10 @@ public class StatementServiceTest {
     private static final String COMPANY_ACCOUNTS_ID = "123123";
     private static final String TRANSACTION_SELF_LINK = "/transactions/123456-123456-123456";
     private static final String STATEMENT_SELF_LINK = TRANSACTION_SELF_LINK + "/"
-        + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-        + COMPANY_ACCOUNTS_ID + "/"
-        + ResourceName.SMALL_FULL.getName() + "/"
-        + ResourceName.STATEMENTS.getName();
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + COMPANY_ACCOUNTS_ID + "/"
+            + ResourceName.SMALL_FULL.getName() + "/"
+            + ResourceName.STATEMENTS.getName();
 
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
     private static final String LEGAL_STATEMENT_SECTION_477 = "Testing place holder: {period_end_on}";
@@ -69,6 +70,8 @@ public class StatementServiceTest {
     private HttpServletRequest requestMock;
     @Mock
     private CompanyAccount companyAccountMock;
+    @Mock
+    private AccountingPeriod accountingPeriodMock;
     @Mock
     private Transaction transactionMock;
     @Mock
@@ -104,7 +107,8 @@ public class StatementServiceTest {
     @DisplayName("Tests the successful creation of a Statement resource")
     void shouldCreateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
 
@@ -112,7 +116,7 @@ public class StatementServiceTest {
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Statement> result =
-            statementService.create(statementMock, transactionMock, "", requestMock);
+                statementService.create(statementMock, transactionMock, "", requestMock);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.CREATED, result.getStatus());
@@ -123,15 +127,17 @@ public class StatementServiceTest {
     @DisplayName("Tests the duplicate key when creating a Statement resource")
     void shouldNotCreateStatementHttpDuplicateKeyError() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
-            .thenThrow(DuplicateKeyException.class);
+                .thenThrow(DuplicateKeyException.class);
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Statement> result =
-            statementService.create(statementMock, transactionMock, "", requestMock);
+                statementService.create(statementMock, transactionMock, "", requestMock);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, result.getStatus());
@@ -142,28 +148,32 @@ public class StatementServiceTest {
     @DisplayName("Tests the mongo exception when creating a Statement resource")
     void shouldThrowMongoExceptionWhenCreating() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
-            .thenThrow(MongoException.class);
+                .thenThrow(MongoException.class);
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-            () -> statementService.create(statementMock, transactionMock, "", requestMock));
+                () -> statementService.create(statementMock, transactionMock, "", requestMock));
     }
 
     @Test
     @DisplayName("Tests the successful update of a Statement resource")
     void shouldUpdateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Statement> result =
-            statementService.update(statementMock, transactionMock, "", requestMock);
+                statementService.update(statementMock, transactionMock, "", requestMock);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.UPDATED, result.getStatus());
@@ -173,15 +183,17 @@ public class StatementServiceTest {
     @DisplayName("Tests the mongo exception when updating a Statement resource")
     void shouldThrowMongoExceptionWhenUpdating() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
         when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
-            .thenThrow(MongoException.class);
+                .thenThrow(MongoException.class);
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-            () -> statementService.update(statementMock, transactionMock, "", requestMock));
+                () -> statementService.update(statementMock, transactionMock, "", requestMock));
     }
 
     @Test
@@ -190,7 +202,7 @@ public class StatementServiceTest {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
         when(statementRepositoryMock.findById(RESOURCE_ID))
-            .thenReturn(Optional.ofNullable(statementEntity));
+                .thenReturn(Optional.ofNullable(statementEntity));
 
         Statement statement = createStatement();
         when(statementTransformerMock.transform(any(StatementEntity.class))).thenReturn(statement);
@@ -208,7 +220,7 @@ public class StatementServiceTest {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
         when(statementRepositoryMock.findById(RESOURCE_ID))
-            .thenReturn(Optional.ofNullable(null));
+                .thenReturn(Optional.ofNullable(null));
 
         ResponseObject<Statement> result = statementService.find(COMPANY_ACCOUNTS_ID, requestMock);
 
@@ -223,10 +235,10 @@ public class StatementServiceTest {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
         when(statementRepositoryMock.findById(RESOURCE_ID))
-            .thenThrow(MongoException.class);
+                .thenThrow(MongoException.class);
 
         assertThrows(DataException.class,
-            () -> statementService.find(COMPANY_ACCOUNTS_ID, requestMock));
+                () -> statementService.find(COMPANY_ACCOUNTS_ID, requestMock));
     }
 
     private StatementEntity createStatementEntity() {
@@ -257,7 +269,7 @@ public class StatementServiceTest {
     private Map<String, String> createSelfLink() {
         Map<String, String> selfLink = new HashMap<>();
         selfLink
-            .put(BasicLinkType.SELF.getLink(), STATEMENT_SELF_LINK);
+                .put(BasicLinkType.SELF.getLink(), STATEMENT_SELF_LINK);
         return selfLink;
     }
 
