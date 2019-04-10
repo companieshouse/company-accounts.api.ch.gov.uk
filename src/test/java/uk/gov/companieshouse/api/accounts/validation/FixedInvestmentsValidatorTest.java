@@ -156,10 +156,4 @@ public class FixedInvestmentsValidatorTest {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find(
                 "", mockRequest);
     }
-
-
-
-    // empty note when balance sheet not
-
-    // note when balance sheet null
 }
