@@ -42,12 +42,8 @@ public class DebtorsValidatorTest {
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
-    private static final String INVALID_NOTE_VALUE = "invalid_note";
-    private static final String INVALID_NOTE_NAME = "invalidNote";
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
-    private static final String INCONSISTENT_DATA_NAME = "inconsistentData";
-    private static final String INCONSISTENT_DATA_VALUE = "inconsistent_data";
     private static final String COMPANY_ACCOUNTS_ID = "123abc";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
@@ -60,8 +56,9 @@ public class DebtorsValidatorTest {
             "mandatory_element_missing";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
-
-    private static final long INVALID_TOTAL = 200L;
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE =
+            "empty_resource";
 
     private Debtors debtors;
     private Errors errors;
@@ -86,9 +83,6 @@ public class DebtorsValidatorTest {
 
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
-
-    @Mock
-    private ResponseObject mockResponseObject;
 
     private DebtorsValidator validator;
 
@@ -222,6 +216,21 @@ public class DebtorsValidatorTest {
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
             DEBTORS_PATH_PREVIOUS)));
+    }
+
+    @Test
+    @DisplayName("Validation fails when empty periods and empty note resource")
+    void testValidationAgainstEmptyResource() throws DataException {
+
+        Debtors debtors = new Debtors();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                DEBTORS_PATH)));
     }
 
     @Test
@@ -371,6 +380,11 @@ public class DebtorsValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
+        Errors errors = new Errors();
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
@@ -406,10 +420,8 @@ public class DebtorsValidatorTest {
         mockValidBalanceSheetCurrentPeriod();
 
         when(mockPreviousPeriodService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(
-            COMPANY_ACCOUNTS_ID);
+                COMPANY_ACCOUNTS_ID);
         when(mockPreviousPeriodService.findById(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         assertThrows(DataException.class,
             () -> validator.validateDebtors(debtors,

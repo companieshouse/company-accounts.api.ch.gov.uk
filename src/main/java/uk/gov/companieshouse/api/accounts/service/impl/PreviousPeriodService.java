@@ -57,7 +57,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
         Transaction transaction, String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -114,7 +114,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = previousPeriodValidator.validatePreviousPeriod(rest);
+        Errors errors = previousPeriodValidator.validatePreviousPeriod(rest, transaction);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);

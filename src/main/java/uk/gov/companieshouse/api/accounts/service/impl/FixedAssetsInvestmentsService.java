@@ -13,113 +13,90 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.repository.EmployeesRepository;
+import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestments.FixedAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
-import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.EmployeesValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 
 @Service
-public class EmployeesService implements ResourceService<Employees> {
+public class FixedAssetsInvestmentsService implements ResourceService<FixedAssetsInvestments> {
 
-    private EmployeesRepository repository;
-    private EmployeesTransformer transformer;
+    private FixedAssetsInvestmentsRepository repository;
+    private FixedAssetsInvestmentsTransformer transformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
-    private EmployeesValidator employeesValidator;
 
     @Autowired
-    public EmployeesService(EmployeesRepository repository,
-            EmployeesTransformer transformer,
+    public FixedAssetsInvestmentsService(FixedAssetsInvestmentsRepository repository,
+            FixedAssetsInvestmentsTransformer transformer,
             KeyIdGenerator keyIdGenerator,
-            SmallFullService smallFullService,
-            EmployeesValidator employeesValidator) {
+            SmallFullService smallFullService) {
 
         this.repository = repository;
         this.transformer = transformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
-        this.employeesValidator = employeesValidator;
     }
 
     @Override
-    public ResponseObject<Employees> create(Employees rest,
+    public ResponseObject<FixedAssetsInvestments> create(FixedAssetsInvestments rest,
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = employeesValidator.validateEmployees(rest, transaction);
-
-        if (errors.hasErrors()) {
-
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
-
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        EmployeesEntity entity = transformer.transform(rest);
+        FixedAssetsInvestmentsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
-        smallFullService.addLink(companyAccountId, SmallFullLinkType.EMPLOYEES_NOTE,
-                getSelfLinkFromEmployeesEntity(entity), request);
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE,
+                getSelfLinkFromFixedAssetsInvestmentsEntity(entity), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<Employees> update(Employees rest,
+    public ResponseObject<FixedAssetsInvestments> update(FixedAssetsInvestments rest,
             Transaction transaction,
             String companyAccountId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = employeesValidator.validateEmployees(rest, transaction);
-
-        if (errors.hasErrors()) {
-
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
-
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        EmployeesEntity entity = transformer.transform(rest);
+        FixedAssetsInvestmentsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
             repository.save(entity);
-        } catch (MongoException me) {
-
-            throw new DataException(me);
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
-    public ResponseObject<Employees> findById(String id,
+    public ResponseObject<FixedAssetsInvestments> findById(String id,
             HttpServletRequest request) throws DataException {
 
-        EmployeesEntity entity;
+        FixedAssetsInvestmentsEntity entity;
 
         try {
             entity = repository.findById(id).orElse(null);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -131,38 +108,37 @@ public class EmployeesService implements ResourceService<Employees> {
     }
 
     @Override
-    public ResponseObject<Employees> delete(String companyAccountsId,
+    public ResponseObject<FixedAssetsInvestments> delete(String companyAccountsId,
                                                              HttpServletRequest request) throws DataException {
 
-        String employeesId = generateID(companyAccountsId);
+        String fixedAssetsInvestmentsId = generateID(companyAccountsId);
 
         try {
-            if (repository.existsById(employeesId)) {
-                repository.deleteById(employeesId);
+            if (repository.existsById(fixedAssetsInvestmentsId)) {
+                repository.deleteById(fixedAssetsInvestmentsId);
 
                 smallFullService.removeLink(companyAccountsId,
-                        SmallFullLinkType.EMPLOYEES_NOTE, request);
+                    SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
-        } catch (MongoException me) {
-
-            throw new DataException(me);
+        } catch (MongoException e) {
+            throw new DataException(e);
         }
     }
 
     @Override
     public String generateID(String companyAccountId) {
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.EMPLOYEES.getName());
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.FIXED_ASSETS_INVESTMENTS.getName());
     }
 
-    private void setMetadataOnRestObject(Employees rest, Transaction transaction,
+    private void setMetadataOnRestObject(FixedAssetsInvestments rest, Transaction transaction,
             String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.EMPLOYEES_NOTE.getValue());
+        rest.setKind(Kind.FIXED_ASSETS_INVESTMENTS_NOTE.getValue());
     }
 
     private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
@@ -175,12 +151,12 @@ public class EmployeesService implements ResourceService<Employees> {
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
-                + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.EMPLOYEES.getName();
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
+                + ResourceName.FIXED_ASSETS_INVESTMENTS.getName();
     }
 
-
-    public String getSelfLinkFromEmployeesEntity(EmployeesEntity entity) {
+    public String getSelfLinkFromFixedAssetsInvestmentsEntity(FixedAssetsInvestmentsEntity entity) {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 }
