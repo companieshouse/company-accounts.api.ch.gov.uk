@@ -309,7 +309,6 @@ class FilingServiceImplTest {
         account.setEtag("etagForTesting");
         account.setKind(ACCOUNTS_LINKS_RELATIONSHIP);
         account.setLinks(createAccountEntityLinks());
-        account.setPeriodEndOn(PERIOD_END_ON_VALUE_DATE);
 
         return account;
     }
