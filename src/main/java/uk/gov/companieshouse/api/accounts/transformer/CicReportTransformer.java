@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
 
+@Component
 public class CicReportTransformer implements GenericTransformer<CicReport, CicReportEntity> {
 
     @Override
