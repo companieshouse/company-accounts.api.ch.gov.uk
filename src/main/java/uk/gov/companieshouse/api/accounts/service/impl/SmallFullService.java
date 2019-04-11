@@ -74,13 +74,6 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> update(SmallFull rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-        //TODO implement method
-        return null;
-    }
-
-    @Override
     public ResponseObject<SmallFull> find(String companyAccountsId, HttpServletRequest request) throws DataException {
 
         SmallFullEntity smallFullEntity;
