@@ -184,7 +184,7 @@ public class CicReportService implements ParentService<CicReport, CicReportLinkT
     private String createSelfLink(Transaction transaction, String companyAccountsId) {
 
         return getTransactionSelfLink(transaction) + "/" + ResourceName.COMPANY_ACCOUNT.getName()
-                + "/" + companyAccountsId + "/" + ResourceName.CIC_REPORT;
+                + "/" + companyAccountsId + "/" + ResourceName.CIC_REPORT.getName();
     }
 
     private String getTransactionSelfLink(Transaction transaction) {
