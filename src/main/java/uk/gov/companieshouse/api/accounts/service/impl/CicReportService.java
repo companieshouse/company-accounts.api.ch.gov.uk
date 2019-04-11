@@ -15,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.ParentService;
@@ -22,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CicReportTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CicReportValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
@@ -31,6 +33,8 @@ public class CicReportService implements ParentService<CicReport, CicReportLinkT
 
     private CicReportTransformer transformer;
 
+    private CicReportValidator validator;
+
     private CompanyAccountService companyAccountService;
 
     private KeyIdGenerator keyIdGenerator;
@@ -38,11 +42,13 @@ public class CicReportService implements ParentService<CicReport, CicReportLinkT
     @Autowired
     public CicReportService(CicReportRepository repository,
                             CicReportTransformer transformer,
+                            CicReportValidator validator,
                             CompanyAccountService companyAccountService,
                             KeyIdGenerator keyIdGenerator) {
 
         this.repository = repository;
         this.transformer = transformer;
+        this.validator = validator;
         this.companyAccountService = companyAccountService;
         this.keyIdGenerator = keyIdGenerator;
     }
@@ -50,6 +56,11 @@ public class CicReportService implements ParentService<CicReport, CicReportLinkT
     @Override
     public ResponseObject<CicReport> create(CicReport rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCicReportCreation(transaction);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
