@@ -22,6 +22,8 @@ public class CicReportApprovalTransformer implements GenericTransformer<CicRepor
     @Override
     public CicReportApproval transform(CicReportApprovalEntity approval) {
 
-        return null;
+        CicReportApproval cicReportApproval = new CicReportApproval();
+        BeanUtils.copyProperties(approval.getData(), cicReportApproval);
+        return cicReportApproval;
     }
 }
