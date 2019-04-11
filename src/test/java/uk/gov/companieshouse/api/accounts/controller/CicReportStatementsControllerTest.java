@@ -21,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
+import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.Cic34ReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.CicReportStatementsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class Cic34ReportControllerTest {
+public class CicReportStatementsControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -43,16 +43,16 @@ public class Cic34ReportControllerTest {
     private Transaction transaction;
 
     @Mock
-    private CompanyAccount companyAccount;
+    private CicReport cicReport;
 
     @Mock
-    private Cic34Report cic34Report;
+    private CicReportStatements cicReportStatements;
 
     @Mock
     private BindingResult bindingResult;
 
     @Mock
-    private Cic34ReportService service;
+    private CicReportStatementsService service;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -64,23 +64,23 @@ public class Cic34ReportControllerTest {
     private Errors errors;
 
     @Mock
-    private Map<String, String> companyAccountsLinks;
+    private Map<String, String> cicReportLinks;
 
     @InjectMocks
-    private Cic34ReportController controller;
+    private CicReportStatementsController controller;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String CIC34_REPORT_LINK = "cic34ReportLink";
+    private static final String CIC_REPORT_STATEMENTS_LINK = "cicReportStatementsLink";
 
     @Test
-    @DisplayName("Create CIC34 report - success path")
-    void createCIC34ReportSuccess() throws DataException {
+    @DisplayName("Create CIC report statements - success path")
+    void createCicReportStatementsSuccess() throws DataException {
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, cic34Report);
-        when(service.create(cic34Report, transaction, COMPANY_ACCOUNTS_ID, request))
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, cicReportStatements);
+        when(service.create(cicReportStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
@@ -89,22 +89,22 @@ public class Cic34ReportControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.create(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, returnedResponse.getStatusCode());
-        assertEquals(cic34Report, returnedResponse.getBody());
+        assertEquals(cicReportStatements, returnedResponse.getBody());
     }
 
     @Test
-    @DisplayName("Create CIC34 report - binding result errors")
-    void createCIC34ReportBindingResultErrors() {
+    @DisplayName("Create CIC report statements - binding result errors")
+    void createCicReportStatementsBindingResultErrors() {
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity returnedResponse =
-                controller.create(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.create(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.BAD_REQUEST, returnedResponse.getStatusCode());
@@ -112,20 +112,20 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Create CIC34 report - data exception")
-    void createCIC34ReportDataException() throws DataException {
+    @DisplayName("Create CIC report statements- data exception")
+    void createCicReportStatementsDataException() throws DataException {
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        when(service.create(cic34Report, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(service.create(cicReportStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(DataException.class);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.create(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, returnedResponse.getStatusCode());
@@ -133,12 +133,12 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Get CIC34 report - success path")
-    void getCIC34ReportSuccess() throws DataException {
+    @DisplayName("Get CIC report statements- success path")
+    void getCicReportStatementsSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, cic34Report);
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, cicReportStatements);
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -150,12 +150,12 @@ public class Cic34ReportControllerTest {
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, returnedResponse.getStatusCode());
-        assertEquals(cic34Report, returnedResponse.getBody());
+        assertEquals(cicReportStatements, returnedResponse.getBody());
     }
 
     @Test
-    @DisplayName("Get CIC34 report - data exception")
-    void getCIC34ReportDataException() throws DataException {
+    @DisplayName("Get CIC report statements - data exception")
+    void getCicReportStatementsDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -172,17 +172,17 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Update CIC34 report - success path")
-    void updateCIC34ReportSuccess() throws DataException {
+    @DisplayName("Update CIC report statements - success path")
+    void updateCicReportStatementsSuccess() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(companyAccount).thenReturn(transaction);
-        when(companyAccount.getLinks()).thenReturn(companyAccountsLinks);
-        when(companyAccountsLinks.get(CompanyAccountLinkType.CIC34_REPORT.getLink()))
-                .thenReturn(CIC34_REPORT_LINK);
+        when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
+        when(cicReport.getLinks()).thenReturn(cicReportLinks);
+        when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
+                .thenReturn(CIC_REPORT_STATEMENTS_LINK);
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, cic34Report);
-        when(service.update(cic34Report, transaction, COMPANY_ACCOUNTS_ID, request))
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, cicReportStatements);
+        when(service.update(cicReportStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -190,7 +190,7 @@ public class Cic34ReportControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.update(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, returnedResponse.getStatusCode());
@@ -198,16 +198,16 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Update CIC34 report - not found")
-    void updateCIC34ReportNotFound() {
+    @DisplayName("Update CIC report statements - not found")
+    void updateCicReportStatementsNotFound() {
 
-        when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(companyAccountsLinks);
-        when(companyAccountsLinks.get(CompanyAccountLinkType.CIC34_REPORT.getLink()))
+        when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
+        when(cicReport.getLinks()).thenReturn(cicReportLinks);
+        when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
                 .thenReturn(null);
 
         ResponseEntity returnedResponse =
-                controller.update(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.update(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NOT_FOUND, returnedResponse.getStatusCode());
@@ -215,19 +215,19 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Update CIC34 report - binding result errors")
-    void updateCIC34ReportBindingResultErrors() {
+    @DisplayName("Update CIC report statements - binding result errors")
+    void updateCicReportStatementsBindingResultErrors() {
 
-        when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(companyAccountsLinks);
-        when(companyAccountsLinks.get(CompanyAccountLinkType.CIC34_REPORT.getLink()))
-                .thenReturn(CIC34_REPORT_LINK);
+        when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
+        when(cicReport.getLinks()).thenReturn(cicReportLinks);
+        when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
+                .thenReturn(CIC_REPORT_STATEMENTS_LINK);
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity returnedResponse =
-                controller.update(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.update(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.BAD_REQUEST, returnedResponse.getStatusCode());
@@ -235,23 +235,23 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Update CIC34 report - data exception")
-    void updateCIC34ReportDataException() throws DataException {
+    @DisplayName("Update CIC report statements - data exception")
+    void updateCicReportStatementsDataException() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(companyAccount).thenReturn(transaction);
-        when(companyAccount.getLinks()).thenReturn(companyAccountsLinks);
-        when(companyAccountsLinks.get(CompanyAccountLinkType.CIC34_REPORT.getLink()))
-                .thenReturn(CIC34_REPORT_LINK);
+        when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
+        when(cicReport.getLinks()).thenReturn(cicReportLinks);
+        when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
+                .thenReturn(CIC_REPORT_STATEMENTS_LINK);
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        when(service.update(cic34Report, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(service.update(cicReportStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(DataException.class);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(cic34Report, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                controller.update(cicReportStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, returnedResponse.getStatusCode());
@@ -259,8 +259,8 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Delete CIC34 report - success path")
-    void deleteCIC34ReportSuccess() throws DataException {
+    @DisplayName("Delete CIC report statements - success path")
+    void deleteCicReportStatementsSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -279,8 +279,8 @@ public class Cic34ReportControllerTest {
     }
 
     @Test
-    @DisplayName("Delete CIC34 report - data exception")
-    void deleteCIC34ReportDataException() throws DataException {
+    @DisplayName("Delete CIC report statements - data exception")
+    void deleteCicReportStatementsDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 

@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
@@ -31,6 +32,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private CicReportInterceptor cicReportInterceptor;
 
     @Autowired
     private LoggingInterceptor loggingInterceptor;
@@ -75,5 +79,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
             .addPathPatterns(
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+
+        registry.addInterceptor(cicReportInterceptor)
+            .addPathPatterns(
+                    "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**");
     }
 }

@@ -12,59 +12,47 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
-import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.repository.Cic34ReportRepository;
-import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.CicReportStatementsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
+import uk.gov.companieshouse.api.accounts.repository.CicReportStatementsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.Cic34ReportTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CicReportStatementsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.Cic34ReportValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class Cic34ReportService implements ResourceService<Cic34Report> {
+public class CicReportStatementsService implements ResourceService<CicReportStatements> {
 
-    private Cic34ReportRepository repository;
+    private CicReportStatementsRepository repository;
 
-    private Cic34ReportTransformer transformer;
+    private CicReportStatementsTransformer transformer;
 
-    private Cic34ReportValidator validator;
-
-    private CompanyAccountService companyAccountService;
+    private CicReportService cicReportService;
 
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public Cic34ReportService(Cic34ReportRepository repository,
-                              Cic34ReportTransformer transformer,
-                              Cic34ReportValidator validator,
-                              CompanyAccountService companyAccountService,
+    public CicReportStatementsService(CicReportStatementsRepository repository,
+                              CicReportStatementsTransformer transformer,
+                              CicReportService cicReportService,
                               KeyIdGenerator keyIdGenerator) {
 
         this.repository = repository;
         this.transformer = transformer;
-        this.validator = validator;
-        this.companyAccountService = companyAccountService;
+        this.cicReportService = cicReportService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
-    public ResponseObject<Cic34Report> create(Cic34Report rest, Transaction transaction,
+    public ResponseObject<CicReportStatements> create(CicReportStatements rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
-
-        Errors errors = validator.validateCIC34ReportSubmission(transaction);
-        if (errors.hasErrors()) {
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
-        }
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        Cic34ReportEntity entity = transformer.transform(rest);
+        CicReportStatementsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -78,18 +66,18 @@ public class Cic34ReportService implements ResourceService<Cic34Report> {
             throw new DataException(e);
         }
 
-        companyAccountService.addLink(companyAccountId, CompanyAccountLinkType.CIC34_REPORT, getSelfLink(rest));
+        cicReportService.addLink(companyAccountId, CicReportLinkType.STATEMENTS, getSelfLink(rest), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<Cic34Report> update(Cic34Report rest, Transaction transaction,
+    public ResponseObject<CicReportStatements> update(CicReportStatements rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        Cic34ReportEntity entity = transformer.transform(rest);
+        CicReportStatementsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -104,10 +92,10 @@ public class Cic34ReportService implements ResourceService<Cic34Report> {
     }
 
     @Override
-    public ResponseObject<Cic34Report> find(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<CicReportStatements> find(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        Cic34ReportEntity entity;
+        CicReportStatementsEntity entity;
 
         try {
             entity = repository.findById(generateID(companyAccountsId)).orElse(null);
@@ -125,7 +113,7 @@ public class Cic34ReportService implements ResourceService<Cic34Report> {
     }
 
     @Override
-    public ResponseObject<Cic34Report> delete(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<CicReportStatements> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
         String cic34ReportId = generateID(companyAccountsId);
@@ -134,7 +122,7 @@ public class Cic34ReportService implements ResourceService<Cic34Report> {
             if (repository.existsById(cic34ReportId)) {
                 repository.deleteById(cic34ReportId);
 
-                companyAccountService.removeLink(companyAccountsId, CompanyAccountLinkType.CIC34_REPORT);
+                cicReportService.removeLink(companyAccountsId, CicReportLinkType.STATEMENTS, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
@@ -145,32 +133,35 @@ public class Cic34ReportService implements ResourceService<Cic34Report> {
         }
     }
 
-    private void populateMetadataOnRestObject(Cic34Report cic34Report, Transaction transaction, String companyAccountsId) {
+    private void populateMetadataOnRestObject(CicReportStatements cicReportStatements, Transaction transaction, String companyAccountsId) {
 
-        initLinks(cic34Report, transaction, companyAccountsId);
-        cic34Report.setEtag(GenerateEtagUtil.generateEtag());
-        cic34Report.setKind(Kind.CIC34_REPORT.getValue());
+        initLinks(cicReportStatements, transaction, companyAccountsId);
+        cicReportStatements.setEtag(GenerateEtagUtil.generateEtag());
+        cicReportStatements.setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
     }
 
     private String generateID(String companyAccountId) {
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CIC34_REPORT.getName());
+        return keyIdGenerator.generate(companyAccountId + "-"
+                                            + ResourceName.CIC_REPORT.getName() + "-"
+                                            + ResourceName.STATEMENTS.getName());
     }
 
     private String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/"
-                + ResourceName.CIC34_REPORT.getName();
+                + ResourceName.CIC_REPORT.getName() + "/"
+                + ResourceName.STATEMENTS.getName();
     }
 
-    private void initLinks(Cic34Report cic34Report, Transaction transaction, String companyAccountsId) {
+    private void initLinks(CicReportStatements cicReportStatements, Transaction transaction, String companyAccountsId) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
-        cic34Report.setLinks(map);
+        cicReportStatements.setLinks(map);
     }
 
-    private String getSelfLink(Cic34Report cic34Report) {
+    private String getSelfLink(CicReportStatements cicReportStatements) {
 
-        return cic34Report.getLinks().get(BasicLinkType.SELF.getLink());
+        return cicReportStatements.getLinks().get(BasicLinkType.SELF.getLink());
     }
 }

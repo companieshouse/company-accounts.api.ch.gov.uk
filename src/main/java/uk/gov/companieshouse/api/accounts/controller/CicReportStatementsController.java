@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
+import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.Cic34ReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.CicReportStatementsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -29,11 +29,11 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic34-report", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Cic34ReportController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/statements", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CicReportStatementsController {
 
     @Autowired
-    private Cic34ReportService cic34ReportService;
+    private CicReportStatementsService cicReportStatementsService;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -42,7 +42,7 @@ public class Cic34ReportController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Cic34Report cic34Report,
+    public ResponseEntity create(@Valid @RequestBody CicReportStatements cicReportStatements,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -56,15 +56,15 @@ public class Cic34ReportController {
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Cic34Report> response = cic34ReportService
-                    .create(cic34Report, transaction, companyAccountId, request);
+            ResponseObject<CicReportStatements> response =
+                    cicReportStatementsService.create(cicReportStatements, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to create CIC34 report resource", ex, request);
+                    "Failed to create CIC report statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -77,29 +77,29 @@ public class Cic34ReportController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Cic34Report> response =
-                    cic34ReportService.find(companyAccountId, request);
+            ResponseObject<CicReportStatements> response =
+                    cicReportStatementsService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to retrieve CIC34 report resource", ex, request);
+                    "Failed to retrieve CIC report statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid Cic34Report cic34Report,
+    public ResponseEntity update(@RequestBody @Valid CicReportStatements cicReportStatements,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        CompanyAccount companyAccount =
-                (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CicReport cicReport =
+                (CicReport) request.getAttribute(AttributeName.CIC_REPORT.getValue());
 
-        if (companyAccount.getLinks().get(CompanyAccountLinkType.CIC34_REPORT.getLink()) == null) {
+        if (cicReport.getLinks().get(CicReportLinkType.STATEMENTS.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -111,8 +111,8 @@ public class Cic34ReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Cic34Report> response =
-                    cic34ReportService.update(cic34Report, transaction, companyAccountId, request);
+            ResponseObject<CicReportStatements> response =
+                    cicReportStatementsService.update(cicReportStatements, transaction, companyAccountId, request);
 
             return apiResponseMapper
                     .map(response.getStatus(), response.getData(), response.getErrors());
@@ -120,7 +120,7 @@ public class Cic34ReportController {
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update CIC34 report resource", ex, request);
+                    "Failed to update CIC report statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -133,14 +133,15 @@ public class Cic34ReportController {
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Cic34Report> response = cic34ReportService.delete(companyAccountsId, request);
+            ResponseObject<CicReportStatements> response =
+                    cicReportStatementsService.delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountsId, transaction,
-                    "Failed to delete CIC34 report resource", ex, request);
+                    "Failed to delete CIC report statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
