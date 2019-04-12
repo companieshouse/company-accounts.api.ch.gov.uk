@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class Cic34ReportValidatorTest {
+public class CicReportValidatorTest {
 
     @Mock
     private Transaction transaction;
@@ -32,45 +32,45 @@ public class Cic34ReportValidatorTest {
     private CompanyService companyService;
 
     @InjectMocks
-    private Cic34ReportValidator validator;
+    private CicReportValidator validator;
 
-    private static final String CIC34_REPORT_PATH = "$.cic34_report";
+    private static final String CIC_REPORT_PATH = "$.cic_report";
 
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
     @Test
-    @DisplayName("Validate CIC34 report submission - CIC company")
-    void validateCIC34ReportSubmissionForCICCompany() throws ServiceException, DataException {
+    @DisplayName("Validate cic report creation - CIC company")
+    void validateCicReportCreationForCICCompany() throws ServiceException, DataException {
 
         when(companyService.isCIC(transaction)).thenReturn(true);
 
-        Errors errors = validator.validateCIC34ReportSubmission(transaction);
+        Errors errors = validator.validateCicReportCreation(transaction);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
-    @DisplayName("Validate CIC34 report submission - non CIC company")
-    void validateCIC34ReportSubmissionForNonCICCompany() throws ServiceException, DataException {
+    @DisplayName("Validate cic report creation - non CIC company")
+    void validateCicReportCreationForNonCICCompany() throws ServiceException, DataException {
 
         when(companyService.isCIC(transaction)).thenReturn(false);
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
-        Errors errors = validator.validateCIC34ReportSubmission(transaction);
+        Errors errors = validator.validateCicReportCreation(transaction);
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, CIC34_REPORT_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, CIC_REPORT_PATH)));
     }
 
     @Test
-    @DisplayName("Validate CIC34 report submission - service throws exception")
-    void validateCIC34ReportSubmissionServiceException() throws ServiceException {
+    @DisplayName("Validate cic report creation - service throws exception")
+    void validateCicReportCreationServiceException() throws ServiceException {
 
         when(companyService.isCIC(transaction)).thenThrow(ServiceException.class);
 
-        assertThrows(DataException.class, () -> validator.validateCIC34ReportSubmission(transaction));
+        assertThrows(DataException.class, () -> validator.validateCicReportCreation(transaction));
     }
 
     private Error createError(String error, String path) {

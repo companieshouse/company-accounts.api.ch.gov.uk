@@ -9,20 +9,20 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class Cic34ReportValidator extends BaseValidator {
+public class CicReportValidator extends BaseValidator {
 
     @Autowired
     private CompanyService companyService;
 
-    private static final String CIC34_REPORT_PATH = "$.cic34_report";
+    private static final String CIC_REPORT_PATH = "$.cic_report";
 
-    public Errors validateCIC34ReportSubmission(Transaction transaction) throws DataException {
+    public Errors validateCicReportCreation(Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
         try {
             if (!companyService.isCIC(transaction)) {
-                addError(errors, unexpectedData, CIC34_REPORT_PATH);
+                addError(errors, unexpectedData, CIC_REPORT_PATH);
             }
         } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);

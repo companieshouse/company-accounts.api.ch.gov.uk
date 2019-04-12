@@ -31,14 +31,12 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Cic34Report;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.Cic34ReportRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.Cic34ReportTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.Cic34ReportValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -51,9 +49,6 @@ public class Cic34ReportServiceTest {
 
     @Mock
     private Cic34ReportTransformer transformer;
-
-    @Mock
-    private Cic34ReportValidator validator;
 
     @Mock
     private CompanyAccountService companyAccountService;
@@ -80,9 +75,6 @@ public class Cic34ReportServiceTest {
     private TransactionLinks transactionLinks;
 
     @Mock
-    private Errors errors;
-
-    @Mock
     private Map<String, String> cic34ReportLinks;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -93,9 +85,6 @@ public class Cic34ReportServiceTest {
     @Test
     @DisplayName("Create a CIC34 report - success path")
     void createCIC34ReportSuccess() throws DataException {
-
-        when(validator.validateCIC34ReportSubmission(transaction)).thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -129,31 +118,8 @@ public class Cic34ReportServiceTest {
     }
 
     @Test
-    @DisplayName("Create a CIC34 report - validation errors returned")
-    void createCIC34ReportValidationErrors() throws DataException {
-
-        when(validator.validateCIC34ReportSubmission(transaction)).thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(true);
-
-        ResponseObject<Cic34Report> response =
-                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
-
-        verify(rest, never()).setLinks(anyMap());
-        verify(rest, never()).setEtag(anyString());
-        verify(rest, never()).setKind(Kind.CIC34_REPORT.getValue());
-
-        assertNotNull(response);
-        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
-        assertNull(response.getData());
-        assertEquals(errors, response.getErrors());
-    }
-
-    @Test
     @DisplayName("Create a CIC34 report - duplicate key exception")
     void createCIC34ReportDuplicateKey() throws DataException {
-
-        when(validator.validateCIC34ReportSubmission(transaction)).thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -185,10 +151,7 @@ public class Cic34ReportServiceTest {
 
     @Test
     @DisplayName("Create a CIC34 report - Mongo exception")
-    void createCIC34ReportMongoException() throws DataException {
-
-        when(validator.validateCIC34ReportSubmission(transaction)).thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(false);
+    void createCIC34ReportMongoException() {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
