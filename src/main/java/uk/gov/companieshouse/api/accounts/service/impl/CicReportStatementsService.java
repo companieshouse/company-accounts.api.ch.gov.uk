@@ -133,11 +133,11 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     public ResponseObject<CicReportStatements> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        String cic34ReportId = generateID(companyAccountsId);
+        String cicReportStatementsId = generateID(companyAccountsId);
 
         try {
-            if (repository.existsById(cic34ReportId)) {
-                repository.deleteById(cic34ReportId);
+            if (repository.existsById(cicReportStatementsId)) {
+                repository.deleteById(cicReportStatementsId);
 
                 cicReportService.removeLink(companyAccountsId, CicReportLinkType.STATEMENTS, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);

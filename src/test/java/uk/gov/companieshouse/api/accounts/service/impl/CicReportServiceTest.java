@@ -33,12 +33,14 @@ import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CicReportTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CicReportValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -51,6 +53,9 @@ public class CicReportServiceTest {
 
     @Mock
     private CicReportTransformer transformer;
+
+    @Mock
+    private CicReportValidator validator;
 
     @Mock
     private CompanyAccountService companyAccountService;
@@ -82,6 +87,9 @@ public class CicReportServiceTest {
     @Mock
     private HttpServletRequest request;
 
+    @Mock
+    private Errors errors;
+
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String CIC_REPORT_ID = "cicReportId";
@@ -91,6 +99,9 @@ public class CicReportServiceTest {
     @Test
     @DisplayName("Create cic report - success")
     void createCicReportSuccess() throws DataException {
+
+        when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -124,8 +135,27 @@ public class CicReportServiceTest {
     }
 
     @Test
+    @DisplayName("Create cic report - validation errors")
+    void createCicReportValidationErrors() throws DataException {
+
+        when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<CicReport> response =
+                service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        assertNull(response.getData());
+        assertEquals(errors, response.getErrors());
+    }
+
+    @Test
     @DisplayName("Create cic report - duplicate key exception")
     void createCicReportDuplicateKeyException() throws DataException {
+
+        when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -157,7 +187,10 @@ public class CicReportServiceTest {
 
     @Test
     @DisplayName("Create cic report - Mongo exception")
-    void createCicReportMongoException() {
+    void createCicReportMongoException() throws DataException {
+
+        when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
