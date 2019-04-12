@@ -128,14 +128,14 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
     }
 
     private String generateID(String companyAccountId) {
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.APPROVAL.getName());
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CIC_APPROVAL.getName());
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().getSelf() + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + companyAccountId + "/" + ResourceName.CIC_REPORT.getName() + "/"
-            + ResourceName.APPROVAL.getName();
+            + ResourceName.CIC_APPROVAL.getName();
     }
 
     private void initLinks(CicReportApproval cicReportApproval, String link) {

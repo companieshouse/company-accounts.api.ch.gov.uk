@@ -87,7 +87,7 @@ public class CicReportApprovalServiceTest {
     void setUp() {
 
         when(keyIdGenerator
-            .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
+            .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_APPROVAL.getName()))
             .thenReturn(RESOURCE_ID);
     }
 
