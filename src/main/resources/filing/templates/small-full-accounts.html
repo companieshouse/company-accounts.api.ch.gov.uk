@@ -1126,6 +1126,8 @@
         <tr>
           <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
         </tr>
+
+        {{if $fixedAssets.tangible}}
         <tr class = "figures">
           <td id = "tangible-assets-label">Tangible assets:</td>
           {{if .small_full_accounts.balance_sheet_notes.tangible_assets}}
@@ -1147,6 +1149,9 @@
           </td>
         </tr>
 
+        {{end}}
+
+        {{if $fixedAssets.investments}}
         <tr class = "figures">
           <td id = "fixed-assets-investments-label">Investments:</td>
           {{if .small_full_accounts.balance_sheet_notes.fixed_assets_investments}}
@@ -1167,6 +1172,8 @@
             {{end}}
           </td>
         </tr>
+
+        {{end}}
 
         <tr class = "figures">
           <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
