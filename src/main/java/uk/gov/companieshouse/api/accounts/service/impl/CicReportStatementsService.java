@@ -15,12 +15,15 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportStatementsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
+import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportStatementsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CicReportStatementsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CicReportStatementsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
@@ -30,18 +33,26 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
 
     private CicReportStatementsTransformer transformer;
 
+    private CicReportStatementsValidator validator;
+
     private CicReportService cicReportService;
 
     private KeyIdGenerator keyIdGenerator;
 
+    private static final String NO_CONSULTATION_WITH_STAKEHOLDERS = "No consultation with stakeholders";
+    private static final String NO_DIRECTORS_REMUNERATION = "No remuneration was received";
+    private static final String NO_TRANSFER_OF_ASSETS = "No transfer of assets other than for full consideration";
+
     @Autowired
     public CicReportStatementsService(CicReportStatementsRepository repository,
                               CicReportStatementsTransformer transformer,
+                              CicReportStatementsValidator validator,
                               CicReportService cicReportService,
                               KeyIdGenerator keyIdGenerator) {
 
         this.repository = repository;
         this.transformer = transformer;
+        this.validator = validator;
         this.cicReportService = cicReportService;
         this.keyIdGenerator = keyIdGenerator;
     }
@@ -51,6 +62,7 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
             String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
+        populateDefaultStatementsIfNotProvided(rest);
 
         CicReportStatementsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
@@ -74,6 +86,11 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     @Override
     public ResponseObject<CicReportStatements> update(CicReportStatements rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateCicReportStatementsUpdate(rest);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -138,6 +155,21 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
         initLinks(cicReportStatements, transaction, companyAccountsId);
         cicReportStatements.setEtag(GenerateEtagUtil.generateEtag());
         cicReportStatements.setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
+    }
+
+    private void populateDefaultStatementsIfNotProvided(CicReportStatements cicReportStatements) {
+
+        ReportStatements reportStatements = cicReportStatements.getReportStatements();
+
+        if (reportStatements.getConsultationWithStakeholders() == null) {
+            reportStatements.setConsultationWithStakeholders(NO_CONSULTATION_WITH_STAKEHOLDERS);
+        }
+        if (reportStatements.getDirectorsRemuneration() == null) {
+            reportStatements.setDirectorsRemuneration(NO_DIRECTORS_REMUNERATION);
+        }
+        if (reportStatements.getTransferOfAssets() == null) {
+            reportStatements.setTransferOfAssets(NO_TRANSFER_OF_ASSETS);
+        }
     }
 
     private String generateID(String companyAccountId) {

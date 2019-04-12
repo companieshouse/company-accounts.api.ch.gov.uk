@@ -449,7 +449,7 @@ public class CompanyAccountServiceImplTest {
 
         when(companyAccountDataEntity.getLinks()).thenReturn(companyAccountsLinks);
 
-        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC_REPORT;
 
         assertAll(() -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
 
@@ -466,7 +466,7 @@ public class CompanyAccountServiceImplTest {
         when(repository.findById(COMPANY_ACCOUNTS_ID))
                 .thenReturn(Optional.ofNullable(companyAccountEntityMock));
 
-        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC34_REPORT;
+        CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC_REPORT;
 
         assertThrows(MongoException.class, () -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
     }

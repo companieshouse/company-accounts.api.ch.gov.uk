@@ -133,7 +133,7 @@ public class CicReportStatementsControllerTest {
     }
 
     @Test
-    @DisplayName("Get CIC report statements- success path")
+    @DisplayName("Get CIC report statements - success path")
     void getCicReportStatementsSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);

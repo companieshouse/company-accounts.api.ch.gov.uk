@@ -9,7 +9,10 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
+import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.impl.CicReportService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -48,7 +51,24 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
                 return false;
             }
 
-            request.setAttribute(AttributeName.CIC_REPORT.getValue(), responseObject.getData());
+            CompanyAccount companyAccount = (CompanyAccount) request
+                    .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+            String companyAccountsCicReportLink =
+                    companyAccount.getLinks().get(CompanyAccountLinkType.CIC_REPORT.getLink());
+
+            CicReport cicReport = responseObject.getData();
+            String cicReportSelfLink = cicReport.getLinks().get(BasicLinkType.SELF.getLink());
+
+            if (!cicReportSelfLink.equals(companyAccountsCicReportLink)) {
+
+                LoggingHelper.logInfo(
+                        companyAccountId, transaction, "Cic report link not present in company accounts resource", request);
+
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                return false;
+            }
+
+            request.setAttribute(AttributeName.CIC_REPORT.getValue(), cicReport);
             return true;
 
         } catch (DataException e) {
