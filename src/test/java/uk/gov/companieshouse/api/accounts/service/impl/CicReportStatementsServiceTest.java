@@ -31,12 +31,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportStatementsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
+import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportStatementsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CicReportStatementsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CicReportStatementsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -51,6 +53,9 @@ public class CicReportStatementsServiceTest {
     private CicReportStatementsTransformer transformer;
 
     @Mock
+    private CicReportStatementsValidator validator;
+
+    @Mock
     private CicReportService cicReportService;
 
     @Mock
@@ -61,6 +66,9 @@ public class CicReportStatementsServiceTest {
 
     @Mock
     private CicReportStatements rest;
+
+    @Mock
+    private ReportStatements reportStatements;
 
     @Mock
     private CicReportStatementsEntity entity;
@@ -85,12 +93,28 @@ public class CicReportStatementsServiceTest {
     private static final String CIC_REPORT_STATEMENTS_SELF_LINK = "cicReportStatementsSelfLink";
     private static final String RESOURCE_ID = "resourceId";
 
+    private static final String PROVIDED_CONSULTATION_WITH_STAKEHOLDERS = "providedConsultationWithStakeholders";
+    private static final String PROVIDED_DIRECTORS_REMUNERATION = "providedDirectorsRemuneration";
+    private static final String PROVIDED_TRANSFER_OF_ASSETS = "providedTransferOfAssets";
+
+    private static final String DEFAULT_CONSULTATION_WITH_STAKEHOLDERS = "No consultation with stakeholders";
+    private static final String DEFAULT_DIRECTORS_REMUNERATION = "No remuneration was received";
+    private static final String DEFAULT_TRANSFER_OF_ASSETS = "No transfer of assets other than for full consideration";
+
     @Test
-    @DisplayName("Create CIC report statements - success path")
-    void createCicReportStatementsSuccess() throws DataException {
+    @DisplayName("Create CIC report statements - success path for REST object with all optional fields populated")
+    void createCicReportStatementsSuccessWithAllFieldsPopulated() throws DataException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(rest.getReportStatements()).thenReturn(reportStatements);
+        when(reportStatements.getConsultationWithStakeholders())
+                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration())
+                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets())
+                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
 
         when(transformer.transform(rest)).thenReturn(entity);
 
@@ -108,6 +132,59 @@ public class CicReportStatementsServiceTest {
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
         verify(rest, times(1)).setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
+
+        verify(reportStatements, never()).setConsultationWithStakeholders(DEFAULT_CONSULTATION_WITH_STAKEHOLDERS);
+        verify(reportStatements, never()).setDirectorsRemuneration(DEFAULT_DIRECTORS_REMUNERATION);
+        verify(reportStatements, never()).setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
+
+        verify(entity, times(1)).setId(RESOURCE_ID);
+
+        verify(repository, times(1)).insert(entity);
+
+        verify(cicReportService, times(1))
+                .addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS, CIC_REPORT_STATEMENTS_SELF_LINK, request);
+
+        assertNotNull(response);
+        assertEquals(ResponseStatus.CREATED, response.getStatus());
+        assertEquals(rest, response.getData());
+        assertNull(response.getErrors());
+    }
+
+    @Test
+    @DisplayName("Create CIC report statements - success path for REST object without optional fields populated")
+    void createCicReportStatementsSuccessWithoutOptionalFieldsPopulated() throws DataException {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(rest.getReportStatements()).thenReturn(reportStatements);
+        when(reportStatements.getConsultationWithStakeholders()).thenReturn(null);
+        when(reportStatements.getDirectorsRemuneration()).thenReturn(null);
+        when(reportStatements.getTransferOfAssets()).thenReturn(null);
+
+        when(transformer.transform(rest)).thenReturn(entity);
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
+                + ResourceName.CIC_REPORT.getName() + "-"
+                + ResourceName.STATEMENTS.getName()))
+                .thenReturn(RESOURCE_ID);
+
+        when(rest.getLinks()).thenReturn(cicReportStatementsLinks);
+        when(cicReportStatementsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(CIC_REPORT_STATEMENTS_SELF_LINK);
+
+        ResponseObject<CicReportStatements> response =
+                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        verify(rest, times(1)).setLinks(anyMap());
+        verify(rest, times(1)).setEtag(anyString());
+        verify(rest, times(1)).setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
+
+        verify(reportStatements, times(1))
+                .setConsultationWithStakeholders(DEFAULT_CONSULTATION_WITH_STAKEHOLDERS);
+        verify(reportStatements, times(1))
+                .setDirectorsRemuneration(DEFAULT_DIRECTORS_REMUNERATION);
+        verify(reportStatements, times(1))
+                .setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
 
         verify(entity, times(1)).setId(RESOURCE_ID);
 
@@ -129,6 +206,14 @@ public class CicReportStatementsServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
+        when(rest.getReportStatements()).thenReturn(reportStatements);
+        when(reportStatements.getConsultationWithStakeholders())
+                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration())
+                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets())
+                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
+
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
@@ -144,6 +229,10 @@ public class CicReportStatementsServiceTest {
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
         verify(rest, times(1)).setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
+
+        verify(reportStatements, never()).setConsultationWithStakeholders(DEFAULT_CONSULTATION_WITH_STAKEHOLDERS);
+        verify(reportStatements, never()).setDirectorsRemuneration(DEFAULT_DIRECTORS_REMUNERATION);
+        verify(reportStatements, never()).setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
 
         verify(entity, times(1)).setId(RESOURCE_ID);
 
@@ -163,6 +252,14 @@ public class CicReportStatementsServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
+        when(rest.getReportStatements()).thenReturn(reportStatements);
+        when(reportStatements.getConsultationWithStakeholders())
+                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration())
+                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets())
+                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
+
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
@@ -179,6 +276,10 @@ public class CicReportStatementsServiceTest {
         verify(rest, times(1)).setEtag(anyString());
         verify(rest, times(1)).setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
 
+        verify(reportStatements, never()).setConsultationWithStakeholders(DEFAULT_CONSULTATION_WITH_STAKEHOLDERS);
+        verify(reportStatements, never()).setDirectorsRemuneration(DEFAULT_DIRECTORS_REMUNERATION);
+        verify(reportStatements, never()).setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
+
         verify(entity, times(1)).setId(RESOURCE_ID);
 
         verify(cicReportService, never())
@@ -188,6 +289,9 @@ public class CicReportStatementsServiceTest {
     @Test
     @DisplayName("Update CIC report statements - success path")
     void updateCicReportStatementsSuccess() throws DataException {
+
+        when(validator.validateCicReportStatementsUpdate(rest)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -219,6 +323,9 @@ public class CicReportStatementsServiceTest {
     @Test
     @DisplayName("Update CIC report statements - Mongo exception")
     void updateCicReportStatementsMongoException() {
+
+        when(validator.validateCicReportStatementsUpdate(rest)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);

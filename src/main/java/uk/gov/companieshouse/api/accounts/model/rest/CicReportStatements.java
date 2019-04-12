@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
@@ -12,6 +13,8 @@ public class CicReportStatements extends RestObject {
     @JsonProperty("has_completed_report_statements")
     private Boolean hasCompletedReportStatements;
 
+    @Valid
+    @NotNull
     @JsonProperty("report_statements")
     private ReportStatements reportStatements;
 
