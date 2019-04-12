@@ -66,7 +66,7 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.APPROVAL.getValue());
+        rest.setKind(Kind.CIC_APPROVAL.getValue());
         CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
             .transform(rest);
 
@@ -93,8 +93,25 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
     @Override
     public ResponseObject<CicReportApproval> update(CicReportApproval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
-        //TODO implement method
-        return null;
+
+        String selfLink = createSelfLink(transaction, companyAccountId);
+        initLinks(rest, selfLink);
+        rest.setEtag(GenerateEtagUtil.generateEtag());
+        rest.setKind(Kind.CIC_APPROVAL.getValue());
+
+        CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
+            .transform(rest);
+        cicReportApprovalEntity.setId(generateID(companyAccountId));
+
+        try {
+            cicReportApprovalRepository.save(cicReportApprovalEntity);
+
+        } catch (MongoException ex) {
+
+            throw new DataException(ex);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
@@ -124,11 +141,25 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
     @Override
     public ResponseObject<CicReportApproval> delete(String companyAccountsId,
         HttpServletRequest request) throws DataException {
-        return null;
+        String id = generateID(companyAccountsId);
+
+        try {
+            if (cicReportApprovalRepository.existsById(id)) {
+                cicReportApprovalRepository.deleteById(id);
+                cicReportService
+                    .removeLink(companyAccountsId, CicReportLinkType.APPROVAL, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
     }
 
     private String generateID(String companyAccountId) {
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CIC_APPROVAL.getName());
+        return keyIdGenerator
+            .generate(companyAccountId + "-" + ResourceName.CIC_APPROVAL.getName());
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
