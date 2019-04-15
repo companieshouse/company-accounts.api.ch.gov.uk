@@ -201,11 +201,13 @@ public class StocksServiceTest {
     @DisplayName("Tests the successful find of a stocks resource")
     void findStocks() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.findById(GENERATED_ID))
                 .thenReturn(Optional.ofNullable(stocksEntity));
         when(mockTransformer.transform(stocksEntity)).thenReturn(mockStocks);
 
-        ResponseObject<Stocks> result = service.findById("", mockRequest);
+        ResponseObject<Stocks> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(mockStocks, result.getData());
@@ -217,10 +219,12 @@ public class StocksServiceTest {
 
         stocksEntity = null;
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.findById(GENERATED_ID))
                 .thenReturn(Optional.ofNullable(stocksEntity));
 
-        ResponseObject<Stocks> result = service.findById("", mockRequest);
+        ResponseObject<Stocks> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -230,8 +234,10 @@ public class StocksServiceTest {
     @DisplayName("Tests mongo exception thrown on find of a stocks resource")
     void findStocksMongoException() {
 
-        when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> service.findById("", mockRequest));
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STOCKS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(mockRepository.findById(GENERATED_ID)).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> service.find(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test

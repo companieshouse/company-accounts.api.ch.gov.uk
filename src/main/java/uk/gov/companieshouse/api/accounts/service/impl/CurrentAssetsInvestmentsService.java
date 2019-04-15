@@ -90,7 +90,7 @@ public class CurrentAssetsInvestmentsService implements ResourceService<CurrentA
         }
 
     @Override
-    public ResponseObject<CurrentAssetsInvestments> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<CurrentAssetsInvestments> find(String id, HttpServletRequest request) throws DataException {
 
         CurrentAssetsInvestmentsEntity entity;
 
@@ -127,36 +127,36 @@ public class CurrentAssetsInvestmentsService implements ResourceService<CurrentA
         }
     }
 
-    @Override
-        public String generateID(String companyAccountId) {
-            return keyIdGenerator.generate(companyAccountId + "-"
-                + ResourceName.CURRENT_ASSETS_INVESTMENTS.getName());
-        }
+    public String generateID(String companyAccountId) {
+        return keyIdGenerator.generate(companyAccountId + "-"
+            + ResourceName.CURRENT_ASSETS_INVESTMENTS.getName());
+    }
 
-        private void setMetadataOnRestObject(CurrentAssetsInvestments rest, Transaction transaction,
-                                             String companyAccountsId) {
+    private void setMetadataOnRestObject(
+        CurrentAssetsInvestments rest, Transaction transaction,
+        String companyAccountsId) {
 
-            rest.setLinks(createSelfLink(transaction, companyAccountsId));
-            rest.setEtag(GenerateEtagUtil.generateEtag());
-            rest.setKind(Kind.CURRENT_ASSETS_INVESTMENT_NOTE.getValue());
-        }
+        rest.setLinks(createSelfLink(transaction, companyAccountsId));
+        rest.setEtag(GenerateEtagUtil.generateEtag());
+        rest.setKind(Kind.CURRENT_ASSETS_INVESTMENT_NOTE.getValue());
+    }
 
-        private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
+    private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
 
-            Map<String, String> map = new HashMap<>();
-            map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
-            return map;
-        }
+        Map<String, String> map = new HashMap<>();
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
+        return map;
+    }
 
-        private String generateSelfLink(Transaction transaction, String companyAccountId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
-            return transaction.getLinks().getSelf() + "/"
-                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
-                + ResourceName.CURRENT_ASSETS_INVESTMENTS.getName();
-        }
+        return transaction.getLinks().getSelf() + "/"
+            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/notes/"
+            + ResourceName.CURRENT_ASSETS_INVESTMENTS.getName();
+    }
 
-        public String getSelfLinkFromFixedAssetsInvestmentsEntity(CurrentAssetsInvestmentsEntity entity) {
-            return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
-        }
+    public String getSelfLinkFromFixedAssetsInvestmentsEntity(CurrentAssetsInvestmentsEntity entity) {
+        return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
+    }
 }

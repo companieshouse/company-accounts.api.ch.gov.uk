@@ -32,17 +32,20 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 @TestInstance(Lifecycle.PER_CLASS)
 public class StatementsControllerTest {
 
-    private static final String STATEMENT_ID = "abcdef";
     private static final String COMPANY_ACCOUNTS_ID = "123123";
 
     @Mock
     private Statement statementMock;
+
     @Mock
     private StatementService statementServiceMock;
+
     @Mock
     private Transaction transactionMock;
+
     @Mock
     private HttpServletRequest requestMock;
+
     @Mock
     private ApiResponseMapper apiResponseMapperMock;
 
@@ -139,11 +142,10 @@ public class StatementsControllerTest {
     @Test
     @DisplayName("Tests the successful request to get Statements")
     void shouldGetStatements() throws DataException {
-        when(statementServiceMock.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STATEMENT_ID);
 
         ResponseObject restObjectFound = createResponseObject(ResponseStatus.FOUND);
 
-        when(statementServiceMock.findById(STATEMENT_ID, requestMock))
+        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock))
             .thenReturn(restObjectFound);
 
         when(apiResponseMapperMock.mapGetResponse(restObjectFound.getData(), requestMock))
@@ -153,18 +155,17 @@ public class StatementsControllerTest {
             statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.OK, true);
-        verifyStatementServiceGenerateAndFind(STATEMENT_ID);
+        verifyStatementServiceFind();
         verifyApiResponseMapperMapGetResponseCall(restObjectFound);
     }
 
     @Test
     @DisplayName("Tests the unsuccessful request to get Statements as statement id not found")
     void shouldNotGetStatementsStatementIdNotFound() throws DataException {
-        when(statementServiceMock.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STATEMENT_ID);
 
         ResponseObject restObjectNotFound = createResponseObject(ResponseStatus.NOT_FOUND);
 
-        when(statementServiceMock.findById(STATEMENT_ID, requestMock))
+        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock))
             .thenReturn(restObjectNotFound);
 
         when(apiResponseMapperMock.mapGetResponse(restObjectNotFound.getData(), requestMock))
@@ -174,7 +175,7 @@ public class StatementsControllerTest {
             statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.NOT_FOUND, true);
-        verifyStatementServiceGenerateAndFind(STATEMENT_ID);
+        verifyStatementServiceFind();
         verifyApiResponseMapperMapGetResponseCall(restObjectNotFound);
     }
 
@@ -183,9 +184,7 @@ public class StatementsControllerTest {
     void shouldNotGetStatementsStatementAsExceptionOccurs() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
 
-        when(statementServiceMock.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STATEMENT_ID);
-
-        when(statementServiceMock.findById(STATEMENT_ID, requestMock))
+        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock))
             .thenThrow(new DataException(""));
 
         when(apiResponseMapperMock.getErrorResponse())
@@ -195,7 +194,7 @@ public class StatementsControllerTest {
             statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
-        verifyStatementServiceGenerateAndFind(STATEMENT_ID);
+        verifyStatementServiceFind();
         verify(apiResponseMapperMock, times(1)).getErrorResponse();
     }
 
@@ -266,13 +265,10 @@ public class StatementsControllerTest {
      *
      * @throws DataException
      */
-    private void verifyStatementServiceGenerateAndFind(String a) throws DataException {
+    private void verifyStatementServiceFind() throws DataException {
 
         verify(statementServiceMock, times(1))
-            .generateID(COMPANY_ACCOUNTS_ID);
-
-        verify(statementServiceMock, times(1))
-            .findById(STATEMENT_ID, requestMock);
+            .find(COMPANY_ACCOUNTS_ID, requestMock);
     }
 
     /**

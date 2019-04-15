@@ -12,10 +12,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.security.MessageDigest;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -68,9 +68,6 @@ public class SmallFullServiceTest {
     private Map<String, String> links;
 
     @Mock
-    private MessageDigest messageDigest;
-
-    @Mock
     private SmallFullTransformer smallFullTransformer;
 
     @Mock
@@ -95,19 +92,21 @@ public class SmallFullServiceTest {
     private static final String GENERATED_ID = "generatedId";
     private static final String SELF_LINK = "self_link";
 
-    public void setUpCreate() {
+    @BeforeEach
+    void setUp() {
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
+                .thenReturn(GENERATED_ID);
     }
 
     @Test
     @DisplayName("Tests the successful creation of a smallFull resource")
     public void createAccountSuccess() throws DataException {
-        setUpCreate();
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, "", request);
+        ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
     }
@@ -115,7 +114,6 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a smallFull resource")
     public void createSmallfullDuplicateKey() throws DataException {
-        setUpCreate();
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
@@ -123,7 +121,7 @@ public class SmallFullServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = smallFullService.create(smallFull, transaction, "", request);
+        ResponseObject response = smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -131,8 +129,7 @@ public class SmallFullServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a small full")
-    void createSmallfullMongoExceptionFailure() throws DataException {
-        setUpCreate();
+    void createSmallfullMongoExceptionFailure() {
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
@@ -141,7 +138,7 @@ public class SmallFullServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         Executable executable = () -> {
-            smallFullService.create(smallFull, transaction, "", request);
+            smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -149,20 +146,20 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the successful find of a small full resource")
     public void findSmallfull() throws DataException {
-        when(smallFullRepository.findById("")).thenReturn(Optional.ofNullable(smallFullEntity));
+        when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
         when(smallFullTransformer.transform(smallFullEntity)).thenReturn(smallFull);
         ResponseObject<SmallFull> result = smallFullService
-            .findById("", request);
+            .find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(smallFull, result.getData());
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a small full resource")
-    public void findSmallfullMongoException() throws DataException {
-        when(smallFullRepository.findById("")).thenThrow(mongoException);
+    public void findSmallfullMongoException() {
+        when(smallFullRepository.findById(GENERATED_ID)).thenThrow(mongoException);
         Executable executable = () -> {
-            smallFullService.findById("", request);
+            smallFullService.find(COMPANY_ACCOUNTS_ID, request);
         };
         assertThrows(DataException.class, executable);
     }
@@ -170,9 +167,6 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the successful removal of a small full link")
     void removeLinkSuccess() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
-                .thenReturn(GENERATED_ID);
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
 
@@ -189,9 +183,6 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the  removal of a small full link where the repository throws a Mongo exception")
     void removeLinkMongoException() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
-                .thenReturn(GENERATED_ID);
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
 
@@ -211,9 +202,6 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the  removal of a small full link where the entity is not found")
     void removeLinkSmallFullEntityNotFound() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
-                .thenReturn(GENERATED_ID);
 
         SmallFullEntity smallFullEntity = null;
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));

@@ -112,11 +112,9 @@ public class CreditorsWithinOneYearController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String creditorsWithinOneYearId = creditorsWithinOneYearService.generateID(companyAccountId);
-
         try {
             ResponseObject<CreditorsWithinOneYear> response = creditorsWithinOneYearService
-                .findById(creditorsWithinOneYearId, request);
+                .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

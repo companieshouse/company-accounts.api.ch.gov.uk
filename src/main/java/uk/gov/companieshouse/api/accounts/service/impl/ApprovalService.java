@@ -96,13 +96,13 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
-    public ResponseObject<Approval> findById(String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Approval> find(String companyAccountsId, HttpServletRequest request) throws DataException {
 
         ApprovalEntity approvalEntity;
 
         try {
 
-            approvalEntity = approvalRepository.findById(id).orElse(null);
+            approvalEntity = approvalRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
 
             throw new DataException(e);
@@ -121,8 +121,7 @@ public class ApprovalService implements ResourceService<Approval> {
         return null;
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.APPROVAL.getName());
     }
 

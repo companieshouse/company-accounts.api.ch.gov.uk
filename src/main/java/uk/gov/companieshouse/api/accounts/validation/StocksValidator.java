@@ -50,7 +50,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                                  HttpServletRequest request) throws DataException {
 
 
-        Errors errors = new Errors();
+        Errors errors = validateIfEmptyResource(stocks, request, companyAccountsId);
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
@@ -71,6 +75,26 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         return errors;
     }
 
+    private Errors validateIfEmptyResource(Stocks stocks,
+            HttpServletRequest request, String companyAccountsId) throws DataException {
+
+        Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
+                (stocks.getCurrentPeriod() == null &&
+                        stocks.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, STOCKS_PATH);
+        }
+
+        return errors;
+    }
+
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote, BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
@@ -83,17 +107,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 validateCurrentPeriodFields(currentPeriodNote, errors);
             }
 
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors)) {
-
-            if (hasCurrentPeriodNoteData) {
+        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-            if (hasCurrentPeriodNoteData && hasCurrentPeriodBalanceSheetNoteValue) {
                 crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
             }
         }
-    }
 
     private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
                                                     String errorPath,
@@ -119,17 +137,11 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
                 validatePreviousPeriodFields(previousPeriodNote, errors);
             }
 
-        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors)) {
-
-            if (hasPreviousPeriodNoteData) {
+        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
-
-            if (hasPreviousPeriodNoteData && hasPreviousPeriodBalanceSheetNoteValue) {
                 crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
             }
         }
-    }
 
     private void validatePreviousPeriodNotPresent(PreviousPeriod previousPeriod,
                                                   Errors errors) {
@@ -279,11 +291,9 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
     private BalanceSheet getPreviousPeriodBalanceSheet(
         HttpServletRequest request, String companyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
-
-        previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject
+                = previousPeriodService.find(companyAccountsId, request);
 
         if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
             return previousPeriodResponseObject.getData().getBalanceSheet();
@@ -339,11 +349,8 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
                                                       String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
-
-        currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject
+                = currentPeriodService.find(companyAccountsId, request);
 
         if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
             return currentPeriodResponseObject.getData().getBalanceSheet();

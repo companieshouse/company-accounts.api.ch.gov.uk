@@ -109,11 +109,9 @@ public class CurrentPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountId);
-
         try {
             ResponseObject<CurrentPeriod> response =
-                    currentPeriodService.findById(currentPeriodId, request);
+                    currentPeriodService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

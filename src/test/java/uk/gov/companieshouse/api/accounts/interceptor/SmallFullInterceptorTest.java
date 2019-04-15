@@ -28,7 +28,6 @@ import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
@@ -85,14 +84,13 @@ public class SmallFullInterceptorTest {
         doReturn(companyAccount).when(httpServletRequest).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-        when(smallFullService.generateID(anyString())).thenReturn("test");
         when(httpServletRequest.getMethod()).thenReturn("GET");
     }
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
-        when(smallFullService.findById(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
+        when(smallFullService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);
         when(companyAccount.getLinks()).thenReturn(companyAccountLinks);
@@ -102,14 +100,14 @@ public class SmallFullInterceptorTest {
 
         smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
-        verify(smallFullService, times(1)).findById(anyString(), any(HttpServletRequest.class));
+        verify(smallFullService, times(1)).find(anyString(), any(HttpServletRequest.class));
         verify(httpServletRequest, times(1)).setAttribute(anyString(), any(SmallFull.class));
     }
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
     public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
-        doThrow(mock(DataException.class)).when(smallFullService).findById(anyString(), any(HttpServletRequest.class));
+        doThrow(mock(DataException.class)).when(smallFullService).find(anyString(), any(HttpServletRequest.class));
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
     }
