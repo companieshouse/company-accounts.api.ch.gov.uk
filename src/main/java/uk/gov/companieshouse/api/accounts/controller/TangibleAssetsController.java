@@ -78,12 +78,10 @@ public class TangibleAssetsController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String tangibleAssetsId = tangibleAssetsService.generateID(companyAccountId);
-
         try {
             ResponseObject<TangibleAssets> response =
                     tangibleAssetsService
-                        .findById(tangibleAssetsId, request);
+                        .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

@@ -101,14 +101,14 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
     }
 
     @Override
-    public ResponseObject<TangibleAssets> findById(String id, HttpServletRequest request)
+    public ResponseObject<TangibleAssets> find(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
         TangibleAssetsEntity entity;
 
         try {
 
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
 
             throw new DataException(e);
@@ -145,8 +145,7 @@ public class TangibleAssetsService implements ResourceService<TangibleAssets> {
         }
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
 
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.TANGIBLE_ASSETS.getName());
     }

@@ -3,22 +3,29 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
 public class CompanyAccount extends RestObject {
 
-    @NotNull
-    @JsonProperty("period_end_on")
-    private LocalDate periodEndOn;
+    @JsonProperty("next_accounts")
+    private AccountingPeriod nextAccounts;
 
-    public LocalDate getPeriodEndOn() {
-        return periodEndOn;
+    @JsonProperty("last_accounts")
+    private AccountingPeriod lastAccounts;
+
+    public AccountingPeriod getNextAccounts() {
+        return nextAccounts;
     }
 
-    public void setPeriodEndOn(LocalDate periodEndOn) {
-        this.periodEndOn = periodEndOn;
+    public void setNextAccounts(AccountingPeriod nextAccounts) {
+        this.nextAccounts = nextAccounts;
     }
 
+    public AccountingPeriod getLastAccounts() {
+        return lastAccounts;
+    }
+
+    public void setLastAccounts(AccountingPeriod lastAccounts) {
+        this.lastAccounts = lastAccounts;
+    }
 }

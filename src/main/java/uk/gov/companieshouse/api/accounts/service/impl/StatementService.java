@@ -113,13 +113,13 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     @Override
-    public ResponseObject<Statement> findById(String id, HttpServletRequest request)
+    public ResponseObject<Statement> find(String companyAccountsId, HttpServletRequest request)
         throws DataException {
 
         StatementEntity statementEntity;
 
         try {
-            statementEntity = statementRepository.findById(id).orElse(null);
+            statementEntity = statementRepository.findById(generateID(companyAccountsId)).orElse(null);
 
         } catch (MongoException ex) {
 
@@ -138,8 +138,7 @@ public class StatementService implements ResourceService<Statement> {
         return null;
     }
 
-    @Override
-    public String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.STATEMENTS.getName());
     }
 
@@ -151,7 +150,7 @@ public class StatementService implements ResourceService<Statement> {
      */
     private LocalDate getPeriodEndOn(CompanyAccount companyAccount) {
 
-        return companyAccount.getPeriodEndOn();
+        return companyAccount.getNextAccounts().getPeriodEndOn();
     }
 
     /**

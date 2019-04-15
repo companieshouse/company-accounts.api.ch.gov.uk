@@ -39,7 +39,6 @@ import static org.mockito.Mockito.when;
 public class StocksControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String STOCKS_ID = "stocksId";
 
     @Mock
     private BindingResult mockBindingResult;
@@ -214,11 +213,10 @@ public class StocksControllerTest {
     void getStocksSuccess() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockStocksService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STOCKS_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
                 mockStocks);
-        when(mockStocksService.findById(STOCKS_ID, mockRequest))
+        when(mockStocksService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -239,9 +237,8 @@ public class StocksControllerTest {
     void getStocksDataException() throws DataException {
 
         when(mockRequest.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(mockTransaction);
-        when(mockStocksService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(STOCKS_ID);
 
-        when(mockStocksService.findById(STOCKS_ID, mockRequest))
+        when(mockStocksService.find(COMPANY_ACCOUNTS_ID, mockRequest))
                 .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

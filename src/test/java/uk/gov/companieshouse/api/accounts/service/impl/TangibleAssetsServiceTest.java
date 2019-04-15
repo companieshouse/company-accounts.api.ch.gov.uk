@@ -253,11 +253,14 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the successful retrieval of a Tangible Assets resource")
     void getTangibleAssetsSuccess() throws DataException {
 
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(tangibleAssetsEntity));
         when(transformer.transform(tangibleAssetsEntity)).thenReturn(tangibleAssets);
 
         ResponseObject<TangibleAssets> response =
-                tangibleAssetsService.findById(GENERATED_ID, request);
+                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.FOUND, response.getStatus());
@@ -268,11 +271,14 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the retrieval of a non-existent Tangible Assets resource")
     void getTangibleAssetsNotFound() throws DataException {
 
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
         TangibleAssetsEntity tangibleAssetsEntity = null;
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(tangibleAssetsEntity));
 
         ResponseObject<TangibleAssets> response =
-                tangibleAssetsService.findById(GENERATED_ID, request);
+                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -283,10 +289,13 @@ public class TangibleAssetsServiceTest {
     @DisplayName("Tests the retrieval of a Tangible Assets resource where the repository throws a Mongo exception")
     void getTangibleAssetsMongoException() {
 
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
         when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
-                tangibleAssetsService.findById(GENERATED_ID, request));
+                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request));
 
         assertRepositoryFindByIdCalled();
     }

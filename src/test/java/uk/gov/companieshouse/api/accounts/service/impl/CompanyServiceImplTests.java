@@ -129,6 +129,30 @@ public class CompanyServiceImplTests {
 
     }
 
+    @Test
+    @DisplayName("isCIC returns true")
+    void isCICReturnsTrue() throws ServiceException, ApiErrorResponseException,
+            URIValidationException {
+
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(true);
+
+        assertTrue(companyService.isCIC(mockTransaction));
+    }
+
+    @Test
+    @DisplayName("isCIC returns false")
+    void isCICReturnsFalse() throws ServiceException, ApiErrorResponseException,
+            URIValidationException {
+
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(false);
+
+        assertFalse(companyService.isCIC(mockTransaction));
+    }
+
     private CompanyProfileApi generateMultipleYearFiler() {
 
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();

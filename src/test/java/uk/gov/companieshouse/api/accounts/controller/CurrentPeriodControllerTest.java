@@ -25,7 +25,6 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -50,9 +49,6 @@ public class CurrentPeriodControllerTest {
 
     @Mock
     private BindingResult bindingResult;
-
-    @Mock
-    private Errors errors;
 
     @Mock
     private CurrentPeriodService currentPeriodService;
@@ -91,10 +87,9 @@ public class CurrentPeriodControllerTest {
     @DisplayName("Test the retreval of a current period resource")
     public void canRetrieveCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        doReturn("find").when(currentPeriodService).generateID("123456");
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
         doReturn(new ResponseObject(ResponseStatus.FOUND,
-            currentPeriod)).when(currentPeriodService).findById("find", request);
+            currentPeriod)).when(currentPeriodService).find("123456", request);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
             request)).thenReturn(responseEntity);
 
