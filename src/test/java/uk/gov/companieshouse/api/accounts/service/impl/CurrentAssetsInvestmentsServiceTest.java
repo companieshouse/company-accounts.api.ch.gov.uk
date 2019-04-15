@@ -192,7 +192,7 @@ public class CurrentAssetsInvestmentsServiceTest {
             .thenReturn(Optional.ofNullable(currentAssetsInvestmentsEntity));
         when(mockTransformer.transform(currentAssetsInvestmentsEntity)).thenReturn(mockCurrentAssetsInvestments);
 
-        ResponseObject<CurrentAssetsInvestments> result = service.findById("", mockRequest);
+        ResponseObject<CurrentAssetsInvestments> result = service.find("", mockRequest);
 
         assertNotNull(result);
         assertEquals(mockCurrentAssetsInvestments, result.getData());
@@ -207,7 +207,7 @@ public class CurrentAssetsInvestmentsServiceTest {
         when(mockRepository.findById(""))
             .thenReturn(Optional.ofNullable(currentAssetsInvestmentsEntity));
 
-        ResponseObject<CurrentAssetsInvestments> result = service.findById("", mockRequest);
+        ResponseObject<CurrentAssetsInvestments> result = service.find("", mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -218,7 +218,7 @@ public class CurrentAssetsInvestmentsServiceTest {
     void findCurrentAssetsInvestmentsMongoException() {
 
         when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> service.findById("", mockRequest));
+        assertThrows(DataException.class, () -> service.find("", mockRequest));
     }
 
     @Test

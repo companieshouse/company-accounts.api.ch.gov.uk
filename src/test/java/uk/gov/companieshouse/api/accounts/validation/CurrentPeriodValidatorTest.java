@@ -73,9 +73,11 @@ public class CurrentPeriodValidatorTest {
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(2L);
-        fixedAssets.setTotal(2L);
+        fixedAssets.setTangible(1L);
+        fixedAssets.setTotal(1L);
         balanceSheet.setFixedAssets(fixedAssets);
+
+        balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 
         currentPeriod.setBalanceSheet(balanceSheet);
         Errors errors = validator.validateCurrentPeriod(currentPeriod);

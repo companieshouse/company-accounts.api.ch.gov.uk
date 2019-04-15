@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -189,12 +190,52 @@ public class FilingServiceImpl implements FilingService {
         filing.setDescriptionIdentifier(accountsType.getAccountType());
         filing.setKind(accountsType.getKind());
         filing.setDescriptionValues(documentGeneratorResponse.getDescriptionValues());
-        filing.setDescription(documentGeneratorResponse.getDescription());
+        filing.setDescription(populateDescription(documentGeneratorResponse.getDescription(),
+            documentGeneratorResponse.getDescriptionValues()));
         filing.setData(createFilingData(documentGeneratorResponse));
 
         return filing;
     }
 
+    /**
+     * Populate the description by reformatting the period_end_on from
+     * "yyyy-MM-dd" to "d MMMM yyyy" if it is present as a parameter and
+     * then update all placeholders in the description string
+     *
+     * @param description
+     * @param originalParameters
+     * @return description
+     */
+    private String populateDescription(final String description, final Map<String, String> originalParameters) {
+        
+        if(originalParameters.containsKey(PERIOD_END_ON)) {
+            Map<String, String> copyOfParameters = new HashMap<>(originalParameters);
+            String periodEndOnValue = copyOfParameters.get(PERIOD_END_ON);
+            
+            LocalDate periodEndOnDate = accountsDatesHelper.convertStringToDate(periodEndOnValue);
+            String displayDate = accountsDatesHelper.convertLocalDateToDisplayDate(periodEndOnDate);
+            
+            copyOfParameters.put(PERIOD_END_ON, displayDate);
+            
+            return populateParameters(description, copyOfParameters);
+        } else {
+            return populateParameters(description, originalParameters);
+        }
+        
+    }
+    
+    /**
+     * Populate the parameters in the description
+     *
+     * @param description
+     * @param parameters
+     * @return description
+     */
+    private String populateParameters(Object description, Map<String, String> parameters) {
+        StrSubstitutor sub = new StrSubstitutor(parameters, "{", "}");
+        return sub.replace(description);
+    }
+    
     /**
      * Retrieve the period end date from the document generator response, and
      * set the date in the expected format YYYY-mm-dd.

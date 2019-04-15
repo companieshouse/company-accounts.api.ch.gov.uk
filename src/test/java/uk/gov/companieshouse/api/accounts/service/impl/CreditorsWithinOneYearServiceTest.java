@@ -246,11 +246,14 @@ public class CreditorsWithinOneYearServiceTest {
     @DisplayName("Tests the successful find of a creditors within one year resource")
     void findCreditorsWithinOneYear() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID))
             .thenReturn(Optional.ofNullable(creditorsWithinOneYearEntity));
         when(mockTransformer.transform(creditorsWithinOneYearEntity)).thenReturn(mockCreditorsWithinOneYear);
 
-        ResponseObject<CreditorsWithinOneYear> result = service.findById("", mockRequest);
+        ResponseObject<CreditorsWithinOneYear> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(mockCreditorsWithinOneYear, result.getData());
@@ -262,10 +265,13 @@ public class CreditorsWithinOneYearServiceTest {
 
         creditorsWithinOneYearEntity = null;
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID))
             .thenReturn(Optional.ofNullable(creditorsWithinOneYearEntity));
 
-        ResponseObject<CreditorsWithinOneYear> result = service.findById("", mockRequest);
+        ResponseObject<CreditorsWithinOneYear> result = service.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -275,8 +281,11 @@ public class CreditorsWithinOneYearServiceTest {
     @DisplayName("Tests mongo exception thrown on find of a creditors within one year resource")
     void findCreditorsMongoException() {
 
-        when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> service.findById("", mockRequest));
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_WITHIN_ONE_YEAR.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(mockRepository.findById(GENERATED_ID)).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> service.find(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test

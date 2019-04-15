@@ -114,7 +114,7 @@ public class CurrentAssetsInvestmentsController {
 
         try {
             ResponseObject<CurrentAssetsInvestments> response = currentAssetsInvestmentsService
-                .findById(currentAssetsInvestmentsId, request);
+                .find(currentAssetsInvestmentsId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

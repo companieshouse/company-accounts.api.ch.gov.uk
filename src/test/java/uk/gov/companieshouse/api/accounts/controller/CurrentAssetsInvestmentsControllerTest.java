@@ -231,7 +231,7 @@ public class CurrentAssetsInvestmentsControllerTest {
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
             mockCurrentAssetsInvestments);
-        when(mockCurrentAssetsInvestmentsService.findById(CURRENT_ASSETS_INVESTMENTS_ID, mockRequest))
+        when(mockCurrentAssetsInvestmentsService.find(CURRENT_ASSETS_INVESTMENTS_ID, mockRequest))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -255,7 +255,7 @@ public class CurrentAssetsInvestmentsControllerTest {
         when(mockCurrentAssetsInvestmentsService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(CURRENT_ASSETS_INVESTMENTS_ID);
 
         DataException dataException = new DataException("");
-        when(mockCurrentAssetsInvestmentsService.findById(CURRENT_ASSETS_INVESTMENTS_ID, mockRequest))
+        when(mockCurrentAssetsInvestmentsService.find(CURRENT_ASSETS_INVESTMENTS_ID, mockRequest))
             .thenThrow(dataException);
 
         ResponseEntity responseEntity =

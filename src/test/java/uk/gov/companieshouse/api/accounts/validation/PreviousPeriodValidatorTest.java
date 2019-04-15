@@ -1,23 +1,34 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PreviousPeriodValidatorTest {
 
     private static final String PREVIOUS_PERIOD_PATH = "$.previous_period";
@@ -33,8 +44,16 @@ public class PreviousPeriodValidatorTest {
     private BalanceSheet balanceSheet;
     private PreviousPeriod previousPeriod;
     private Errors errors;
+    private PreviousPeriodValidator validator;
 
-    PreviousPeriodValidator validator = new PreviousPeriodValidator();
+    @Mock
+    private Transaction mockTransaction;
+
+    @Mock
+    private CompanyService mockCompanyService;
+
+    @Mock
+    private ServiceException mockServiceException;
 
     @BeforeEach
     void setup() {
@@ -42,11 +61,13 @@ public class PreviousPeriodValidatorTest {
         previousPeriod = new PreviousPeriod();
         balanceSheet = new BalanceSheet();
         errors = new Errors();
+
+        validator = new PreviousPeriodValidator(mockCompanyService);
     }
 
     @Test
     @DisplayName("SUCCESS - Test Balance Sheet validation with no errors")
-    void validateBalanceSheet() {
+    void validateBalanceSheet() throws DataException, ServiceException {
 
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setStocks(1L);
@@ -75,20 +96,24 @@ public class PreviousPeriodValidatorTest {
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(2L);
-        fixedAssets.setTotal(2L);
+        fixedAssets.setTangible(1L);
+        fixedAssets.setTotal(1L);
         balanceSheet.setFixedAssets(fixedAssets);
+
+        balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 
         previousPeriod.setBalanceSheet(balanceSheet);
 
-        Errors errors = validator.validatePreviousPeriod(previousPeriod);
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod, mockTransaction);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with net current assets error")
-    void validateBalanceSheetWithOtherLiabilitiesOrAssetsNetCurrentAssetsError() {
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsNetCurrentAssetsError() throws DataException, ServiceException {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
@@ -98,8 +123,10 @@ public class PreviousPeriodValidatorTest {
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
         ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
-        
-        Errors errors =  validator.validatePreviousPeriod(previousPeriod);
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        Errors errors =  validator.validatePreviousPeriod(previousPeriod, mockTransaction);
 
         assertTrue(errors.containsError(
                 new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH,
@@ -109,7 +136,7 @@ public class PreviousPeriodValidatorTest {
 
     @Test
     @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with total assets less current liabilities error")
-    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilitiesError() {
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilitiesError() throws DataException, ServiceException {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
@@ -126,7 +153,9 @@ public class PreviousPeriodValidatorTest {
 
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
-        Errors errors = validator.validatePreviousPeriod(previousPeriod);
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod, mockTransaction);
 
         assertTrue(errors.containsError(
 
@@ -137,7 +166,7 @@ public class PreviousPeriodValidatorTest {
 
     @Test
     @DisplayName("ERROR - Other Liabilities Or Assets - Test validation with total net assets error")
-    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalNetAssetsError() {
+    void validateBalanceSheetWithOtherLiabilitiesOrAssetsTotalNetAssetsError() throws DataException, ServiceException {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(2L);
@@ -153,7 +182,9 @@ public class PreviousPeriodValidatorTest {
         previousPeriod.setBalanceSheet(balanceSheet);
         ReflectionTestUtils.setField(validator, "incorrectTotal", "incorrect_total");
 
-        Errors errors = validator.validatePreviousPeriod(previousPeriod);
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod, mockTransaction);
 
         assertTrue(errors.containsError(
                 new Error("incorrect_total", OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH,
@@ -163,7 +194,7 @@ public class PreviousPeriodValidatorTest {
 
     @Test
     @DisplayName("Test validate whole previous period with multiple errors")
-    void validatePreviousPeriod() {
+    void validatePreviousPeriod() throws DataException, ServiceException {
 
         addInvalidFixedAssetsToBalanceSheet();
         addInvalidCurrentAssetsToBalanceSheet();
@@ -182,7 +213,9 @@ public class PreviousPeriodValidatorTest {
         ReflectionTestUtils.setField(validator, "shareholderFundsMismatch", "shareholder_funds_mismatch");
         ReflectionTestUtils.setField(validator, "mandatoryElementMissing", "mandatory_element_missing");
 
-        errors = validator.validatePreviousPeriod(previousPeriod);
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
+        errors = validator.validatePreviousPeriod(previousPeriod, mockTransaction);
 
         assertTrue(errors.hasErrors());
 
@@ -222,6 +255,50 @@ public class PreviousPeriodValidatorTest {
         assertTrue(errors.containsError(new Error("incorrect_total", TOTAL_SHAREHOLDER_FUNDS_PATH,
                         LocationType.JSON_PATH.getValue(),
                         ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("ERROR - Test validation when single year filer files previous period")
+    void validatePreviousPeriodOnFirstYearFiler() throws DataException, ServiceException {
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setNetCurrentAssets(1L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(1L);
+        currentAssets.setTotal(1L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
+        capitalAndReserves.setCalledUpShareCapital(1L);
+        capitalAndReserves.setTotalShareholdersFunds(1L);
+        balanceSheet.setCapitalAndReserves(capitalAndReserves);
+
+
+        previousPeriod.setBalanceSheet(balanceSheet);
+        ReflectionTestUtils.setField(validator, "unexpectedData", "unexpected_data");
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
+
+        Errors errors = validator.validatePreviousPeriod(previousPeriod, mockTransaction);
+
+        assertTrue(errors.containsError(
+                new Error("unexpected_data", BALANCE_SHEET_PATH,
+                        LocationType.JSON_PATH.getValue(),
+                        ErrorType.VALIDATION.getType())));
+    }
+
+    @Test
+    @DisplayName("Data exception thrown when company service API call fails")
+    void testDataExceptionThrown() throws ServiceException {
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+
+        assertThrows(DataException.class,
+                () -> validator.validatePreviousPeriod(previousPeriod, mockTransaction));
     }
 
     private void addInvalidFixedAssetsToBalanceSheet() {

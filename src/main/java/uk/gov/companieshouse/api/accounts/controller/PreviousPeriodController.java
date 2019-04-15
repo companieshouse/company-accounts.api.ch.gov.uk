@@ -75,11 +75,9 @@ public class PreviousPeriodController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String previousPeriodId = previousPeriodService.generateID(companyAccountId);
-
         try {
             ResponseObject<PreviousPeriod> response =
-                    previousPeriodService.findById(previousPeriodId, request);
+                    previousPeriodService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
