@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CicReportApproval extends RestObject {
+public class CicApproval extends RestObject {
 
     private static final int MAX_FIELD_LENGTH = 120;
 

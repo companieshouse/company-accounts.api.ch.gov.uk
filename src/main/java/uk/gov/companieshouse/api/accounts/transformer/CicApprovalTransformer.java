@@ -4,13 +4,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 
 @Component
-public class CicReportApprovalTransformer implements GenericTransformer<CicReportApproval, CicReportApprovalEntity> {
+public class CicApprovalTransformer implements GenericTransformer<CicApproval, CicReportApprovalEntity> {
 
     @Override
-    public CicReportApprovalEntity transform(CicReportApproval approval) {
+    public CicReportApprovalEntity transform(CicApproval approval) {
 
         CicReportApprovalDataEntity dataEntity = new CicReportApprovalDataEntity();
         CicReportApprovalEntity entity  = new CicReportApprovalEntity();
@@ -20,10 +20,10 @@ public class CicReportApprovalTransformer implements GenericTransformer<CicRepor
     }
 
     @Override
-    public CicReportApproval transform(CicReportApprovalEntity approval) {
+    public CicApproval transform(CicReportApprovalEntity approval) {
 
-        CicReportApproval cicReportApproval = new CicReportApproval();
-        BeanUtils.copyProperties(approval.getData(), cicReportApproval);
-        return cicReportApproval;
+        CicApproval cicApproval = new CicApproval();
+        BeanUtils.copyProperties(approval.getData(), cicApproval);
+        return cicApproval;
     }
 }

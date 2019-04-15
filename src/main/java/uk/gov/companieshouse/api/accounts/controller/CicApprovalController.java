@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.CicReportApprovalService;
+import uk.gov.companieshouse.api.accounts.service.impl.CicApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -31,11 +31,11 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/approval", produces = MediaType.APPLICATION_JSON_VALUE)
-public class CicReportApprovalController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/cic-approval", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CicApprovalController {
 
     @Autowired
-    private CicReportApprovalService cicReportApprovalService;
+    private CicApprovalService cicApprovalService;
 
     @Autowired
     private ErrorMapper errorMapper;
@@ -44,7 +44,7 @@ public class CicReportApprovalController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody @Valid CicReportApproval cicReportApproval,
+    public ResponseEntity create(@RequestBody @Valid CicApproval cicApproval,
         BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
@@ -57,8 +57,8 @@ public class CicReportApprovalController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicReportApproval> responseObject = cicReportApprovalService
-                .create(cicReportApproval, transaction, companyAccountId, request);
+            ResponseObject<CicApproval> responseObject = cicApprovalService
+                .create(cicApproval, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
@@ -83,7 +83,7 @@ public class CicReportApprovalController {
         debugMap.put("transaction_id", transaction.getId());
 
         try {
-            ResponseObject<CicReportApproval> response = cicReportApprovalService
+            ResponseObject<CicApproval> response = cicApprovalService
                 .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
@@ -97,7 +97,7 @@ public class CicReportApprovalController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid CicReportApproval cicReportApproval,
+    public ResponseEntity update(@RequestBody @Valid CicApproval cicApproval,
         BindingResult bindingResult,
         @PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
@@ -116,8 +116,8 @@ public class CicReportApprovalController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicReportApproval> response = cicReportApprovalService
-                .update(cicReportApproval, transaction, companyAccountId, request);
+            ResponseObject<CicApproval> response = cicApprovalService
+                .update(cicApproval, transaction, companyAccountId, request);
 
             return apiResponseMapper
                 .map(response.getStatus(), response.getData(), response.getErrors());
@@ -138,7 +138,7 @@ public class CicReportApprovalController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicReportApproval> response = cicReportApprovalService
+            ResponseObject<CicApproval> response = cicApprovalService
                 .delete(companyAccountsId, request);
 
             return apiResponseMapper

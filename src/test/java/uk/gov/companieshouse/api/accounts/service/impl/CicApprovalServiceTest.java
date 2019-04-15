@@ -24,27 +24,27 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.CicReportApprovalTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CicApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.CicReportApprovalValidator;
+import uk.gov.companieshouse.api.accounts.validation.CicApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicReportApprovalServiceTest {
+public class CicApprovalServiceTest {
 
 
     @Mock
     private HttpServletRequest request;
 
     @Mock
-    private CicReportApproval cicReportApproval;
+    private CicApproval cicApproval;
 
     @Mock
     private Transaction transaction;
@@ -59,13 +59,13 @@ public class CicReportApprovalServiceTest {
     private CicReportService cicReportService;
 
     @Mock
-    private CicReportApprovalValidator cicReportApprovalValidator;
+    private CicApprovalValidator cicApprovalValidator;
 
     @Mock
     private CicReportApprovalEntity cicReportApprovalEntity;
 
     @Mock
-    private CicReportApprovalTransformer cicReportApprovalTransformer;
+    private CicApprovalTransformer cicApprovalTransformer;
 
     @Mock
     private DuplicateKeyException duplicateKeyException;
@@ -77,7 +77,7 @@ public class CicReportApprovalServiceTest {
     private KeyIdGenerator keyIdGenerator;
 
     @InjectMocks
-    private CicReportApprovalService cicReportApprovalService;
+    private CicApprovalService cicApprovalService;
 
     private static final String SELF_LINK = "self_link";
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -92,79 +92,79 @@ public class CicReportApprovalServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful creation of an CicReportApproval resource")
+    @DisplayName("Tests the successful creation of an CicApproval resource")
     public void canCreateAnCicReportApproval() throws DataException {
-        when(cicReportApprovalTransformer.transform(cicReportApproval)).thenReturn(
+        when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
             cicReportApprovalEntity);
-        doReturn(new Errors()).when(cicReportApprovalValidator)
-            .validateCicReportApproval(cicReportApproval, request);
+        doReturn(new Errors()).when(cicApprovalValidator)
+            .validateCicReportApproval(cicApproval, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject<CicReportApproval> result = cicReportApprovalService
-            .create(cicReportApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicApproval> result = cicApprovalService
+            .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
-        assertEquals(cicReportApproval, result.getData());
+        assertEquals(cicApproval, result.getData());
     }
 
     @Test
-    @DisplayName("Tests the duplicate key when creating an CicReportApproval resource")
+    @DisplayName("Tests the duplicate key when creating an CicApproval resource")
     public void createCicReportApprovalDuplicateKey() throws DataException {
-        doReturn(cicReportApprovalEntity).when(cicReportApprovalTransformer)
+        doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
             .transform(ArgumentMatchers
-                .any(CicReportApproval.class));
+                .any(CicApproval.class));
         when(cicReportApprovalRepository.insert(cicReportApprovalEntity))
             .thenThrow(duplicateKeyException);
-        doReturn(new Errors()).when(cicReportApprovalValidator)
-            .validateCicReportApproval(cicReportApproval, request);
+        doReturn(new Errors()).when(cicApprovalValidator)
+            .validateCicReportApproval(cicApproval, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = cicReportApprovalService
-            .create(cicReportApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject response = cicApprovalService
+            .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
     }
 
     @Test
-    @DisplayName("Tests the mongo exception when creating an CicReportApproval")
+    @DisplayName("Tests the mongo exception when creating an CicApproval")
     void createCicReportApprovalMongoExceptionFailure() throws DataException {
-        doReturn(cicReportApprovalEntity).when(cicReportApprovalTransformer)
+        doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
             .transform(ArgumentMatchers
-                .any(CicReportApproval.class));
-        doReturn(new Errors()).when(cicReportApprovalValidator)
-            .validateCicReportApproval(cicReportApproval, request);
+                .any(CicApproval.class));
+        doReturn(new Errors()).when(cicApprovalValidator)
+            .validateCicReportApproval(cicApproval, request);
         when(cicReportApprovalRepository.insert(cicReportApprovalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-            () -> cicReportApprovalService
-                .create(cicReportApproval, transaction, COMPANY_ACCOUNTS_ID, request));
+            () -> cicApprovalService
+                .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
-    @DisplayName("Tests the successful find of an CicReportApproval resource")
+    @DisplayName("Tests the successful find of an CicApproval resource")
     public void findCicReportApproval() throws DataException {
         when(cicReportApprovalRepository.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(cicReportApprovalEntity));
-        when(cicReportApprovalTransformer.transform(cicReportApprovalEntity))
-            .thenReturn(cicReportApproval);
-        ResponseObject<CicReportApproval> result = cicReportApprovalService
+        when(cicApprovalTransformer.transform(cicReportApprovalEntity))
+            .thenReturn(cicApproval);
+        ResponseObject<CicApproval> result = cicApprovalService
             .find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
-        assertEquals(cicReportApproval, result.getData());
+        assertEquals(cicApproval, result.getData());
     }
 
     @Test
-    @DisplayName("Tests mongo exception thrown on find of an CicReportApproval resource")
+    @DisplayName("Tests mongo exception thrown on find of an CicApproval resource")
     public void findCicReportApprovalMongoException() {
         when(cicReportApprovalRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
-        assertThrows(DataException.class, () -> cicReportApprovalService
+        assertThrows(DataException.class, () -> cicApprovalService
             .find(COMPANY_ACCOUNTS_ID, request));
     }
 }

@@ -9,22 +9,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 
 
-public class CicReportApprovalTransformerTest {
+public class CicApprovalTransformerTest {
 
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
     public static final String NAME = "name";
 
-    private CicReportApprovalTransformer cicReportApprovalTransformer = new CicReportApprovalTransformer();
+    private CicApprovalTransformer cicApprovalTransformer = new CicApprovalTransformer();
 
     @Test
-    @DisplayName("Tests CicReportApprovalTransformer with empty object which should result in null values")
+    @DisplayName("Tests CicApprovalTransformer with empty object which should result in null values")
     public void testTransformerWithEmptyObject() {
-        CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
-            .transform(new CicReportApproval());
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
+            .transform(new CicApproval());
 
         assertNotNull(cicReportApprovalEntity);
         assertNull(cicReportApprovalEntity.getData().getEtag());
@@ -32,17 +32,17 @@ public class CicReportApprovalTransformerTest {
     }
 
     @Test
-    @DisplayName("Tests CicReportApprovalTransformer with populated Rest object and validates values returned")
+    @DisplayName("Tests CicApprovalTransformer with populated Rest object and validates values returned")
     public void testRestToEntityTransformerWithPopulatedObject() {
 
-        CicReportApproval cicReportApproval = new CicReportApproval();
-        cicReportApproval.setEtag(ETAG);
-        cicReportApproval.setKind(KIND);
-        cicReportApproval.setName(NAME);
-        cicReportApproval.setLinks(new HashMap<>());
+        CicApproval cicApproval = new CicApproval();
+        cicApproval.setEtag(ETAG);
+        cicApproval.setKind(KIND);
+        cicApproval.setName(NAME);
+        cicApproval.setLinks(new HashMap<>());
 
-        CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
-            .transform(cicReportApproval);
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
+            .transform(cicApproval);
 
         CicReportApprovalDataEntity cicReportApprovalEntityData = cicReportApprovalEntity.getData();
 
@@ -54,7 +54,7 @@ public class CicReportApprovalTransformerTest {
     }
 
     @Test
-    @DisplayName("Tests CicReportApprovalTransformer with populated Entity object and validates values returned")
+    @DisplayName("Tests CicApprovalTransformer with populated Entity object and validates values returned")
     public void testEntityToRestTransformerWithPopulatedObject() {
 
         CicReportApprovalEntity cicReportApprovalEntity = new CicReportApprovalEntity();
@@ -65,14 +65,14 @@ public class CicReportApprovalTransformerTest {
         cicReportApprovalDataEntity.setLinks(new HashMap<>());
         cicReportApprovalEntity.setData(cicReportApprovalDataEntity);
 
-        CicReportApproval cicReportApproval = cicReportApprovalTransformer
+        CicApproval cicApproval = cicApprovalTransformer
             .transform(cicReportApprovalEntity);
 
-        assertNotNull(cicReportApproval);
-        assertEquals(ETAG, cicReportApproval.getEtag());
-        assertEquals(KIND, cicReportApproval.getKind());
-        assertEquals(NAME, cicReportApproval.getName());
-        assertEquals(new HashMap<>(), cicReportApproval.getLinks());
+        assertNotNull(cicApproval);
+        assertEquals(ETAG, cicApproval.getEtag());
+        assertEquals(KIND, cicApproval.getKind());
+        assertEquals(NAME, cicApproval.getName());
+        assertEquals(new HashMap<>(), cicApproval.getLinks());
     }
 
 

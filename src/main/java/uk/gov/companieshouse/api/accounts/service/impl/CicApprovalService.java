@@ -15,49 +15,49 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CicReportApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.CicReportApprovalTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CicApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.CicReportApprovalValidator;
+import uk.gov.companieshouse.api.accounts.validation.CicApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class CicReportApprovalService implements ResourceService<CicReportApproval> {
+public class CicApprovalService implements ResourceService<CicApproval> {
 
     private CicReportApprovalRepository cicReportApprovalRepository;
 
-    private CicReportApprovalTransformer cicReportApprovalTransformer;
+    private CicApprovalTransformer cicApprovalTransformer;
 
-    private CicReportApprovalValidator cicReportApprovalValidator;
+    private CicApprovalValidator cicApprovalValidator;
 
     private CicReportService cicReportService;
 
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public CicReportApprovalService(
+    public CicApprovalService(
         CicReportApprovalRepository cicReportApprovalRepository,
-        CicReportApprovalTransformer cicReportApprovalTransformer,
-        CicReportApprovalValidator cicReportApprovalValidator,
+        CicApprovalTransformer cicApprovalTransformer,
+        CicApprovalValidator cicApprovalValidator,
         CicReportService cicReportService,
         KeyIdGenerator keyIdGenerator) {
         this.cicReportApprovalRepository = cicReportApprovalRepository;
-        this.cicReportApprovalTransformer = cicReportApprovalTransformer;
-        this.cicReportApprovalValidator = cicReportApprovalValidator;
+        this.cicApprovalTransformer = cicApprovalTransformer;
+        this.cicApprovalValidator = cicApprovalValidator;
         this.cicReportService = cicReportService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
     @Override
-    public ResponseObject<CicReportApproval> create(CicReportApproval rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
+    public ResponseObject<CicApproval> create(CicApproval rest, Transaction transaction,
+                                              String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = cicReportApprovalValidator.validateCicReportApproval(rest, request);
+        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, request);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -67,7 +67,7 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.CIC_APPROVAL.getValue());
-        CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
             .transform(rest);
 
         String id = generateID(companyAccountId);
@@ -91,15 +91,15 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
     }
 
     @Override
-    public ResponseObject<CicReportApproval> update(CicReportApproval rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
+    public ResponseObject<CicApproval> update(CicApproval rest, Transaction transaction,
+                                              String companyAccountId, HttpServletRequest request) throws DataException {
 
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.CIC_APPROVAL.getValue());
 
-        CicReportApprovalEntity cicReportApprovalEntity = cicReportApprovalTransformer
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
             .transform(rest);
         cicReportApprovalEntity.setId(generateID(companyAccountId));
 
@@ -115,8 +115,8 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
     }
 
     @Override
-    public ResponseObject<CicReportApproval> find(String companyAccountsId,
-        HttpServletRequest request) throws DataException {
+    public ResponseObject<CicApproval> find(String companyAccountsId,
+                                            HttpServletRequest request) throws DataException {
 
         CicReportApprovalEntity cicReportApprovalEntity;
 
@@ -133,14 +133,14 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
 
-        CicReportApproval cicReportApproval = cicReportApprovalTransformer
+        CicApproval cicApproval = cicApprovalTransformer
             .transform(cicReportApprovalEntity);
-        return new ResponseObject<>(ResponseStatus.FOUND, cicReportApproval);
+        return new ResponseObject<>(ResponseStatus.FOUND, cicApproval);
     }
 
     @Override
-    public ResponseObject<CicReportApproval> delete(String companyAccountsId,
-        HttpServletRequest request) throws DataException {
+    public ResponseObject<CicApproval> delete(String companyAccountsId,
+                                              HttpServletRequest request) throws DataException {
         String id = generateID(companyAccountsId);
 
         try {
@@ -169,9 +169,9 @@ public class CicReportApprovalService implements ResourceService<CicReportApprov
             + ResourceName.CIC_APPROVAL.getName();
     }
 
-    private void initLinks(CicReportApproval cicReportApproval, String link) {
+    private void initLinks(CicApproval cicApproval, String link) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), link);
-        cicReportApproval.setLinks(map);
+        cicApproval.setLinks(map);
     }
 }

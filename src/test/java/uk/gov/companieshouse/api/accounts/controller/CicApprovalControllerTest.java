@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,11 +28,10 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportApproval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.CicReportApprovalService;
+import uk.gov.companieshouse.api.accounts.service.impl.CicApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -41,7 +40,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicReportApprovalControllerTest {
+public class CicApprovalControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -50,7 +49,7 @@ public class CicReportApprovalControllerTest {
     private Transaction transaction;
 
     @Mock
-    private CicReportApproval cicReportApproval;
+    private CicApproval cicApproval;
 
     @Mock
     private CicReport cicReport;
@@ -62,7 +61,7 @@ public class CicReportApprovalControllerTest {
     private BindingResult bindingResult;
 
     @Mock
-    private CicReportApprovalService cicReportApprovalService;
+    private CicApprovalService cicApprovalService;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -73,20 +72,20 @@ public class CicReportApprovalControllerTest {
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @InjectMocks
-    private CicReportApprovalController cicReportApprovalController;
+    private CicApprovalController cicApprovalController;
 
 
 
 
 
     @Test
-    @DisplayName("Tests the successful creation of a CicReportApproval resource")
+    @DisplayName("Tests the successful creation of a CicApproval resource")
     public void canCreateCicReportApproval() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
-            cicReportApproval);
-        doReturn(successCreateResponse).when(cicReportApprovalService)
-            .create(any(CicReportApproval.class), any(Transaction.class), anyString(),
+                cicApproval);
+        doReturn(successCreateResponse).when(cicApprovalService)
+            .create(any(CicApproval.class), any(Transaction.class), anyString(),
                 any(HttpServletRequest.class));
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(successCreateResponse.getData());
@@ -94,53 +93,53 @@ public class CicReportApprovalControllerTest {
             successCreateResponse.getData(), successCreateResponse.getErrors()))
             .thenReturn(responseEntity);
 
-        ResponseEntity response = cicReportApprovalController
-            .create(cicReportApproval, bindingResult, "", request);
+        ResponseEntity response = cicApprovalController
+            .create(cicApproval, bindingResult, "", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(cicReportApproval, response.getBody());
+        assertEquals(cicApproval, response.getBody());
     }
 
     @Test
-    @DisplayName("Tests the unsuccessful request to create CicReportApproval")
+    @DisplayName("Tests the unsuccessful request to create CicApproval")
     void createCicReportApprovalError() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        when(cicReportApprovalService.create(any(), any(), any(), any()))
+        when(cicApprovalService.create(any(), any(), any(), any()))
             .thenThrow(new DataException(""));
         when(apiResponseMapper.getErrorResponse())
             .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ResponseEntity response = cicReportApprovalController
-            .create(cicReportApproval, bindingResult, "", request);
+        ResponseEntity response = cicApprovalController
+            .create(cicApproval, bindingResult, "", request);
 
-        verify(cicReportApprovalService, times(1)).create(any(), any(), any(), any());
+        verify(cicApprovalService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    @DisplayName("Test the retreval of a CicReportApproval resource")
+    @DisplayName("Test the retreval of a CicApproval resource")
     public void canRetrieveCicReportApproval() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
-            cicReportApproval);
-        doReturn(successFindResponse).when(cicReportApprovalService).find("123456", request);
+                cicApproval);
+        doReturn(successFindResponse).when(cicApprovalService).find("123456", request);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK)
-            .body(cicReportApproval);
-        when(apiResponseMapper.mapGetResponse(cicReportApproval,
+            .body(cicApproval);
+        when(apiResponseMapper.mapGetResponse(cicApproval,
             request)).thenReturn(responseEntity);
 
-        ResponseEntity response = cicReportApprovalController.get("123456", request);
+        ResponseEntity response = cicApprovalController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(cicReportApproval, response.getBody());
+        assertEquals(cicApproval, response.getBody());
     }
     @Test
-    @DisplayName("Update CicReportApproval - no cic report link")
+    @DisplayName("Update CicApproval - no cic report link")
     void updateCicReportApprovalNoCicReportLink() {
 
         when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
@@ -148,7 +147,7 @@ public class CicReportApprovalControllerTest {
         when(cicReportLinks.get(CicReportLinkType.APPROVAL.getLink())).thenReturn(null);
 
         ResponseEntity responseEntity =
-            cicReportApprovalController.update(cicReportApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            cicApprovalController.update(cicApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -156,7 +155,7 @@ public class CicReportApprovalControllerTest {
     }
 
     @Test
-    @DisplayName("Update CicReportApproval - has binding errors")
+    @DisplayName("Update CicApproval - has binding errors")
     void updateCicReportApprovalBindingErrors() {
 
         when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
@@ -166,7 +165,7 @@ public class CicReportApprovalControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-            cicReportApprovalController.update(cicReportApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            cicApprovalController.update(cicApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -174,7 +173,7 @@ public class CicReportApprovalControllerTest {
     }
 
     @Test
-    @DisplayName("Update CicReportApproval - success")
+    @DisplayName("Update CicApproval - success")
     void updateCicReportApprovalSuccess() throws DataException {
 
         when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
@@ -183,8 +182,8 @@ public class CicReportApprovalControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
-            cicReportApproval);
-        when(cicReportApprovalService.update(cicReportApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                cicApproval);
+        when(cicApprovalService.update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request))
             .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -192,7 +191,7 @@ public class CicReportApprovalControllerTest {
             .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-            cicReportApprovalController.update(cicReportApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            cicApprovalController.update(cicApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -200,7 +199,7 @@ public class CicReportApprovalControllerTest {
     }
 
     @Test
-    @DisplayName("Update CicReportApproval - data exception thrown")
+    @DisplayName("Update CicApproval - data exception thrown")
     void updateCicReportApprovalsDataException() throws DataException {
 
         when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
@@ -208,14 +207,14 @@ public class CicReportApprovalControllerTest {
         when(cicReportLinks.get(CicReportLinkType.APPROVAL.getLink())).thenReturn("");
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        when(cicReportApprovalService.update(cicReportApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(cicApprovalService.update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request))
             .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-            cicReportApprovalController.update(cicReportApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+            cicApprovalController.update(cicApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
