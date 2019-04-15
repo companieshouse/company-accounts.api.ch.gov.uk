@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
-public class CicReportStatements extends RestObject {
+public class CicStatements extends RestObject {
 
     @NotNull
     @JsonProperty("has_completed_report_statements")

@@ -17,7 +17,7 @@ public enum ResourceName {
     FIXED_ASSETS_INVESTMENTS("fixed-assets-investments"),
     EMPLOYEES("employees"),
     CIC_REPORT("cic-report"),
-    CIC_REPORT_STATEMENTS("cic-report-statements");
+    CIC_STATEMENTS("cic-statements");
 
     private String name;
 

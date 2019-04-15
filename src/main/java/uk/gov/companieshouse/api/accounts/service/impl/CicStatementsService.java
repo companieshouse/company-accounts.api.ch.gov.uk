@@ -13,27 +13,27 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CicReportLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.CicReportStatementsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CicReportStatements;
+import uk.gov.companieshouse.api.accounts.model.entity.CicStatementsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.CicStatements;
 import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.repository.CicReportStatementsRepository;
+import uk.gov.companieshouse.api.accounts.repository.CicStatementsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.CicReportStatementsTransformer;
+import uk.gov.companieshouse.api.accounts.transformer.CicStatementsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.CicReportStatementsValidator;
+import uk.gov.companieshouse.api.accounts.validation.CicStatementsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class CicReportStatementsService implements ResourceService<CicReportStatements> {
+public class CicStatementsService implements ResourceService<CicStatements> {
 
-    private CicReportStatementsRepository repository;
+    private CicStatementsRepository repository;
 
-    private CicReportStatementsTransformer transformer;
+    private CicStatementsTransformer transformer;
 
-    private CicReportStatementsValidator validator;
+    private CicStatementsValidator validator;
 
     private CicReportService cicReportService;
 
@@ -44,9 +44,9 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     private static final String NO_TRANSFER_OF_ASSETS = "No transfer of assets other than for full consideration";
 
     @Autowired
-    public CicReportStatementsService(CicReportStatementsRepository repository,
-                              CicReportStatementsTransformer transformer,
-                              CicReportStatementsValidator validator,
+    public CicStatementsService(CicStatementsRepository repository,
+                              CicStatementsTransformer transformer,
+                              CicStatementsValidator validator,
                               CicReportService cicReportService,
                               KeyIdGenerator keyIdGenerator) {
 
@@ -58,13 +58,13 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     }
 
     @Override
-    public ResponseObject<CicReportStatements> create(CicReportStatements rest, Transaction transaction,
+    public ResponseObject<CicStatements> create(CicStatements rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
         populateDefaultStatementsIfNotProvided(rest);
 
-        CicReportStatementsEntity entity = transformer.transform(rest);
+        CicStatementsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -84,17 +84,17 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     }
 
     @Override
-    public ResponseObject<CicReportStatements> update(CicReportStatements rest, Transaction transaction,
+    public ResponseObject<CicStatements> update(CicStatements rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateCicReportStatementsUpdate(rest);
+        Errors errors = validator.validateCicStatementsUpdate(rest);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
         populateMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CicReportStatementsEntity entity = transformer.transform(rest);
+        CicStatementsEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -109,10 +109,10 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     }
 
     @Override
-    public ResponseObject<CicReportStatements> find(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<CicStatements> find(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        CicReportStatementsEntity entity;
+        CicStatementsEntity entity;
 
         try {
             entity = repository.findById(generateID(companyAccountsId)).orElse(null);
@@ -130,14 +130,14 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
     }
 
     @Override
-    public ResponseObject<CicReportStatements> delete(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<CicStatements> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        String cicReportStatementsId = generateID(companyAccountsId);
+        String cicStatementsId = generateID(companyAccountsId);
 
         try {
-            if (repository.existsById(cicReportStatementsId)) {
-                repository.deleteById(cicReportStatementsId);
+            if (repository.existsById(cicStatementsId)) {
+                repository.deleteById(cicStatementsId);
 
                 cicReportService.removeLink(companyAccountsId, CicReportLinkType.STATEMENTS, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
@@ -150,16 +150,16 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
         }
     }
 
-    private void populateMetadataOnRestObject(CicReportStatements cicReportStatements, Transaction transaction, String companyAccountsId) {
+    private void populateMetadataOnRestObject(CicStatements cicStatements, Transaction transaction, String companyAccountsId) {
 
-        initLinks(cicReportStatements, transaction, companyAccountsId);
-        cicReportStatements.setEtag(GenerateEtagUtil.generateEtag());
-        cicReportStatements.setKind(Kind.CIC_REPORT_STATEMENTS.getValue());
+        initLinks(cicStatements, transaction, companyAccountsId);
+        cicStatements.setEtag(GenerateEtagUtil.generateEtag());
+        cicStatements.setKind(Kind.CIC_STATEMENTS.getValue());
     }
 
-    private void populateDefaultStatementsIfNotProvided(CicReportStatements cicReportStatements) {
+    private void populateDefaultStatementsIfNotProvided(CicStatements cicStatements) {
 
-        ReportStatements reportStatements = cicReportStatements.getReportStatements();
+        ReportStatements reportStatements = cicStatements.getReportStatements();
 
         if (reportStatements.getConsultationWithStakeholders() == null) {
             reportStatements.setConsultationWithStakeholders(NO_CONSULTATION_WITH_STAKEHOLDERS);
@@ -174,8 +174,7 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
 
     private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-"
-                                            + ResourceName.CIC_REPORT.getName() + "-"
-                                            + ResourceName.STATEMENTS.getName());
+                                        + ResourceName.CIC_STATEMENTS.getName());
     }
 
     private String createSelfLink(Transaction transaction, String companyAccountId) {
@@ -183,17 +182,17 @@ public class CicReportStatementsService implements ResourceService<CicReportStat
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/"
                 + ResourceName.CIC_REPORT.getName() + "/"
-                + ResourceName.STATEMENTS.getName();
+                + ResourceName.CIC_STATEMENTS.getName();
     }
 
-    private void initLinks(CicReportStatements cicReportStatements, Transaction transaction, String companyAccountsId) {
+    private void initLinks(CicStatements cicStatements, Transaction transaction, String companyAccountsId) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
-        cicReportStatements.setLinks(map);
+        cicStatements.setLinks(map);
     }
 
-    private String getSelfLink(CicReportStatements cicReportStatements) {
+    private String getSelfLink(CicStatements cicStatements) {
 
-        return cicReportStatements.getLinks().get(BasicLinkType.SELF.getLink());
+        return cicStatements.getLinks().get(BasicLinkType.SELF.getLink());
     }
 }

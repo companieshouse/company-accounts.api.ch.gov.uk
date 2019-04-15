@@ -33,12 +33,6 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
                              HttpServletResponse response,
                              Object handler) {
 
-        if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
-                .endsWith("cic-report")) {
-
-            return true;
-        }
-
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 

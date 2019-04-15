@@ -4,16 +4,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "cic_report")
-public class CicReportStatementsEntity extends BaseEntity {
+public class CicStatementsEntity extends BaseEntity {
 
     @Field("data")
-    private CicReportStatementsDataEntity data;
+    private CicStatementsDataEntity data;
 
-    public CicReportStatementsDataEntity getData() {
+    public CicStatementsDataEntity getData() {
         return data;
     }
 
-    public void setData(CicReportStatementsDataEntity data) {
+    public void setData(CicStatementsDataEntity data) {
         this.data = data;
     }
 }

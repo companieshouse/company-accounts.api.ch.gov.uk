@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.entity;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class CicReportStatementsDataEntity extends BaseDataEntity {
+public class CicStatementsDataEntity extends BaseDataEntity {
 
     @Field("has_completed_report_statements")
     private Boolean hasCompletedReportStatements;
