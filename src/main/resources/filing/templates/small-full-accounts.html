@@ -1788,6 +1788,85 @@
     {{end}}
     <!-- ACCOUNTING POLICIES END -->
 
+    <!-- EMPLOYEES START -->
+
+    {{ if $employeesNote := $additionalNotes.employees }}
+    {{incValue "notes-page-count" }}
+    {{setValue "employees-notes-id" (getValue "notes-page-count" ) }}
+
+    <div class="page">
+      <div class="header">
+        <h1 class="text--center">
+          <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+        </h1>
+      </div>
+
+      <h2 class="text--center">Notes to the Financial Statements</h2>
+      <p class="text--center">
+        <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+      </p>
+
+      <ul>
+        <li>
+          <h2>{{- getValue "notes-page-count"}}. Employees </h2>
+
+          <table>
+            <tbody>
+
+            <tr>
+              <th class="table-heading"></th>
+              {{if isNotEmpty $employeesNote.average_number_of_employees.current_amount}}
+              <th class="table-heading" id="employees-note-current-heading">{{$period.current_period_bs_date}}</th>
+              {{else}}
+              <th  class="table-heading">&#160;</th>
+              {{end}}
+
+              {{if isNotEmpty $employeesNote.average_number_of_employees.previous_amount}}
+              <th class="table-heading" id="employees-note-previous-heading">{{$period.previous_period_bs_date}}</th>
+              {{end}}
+            </tr>
+
+            {{if or (isNotEmpty $employeesNote.average_number_of_employees.previous_amount) (isNotEmpty $employeesNote.average_number_of_employees.current_amount)}}
+            <tr class="figures">
+              <td id="employeesNote-label">Average number of employees during the period</td>
+              <td id="employeesNote-curr-val" class="strong figure">
+
+                {{ if isNotEmpty $employeesNote.average_number_of_employees.current_amount }}
+                <ix:nonFraction contextRef="CY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $employeesNote.average_number_of_employees.current_amount}}</ix:nonFraction>
+                {{end}}
+
+              </td>
+
+              <td id="employeesNote-prev-val" class="figure">
+
+                {{ if isNotEmpty $employeesNote.average_number_of_employees.previous_amount }}
+                <ix:nonFraction contextRef="PY" decimals="0" unitRef="pure" name="core:AverageNumberEmployeesDuringPeriod" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $employeesNote.average_number_of_employees.previous_amount}}</ix:nonFraction>
+                {{end}}
+
+              </td>
+            </tr>
+            {{end}}
+
+            </tbody>
+          </table>
+
+          {{ if $employeesNote.details }}
+          <div class="text-area-display" id="employees-free-text-note">
+
+            <p class="text-area-display">
+              <ix:nonNumeric contextRef="CY" name="core:EmployeeInformationFree-textComment">{{$employeesNote.details }}</ix:nonNumeric>
+            </p>
+
+          </div>
+          {{ end}}
+        </li>
+      </ul>
+    </div>
+
+    {{end}}
+
+    <!-- EMPLOYEES END -->
+    
     {{end}}
     <!-- NOTES END -->
 

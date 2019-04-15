@@ -150,7 +150,7 @@ public class StatementService implements ResourceService<Statement> {
      */
     private LocalDate getPeriodEndOn(CompanyAccount companyAccount) {
 
-        return companyAccount.getPeriodEndOn();
+        return companyAccount.getNextAccounts().getPeriodEndOn();
     }
 
     /**
