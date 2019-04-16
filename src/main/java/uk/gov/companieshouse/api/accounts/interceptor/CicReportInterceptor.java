@@ -30,20 +30,14 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request,
-        HttpServletResponse response,
-        Object handler) {
-
-        if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
-            .endsWith("cic-report")) {
-
-            return true;
-        }
+                             HttpServletResponse response,
+                             Object handler) {
 
         Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+                .getAttribute(AttributeName.TRANSACTION.getValue());
 
         Map<String, String> pathVariables = (Map) request
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
         String companyAccountId = pathVariables.get(COMPANY_ACCOUNTS_ID_PATH_VARIABLE);
 
@@ -53,16 +47,16 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
             if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
 
                 LoggingHelper.logInfo(
-                    companyAccountId, transaction, "Cic report not found", request);
+                        companyAccountId, transaction, "Cic report not found", request);
 
                 response.setStatus(HttpStatus.NOT_FOUND.value());
                 return false;
             }
 
             CompanyAccount companyAccount = (CompanyAccount) request
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+                    .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
             String companyAccountsCicReportLink =
-                companyAccount.getLinks().get(CompanyAccountLinkType.CIC_REPORT.getLink());
+                    companyAccount.getLinks().get(CompanyAccountLinkType.CIC_REPORT.getLink());
 
             CicReport cicReport = responseObject.getData();
             String cicReportSelfLink = cicReport.getLinks().get(BasicLinkType.SELF.getLink());
@@ -70,7 +64,7 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
             if (!cicReportSelfLink.equals(companyAccountsCicReportLink)) {
 
                 LoggingHelper.logInfo(
-                    companyAccountId, transaction, "Cic report link not present in company accounts resource", request);
+                        companyAccountId, transaction, "Cic report link not present in company accounts resource", request);
 
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 return false;
@@ -82,7 +76,7 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
         } catch (DataException e) {
 
             LoggingHelper.logException(
-                companyAccountId, transaction, "Failed to retrieve cic report resource", e, request);
+                    companyAccountId, transaction, "Failed to retrieve cic report resource", e, request);
 
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return false;

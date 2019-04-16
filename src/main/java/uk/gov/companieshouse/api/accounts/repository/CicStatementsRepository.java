@@ -2,9 +2,9 @@ package uk.gov.companieshouse.api.accounts.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.companieshouse.api.accounts.model.entity.Cic34ReportEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.CicStatementsEntity;
 
 @Repository
-public interface Cic34ReportRepository extends MongoRepository<Cic34ReportEntity, String> {
+public interface CicStatementsRepository extends MongoRepository<CicStatementsEntity, String> {
 
 }

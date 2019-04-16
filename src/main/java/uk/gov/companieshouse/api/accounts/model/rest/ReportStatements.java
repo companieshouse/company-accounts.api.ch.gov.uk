@@ -7,10 +7,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
-import com.google.gson.Gson;
 
 @JsonInclude(Include.NON_NULL)
-public class Cic34Report extends RestObject {
+public class ReportStatements {
 
     private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MIN_FIELD_LENGTH = 1;
@@ -67,7 +66,4 @@ public class Cic34Report extends RestObject {
     public void setTransferOfAssets(String transferOfAssets) {
         this.transferOfAssets = transferOfAssets;
     }
-
-    @Override
-    public String toString() { return new Gson().toJson(this); }
 }
