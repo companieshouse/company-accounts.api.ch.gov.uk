@@ -27,14 +27,6 @@ public class LoggingHelper {
         LOGGER.errorRequest(request, exception, createDebugMap(companyAccountId, transaction, message));
     }
 
-    public static void logInfo(String companyAccountId,
-                               Transaction transaction,
-                               String message,
-                               HttpServletRequest request) {
-
-        LOGGER.infoRequest(request, message, createDebugMap(companyAccountId, transaction, message));
-    }
-
     private static Map<String, Object> createDebugMap(String companyAccountId,
                                                       Transaction transaction,
                                                       String message) {
