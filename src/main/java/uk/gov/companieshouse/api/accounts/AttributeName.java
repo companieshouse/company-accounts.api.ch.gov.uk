@@ -4,7 +4,8 @@ public enum AttributeName {
 
     TRANSACTION("transaction"),
     COMPANY_ACCOUNT("accounts"),
-    SMALLFULL("small-full");
+    SMALLFULL("small-full"),
+    CIC_REPORT("cic-report");
 
     private String value;
 
