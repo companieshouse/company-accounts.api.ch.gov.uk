@@ -126,11 +126,11 @@ public class PreviousPeriodValidator extends BaseValidator {
 
             Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
             Long debtors = Optional.ofNullable(currentAssets.getDebtors()).orElse(0L);
-            Long cashAtBankAndInHand =
-                    Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
+            Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
+            Long investments = Optional.ofNullable(currentAssets.getInvestments()).orElse(0L);
             Long currentAssetsTotal = Optional.ofNullable(currentAssets.getTotal()).orElse(0L);
 
-            Long calculatedTotal = stocks + debtors + cashAtBankAndInHand;
+            Long calculatedTotal = stocks + debtors + cashAtBankAndInHand + investments;
 
             validateAggregateTotal(currentAssetsTotal, calculatedTotal, CURRENT_ASSETS_TOTAL_PATH
                     , errors);
