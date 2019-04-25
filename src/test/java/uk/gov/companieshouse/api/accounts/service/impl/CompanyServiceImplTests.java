@@ -56,6 +56,10 @@ public class CompanyServiceImplTests {
     private static final String COMPANY_NUMBER = "12345678";
     private static final String COMPANY_URI = "/company/" + COMPANY_NUMBER;
 
+    private static final String LIMITED_BY_GUARANTEE = "private-limited-guarant-nsc";
+    private static final String LIMITED_BY_GUARANTEE_EXEMPT = "private-limited-guarant-nsc-limited-exemption";
+    private static final String PLC = "plc";
+
     @BeforeEach
     private void init() {
         when(mockApiClientService.getApiClient()).thenReturn(mockApiClient);
@@ -151,6 +155,42 @@ public class CompanyServiceImplTests {
         when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(false);
 
         assertFalse(companyService.isCIC(mockTransaction));
+    }
+
+    @Test
+    @DisplayName("isLBG returns true for private limited by guarantee company")
+    void isLBGForPrivateLimitedByGuaranteeCompany()
+            throws ApiErrorResponseException, URIValidationException, ServiceException {
+
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyProfileApi.getType()).thenReturn(LIMITED_BY_GUARANTEE);
+
+        assertTrue(companyService.isLBG(mockTransaction));
+    }
+
+    @Test
+    @DisplayName("isLBG returns true for private limited by guarantee exempt company")
+    void isLBGForPrivateLimitedByGuaranteeExemptCompany()
+            throws ApiErrorResponseException, URIValidationException, ServiceException {
+
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyProfileApi.getType()).thenReturn(LIMITED_BY_GUARANTEE_EXEMPT);
+
+        assertTrue(companyService.isLBG(mockTransaction));
+    }
+
+    @Test
+    @DisplayName("isLBG returns false for plc company")
+    void isLBGForPLCCompany()
+            throws ApiErrorResponseException, URIValidationException, ServiceException {
+
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyProfileApi.getType()).thenReturn(PLC);
+
+        assertFalse(companyService.isLBG(mockTransaction));
     }
 
     private CompanyProfileApi generateMultipleYearFiler() {
