@@ -80,25 +80,28 @@ public class PreviousPeriodValidatorTest {
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(5L);
         otherLiabilitiesOrAssets.setNetCurrentAssets(2L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(5L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(2L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
         capitalAndReserves.setCalledUpShareCapital(1L);
-        capitalAndReserves.setOtherReserves(0L);
+        capitalAndReserves.setOtherReserves(1L);
         capitalAndReserves.setProfitAndLoss(0L);
         capitalAndReserves.setSharePremiumAccount(0L);
-        capitalAndReserves.setTotalShareholdersFunds(1L);
+        capitalAndReserves.setTotalShareholdersFunds(2L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(1L);
-        fixedAssets.setTotal(1L);
+        fixedAssets.setInvestments(1L);
+        fixedAssets.setTotal(2L);
         balanceSheet.setFixedAssets(fixedAssets);
+
+        balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 
         balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 

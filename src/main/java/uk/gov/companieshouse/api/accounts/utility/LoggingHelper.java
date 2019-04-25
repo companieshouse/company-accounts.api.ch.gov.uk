@@ -38,4 +38,12 @@ public class LoggingHelper {
         debugMap.put(MESSAGE, message);
         return debugMap;
     }
+
+    public static void logInfo(String companyAccountId,
+        Transaction transaction,
+        String message,
+        HttpServletRequest request) {
+
+        LOGGER.infoRequest(request, message, createDebugMap(companyAccountId, transaction, message));
+    }
 }
