@@ -48,7 +48,7 @@ public class BalanceSheetValidator extends BaseValidator {
 
             validateCalledUpShareCapitalNotPaidNotSubmitted(balanceSheet, periodPath, errors);
             validateCapitalAndReservesNotSubmitted(balanceSheet, periodPath, errors);
-            //TODO: Validate members' funds total
+            //TODO: Validate members' funds total (will be resolved in SFA-1496)
         } else {
             validateMembersFundsNotSubmitted(balanceSheet, periodPath, errors);
             validateTotalShareholderFunds(balanceSheet, periodPath, errors);
