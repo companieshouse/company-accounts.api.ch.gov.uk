@@ -10,6 +10,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.MembersFunds;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -24,6 +25,9 @@ public class BalanceSheetValidator extends BaseValidator {
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
+    @Value("${membersFunds.mismatch}")
+    private String membersFundsMismatch;
+
     private static final String BALANCE_SHEET_PATH = ".balance_sheet";
     private static final String CALLED_UP_SHARE_CAPITAL_NOT_PAID_PATH = BALANCE_SHEET_PATH + ".called_up_share_capital_not_paid";
     private static final String FIXED_ASSETS_TOTAL_PATH = BALANCE_SHEET_PATH + ".fixed_assets.total";
@@ -31,6 +35,7 @@ public class BalanceSheetValidator extends BaseValidator {
     private static final String CAPITAL_AND_RESERVES_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves";
     private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = CAPITAL_AND_RESERVES_PATH + ".total_shareholders_funds";
     private static final String MEMBERS_FUNDS_PATH = BALANCE_SHEET_PATH + ".members_funds";
+    private static final String TOTAL_MEMBERS_FUNDS_PATH = MEMBERS_FUNDS_PATH + ".total_members_funds";
     private static final String OTHER_LIABILITIES_OR_ASSETS_PATH = BALANCE_SHEET_PATH + ".other_liabilities_or_assets";
     private static final String OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".net_current_assets";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
@@ -48,8 +53,9 @@ public class BalanceSheetValidator extends BaseValidator {
 
             validateCalledUpShareCapitalNotPaidNotSubmitted(balanceSheet, periodPath, errors);
             validateCapitalAndReservesNotSubmitted(balanceSheet, periodPath, errors);
-            //TODO: Validate members' funds total (will be resolved in SFA-1496)
+            validateTotalMembersFunds(balanceSheet, periodPath, errors);
         } else {
+
             validateMembersFundsNotSubmitted(balanceSheet, periodPath, errors);
             validateTotalShareholderFunds(balanceSheet, periodPath, errors);
         }
@@ -198,6 +204,32 @@ public class BalanceSheetValidator extends BaseValidator {
             }
         } else {
             addError(errors, mandatoryElementMissing, periodPath + CAPITAL_AND_RESERVES_PATH);
+        }
+    }
+
+    private void validateTotalMembersFunds(BalanceSheet balanceSheet, String periodPath, Errors errors) {
+
+        MembersFunds membersFunds = balanceSheet.getMembersFunds();
+
+        if (membersFunds != null) {
+
+            Long profitAndLossAccount = membersFunds.getProfitAndLossAccount();
+
+            Long calculatedTotal = profitAndLossAccount;
+
+            Long totalMembersFunds = membersFunds.getTotalMembersFunds();
+            validateAggregateTotal(totalMembersFunds, calculatedTotal, periodPath + TOTAL_MEMBERS_FUNDS_PATH, errors);
+
+            Long totalNetAssets = 0L;
+            if (balanceSheet.getOtherLiabilitiesOrAssets() != null) {
+                totalNetAssets = balanceSheet.getOtherLiabilitiesOrAssets().getTotalNetAssets();
+            }
+
+            if (!totalNetAssets.equals(totalMembersFunds)) {
+                addError(errors, membersFundsMismatch, periodPath + TOTAL_MEMBERS_FUNDS_PATH);
+            }
+        } else {
+            addError(errors, mandatoryElementMissing, periodPath + MEMBERS_FUNDS_PATH);
         }
     }
 
