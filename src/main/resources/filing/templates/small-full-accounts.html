@@ -1133,7 +1133,7 @@
           {{if .small_full_accounts.balance_sheet_notes.tangible_assets}}
           <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes">{{getValue "tangible-notes-id" }}</td>
           {{else}}
-          <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes">&#160;</td>
+          <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes1">&#160;</td>
           {{end}}
 
           <td id="tangible-curr" class="strong figure">
@@ -1160,13 +1160,13 @@
           <td class="figure noteIndex" id="uk-busInvestmentsFixedAssetsCY_ENDNoteIndexes1">&#160;</td>
           {{end}}
 
-          <td id="investments-curr" class="strong figure">
+          <td id="fixed-investments-curr" class="strong figure">
             {{if isNotEmpty $fixedAssets.investments.current_amount}}
             <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.current_amount}}</ix:nonFraction>
             {{end}}
           </td>
 
-          <td id="investments-prev" class="text--right">
+          <td id="fixed-investments-prev" class="text--right">
             {{if isNotEmpty $fixedAssets.investments.previous_amount}}
             <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.previous_amount}}</ix:nonFraction>
             {{end}}
