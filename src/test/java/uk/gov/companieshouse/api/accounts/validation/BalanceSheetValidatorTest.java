@@ -142,6 +142,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -236,6 +237,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -283,6 +285,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -378,6 +381,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -473,6 +477,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -568,6 +573,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -663,6 +669,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(0L);
         membersFunds.setTotalMembersFunds(0L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
@@ -758,6 +765,7 @@ public class BalanceSheetValidatorTest {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(1L);
         membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
 
