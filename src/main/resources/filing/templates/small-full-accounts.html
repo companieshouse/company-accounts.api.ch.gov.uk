@@ -1259,6 +1259,30 @@
         </tr>
         {{end}}
 
+        <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
+
+        {{if $cashAtBank := $currentAssets.cash_at_bank_and_in_hand}}
+
+        <tr class="figures">
+          <td id="cash-at-bank-and-in-hand-label">Cash at bank and in hand:</td>
+
+          <td class="figure noteIndex" id="uk-busCashBankOnHandCY_ENDNoteIndexes"></td>
+
+          <td id="cash-at-bank-curr-val" class="strong figure">
+            {{if isNotEmpty $cashAtBank.current_amount}}
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="cash-at-bank-prev-val" class="figure">
+            {{if isNotEmpty $cashAtBank.previous_amount}}
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+        </tr>
+        {{end}}
+
         <!-- BALANCE SHEET - CURRENT ASSETS - INVESTMENTS -->
         {{if $currentAssets.investments}}
         <tr class = "figures">
@@ -1282,30 +1306,6 @@
           </td>
         </tr>
 
-        {{end}}
-
-        <!-- BALANCE SHEET - CURRENT ASSETS - CASH AT BANK AND IN HAND -->
-
-        {{if $cashAtBank := $currentAssets.cash_at_bank_and_in_hand}}
-
-        <tr class="figures">
-          <td id="cash-at-bank-and-in-hand-label">Cash at bank and in hand:</td>
-
-          <td class="figure noteIndex" id="uk-busCashBankOnHandCY_ENDNoteIndexes"></td>
-
-          <td id="cash-at-bank-curr-val" class="strong figure">
-            {{if isNotEmpty $cashAtBank.current_amount}}
-            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.current_amount}}</ix:nonFraction>
-            {{end}}
-          </td>
-
-          <td id="cash-at-bank-prev-val" class="figure">
-            {{if isNotEmpty $cashAtBank.previous_amount}}
-            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CashBankOnHand" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cashAtBank.previous_amount}}</ix:nonFraction>
-            {{end}}
-          </td>
-
-        </tr>
         {{end}}
 
         <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
