@@ -12,12 +12,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.CurrentAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CurrentAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CurrentAssetsInvestmentsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,17 +33,20 @@ public class CurrentAssetsInvestmentsService implements ResourceService<CurrentA
         private CurrentAssetsInvestmentsTransformer transformer;
         private KeyIdGenerator keyIdGenerator;
         private SmallFullService smallFullService;
+        private CurrentAssetsInvestmentsValidator validator;
 
         @Autowired
         public CurrentAssetsInvestmentsService(CurrentAssetsInvestmentsRepository repository,
                                                CurrentAssetsInvestmentsTransformer transformer,
                                                KeyIdGenerator keyIdGenerator,
-                                               SmallFullService smallFullService) {
+                                               SmallFullService smallFullService,
+                                               CurrentAssetsInvestmentsValidator validator) {
 
             this.repository = repository;
             this.transformer = transformer;
             this.keyIdGenerator = keyIdGenerator;
             this.smallFullService = smallFullService;
+            this.validator = validator;
         }
 
         @Override
@@ -49,6 +54,14 @@ public class CurrentAssetsInvestmentsService implements ResourceService<CurrentA
                                                                Transaction transaction,
                                                                String companyAccountId,
                                                                HttpServletRequest request) throws DataException {
+
+            Errors errors = validator.validateCurrentAssetsInvestments(request, rest,
+                companyAccountId);
+
+            if (errors.hasErrors()) {
+
+                return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+            }
 
             setMetadataOnRestObject(rest, transaction, companyAccountId);
 
@@ -74,6 +87,14 @@ public class CurrentAssetsInvestmentsService implements ResourceService<CurrentA
                                                                Transaction transaction,
                                                                String companyAccountId,
                                                                HttpServletRequest request) throws DataException {
+
+            Errors errors = validator.validateCurrentAssetsInvestments(request, rest,
+                companyAccountId);
+
+            if (errors.hasErrors()) {
+
+                return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+            }
 
             setMetadataOnRestObject(rest, transaction, companyAccountId);
 

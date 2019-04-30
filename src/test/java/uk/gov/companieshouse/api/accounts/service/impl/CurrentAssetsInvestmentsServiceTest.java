@@ -24,6 +24,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.CurrentAssetsInvestmentsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -81,6 +82,9 @@ public class CurrentAssetsInvestmentsServiceTest {
     private Errors mockErrors;
 
     @Mock
+    private CurrentAssetsInvestmentsValidator mockValidator;
+
+    @Mock
     private SmallFullService mockSmallFullService;
 
     @Mock
@@ -110,7 +114,7 @@ public class CurrentAssetsInvestmentsServiceTest {
     void canCreateCurrentAssetsInvestments() throws DataException {
 
         when(mockTransformer.transform(mockCurrentAssetsInvestments)).thenReturn(currentAssetsInvestmentsEntity);
-
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
@@ -129,7 +133,7 @@ public class CurrentAssetsInvestmentsServiceTest {
 
         doReturn(currentAssetsInvestmentsEntity).when(mockTransformer).transform(any(CurrentAssetsInvestments.class));
         when(mockRepository.insert(currentAssetsInvestmentsEntity)).thenThrow(mockDuplicateKeyException);
-
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
@@ -142,10 +146,11 @@ public class CurrentAssetsInvestmentsServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating current assets investments")
-    void createCurrentAssetsInvestmentsMongoExceptionFailure() {
+    void createCurrentAssetsInvestmentsMongoExceptionFailure() throws DataException {
 
         doReturn(currentAssetsInvestmentsEntity).when(mockTransformer).transform(any(CurrentAssetsInvestments.class));
 
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         when(mockRepository.insert(currentAssetsInvestmentsEntity)).thenThrow(mockMongoException);
@@ -159,7 +164,7 @@ public class CurrentAssetsInvestmentsServiceTest {
     void canUpdateACurrentAssetsInvestments() throws DataException {
 
         when(mockTransformer.transform(mockCurrentAssetsInvestments)).thenReturn(currentAssetsInvestmentsEntity);
-
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
 
@@ -172,10 +177,11 @@ public class CurrentAssetsInvestmentsServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when updating a current assets investments")
-    void updateCurrentAssetsInvestmentsMongoExceptionFailure() {
+    void updateCurrentAssetsInvestmentsMongoExceptionFailure() throws DataException {
 
         doReturn(currentAssetsInvestmentsEntity).when(mockTransformer).transform(any(CurrentAssetsInvestments.class));
 
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         when(mockRepository.save(currentAssetsInvestmentsEntity)).thenThrow(mockMongoException);
@@ -261,6 +267,33 @@ public class CurrentAssetsInvestmentsServiceTest {
 
         assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
+
+    @Test
+    @DisplayName("Test correct response when validation fails on create")
+    void validationFailsOnCreate() throws DataException {
+
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
+        when(mockErrors.hasErrors()).thenReturn(true);
+
+        ResponseObject<CurrentAssetsInvestments> responseObject = service.create(mockCurrentAssetsInvestments, mockTransaction,
+            "", mockRequest);
+
+        assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
+    }
+
+    @Test
+    @DisplayName("Test correct response when validation fails on update")
+    void validationFailsOnUpdate() throws DataException {
+
+        when(mockValidator.validateCurrentAssetsInvestments(mockRequest, mockCurrentAssetsInvestments, "")).thenReturn(mockErrors);
+        when(mockErrors.hasErrors()).thenReturn(true);
+
+        ResponseObject<CurrentAssetsInvestments> responseObject = service.update(mockCurrentAssetsInvestments, mockTransaction,
+            "", mockRequest);
+
+        assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
+    }
+
 
     private ResponseStatus responseStatusNotFound() {
         ResponseObject<RestObject> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
