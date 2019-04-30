@@ -35,6 +35,10 @@ public class BalanceSheet {
     @JsonProperty("capital_and_reserves")
     private CapitalAndReserves capitalAndReserves;
 
+    @Valid
+    @JsonProperty("members_funds")
+    private MembersFunds membersFunds;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -74,5 +78,13 @@ public class BalanceSheet {
 
     public void setCapitalAndReserves(CapitalAndReserves capitalAndReserves) {
         this.capitalAndReserves = capitalAndReserves;
+    }
+
+    public MembersFunds getMembersFunds() {
+        return membersFunds;
+    }
+
+    public void setMembersFunds(MembersFunds membersFunds) {
+        this.membersFunds = membersFunds;
     }
 }

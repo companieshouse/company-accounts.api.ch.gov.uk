@@ -21,6 +21,9 @@ public class BalanceSheetEntity {
     @Field("capital_and_reserves")
     private CapitalAndReservesEntity capitalAndReservesEntity;
 
+    @Field("members_funds")
+    private MembersFundsEntity membersFundsEntity;
+
     public Long getCalledUpShareCapitalNotPaid() {
         return calledUpShareCapitalNotPaid;
     }
@@ -57,5 +60,14 @@ public class BalanceSheetEntity {
 
     public void setCapitalAndReservesEntity(CapitalAndReservesEntity capitalAndReservesEntity) {
         this.capitalAndReservesEntity = capitalAndReservesEntity;
+    }
+
+    public MembersFundsEntity getMembersFundsEntity() {
+        return membersFundsEntity;
+    }
+
+    public void setMembersFundsEntity(
+            MembersFundsEntity membersFundsEntity) {
+        this.membersFundsEntity = membersFundsEntity;
     }
 }
