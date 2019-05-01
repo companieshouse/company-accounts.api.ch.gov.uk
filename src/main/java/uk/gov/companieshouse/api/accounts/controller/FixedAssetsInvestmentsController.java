@@ -111,11 +111,9 @@ public class FixedAssetsInvestmentsController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String fixedAssetsInvestmentsId = fixedAssetsInvestmentsService.generateID(companyAccountId);
-
         try {
             ResponseObject<FixedAssetsInvestments> response = fixedAssetsInvestmentsService
-                .findById(fixedAssetsInvestmentsId, request);
+                .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

@@ -9,20 +9,20 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-import java.security.MessageDigest;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
@@ -63,9 +63,6 @@ public class ApprovalServiceTest {
     private ApprovalValidator approvalValidator;
 
     @Mock
-    private MessageDigest messageDigest;
-
-    @Mock
     private ApprovalEntity approvalEntity;
 
     @Mock
@@ -84,7 +81,16 @@ public class ApprovalServiceTest {
     private ApprovalService approvalService;
 
     private static final String SELF_LINK = "self_link";
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String RESOURCE_ID = "resourceId";
 
+    @BeforeEach
+    void setUp() {
+
+        when(keyIdGenerator
+                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
+                        .thenReturn(RESOURCE_ID);
+    }
 
     @Test
     @DisplayName("Tests the successful creation of an Approval resource")
@@ -96,7 +102,7 @@ public class ApprovalServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<Approval> result = approvalService
-            .create(approval, transaction, "", request);
+            .create(approval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(approval, result.getData());
     }
@@ -112,7 +118,7 @@ public class ApprovalServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = approvalService.create(approval, transaction, "", request);
+        ResponseObject response = approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -130,25 +136,25 @@ public class ApprovalServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-            () -> approvalService.create(approval, transaction, "", request));
+            () -> approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Tests the successful find of an Approval resource")
     public void findApproval() throws DataException {
-        when(approvalRepository.findById(""))
+        when(approvalRepository.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(approvalEntity));
         when(approvalTransformer.transform(approvalEntity)).thenReturn(approval);
         ResponseObject<Approval> result = approvalService
-            .findById("", request);
+            .find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(approval, result.getData());
     }
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of an Approval resource")
-    public void findApprovalMongoException() throws DataException {
-        when(approvalRepository.findById("")).thenThrow(mongoException);
-        assertThrows(DataException.class, () -> approvalService.findById("", request));
+    public void findApprovalMongoException() {
+        when(approvalRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
+        assertThrows(DataException.class, () -> approvalService.find(COMPANY_ACCOUNTS_ID, request));
     }
 }

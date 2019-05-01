@@ -68,8 +68,6 @@ public class AccountingPoliciesControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
-    private static final String ACCOUNTING_POLICIES_ID = "accountingPoliciesId";
-
     @Test
     @DisplayName("Create accounting policies - has binding errors")
     void createAccountingPoliciesBindingErrors() {
@@ -136,11 +134,10 @@ public class AccountingPoliciesControllerTest {
     void getAccountingPoliciesSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(accountingPoliciesService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(ACCOUNTING_POLICIES_ID);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
                 accountingPolicies);
-        when(accountingPoliciesService.findById(ACCOUNTING_POLICIES_ID, request))
+        when(accountingPoliciesService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -161,9 +158,8 @@ public class AccountingPoliciesControllerTest {
     void getAccountingPoliciesDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(accountingPoliciesService.generateID(COMPANY_ACCOUNTS_ID)).thenReturn(ACCOUNTING_POLICIES_ID);
 
-        when(accountingPoliciesService.findById(ACCOUNTING_POLICIES_ID, request))
+        when(accountingPoliciesService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(new DataException(""));
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

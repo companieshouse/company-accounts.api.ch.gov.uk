@@ -77,11 +77,9 @@ public class AccountingPoliciesController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String accountingPoliciesId = accountingPoliciesService.generateID(companyAccountId);
-
         try {
             ResponseObject<AccountingPolicies> response = accountingPoliciesService
-                    .findById(accountingPoliciesId, request);
+                    .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

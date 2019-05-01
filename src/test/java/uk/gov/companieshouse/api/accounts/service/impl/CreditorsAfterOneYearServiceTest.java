@@ -287,11 +287,14 @@ public class CreditorsAfterOneYearServiceTest {
     @DisplayName("Tests the successful find of a creditors after one year resource")
     void findCreditorsAfterOneYear() throws DataException {
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+
+        when(mockRepository.findById(CREDITORS_AFTER_ID))
                 .thenReturn(Optional.ofNullable(creditorsAfterOneYearEntity));
         when(mockTransformer.transform(creditorsAfterOneYearEntity)).thenReturn(mockCreditorsAfterOneYear);
 
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.findById("", mockRequest);
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(mockCreditorsAfterOneYear, result.getData());
@@ -303,10 +306,13 @@ public class CreditorsAfterOneYearServiceTest {
 
         creditorsAfterOneYearEntity = null;
 
-        when(mockRepository.findById(""))
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+
+        when(mockRepository.findById(CREDITORS_AFTER_ID))
                 .thenReturn(Optional.ofNullable(creditorsAfterOneYearEntity));
 
-        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.findById("", mockRequest);
+        ResponseObject<CreditorsAfterOneYear> result = mockCreditorsAfterOneYearService.find(COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertNotNull(result);
         assertEquals(responseStatusNotFound(), result.getStatus());
@@ -316,8 +322,11 @@ public class CreditorsAfterOneYearServiceTest {
     @DisplayName("Tests mongo exception thrown on find of a creditors after one year resource")
     void findCreditorsMongoException() {
 
-        when(mockRepository.findById("")).thenThrow(mockMongoException);
-        assertThrows(DataException.class, () -> mockCreditorsAfterOneYearService.findById("", mockRequest));
+        when(mockKeyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName()))
+                .thenReturn(CREDITORS_AFTER_ID);
+
+        when(mockRepository.findById(CREDITORS_AFTER_ID)).thenThrow(mockMongoException);
+        assertThrows(DataException.class, () -> mockCreditorsAfterOneYearService.find(COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     private ResponseStatus responseStatusNotFound() {

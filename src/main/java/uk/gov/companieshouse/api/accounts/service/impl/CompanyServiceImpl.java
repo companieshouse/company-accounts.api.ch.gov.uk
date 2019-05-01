@@ -51,5 +51,12 @@ public class CompanyServiceImpl implements CompanyService {
                 companyProfile.getAccounts().getLastAccounts() != null &&
                 companyProfile.getAccounts().getLastAccounts().getPeriodStartOn() != null);
     }
+
+    @Override
+    public boolean isCIC(Transaction transaction) throws ServiceException {
+
+        CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
+        return companyProfile.isCommunityInterestCompany();
+    }
 }
 

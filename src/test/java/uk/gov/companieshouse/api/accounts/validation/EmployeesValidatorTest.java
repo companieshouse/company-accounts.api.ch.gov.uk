@@ -65,6 +65,7 @@ public class EmployeesValidatorTest {
         createValidNoteCurrentPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+
         errors = validator.validateEmployees(employees, mockTransaction);
 
         assertFalse(errors.hasErrors());

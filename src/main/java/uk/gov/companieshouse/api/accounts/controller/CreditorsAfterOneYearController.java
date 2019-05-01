@@ -78,11 +78,9 @@ public class CreditorsAfterOneYearController {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String creditorsAfterOneYearId = creditorsAfterOneYearService.generateID(companyAccountId);
-
         try {
             ResponseObject<CreditorsAfterOneYear> response = creditorsAfterOneYearService
-                    .findById(creditorsAfterOneYearId, request);
+                    .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

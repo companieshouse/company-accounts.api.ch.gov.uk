@@ -14,16 +14,17 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DebtorsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.DebtorsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DebtorsValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
 public class DebtorsService implements ResourceService<Debtors> {
@@ -35,7 +36,7 @@ public class DebtorsService implements ResourceService<Debtors> {
     private DebtorsValidator debtorsValidator;
 
     @Autowired
-    public DebtorsService (DebtorsRepository repository, DebtorsTransformer transformer,
+    public DebtorsService(DebtorsRepository repository, DebtorsTransformer transformer,
             SmallFullService smallFullService, KeyIdGenerator keyIdGenerator,
             DebtorsValidator debtorsValidator) {
 
@@ -47,8 +48,15 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> create (Debtors rest, Transaction transaction,
+    public ResponseObject<Debtors> create(Debtors rest, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException {
+
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriodDebtors = rest.getCurrentPeriod();
+        if (debtorsValidator.validateIfOnlyDetails(currentPeriodDebtors)) {
+            rest.setCurrentPeriod(null);
+
+        }
 
         Errors errors = debtorsValidator.validateDebtors(rest, transaction, companyAccountsId,
                 request);
@@ -81,9 +89,15 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> update (Debtors rest, Transaction transaction,
+    public ResponseObject<Debtors> update(Debtors rest, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException {
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
+
+        // Details value should not be saved if no other current period fields are provided
+        CurrentPeriod currentPeriodDebtors = rest.getCurrentPeriod();
+        if (debtorsValidator.validateIfOnlyDetails(currentPeriodDebtors)) {
+            rest.setCurrentPeriod(null);
+        }
 
         Errors errors = debtorsValidator.validateDebtors(rest, transaction, companyAccountsId,
                 request);
@@ -105,11 +119,11 @@ public class DebtorsService implements ResourceService<Debtors> {
     }
 
     @Override
-    public ResponseObject<Debtors> findById (String id, HttpServletRequest request) throws DataException {
+    public ResponseObject<Debtors> find(String companyAccountsId, HttpServletRequest request) throws DataException {
         DebtorsEntity entity;
 
         try {
-            entity = repository.findById(id).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -140,31 +154,31 @@ public class DebtorsService implements ResourceService<Debtors> {
             throw new DataException(e);
         }
     }
-    @Override
-    public String generateID(String companyAccountId) {
+
+    private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DEBTORS.getName());
     }
 
-    private String generateSelfLink (Transaction transaction, String companyAccountId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/" + ResourceName.DEBTORS.getName();
     }
 
-    public String getSelfLinkFromDebtorsEntity (DebtorsEntity entity) {
+    public String getSelfLinkFromDebtorsEntity(DebtorsEntity entity) {
 
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private Map<String, String> createSelfLink (Transaction transaction, String companyAccountsId) {
+    private Map<String, String> createSelfLink(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
-    private void setMetadataOnRestObject (Debtors rest, Transaction transaction,
+    private void setMetadataOnRestObject(Debtors rest, Transaction transaction,
             String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));

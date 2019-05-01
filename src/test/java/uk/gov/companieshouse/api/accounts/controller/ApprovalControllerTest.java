@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,13 +56,13 @@ public class ApprovalControllerTest {
     private ApprovalController approvalController;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException, DataException {
+    public void setUp() {
         when(request.getAttribute("transaction")).thenReturn(transaction);
     }
 
     @Test
     @DisplayName("Tests the successful creation of a approval resource")
-    public void canCreateApproval() throws NoSuchAlgorithmException, DataException {
+    public void canCreateApproval() throws DataException {
         ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
             approval);
         doReturn(successCreateResponse).when(approvalService)
@@ -102,11 +101,11 @@ public class ApprovalControllerTest {
 
     @Test
     @DisplayName("Test the retreval of a approval resource")
-    public void canRetrieveApproval() throws NoSuchAlgorithmException, DataException {
+    public void canRetrieveApproval() throws DataException {
         ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
             approval);
-        doReturn(successFindResponse).when(approvalService).findById("find", request);
-        doReturn("find").when(approvalService).generateID("123456");
+        doReturn(successFindResponse).when(approvalService).find("123456", request);
+
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(approval);
         when(apiResponseMapper.mapGetResponse(approval,
             request)).thenReturn(responseEntity);

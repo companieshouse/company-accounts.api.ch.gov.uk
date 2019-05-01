@@ -15,7 +15,10 @@ public enum ResourceName {
     STOCKS("stocks"),
     TANGIBLE_ASSETS("tangible-assets"),
     FIXED_ASSETS_INVESTMENTS("fixed-assets-investments"),
-    EMPLOYEES("employees");
+    EMPLOYEES("employees"),
+    CIC_REPORT("cic-report"),
+    CIC_APPROVAL("cic-approval"),
+    CIC_STATEMENTS("cic-statements");
 
     private String name;
 

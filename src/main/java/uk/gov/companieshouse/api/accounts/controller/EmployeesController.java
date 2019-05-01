@@ -111,11 +111,9 @@ public class EmployeesController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        String employeesId = employeesService.generateID(companyAccountId);
-
         try {
             ResponseObject<Employees> response = employeesService
-                .findById(employeesId, request);
+                .find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 

@@ -46,6 +46,20 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
+                && creditorsNumberFieldsAreNull(currentPeriodNote));
+    }
+
+    private boolean creditorsNumberFieldsAreNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getTotal() == null && currentPeriodNote.getTradeCreditors() == null &&
+                currentPeriodNote.getAccrualsAndDeferredIncome() == null &&
+                currentPeriodNote.getOtherCreditors() == null &&
+                currentPeriodNote.getTaxationAndSocialSecurity() == null &&
+                currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts() == null &&
+                currentPeriodNote.getBankLoansAndOverdrafts() == null;
+    }
+
     private Errors validateIfEmptyResource(CreditorsWithinOneYear creditorsWithinOneYear,
             HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -337,11 +351,9 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
     private BalanceSheet getPreviousPeriodBalanceSheet(
             HttpServletRequest request, String companyAccountsId) throws DataException {
-        String previousPeriodId = previousPeriodService.generateID(companyAccountsId);
 
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
-
-        previousPeriodResponseObject = previousPeriodService.findById(previousPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject
+                = previousPeriodService.find(companyAccountsId, request);
 
         if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
             return previousPeriodResponseObject.getData().getBalanceSheet();
@@ -403,11 +415,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
             String companyAccountsId) throws DataException {
 
-        String currentPeriodId = currentPeriodService.generateID(companyAccountsId);
-
-        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject;
-
-        currentPeriodResponseObject = currentPeriodService.findById(currentPeriodId, request);
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject
+                = currentPeriodService.find(companyAccountsId, request);
 
         if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
             return currentPeriodResponseObject.getData().getBalanceSheet();

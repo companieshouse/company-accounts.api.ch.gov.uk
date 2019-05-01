@@ -34,7 +34,8 @@ public class EmployeesValidator extends BaseValidator {
             addEmptyResourceError(errors, EMPLOYEES_PATH);
         }
 
-        if (!isMultipleYearFiler && employees.getPreviousPeriod().getAverageNumberOfEmployees() != null) {
+        if (!isMultipleYearFiler && employees.getPreviousPeriod() != null &&
+                employees.getPreviousPeriod().getAverageNumberOfEmployees() != null) {
             addError(errors, unexpectedData, EMPLOYEES_PREVIOUS_PERIOD_PATH);
         }
         return errors;
