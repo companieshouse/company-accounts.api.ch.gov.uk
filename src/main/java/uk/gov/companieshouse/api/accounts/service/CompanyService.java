@@ -23,4 +23,13 @@ public interface CompanyService {
      * @throws ServiceException if there's an error when fetching the company profile
      */
     boolean isCIC(Transaction transaction) throws ServiceException;
+
+    /**
+     * Return whether company profile is limited by guarantee.
+     *
+     * @param transaction Transaction for which to look up company details
+     * @return whether the company associated with the transaction is LBG
+     * @throws ServiceException if there's an error when fetching the company profile
+     */
+    boolean isLBG(Transaction transaction) throws ServiceException;
 }
