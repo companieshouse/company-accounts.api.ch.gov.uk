@@ -1132,12 +1132,14 @@
         <tr>
           <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
         </tr>
+
+        {{if $fixedAssets.tangible}}
         <tr class = "figures">
           <td id = "tangible-assets-label">Tangible assets:</td>
           {{if .small_full_accounts.balance_sheet_notes.tangible_assets}}
           <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes">{{getValue "tangible-notes-id" }}</td>
           {{else}}
-          <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes">&#160;</td>
+          <td class="figure noteIndex" id="uk-busPropertyPlantEquipmentCY_ENDNoteIndexes1">&#160;</td>
           {{end}}
 
           <td id="tangible-curr" class="strong figure">
@@ -1152,6 +1154,32 @@
             {{end}}
           </td>
         </tr>
+
+        {{end}}
+
+        {{if $fixedAssets.investments}}
+        <tr class = "figures">
+          <td id = "fixed-assets-investments-label">Investments:</td>
+          {{if .small_full_accounts.balance_sheet_notes.fixed_assets_investments}}
+          <td class="figure noteIndex" id="uk-busInvestmentsFixedAssetsCY_ENDNoteIndexes">{{getValue "fixed-assets-investments-notes-id" }}</td>
+          {{else}}
+          <td class="figure noteIndex" id="uk-busInvestmentsFixedAssetsCY_ENDNoteIndexes1">&#160;</td>
+          {{end}}
+
+          <td id="fixed-investments-curr" class="strong figure">
+            {{if isNotEmpty $fixedAssets.investments.current_amount}}
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="fixed-investments-prev" class="text--right">
+            {{if isNotEmpty $fixedAssets.investments.previous_amount}}
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:InvestmentsFixedAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.investments.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        {{end}}
 
         <tr class = "figures">
           <td id = "total-fixed-assets-label" class="strong">Total fixed assets:</td>
@@ -1259,6 +1287,31 @@
           </td>
 
         </tr>
+        {{end}}
+
+        <!-- BALANCE SHEET - CURRENT ASSETS - INVESTMENTS -->
+        {{if $currentAssets.investments}}
+        <tr class = "figures">
+          <td id = "current-assets-investments-label">Investments:</td>
+          {{if .small_full_accounts.balance_sheet_notes.current_assets_investments}}
+          <td class="figure noteIndex" id="uk-busCurrentAssetInvestmentsCY_ENDNoteIndexes">{{getValue "current-assets-investments-notes-id" }}</td>
+          {{else}}
+          <td class="figure noteIndex" id="uk-busCurrentAssetInvestmentsCY_ENDNoteIndexes1">&#160;</td>
+          {{end}}
+
+          <td id="investments-curr" class="strong figure">
+            {{if isNotEmpty $currentAssets.investments.current_amount}}
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:CurrentAssetInvestments" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.investments.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="investments-prev" class="text--right">
+            {{if isNotEmpty $currentAssets.investments.previous_amount}}
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:CurrentAssetInvestments" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $currentAssets.investments.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
         {{end}}
 
         <!-- BALANCE SHEET - CURRENT ASSETS - TOTAL CURRENT ASSETS -->
@@ -2521,6 +2574,40 @@
 
       <!-- TANGIBLE ASSETS NOTE END -->
 
+      <!-- FIXED ASSETS INVESTMENTS NOTE START -->
+      {{if $fixedAssetsInvestments := $balanceSheetNotes.fixed_assets_investments}}
+      {{incValue "notes-page-count" }}
+      {{setValue "fixed-assets-investments-notes-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+
+        <h2>{{getValue "notes-page-count"}}. Fixed assets investments note</h2>
+
+        {{if $fixedAssetsInvestments.details}}
+        <div class="text-area-display" id="fixed-assets-investments-free-text-note">
+
+          <p class="text-area-display">
+            {{$fixedAssetsInvestments.details}}
+          </p>
+
+        </div>
+        {{end}}
+
+      </div>
+
+      {{end}}
+      <!-- FIXED ASSETS INVESTMENTS NOTE END -->
+
       <!-- STOCKS NOTE START -->
 
       {{if $stocksNote := $balanceSheetNotes.stocks}}
@@ -2783,6 +2870,40 @@
       {{end}}
 
       <!-- DEBTORS NOTE END -->
+
+      <!-- CURRENT ASSETS INVESTMENTS NOTE START -->
+      {{if $currentAssetsInvestments := $balanceSheetNotes.current_assets_investments}}
+      {{incValue "notes-page-count" }}
+      {{setValue "current-assets-investments-notes-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+
+        <h2>{{getValue "notes-page-count"}}. Current assets investments note</h2>
+
+        {{if $currentAssetsInvestments.details}}
+        <div class="text-area-display" id="current-assets-investments-free-text-note">
+
+          <p class="text-area-display">
+            {{$currentAssetsInvestments.details}}
+          </p>
+
+        </div>
+        {{end}}
+
+      </div>
+
+      {{end}}
+      <!-- CURRENT ASSETS INVESTMENTS NOTE END -->
 
       <!-- CREDITORS WITHIN ONE YEAR NOTE START -->
       {{if $creditorsWithinOneYearNote := $balanceSheetNotes.creditors_within_one_year}}
@@ -3097,40 +3218,6 @@
 
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
-      
-      <!-- FIXED ASSETS INVESTMENTS NOTE START -->
-      {{if $fixedAssetsInvestments := $balanceSheetNotes.fixed_assets_investments}}
-      {{incValue "notes-page-count" }}
-      {{setValue "fixed-assets-investments-notes-id" (getValue "notes-page-count") }}
-
-      <div class="page">
-          <div class="header">
-              <h1 class="text--center">
-                  <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-              </h1>
-          </div>
-
-          <h2 class="text--center">Notes to the Financial Statements</h2>
-          <p class="text--center">
-              <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
-          </p>
-
-          <h2>{{getValue "notes-page-count"}}. Fixed assets investments note</h2>
-
-          {{if $fixedAssetsInvestments.details}}
-          <div class="text-area-display" id="fixed-assets-investments-free-text-note">
-
-              <p class="text-area-display">
-                  {{$fixedAssetsInvestments.details}}
-              </p>
-
-          </div>
-          {{end}}
-            
-      </div>
-
-      {{end}}
-      <!-- FIXED ASSETS INVESTMENTS NOTE END -->      
 
       {{end}}
     </div>
