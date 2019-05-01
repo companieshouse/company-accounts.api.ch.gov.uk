@@ -47,6 +47,7 @@ public class BalanceSheetValidatorTest {
     private static final String CAPITAL_AND_RESERVES_PATH = BALANCE_SHEET_PATH + ".capital_and_reserves";
     private static final String TOTAL_SHAREHOLDER_FUNDS_PATH = CAPITAL_AND_RESERVES_PATH + ".total_shareholders_funds";
     private static final String MEMBERS_FUNDS_PATH = BALANCE_SHEET_PATH + ".members_funds";
+    private static final String TOTAL_MEMBERS_FUNDS_PATH = MEMBERS_FUNDS_PATH + ".total_members_funds";
     private static final String OTHER_LIABILITIES_OR_ASSETS_PATH = BALANCE_SHEET_PATH + ".other_liabilities_or_assets";
     private static final String OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".net_current_assets";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
@@ -60,6 +61,9 @@ public class BalanceSheetValidatorTest {
 
     private static final String SHAREHOLDERS_FUNDS_MISMATCH_KEY = "shareholderFundsMismatch";
     private static final String SHAREHOLDERS_FUNDS_MISMATCH = "shareholders.mismatch";
+
+    private static final String MEMBERS_FUNDS_MISMATCH_KEY = "membersFundsMismatch";
+    private static final String MEMBERS_FUNDS_MISMATCH = "membersFunds.mismatch";
 
     private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
@@ -923,6 +927,139 @@ public class BalanceSheetValidatorTest {
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING, CAPITAL_AND_RESERVES_PATH)));
+    }
+
+    @Test
+    @DisplayName("Validate balance sheet with invalid members' funds total - LBG filer")
+    void validateBalanceSheetInvalidMembersFundsTotalForLBGFiler() throws ServiceException, DataException {
+
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(1L);
+        fixedAssets.setTotal(1L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(1L);
+        currentAssets.setDebtors(1L);
+        currentAssets.setCashAtBankAndInHand(1L);
+        currentAssets.setTotal(3L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        MembersFunds membersFunds = new MembersFunds();
+        membersFunds.setProfitAndLossAccount(2L);
+        membersFunds.setTotalMembersFunds(1L);
+        balanceSheet.setMembersFunds(membersFunds);
+
+        when(companyService.isLBG(transaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = new Errors();
+        validator.validateBalanceSheet(balanceSheet, transaction, PERIOD_PATH, errors);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, TOTAL_MEMBERS_FUNDS_PATH)));
+    }
+
+    @Test
+    @DisplayName("Validate balance sheet members'' funds mismatch - LBG filer")
+    void validateBalanceSheetWithMembersFundsMismatchForLBGFiler() throws ServiceException, DataException {
+
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(1L);
+        fixedAssets.setTotal(1L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(1L);
+        currentAssets.setDebtors(1L);
+        currentAssets.setCashAtBankAndInHand(1L);
+        currentAssets.setTotal(3L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        MembersFunds membersFunds = new MembersFunds();
+        membersFunds.setProfitAndLossAccount(2L);
+        membersFunds.setTotalMembersFunds(2L);
+        balanceSheet.setMembersFunds(membersFunds);
+
+        when(companyService.isLBG(transaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, MEMBERS_FUNDS_MISMATCH_KEY, MEMBERS_FUNDS_MISMATCH);
+
+        Errors errors = new Errors();
+        validator.validateBalanceSheet(balanceSheet, transaction, PERIOD_PATH, errors);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MEMBERS_FUNDS_MISMATCH, TOTAL_MEMBERS_FUNDS_PATH)));
+    }
+
+    @Test
+    @DisplayName("Validate balance sheet without members' funds - LBG filer")
+    void validateBalanceSheetWithoutMembersFundsForLBGFiler() throws ServiceException, DataException {
+
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(1L);
+        fixedAssets.setTotal(1L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
+        CurrentAssets currentAssets = new CurrentAssets();
+        currentAssets.setStocks(1L);
+        currentAssets.setDebtors(1L);
+        currentAssets.setCashAtBankAndInHand(1L);
+        currentAssets.setTotal(3L);
+        balanceSheet.setCurrentAssets(currentAssets);
+
+        OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
+        otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
+        otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
+        otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
+        otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
+
+        when(companyService.isLBG(transaction)).thenReturn(true);
+
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+
+        Errors errors = new Errors();
+        validator.validateBalanceSheet(balanceSheet, transaction, PERIOD_PATH, errors);
+
+        assertTrue(errors.hasErrors());
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING, MEMBERS_FUNDS_PATH)));
     }
 
     private Error createError(String error, String path) {
