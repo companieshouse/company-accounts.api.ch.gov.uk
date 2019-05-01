@@ -6,22 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mongodb.MongoException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
-
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -45,10 +41,11 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 import uk.gov.companieshouse.api.accounts.transformer.FixedAssetsInvestmentsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.FixedAssetsInvestmentsValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -88,6 +85,9 @@ public class FixedAssetsInvestmentsServiceTest {
     private SmallFullService mockSmallFullService;
 
     @Mock
+    private FixedAssetsInvestmentsValidator mockValidator;
+
+    @Mock
     private KeyIdGenerator mockKeyIdGenerator;
 
     private FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity;
@@ -114,7 +114,7 @@ public class FixedAssetsInvestmentsServiceTest {
     void canCreateFixedAssetsInvestments() throws DataException {
 
         when(mockTransformer.transform(mockFixedAssetsInvestments)).thenReturn(fixedAssetsInvestmentsEntity);
-
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         
@@ -134,7 +134,7 @@ public class FixedAssetsInvestmentsServiceTest {
         doReturn(fixedAssetsInvestmentsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(FixedAssetsInvestments.class));
         when(mockRepository.insert(fixedAssetsInvestmentsEntity)).thenThrow(mockDuplicateKeyException);
-
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         
@@ -152,7 +152,7 @@ public class FixedAssetsInvestmentsServiceTest {
         doReturn(fixedAssetsInvestmentsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(FixedAssetsInvestments.class));
         when(mockRepository.insert(fixedAssetsInvestmentsEntity)).thenThrow(mockMongoException);
-
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         
@@ -165,6 +165,7 @@ public class FixedAssetsInvestmentsServiceTest {
     void canUpdateAFixedAssetsInvestments() throws DataException {
 
         when(mockTransformer.transform(mockFixedAssetsInvestments)).thenReturn(fixedAssetsInvestmentsEntity);
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
         when(mockTransactionLinks.getSelf()).thenReturn(SELF_LINK);
         
@@ -181,6 +182,7 @@ public class FixedAssetsInvestmentsServiceTest {
 
         doReturn(fixedAssetsInvestmentsEntity).when(mockTransformer).transform(ArgumentMatchers
             .any(FixedAssetsInvestments.class));
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
         when(mockRepository.save(fixedAssetsInvestmentsEntity)).thenThrow(mockMongoException);
 
         when(mockTransaction.getLinks()).thenReturn(mockTransactionLinks);
@@ -276,9 +278,35 @@ public class FixedAssetsInvestmentsServiceTest {
 
         assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, mockRequest));
     }
+    @Test
+    @DisplayName("Test correct response when validation fails on create")
+    void validationFailsOnCreate() throws DataException {
+
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
+        when(mockErrors.hasErrors()).thenReturn(true);
+
+        ResponseObject<FixedAssetsInvestments> responseObject = service.create(mockFixedAssetsInvestments, mockTransaction,
+                "", mockRequest);
+
+        assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
+    }
+
+    @Test
+    @DisplayName("Test correct response when validation fails on update")
+    void validationFailsOnUpdate() throws DataException {
+
+        when(mockValidator.validateFixedAssetsInvestments(mockRequest, mockFixedAssetsInvestments, "")).thenReturn(mockErrors);
+        when(mockErrors.hasErrors()).thenReturn(true);
+
+        ResponseObject<FixedAssetsInvestments> responseObject = service.update(mockFixedAssetsInvestments, mockTransaction,
+                "", mockRequest);
+
+        assertEquals(responseObject.getStatus(), ResponseStatus.VALIDATION_ERROR);
+    }
 
     private ResponseStatus responseStatusNotFound() {
         ResponseObject<RestObject> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
         return responseObject.getStatus();
     }
+
 }

@@ -77,33 +77,35 @@ public class BalanceSheetValidatorTest {
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(1L);
-        fixedAssets.setTotal(1L);
+        fixedAssets.setInvestments(1L);
+        fixedAssets.setTotal(2L);
         balanceSheet.setFixedAssets(fixedAssets);
 
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setStocks(1L);
         currentAssets.setDebtors(1L);
         currentAssets.setCashAtBankAndInHand(1L);
-        currentAssets.setTotal(3L);
+        currentAssets.setInvestments(1L);
+        currentAssets.setTotal(4L);
         balanceSheet.setCurrentAssets(currentAssets);
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
-        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(7L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(4L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(9L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(4L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(6L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setCalledUpShareCapital(1L);
+        capitalAndReserves.setCalledUpShareCapital(3L);
         capitalAndReserves.setSharePremiumAccount(1L);
         capitalAndReserves.setOtherReserves(1L);
         capitalAndReserves.setProfitAndLoss(1L);
-        capitalAndReserves.setTotalShareholdersFunds(4L);
+        capitalAndReserves.setTotalShareholdersFunds(6L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         when(companyService.isLBG(transaction)).thenReturn(false);
@@ -122,30 +124,32 @@ public class BalanceSheetValidatorTest {
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(1L);
-        fixedAssets.setTotal(1L);
+        fixedAssets.setInvestments(1L);
+        fixedAssets.setTotal(2L);
         balanceSheet.setFixedAssets(fixedAssets);
 
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setStocks(1L);
         currentAssets.setDebtors(1L);
         currentAssets.setCashAtBankAndInHand(1L);
-        currentAssets.setTotal(3L);
+        currentAssets.setInvestments(1L);
+        currentAssets.setTotal(4L);
         balanceSheet.setCurrentAssets(currentAssets);
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
-        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(4L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(6L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(3L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         MembersFunds membersFunds = new MembersFunds();
-        membersFunds.setProfitAndLossAccount(1L);
-        membersFunds.setTotalMembersFunds(1L);
+        membersFunds.setProfitAndLossAccount(3L);
+        membersFunds.setTotalMembersFunds(3L);
         balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
