@@ -1,21 +1,20 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CurrentPeriodValidatorTest {
 
@@ -46,36 +45,38 @@ public class CurrentPeriodValidatorTest {
     @DisplayName("SUCCESS - Test Balance Sheet validation with no errors")
     void validateBalanceSheet() {
 
+        FixedAssets fixedAssets = new FixedAssets();
+        fixedAssets.setTangible(1L);
+        fixedAssets.setInvestments(1L);
+        fixedAssets.setTotal(2L);
+        balanceSheet.setFixedAssets(fixedAssets);
+
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setStocks(1L);
         currentAssets.setDebtors(1L);
         currentAssets.setCashAtBankAndInHand(1L);
-        currentAssets.setTotal(3L);
+        currentAssets.setInvestments(1L);
+        currentAssets.setTotal(4L);
         balanceSheet.setCurrentAssets(currentAssets);
 
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(4L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(5L);
-        otherLiabilitiesOrAssets.setNetCurrentAssets(2L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(4L);
+        otherLiabilitiesOrAssets.setNetCurrentAssets(3L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(6L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(1L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(3L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-        capitalAndReserves.setCalledUpShareCapital(1L);
-        capitalAndReserves.setOtherReserves(0L);
+        capitalAndReserves.setCalledUpShareCapital(2L);
+        capitalAndReserves.setOtherReserves(1L);
         capitalAndReserves.setProfitAndLoss(0L);
         capitalAndReserves.setSharePremiumAccount(0L);
-        capitalAndReserves.setTotalShareholdersFunds(1L);
+        capitalAndReserves.setTotalShareholdersFunds(3L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
-
-        FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(1L);
-        fixedAssets.setTotal(1L);
-        balanceSheet.setFixedAssets(fixedAssets);
 
         balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 
@@ -122,7 +123,8 @@ public class CurrentPeriodValidatorTest {
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         FixedAssets fixedAssets = new FixedAssets();
-        fixedAssets.setTangible(2L);
+        fixedAssets.setTangible(1L);
+        fixedAssets.setInvestments(1L);
         fixedAssets.setTotal(2L);
         balanceSheet.setFixedAssets(fixedAssets);
 
@@ -233,6 +235,7 @@ public class CurrentPeriodValidatorTest {
     private void addInvalidFixedAssetsToBalanceSheet() {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(5L);
+        fixedAssets.setInvestments(2L);
         fixedAssets.setTotal(10L);
 
         balanceSheet.setFixedAssets(fixedAssets);
@@ -243,6 +246,7 @@ public class CurrentPeriodValidatorTest {
         currentAssets.setStocks(5L);
         currentAssets.setDebtors(5L);
         currentAssets.setCashAtBankAndInHand(5L);
+        currentAssets.setInvestments(5L);
         currentAssets.setTotal(10L);
 
         balanceSheet.setCurrentAssets(currentAssets);
