@@ -98,7 +98,7 @@ public class CurrentPeriodServiceTest {
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     public void canCreateCurrentPeriod() throws DataException {
 
-        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
+        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -114,7 +114,7 @@ public class CurrentPeriodServiceTest {
     @DisplayName("Tests the duplicate key when creating a current period resource")
     public void createSmallfullDuplicateKey() throws DataException {
 
-        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
+        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(duplicateKeyException);
@@ -130,9 +130,9 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a current period")
-    void createSmallfullMongoExceptionFailure() {
+    void createSmallfullMongoExceptionFailure() throws DataException {
 
-        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod)).thenReturn(errors);
+        when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(ArgumentMatchers
             .any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);

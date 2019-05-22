@@ -58,7 +58,7 @@ public class CurrentPeriodService implements
         Transaction transaction, String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -88,7 +88,7 @@ public class CurrentPeriodService implements
     public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = currentPeriodValidator.validateCurrentPeriod(rest);
+        Errors errors = currentPeriodValidator.validateCurrentPeriod(rest, transaction);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);

@@ -361,7 +361,7 @@
             <xbrli:entity>
               <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
               <xbrli:segment>
-                <xbrldi:explicitMember dimension="uk-bus:LegalFormEntityDimension">uk-bus:PrivateLimitedCompanyLtd</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="uk-bus:LegalFormEntityDimension">{{if $company.is_lbg}}uk-bus:CompanyLimitedByGuarantee{{else}}uk-bus:PrivateLimitedCompanyLtd{{end}}</xbrldi:explicitMember>
               </xbrli:segment>
             </xbrli:entity>
             <xbrli:period>
@@ -983,6 +983,12 @@
         <h1 class="text--center">
           <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
         </h1>
+
+        {{if $company.is_lbg}}
+        <h2 class="text--center">
+          Company limited by guarantee
+        </h2>
+        {{end}}
       </div>
       <h2 class="center margin-large">Company Registration Number:
         <br />
@@ -1672,6 +1678,61 @@
 
         {{end}}
 
+        <!-- BALANCE SHEET - MEMBERS' FUNDS -->
+
+        {{if $membersFunds := $balanceSheet.members_funds}}
+
+        <tr>
+          <th class="strong" id="members-funds-heading">Members' funds</th>
+        </tr>
+
+        {{if $membersFundsProfitAndLossAccount := $membersFunds.profit_and_loss_account}}
+
+        <tr class="figures">
+          <td id="members-funds-profit-and-loss-label">Profit and loss account:</td>
+
+          <td class="figure noteIndex" id="uk-busEquityRetainedEarningsAccumulatedLosses_CY_ENDNoteIndexes"></td>
+
+          <td id="members-funds-profit-and-loss-curr-val" class="strong figure">
+            {{if isNotEmpty $membersFundsProfitAndLossAccount.current_amount}}
+            <ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $membersFundsProfitAndLossAccount.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="members-funds-profit-and-loss-prev-val" class="figure">
+            {{if isNotEmpty $membersFundsProfitAndLossAccount.previous_amount}}
+            <ix:nonFraction contextRef="RetainedEarningsAccumulatedLosses_PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $membersFundsProfitAndLossAccount.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        {{end}}
+
+        {{if isNotEmpty ($current_total_members_funds := $membersFunds.total_members_funds.current_amount) ($previous_total_members_funds := $membersFunds.total_members_funds.previous_amount)}}
+
+        <tr class="figures">
+          <td id="total-members-funds-label" class="strong">Total members' funds:</td>
+
+          <td class="figure noteIndex" id="uk-busEquityCY_ENDNoteIndexes"></td>
+
+          {{if isNotEmpty $current_total_members_funds}}
+          <td id="total-members-funds-curr-val" class="strong total">
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_members_funds}}</ix:nonFraction>
+          </td>
+          {{else}}
+          <td  class="figures">&#160;</td>
+          {{end}}
+
+          {{if isNotEmpty $previous_total_members_funds}}
+          <td id="total-members-funds-prev-val" class="total">
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_total_members_funds}}</ix:nonFraction>
+          </td>
+          {{end}}
+        </tr>
+
+        {{end}}
+
+        {{end}}
 
         </tbody>
       </table>

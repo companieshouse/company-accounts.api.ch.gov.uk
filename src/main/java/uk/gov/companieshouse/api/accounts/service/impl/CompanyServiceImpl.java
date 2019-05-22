@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import java.util.Arrays;
+import java.util.List;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     private ApiClientService apiClientService;
+
+    private static final List<String> LBG_COMPANY_TYPES =
+            Arrays.asList("private-limited-guarant-nsc", "private-limited-guarant-nsc-limited-exemption");
 
     private static final UriTemplate GET_COMPANY_URI =
             new UriTemplate("/company/{companyNumber}");
@@ -57,6 +62,13 @@ public class CompanyServiceImpl implements CompanyService {
 
         CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
         return companyProfile.isCommunityInterestCompany();
+    }
+
+    @Override
+    public boolean isLBG(Transaction transaction) throws ServiceException {
+
+        CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
+        return LBG_COMPANY_TYPES.contains(companyProfile.getType());
     }
 }
 

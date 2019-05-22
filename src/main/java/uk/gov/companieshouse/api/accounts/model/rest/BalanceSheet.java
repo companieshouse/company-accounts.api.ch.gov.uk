@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
 public class BalanceSheet {
@@ -31,7 +30,6 @@ public class BalanceSheet {
     private CurrentAssets currentAssets;
 
     @Valid
-    @NotNull
     @JsonProperty("capital_and_reserves")
     private CapitalAndReserves capitalAndReserves;
 
