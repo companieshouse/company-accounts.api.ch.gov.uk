@@ -12,7 +12,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 @Component
 public class CicApprovalValidator extends BaseValidator {
 
-    private static final String APPROVAL_PATH = "$.cic-approval";
+    private static final String APPROVAL_PATH = "$.cic_approval";
     private static final String DATE_PATH = APPROVAL_PATH + ".date";
 
     public Errors validateCicReportApproval(CicApproval cicApproval, HttpServletRequest request) {
