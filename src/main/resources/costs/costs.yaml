@@ -1,0 +1,9 @@
+costs:
+  cic-report:
+    amount: 15
+    available_payment_methods: [credit-card, account]
+    class_of_payment: [data-maintenance]
+    description: CIC report cost
+    description_identifier: cic-report
+    kind: cost#cost
+    resource_kind: cost#cic-report

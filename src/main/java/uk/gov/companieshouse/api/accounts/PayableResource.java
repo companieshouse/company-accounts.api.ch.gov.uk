@@ -2,16 +2,16 @@ package uk.gov.companieshouse.api.accounts;
 
 public enum PayableResource {
 
-    CIC("cic.yaml");
+    CIC("cic-report");
 
-    PayableResource(String yamlFile) {
-        this.yamlFile = yamlFile;
+    PayableResource(String resource) {
+        this.resource = resource;
     }
 
-    private String yamlFile;
+    private String resource;
 
-    public String getYamlFile() {
+    public String getResource() {
 
-        return yamlFile;
+        return resource;
     }
 }

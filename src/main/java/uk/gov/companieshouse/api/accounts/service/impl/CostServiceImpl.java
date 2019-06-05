@@ -1,12 +1,14 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.PayableResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.Costs;
 import uk.gov.companieshouse.api.accounts.service.CostService;
 import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.utility.YamlResourceMapper;
@@ -21,7 +23,9 @@ public class CostServiceImpl implements CostService {
     @Autowired
     private YamlResourceMapper yamlResourceMapper;
 
-    private static final String COSTS_RESOURCE_PACKAGE = "/costs/";
+    private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
+
+    private Costs costs;
 
     @Override
     public Cost[] getCosts(Transaction transaction) throws DataException {
@@ -33,19 +37,20 @@ public class CostServiceImpl implements CostService {
                 return new Cost[0];
             }
 
-            Cost[] costs = new Cost[payableResources.size()];
+            if (costs == null) {
+                costs =
+                    yamlResourceMapper
+                        .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
+            }
+
+            Cost[] costArray = new Cost[payableResources.size()];
 
             for (int i = 0; i < payableResources.size(); i++) {
 
-                Cost cost =
-                        yamlResourceMapper.fetchObjectFromYaml(
-                                COSTS_RESOURCE_PACKAGE + payableResources.get(i).getYamlFile(),
-                                        Cost.class);
-
-                costs[i] = cost;
+                costArray[i] = costs.getCosts().get(payableResources.get(i).getResource());
             }
 
-            return costs;
+            return costArray;
 
         } catch (ServiceException e) {
 
