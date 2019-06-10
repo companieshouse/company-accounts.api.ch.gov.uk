@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.accounts.PayableResource;
@@ -17,11 +16,19 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Service
 public class CostServiceImpl implements CostService {
 
-    @Autowired
     private TransactionService transactionService;
 
-    @Autowired
     private YamlResourceMapper yamlResourceMapper;
+
+    @Autowired
+    public CostServiceImpl(TransactionService transactionService, YamlResourceMapper yamlResourceMapper) {
+
+        this.transactionService = transactionService;
+        this.yamlResourceMapper = yamlResourceMapper;
+        this.costs =
+                yamlResourceMapper
+                        .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
+    }
 
     private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
 
@@ -35,12 +42,6 @@ public class CostServiceImpl implements CostService {
 
             if (payableResources.isEmpty()) {
                 return new Cost[0];
-            }
-
-            if (costs == null) {
-                costs =
-                    yamlResourceMapper
-                        .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
             }
 
             Cost[] costArray = new Cost[payableResources.size()];

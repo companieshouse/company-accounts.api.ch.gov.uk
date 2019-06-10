@@ -2,21 +2,18 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.PayableResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -37,8 +34,7 @@ public class CostServiceImplTest {
     @Mock
     private YamlResourceMapper yamlResourceMapper;
 
-    @InjectMocks
-    private CostService costService = new CostServiceImpl();
+    private CostService costService;
 
     @Mock
     private Transaction transaction;
@@ -52,6 +48,15 @@ public class CostServiceImplTest {
     @Mock
     private Map<String, Cost> costMap;
 
+    @BeforeEach
+    private void setUp() {
+
+        when(yamlResourceMapper.fetchObjectFromYaml("/costs/costs.yaml", Costs.class))
+                .thenReturn(costs);
+
+        this.costService = new CostServiceImpl(transactionService, yamlResourceMapper);
+    }
+
     @Test
     @DisplayName("Get costs for payable transaction")
     void getCostsForPayableTransaction() throws ServiceException, DataException {
@@ -59,12 +64,6 @@ public class CostServiceImplTest {
         when(transactionService.getPayableResources(transaction))
                 .thenReturn(Arrays.asList(PayableResource.CIC));
 
-        ReflectionTestUtils.setField(costService, "costs", null);
-
-        when(yamlResourceMapper.fetchObjectFromYaml(
-                "/costs/costs.yaml", Costs.class))
-                        .thenReturn(costs);
-
         when(costs.getCosts()).thenReturn(costMap);
 
         when(costMap.get(PayableResource.CIC.getResource())).thenReturn(cost);
@@ -73,28 +72,6 @@ public class CostServiceImplTest {
 
         assertEquals(1, costArray.length);
         assertEquals(cost, costArray[0]);
-    }
-
-    @Test
-    @DisplayName("Get costs for payable transaction - costs already cached")
-    void getCostsForPayableTransactionCostsAlreadyCached() throws ServiceException, DataException {
-
-        when(transactionService.getPayableResources(transaction))
-                .thenReturn(Arrays.asList(PayableResource.CIC));
-
-        ReflectionTestUtils.setField(costService, "costs", costs);
-
-        when(costs.getCosts()).thenReturn(costMap);
-
-        when(costMap.get(PayableResource.CIC.getResource())).thenReturn(cost);
-
-        Cost[] costArray = costService.getCosts(transaction);
-
-        assertEquals(1, costArray.length);
-        assertEquals(cost, costArray[0]);
-
-        verify(yamlResourceMapper, never())
-                .fetchObjectFromYaml("/costs/costs.yaml", Costs.class);
     }
 
     @Test
