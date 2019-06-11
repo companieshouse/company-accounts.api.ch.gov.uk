@@ -30,6 +30,7 @@ import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -53,6 +54,9 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     /**
      * {@inheritDoc}
@@ -80,7 +84,9 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
                     apiClientService.getInternalApiClient(
                             request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader()));
 
-            transaction.setResources(createTransactionResourceMap(companyAccount));
+            boolean isPayableTransaction = !transactionService.getPayableResources(transaction).isEmpty();
+
+            transaction.setResources(createTransactionResourceMap(companyAccount, isPayableTransaction));
 
             internalApiClient.privateTransaction()
                     .patch("/private/transactions/" + transaction.getId(), transaction).execute();
@@ -214,7 +220,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
-    private Map<String, Resource> createTransactionResourceMap(CompanyAccount companyAccount) {
+    private Map<String, Resource> createTransactionResourceMap(CompanyAccount companyAccount, boolean isPayableTransaction) {
 
         String selfLink = getSelfLink(companyAccount);
 
@@ -223,6 +229,11 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         Map<String, String> links = new HashMap<>();
         links.put(TransactionLinkType.RESOURCE.getLink(), selfLink);
+
+        if (isPayableTransaction) {
+            links.put(TransactionLinkType.COSTS.getLink(), selfLink + "/costs");
+        }
+
         resource.setLinks(links);
         resource.setUpdatedAt(LocalDateTime.now());
 

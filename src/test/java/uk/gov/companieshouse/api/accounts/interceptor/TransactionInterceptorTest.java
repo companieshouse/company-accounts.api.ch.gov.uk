@@ -27,6 +27,7 @@ import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionRe
 import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionGet;
 import uk.gov.companieshouse.api.handler.transaction.TransactionsResourceHandler;
 import uk.gov.companieshouse.api.handler.transaction.request.TransactionsGet;
+import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +55,9 @@ public class TransactionInterceptorTest {
     @Mock
     private HttpServletResponse httpServletResponseMock;
 
+    @Mock
+    private ApiResponse<Transaction> apiResponse;
+
     @BeforeEach
     void setUp() throws URIValidationException, IOException {
         Map<String, String> pathVariables = new HashMap<>();
@@ -68,7 +72,8 @@ public class TransactionInterceptorTest {
         when(apiClientServiceMock.getApiClient(anyString())).thenReturn(apiClientMock);
         when(apiClientMock.transactions()).thenReturn(transactionResourceHandlerMock);
         when(transactionResourceHandlerMock.get(anyString())).thenReturn(transactionGetMock);
-        when(transactionGetMock.execute()).thenReturn(new Transaction());
+        when(transactionGetMock.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(new Transaction());
     }
 
     @Test

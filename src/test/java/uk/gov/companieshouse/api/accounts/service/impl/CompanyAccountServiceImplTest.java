@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.Kind;
+import uk.gov.companieshouse.api.accounts.PayableResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.MissingAccountingPeriodException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
@@ -41,6 +44,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -71,6 +75,9 @@ public class CompanyAccountServiceImplTest {
 
     @Mock
     private CompanyService companyService;
+
+    @Mock
+    private TransactionService transactionService;
 
     @InjectMocks
     private CompanyAccountServiceImpl companyAccountService;
@@ -145,6 +152,8 @@ public class CompanyAccountServiceImplTest {
         when(privateTransactionResourceHandler.patch(TRANSACTION_PATCH_LINK, transaction))
                 .thenReturn(privateTransactionPatch);
 
+        when(transactionService.getPayableResources(transaction)).thenReturn(Arrays.asList(PayableResource.CIC));
+
         ResponseObject response = companyAccountService.create(companyAccount, transaction, request);
 
         assertNotNull(response);
@@ -190,6 +199,8 @@ public class CompanyAccountServiceImplTest {
         when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
         when(privateTransactionResourceHandler.patch(TRANSACTION_PATCH_LINK, transaction))
                 .thenReturn(privateTransactionPatch);
+
+        when(transactionService.getPayableResources(transaction)).thenReturn(new ArrayList<>());
 
         ResponseObject response = companyAccountService.create(companyAccount, transaction, request);
 
@@ -355,6 +366,8 @@ public class CompanyAccountServiceImplTest {
         when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
         when(privateTransactionResourceHandler.patch(TRANSACTION_PATCH_LINK, transaction))
                 .thenReturn(privateTransactionPatch);
+
+        when(transactionService.getPayableResources(transaction)).thenReturn(new ArrayList<>());
 
         when(privateTransactionPatch.execute()).thenThrow(URIValidationException.class);
 

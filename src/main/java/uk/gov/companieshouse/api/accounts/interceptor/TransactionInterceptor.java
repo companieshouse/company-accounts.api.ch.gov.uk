@@ -55,7 +55,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             ApiClient apiClient = apiClientService.getApiClient(passthroughHeader);
 
             Transaction transaction = apiClient.transactions().get("/transactions/" + transactionId)
-                .execute();
+                .execute().getData();
 
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction);
             return true;
