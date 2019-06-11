@@ -20,6 +20,10 @@ public class CostServiceImpl implements CostService {
 
     private YamlResourceMapper yamlResourceMapper;
 
+    private Costs costs;
+
+    private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
+
     @Autowired
     public CostServiceImpl(TransactionService transactionService, YamlResourceMapper yamlResourceMapper) {
 
@@ -29,10 +33,6 @@ public class CostServiceImpl implements CostService {
                 yamlResourceMapper
                         .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
     }
-
-    private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
-
-    private Costs costs;
 
     @Override
     public Cost[] getCosts(Transaction transaction) throws DataException {
