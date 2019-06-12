@@ -75,9 +75,6 @@ public class ApprovalController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-
         try {
             ResponseObject<Approval> response = approvalService.find(companyAccountId, request);
 
