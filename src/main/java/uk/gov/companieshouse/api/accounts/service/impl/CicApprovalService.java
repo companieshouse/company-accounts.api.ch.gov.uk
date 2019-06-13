@@ -94,6 +94,12 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     public ResponseObject<CicApproval> update(CicApproval rest, Transaction transaction,
                                               String companyAccountId, HttpServletRequest request) throws DataException {
 
+        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, request);
+
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
