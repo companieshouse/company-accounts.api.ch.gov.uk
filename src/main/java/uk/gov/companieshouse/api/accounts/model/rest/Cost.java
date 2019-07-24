@@ -25,6 +25,9 @@ public class Cost {
     @JsonProperty("resource_kind")
     private String resourceKind;
 
+    @JsonProperty("product_code")
+    private String productCode;
+
     public String getAmount() {
         return amount;
     }
@@ -79,5 +82,13 @@ public class Cost {
 
     public void setResourceKind(String resourceKind) {
         this.resourceKind = resourceKind;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
     }
 }

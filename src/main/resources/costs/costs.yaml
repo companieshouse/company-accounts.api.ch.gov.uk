@@ -7,3 +7,4 @@ costs:
     description_identifier: cic-report
     kind: cost#cost
     resource_kind: cost#cic-report
+    product_code: CICACC
