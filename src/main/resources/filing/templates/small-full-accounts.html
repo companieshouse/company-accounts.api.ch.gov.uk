@@ -3249,8 +3249,10 @@
     <!-- POST BALANCE SHEET EVENTS NOTE END -->
   </div>
 
+  {{if .cic_report}}
+
   <!--CIC REPORT SECTION START-->
-  <div class="page">
+  <div class="page" id="cicReport">
     <div class="header">
       <h1 class="text--center">
         <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
@@ -3301,6 +3303,7 @@
 
   </div>
   <!--CIC REPORT SECTION END-->
+  {{end}}
 
 </div>
 </body>
