@@ -1,6 +1,13 @@
 package uk.gov.companieshouse.api.accounts.model.rest.notes.intangible;
 
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import org.hibernate.validator.constraints.Range;
+import uk.gov.companieshouse.charset.CharSet;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IntangibleAssets extends RestObject {

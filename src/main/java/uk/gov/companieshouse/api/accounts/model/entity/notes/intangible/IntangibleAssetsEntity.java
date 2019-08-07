@@ -18,7 +18,7 @@ public class IntangibleAssetsEntity extends BaseEntity {
 
     @Override
     public String toString() {
-        return "IntangibleAssetsEntity{" +
+        return "IntangibleAssetEntity{" +
                 "data=" + data +
                 '}';
     }
