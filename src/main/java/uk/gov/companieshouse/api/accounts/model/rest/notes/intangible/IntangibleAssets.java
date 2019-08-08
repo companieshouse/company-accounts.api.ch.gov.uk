@@ -17,7 +17,7 @@ public class IntangibleAssets extends RestObject {
 
     @Valid
     @JsonProperty("goodwill")
-    private IntangibleAssetsResource goodWill;
+    private IntangibleAssetsResource goodwill;
 
     @Valid
     @JsonProperty("other_intangible_assets")
@@ -32,12 +32,12 @@ public class IntangibleAssets extends RestObject {
     @JsonProperty("additional_information")
     private String additionalInformation;
 
-    public IntangibleAssetsResource getGoodWill() {
-        return goodWill;
+    public IntangibleAssetsResource getGoodwill() {
+        return goodwill;
     }
 
-    public void setGoodWill(IntangibleAssetsResource goodWill) {
-        this.goodWill = goodWill;
+    public void setGoodWill(IntangibleAssetsResource goodwill) {
+        this.goodwill = goodwill;
     }
 
     public IntangibleAssetsResource getOther_intangible_assets() {

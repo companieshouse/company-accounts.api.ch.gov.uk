@@ -18,7 +18,7 @@ public class IntangibleAssetsResource {
     private Cost cost;
 
     @Valid
-    @JsonProperty("depreciation")
+    @JsonProperty("amortisation")
     private Amortisation amortisation;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
