@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.entity.notes.intangible;
 
 import org.springframework.data.mongodb.core.mapping.Field;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 
 public class IntangibleAssetsResourceEntity {
 

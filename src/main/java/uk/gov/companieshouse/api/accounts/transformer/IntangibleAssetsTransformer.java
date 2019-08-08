@@ -7,8 +7,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
 
 @Component
 public class IntangibleAssetsTransformer implements GenericTransformer<IntangibleAssets, IntangibleAssetsEntity> {
@@ -27,10 +25,10 @@ public class IntangibleAssetsTransformer implements GenericTransformer<Intangibl
                     mapRestResourceToEntityResource(rest.getGoodwill()));
         }
 
-        if (rest.getOther_intangible_assets() != null) {
+        if (rest.getOtherIntangibleAssets() != null) {
 
             intangibleAssetsDataEntity.setOtherIntangibleAssets(
-                    mapRestResourceToEntityResource(rest.getOther_intangible_assets()));
+                    mapRestResourceToEntityResource(rest.getOtherIntangibleAssets()));
         }
 
         if (rest.getTotal() != null) {
@@ -75,13 +73,13 @@ public class IntangibleAssetsTransformer implements GenericTransformer<Intangibl
 
         if (dataEntity.getGoodwill() != null) {
 
-            intangibleAssets.setGoodWill(
+            intangibleAssets.setGoodwill(
                     mapEntityResourceToRestResource(dataEntity.getGoodwill()));
         }
 
         if (dataEntity.getOtherIntangibleAssets() != null) {
 
-            intangibleAssets.setOther_intangible_assets(
+            intangibleAssets.setOtherIntangibleAssets(
                     mapEntityResourceToRestResource(dataEntity.getOtherIntangibleAssets()));
         }
 

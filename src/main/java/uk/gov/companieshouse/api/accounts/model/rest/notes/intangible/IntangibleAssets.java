@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import org.hibernate.validator.constraints.Range;
 import uk.gov.companieshouse.charset.CharSet;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,7 +20,7 @@ public class IntangibleAssets extends RestObject {
 
     @Valid
     @JsonProperty("other_intangible_assets")
-    private IntangibleAssetsResource other_intangible_assets;
+    private IntangibleAssetsResource otherIntangibleAssets;
 
     @Valid
     @JsonProperty("total")
@@ -36,16 +35,16 @@ public class IntangibleAssets extends RestObject {
         return goodwill;
     }
 
-    public void setGoodWill(IntangibleAssetsResource goodwill) {
+    public void setGoodwill(IntangibleAssetsResource goodwill) {
         this.goodwill = goodwill;
     }
 
-    public IntangibleAssetsResource getOther_intangible_assets() {
-        return other_intangible_assets;
+    public IntangibleAssetsResource getOtherIntangibleAssets() {
+        return otherIntangibleAssets;
     }
 
-    public void setOther_intangible_assets(IntangibleAssetsResource other_intangible_assets) {
-        this.other_intangible_assets = other_intangible_assets;
+    public void setOtherIntangibleAssets(IntangibleAssetsResource otherIntangibleAssets) {
+        this.otherIntangibleAssets = otherIntangibleAssets;
     }
 
     public IntangibleAssetsResource getTotal() {
