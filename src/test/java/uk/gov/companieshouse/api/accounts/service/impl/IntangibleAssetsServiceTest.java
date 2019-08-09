@@ -114,7 +114,7 @@ public class IntangibleAssetsServiceTest {
         ResponseObject<IntangibleAssets> response =
                 intangibleAssetsService.create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertMetaDataSetOnRestObject();
+        
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryInsertCalled();
         assertWhetherSmallFullServiceCalledToAddLink(false);
