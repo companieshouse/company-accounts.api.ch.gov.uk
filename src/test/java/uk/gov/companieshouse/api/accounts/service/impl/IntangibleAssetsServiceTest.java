@@ -105,241 +105,194 @@ public class IntangibleAssetsServiceTest {
         assertEquals(intangibleAssets, response.getData());
     }
 
-//    @Test
-//    @DisplayName("Tests the creation of a Tangible Assets resource where the repository throws a duplicate key exception")
-//    void createTangibleAssetsDuplicateKeyException() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(false);
-//
-//        when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//        when(repository.insert(tangibleAssetsEntity)).thenThrow(DuplicateKeyException.class);
-//
-//        when(transaction.getLinks()).thenReturn(transactionLinks);
-//        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-//
-//        assertMetaDataSetOnRestObject();
-//        assertIdGeneratedForDatabaseEntity();
-//        assertRepositoryInsertCalled();
-//        assertWhetherSmallFullServiceCalledToAddLink(false);
-//        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
-//        assertNull(response.getData());
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the creation of a Tangible Assets resource where the repository throws a Mongo exception")
-//    void createTangibleAssetsMongoException() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(false);
-//
-//        when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//        when(repository.insert(tangibleAssetsEntity)).thenThrow(MongoException.class);
-//
-//        when(transaction.getLinks()).thenReturn(transactionLinks);
-//        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-//
-//        assertThrows(DataException.class, () ->
-//                tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
-//
-//        assertMetaDataSetOnRestObject();
-//        assertIdGeneratedForDatabaseEntity();
-//        assertRepositoryInsertCalled();
-//        assertWhetherSmallFullServiceCalledToAddLink(false);
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the creation of a Tangible Assets resource where validation errors are present")
-//    void createTangibleAssetsWithValidationErrors() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(true);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.create(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-//
-//        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
-//        verify(repository, never()).insert(any(TangibleAssetsEntity.class));
-//        assertWhetherSmallFullServiceCalledToAddLink(false);
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the successful update of a Tangible Assets resource")
-//    void updateTangibleAssetsSuccess() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(false);
-//
-//        when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(transaction.getLinks()).thenReturn(transactionLinks);
-//        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-//
-//        assertMetaDataSetOnRestObject();
-//        assertIdGeneratedForDatabaseEntity();
-//        assertRepositoryUpdateCalled();
-//        assertEquals(ResponseStatus.UPDATED, response.getStatus());
-//        assertEquals(tangibleAssets, response.getData());
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the update of a Tangible Assets resource where the repository throws a Mongo exception")
-//    void updateTangibleAssetsMongoException() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(false);
-//
-//        when(transformer.transform(tangibleAssets)).thenReturn(tangibleAssetsEntity);
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//        when(repository.save(tangibleAssetsEntity)).thenThrow(MongoException.class);
-//
-//        when(transaction.getLinks()).thenReturn(transactionLinks);
-//        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-//
-//        assertThrows(DataException.class, () ->
-//                tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
-//
-//        assertMetaDataSetOnRestObject();
-//        assertIdGeneratedForDatabaseEntity();
-//        assertRepositoryUpdateCalled();
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the update of a Tangible Assets resource where validation errors are present")
-//    void updateTangibleAssetsWithValidationErrors() throws DataException {
-//
-//        when(validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
-//                .thenReturn(errors);
-//        when(errors.hasErrors()).thenReturn(true);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.update(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-//
-//        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
-//        verify(repository, never()).save(any(TangibleAssetsEntity.class));
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the successful retrieval of a Tangible Assets resource")
-//    void getTangibleAssetsSuccess() throws DataException {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(tangibleAssetsEntity));
-//        when(transformer.transform(tangibleAssetsEntity)).thenReturn(tangibleAssets);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
-//
-//        assertRepositoryFindByIdCalled();
-//        assertEquals(ResponseStatus.FOUND, response.getStatus());
-//        assertEquals(tangibleAssets, response.getData());
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the retrieval of a non-existent Tangible Assets resource")
-//    void getTangibleAssetsNotFound() throws DataException {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        TangibleAssetsEntity tangibleAssetsEntity = null;
-//        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(tangibleAssetsEntity));
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
-//
-//        assertRepositoryFindByIdCalled();
-//        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
-//        assertNull(response.getData());
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the retrieval of a Tangible Assets resource where the repository throws a Mongo exception")
-//    void getTangibleAssetsMongoException() {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
-//
-//        assertThrows(DataException.class, () ->
-//                tangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request));
-//
-//        assertRepositoryFindByIdCalled();
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the successful deletion of a Tangible Assets resource")
-//    void deleteTangibleAssetsSuccess() throws DataException {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(repository.existsById(GENERATED_ID)).thenReturn(true);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
-//
-//        assertRepositoryDeleteByIdCalled();
-//        assertWhetherSmallFullServiceCalledToRemoveLink(true);
-//        assertEquals(ResponseStatus.UPDATED, response.getStatus());
-//        assertNull(response.getData());
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the deletion of a Tangible Assets resource where the repository throws a Mongo exception")
-//    void deleteTangibleAssetsMongoException() throws DataException {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(repository.existsById(GENERATED_ID)).thenReturn(true);
-//        doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
-//
-//        assertThrows(DataException.class, () ->
-//                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request));
-//
-//        assertRepositoryDeleteByIdCalled();
-//        assertWhetherSmallFullServiceCalledToRemoveLink(false);
-//    }
-//
-//    @Test
-//    @DisplayName("Tests the deletion of a non-existent Tangible Assets resource")
-//    void deleteTangibleAssetsNotFound() throws DataException {
-//
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.TANGIBLE_ASSETS.getName()))
-//                .thenReturn(GENERATED_ID);
-//
-//        when(repository.existsById(GENERATED_ID)).thenReturn(false);
-//
-//        ResponseObject<TangibleAssets> response =
-//                tangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
-//
-//        verify(repository, never()).deleteById(GENERATED_ID);
-//        assertWhetherSmallFullServiceCalledToRemoveLink(false);
-//        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
-//        assertNull(response.getData());
-//    }
+    @Test
+    @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a duplicate key exception")
+    void createIntangibleAssetsDuplicateKeyException() throws DataException {
+
+        when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.insert(intangibleAssetsEntity)).thenThrow(DuplicateKeyException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherSmallFullServiceCalledToAddLink(false);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a Mongo exception")
+    void createIntangibleAssetsMongoException() throws DataException {
+
+        when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.insert(intangibleAssetsEntity)).thenThrow(MongoException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        assertThrows(DataException.class, () ->
+                intangibleAssetsService.create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherSmallFullServiceCalledToAddLink(false);
+    }
+
+    @Test
+    @DisplayName("Tests the successful update of a Intangible Assets resource")
+    void updateIntangibleAssetsSuccess() throws DataException {
+
+        when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryUpdateCalled();
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertEquals(intangibleAssets, response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the update of a Intangible Assets resource where the repository throws a Mongo exception")
+    void updateIntangibleAssetsMongoException() throws DataException {
+
+        when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.save(intangibleAssetsEntity)).thenThrow(MongoException.class);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        assertThrows(DataException.class, () ->
+                intangibleAssetsService.update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request));
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the successful retrieval of a Intangible Assets resource")
+    void getIntangibleAssetsSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(intangibleAssetsEntity));
+        when(transformer.transform(intangibleAssetsEntity)).thenReturn(intangibleAssets);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
+
+        assertRepositoryFindByIdCalled();
+        assertEquals(ResponseStatus.FOUND, response.getStatus());
+        assertEquals(intangibleAssets, response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of a non-existent Intangible Assets resource")
+    void getIntangibleAssetsNotFound() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        IntangibleAssetsEntity intangibleAssetsEntity = null;
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(intangibleAssetsEntity));
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request);
+
+        assertRepositoryFindByIdCalled();
+        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of a Intangible Assets resource where the repository throws a Mongo exception")
+    void getIntangibleAssetsMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class, () ->
+                intangibleAssetsService.find(COMPANY_ACCOUNTS_ID, request));
+
+        assertRepositoryFindByIdCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the successful deletion of a Intangible Assets resource")
+    void deleteIntangibleAssetsSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertRepositoryDeleteByIdCalled();
+        assertWhetherSmallFullServiceCalledToRemoveLink(true);
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of a Intangible Assets resource where the repository throws a Mongo exception")
+    void deleteIntangibleAssetsMongoException() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+        doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
+
+        assertThrows(DataException.class, () ->
+                intangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request));
+
+        assertRepositoryDeleteByIdCalled();
+        assertWhetherSmallFullServiceCalledToRemoveLink(false);
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of a non-existent Intangible Assets resource")
+    void deleteIntangibleAssetsNotFound() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.existsById(GENERATED_ID)).thenReturn(false);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.delete(COMPANY_ACCOUNTS_ID, request);
+
+        verify(repository, never()).deleteById(GENERATED_ID);
+        assertWhetherSmallFullServiceCalledToRemoveLink(false);
+        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
+        assertNull(response.getData());
+    }
 
     private void assertMetaDataSetOnRestObject() {
         verify(intangibleAssets, times(1)).setKind(anyString());
