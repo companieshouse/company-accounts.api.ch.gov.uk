@@ -1,9 +1,10 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.*;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_CLASS)
 public class IntangibleAssetsTransformerTest {
 
     private static final Long NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD = 1L;
@@ -68,8 +69,400 @@ public class IntangibleAssetsTransformerTest {
 
         assertNull(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
 
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the REST object when the nested amortisation object is not null")
+    void TestGoodwillMapFromRestObjectAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setGoodwill(createIntangibleAssetsResource(true, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getGoodwill());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill().getCost());
 
     }
+
+    @Test
+    @DisplayName("Test goodwill field map from the REST object when the nested amortisation and cost objects are not null")
+    void TestGoodwillMapFromRestObjectCostAndAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setGoodwill(createIntangibleAssetsResource(false, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill());
+
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getGoodwill());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
+        assertCostFieldsMapped(intangibleAssetsEntity.getData().getGoodwill().getCost());
+
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill().getCost());
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the REST object when the nested amortisation and cost objects are null")
+    void TestGoodwillMapFromRestObjectCostAndAmortisationNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setGoodwill(createIntangibleAssetsResource(true, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getGoodwill());
+
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getGoodwill());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill().getCost());
+        assertNull(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
+
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested cost objects is not null")
+    void TestOtherIntangibleAssetsMapFromRestObjectCostNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(false, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getCost());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation object is not null")
+    void TestOtherIntangibleAssetsMapFromRestObjectAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(true, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getCost());
+
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
+    void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(false, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+        assertCostFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getCost());
+
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getCost());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
+    void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(true, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getCost());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets().getAmortisation());
+
+    }
+
+    @Test
+    @DisplayName("Test total field map from the REST object when the nested cost objects is not null")
+    void TestTotalMapFromRestObjectCostNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setTotal(createIntangibleAssetsResource(false, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal().getCost());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+        assertNull(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getTotal());
+
+    }
+
+    @Test
+    @DisplayName("Test total field map from the REST object when the nested amortisation object is not null")
+    void TestTotalMapFromRestObjectAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setTotal(createIntangibleAssetsResource(true, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getTotal());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+
+        assertNull(intangibleAssetsEntity.getData().getTotal().getCost());
+
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
+    void TestTotalMapFromRestObjectCostAndAmortisationNotNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setTotal(createIntangibleAssetsResource(false, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getTotal());
+        assertAmortisationFieldsMapped(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+        assertCostFieldsMapped(intangibleAssetsEntity.getData().getTotal().getCost());
+
+        assertNotNull(intangibleAssetsEntity.getData().getTotal().getCost());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+    }
+
+    @Test
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
+    void TestTotalMapFromRestObjectCostAndAmortisationNull() {
+
+        IntangibleAssets intangibleassets = createIntangibleAssets();
+        intangibleassets.setTotal(createIntangibleAssetsResource(true, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = transformer.transform(intangibleassets);
+
+        assertNotNull(intangibleAssetsEntity);
+        assertNotNull(intangibleAssetsEntity.getData());
+        assertNotNull(intangibleAssetsEntity.getData().getTotal());
+
+        assertNull(intangibleAssetsEntity.getData().getGoodwill());
+        assertNull(intangibleAssetsEntity.getData().getOtherIntangibleAssets());
+
+        assertRestObjectFieldsMapped(intangibleAssetsEntity);
+        assertAdditionalInformationMapped(intangibleAssetsEntity.getData());
+        assertNetBookValueFieldsMapped(intangibleAssetsEntity.getData().getTotal());
+
+        assertNull(intangibleAssetsEntity.getData().getTotal().getCost());
+        assertNull(intangibleAssetsEntity.getData().getTotal().getAmortisation());
+
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the entity object when the nested cost object is not null")
+    void TestGoodwillMapFromEntityObjectCostNotNull() {
+
+        IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
+        intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(false, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = new IntangibleAssetsEntity();
+        intangibleAssetsEntity.setData(intangibleAssetsDataEntity);
+
+        IntangibleAssets intangibleAssets = transformer.transform(intangibleAssetsEntity);
+
+        assertNotNull(intangibleAssets);
+        assertNotNull(intangibleAssets.getGoodwill());
+        assertNotNull(intangibleAssets.getGoodwill().getCost());
+
+
+        assertNull(intangibleAssets.getOtherIntangibleAssets());
+        assertNull(intangibleAssets.getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssets);
+        assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
+        assertCostFieldsMapped(intangibleAssets.getGoodwill().getCost());
+
+        assertNull(intangibleAssets.getGoodwill().getAmortisation());
+
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the entity object when the nested amortisation object is not null")
+    void TestGoodwillMapFromEntityObjectAmortisationNotNull() {
+
+        IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
+        intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(true, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = new IntangibleAssetsEntity();
+        intangibleAssetsEntity.setData(intangibleAssetsDataEntity);
+
+        IntangibleAssets intangibleAssets = transformer.transform(intangibleAssetsEntity);
+
+        assertNotNull(intangibleAssets);
+        assertNotNull(intangibleAssets.getGoodwill());
+        assertNotNull(intangibleAssets.getGoodwill().getAmortisation());
+
+
+        assertNull(intangibleAssets.getOtherIntangibleAssets());
+        assertNull(intangibleAssets.getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssets);
+        assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
+        assertAmortisationFieldsMapped(intangibleAssets.getGoodwill().getAmortisation());
+
+        assertNull(intangibleAssets.getGoodwill().getCost());
+
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the entity object when the nested amortisation and cost objects are not null")
+    void TestGoodwillMapFromEntityObjectAmortisationAndCostNotNull() {
+
+        IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
+        intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(false, false));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = new IntangibleAssetsEntity();
+        intangibleAssetsEntity.setData(intangibleAssetsDataEntity);
+
+        IntangibleAssets intangibleAssets = transformer.transform(intangibleAssetsEntity);
+
+        assertNotNull(intangibleAssets);
+        assertNotNull(intangibleAssets.getGoodwill());
+        assertNotNull(intangibleAssets.getGoodwill().getAmortisation());
+        assertNotNull(intangibleAssets.getGoodwill().getCost());
+
+
+
+        assertNull(intangibleAssets.getOtherIntangibleAssets());
+        assertNull(intangibleAssets.getTotal());
+
+        assertRestObjectFieldsMapped(intangibleAssets);
+        assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
+        assertAmortisationFieldsMapped(intangibleAssets.getGoodwill().getAmortisation());
+        assertCostFieldsMapped(intangibleAssets.getGoodwill().getCost());
+
+
+    }
+
+    @Test
+    @DisplayName("Test goodwill field map from the entity object when the nested amortisation and cost objects are null")
+    void TestGoodwillMapFromEntityObjectAmortisationAndCostNull() {
+
+        IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
+        intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(true, true));
+
+        IntangibleAssetsEntity intangibleAssetsEntity = new IntangibleAssetsEntity();
+        intangibleAssetsEntity.setData(intangibleAssetsDataEntity);
+
+        IntangibleAssets intangibleAssets = transformer.transform(intangibleAssetsEntity);
+
+        assertNotNull(intangibleAssets);
+        assertNotNull(intangibleAssets.getGoodwill());
+
+        assertNull(intangibleAssets.getOtherIntangibleAssets());
+        assertNull(intangibleAssets.getTotal());
+        assertNull(intangibleAssets.getGoodwill().getAmortisation());
+        assertNull(intangibleAssets.getGoodwill().getCost());
+
+
+        assertRestObjectFieldsMapped(intangibleAssets);
+        assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
+
+    }
+
+
 
     private IntangibleAssets createIntangibleAssets() {
 
@@ -82,7 +475,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     private IntangibleAssetsResource createIntangibleAssetsResource(boolean costNull,
-                                                                boolean amortisationNull) {
+                                                                    boolean amortisationNull) {
 
         IntangibleAssetsResource intangibleAssetsResource = new IntangibleAssetsResource();
         intangibleAssetsResource
@@ -135,7 +528,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     private IntangibleAssetsResourceEntity createIntangibleAssetsResourceEntity(boolean costNull,
-                                                                            boolean amortisationNull) {
+                                                                                boolean amortisationNull) {
 
         IntangibleAssetsResourceEntity intangibleAssetsResourceEntity = new IntangibleAssetsResourceEntity();
         intangibleAssetsResourceEntity
@@ -237,7 +630,7 @@ public class IntangibleAssetsTransformerTest {
         assertEquals(COST_TRANSFERS, cost.getTransfers());
     }
 
-    private void assertDepreciationFieldsMapped(Amortisation amortisation) {
+    private void assertAmortisationFieldsMapped(Amortisation amortisation) {
         assertEquals(AMORTISATION_AT_PERIOD_END, amortisation.getAtPeriodEnd());
         assertEquals(AMORTISATION_AT_PERIOD_START, amortisation.getAtPeriodStart());
         assertEquals(AMORTISATION_CHARGE_FOR_YEAR, amortisation.getChargeForYear());
@@ -248,7 +641,3 @@ public class IntangibleAssetsTransformerTest {
 
 
 }
-
-
-
-
