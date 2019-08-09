@@ -371,6 +371,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
         assertCostFieldsMapped(intangibleAssets.getGoodwill().getCost());
 
@@ -399,6 +400,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
         assertAmortisationFieldsMapped(intangibleAssets.getGoodwill().getAmortisation());
 
@@ -429,6 +431,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
         assertAmortisationFieldsMapped(intangibleAssets.getGoodwill().getAmortisation());
         assertCostFieldsMapped(intangibleAssets.getGoodwill().getCost());
@@ -458,6 +461,7 @@ public class IntangibleAssetsTransformerTest {
 
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getGoodwill());
 
     }
@@ -483,6 +487,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getOtherIntangibleAssets());
         assertCostFieldsMapped(intangibleAssets.getOtherIntangibleAssets().getCost());
 
@@ -511,6 +516,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getOtherIntangibleAssets());
         assertAmortisationFieldsMapped(intangibleAssets.getOtherIntangibleAssets().getAmortisation());
 
@@ -541,6 +547,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getOtherIntangibleAssets());
         assertAmortisationFieldsMapped(intangibleAssets.getOtherIntangibleAssets().getAmortisation());
         assertCostFieldsMapped(intangibleAssets.getOtherIntangibleAssets().getCost());
@@ -570,6 +577,7 @@ public class IntangibleAssetsTransformerTest {
 
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getOtherIntangibleAssets());
 
     }
@@ -593,6 +601,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getGoodwill());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getTotal());
         assertCostFieldsMapped(intangibleAssets.getTotal().getCost());
 
@@ -617,6 +626,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getGoodwill());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getTotal());
         assertAmortisationFieldsMapped(intangibleAssets.getTotal().getAmortisation());
         assertNull(intangibleAssets.getTotal().getCost());
@@ -640,6 +650,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getGoodwill());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getTotal());
         assertAmortisationFieldsMapped(intangibleAssets.getTotal().getAmortisation());
     }
@@ -662,6 +673,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getGoodwill());
 
         assertRestObjectFieldsMapped(intangibleAssets);
+        assertAdditionalInformationMapped(intangibleAssets);
         assertNetBookValueFieldsMapped(intangibleAssets.getTotal());
     }
 
