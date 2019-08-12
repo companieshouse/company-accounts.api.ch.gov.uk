@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-
 import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
