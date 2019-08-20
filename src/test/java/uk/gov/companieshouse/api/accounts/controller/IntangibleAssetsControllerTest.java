@@ -30,7 +30,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -100,10 +99,6 @@ public class IntangibleAssetsControllerTest {
         assertEquals(intangibleAssets, response.getBody());
 
         verify(errorMapper, never()).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, times(1))
-                .create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
 
     @Test
@@ -121,8 +116,6 @@ public class IntangibleAssetsControllerTest {
         assertEquals(errors, response.getBody());
 
         verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, never())
-                .create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
@@ -146,10 +139,6 @@ public class IntangibleAssetsControllerTest {
         assertNull(response.getBody());
 
         verify(errorMapper, never()).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, times(1))
-                .create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .getErrorResponse();
     }
 
     @Test
@@ -171,11 +160,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
         assertEquals(intangibleAssets, response.getBody());
-
-        verify(intangibleAssetsService, times(1))
-                .find(COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .mapGetResponse(responseObject.getData(), request);
     }
 
     @Test
@@ -194,11 +178,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
-
-        verify(intangibleAssetsService, times(1))
-                .find(COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, never()).mapGetResponse(any(), any());
-        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
 
     @Test
@@ -228,10 +207,6 @@ public class IntangibleAssetsControllerTest {
         assertNull(response.getBody());
 
         verify(errorMapper, never()).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, times(1))
-                .update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
 
     @Test
@@ -250,10 +225,7 @@ public class IntangibleAssetsControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
 
-
         verify(bindingResult, never()).hasErrors();
-        verify(intangibleAssetsService, never())
-                .update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
@@ -276,8 +248,6 @@ public class IntangibleAssetsControllerTest {
         assertEquals(errors, response.getBody());
 
         verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, never())
-                .update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
@@ -305,10 +275,6 @@ public class IntangibleAssetsControllerTest {
         assertNull(response.getBody());
 
         verify(errorMapper, never()).mapBindingResultErrorsToErrorModel(bindingResult);
-        verify(intangibleAssetsService, times(1))
-                .update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .getErrorResponse();
     }
 
     @Test
@@ -330,10 +296,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
-
-        verify(intangibleAssetsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
 
     @Test
@@ -352,9 +314,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
-
-        verify(intangibleAssetsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
-        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
 
 }

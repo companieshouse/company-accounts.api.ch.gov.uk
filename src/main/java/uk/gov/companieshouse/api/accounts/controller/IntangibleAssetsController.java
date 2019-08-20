@@ -27,8 +27,6 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.swing.text.DefaultEditorKit;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/intangible-assets", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,8 +60,7 @@ public class IntangibleAssetsController {
                     companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
-        }
-        catch(DataException ex) {
+        } catch(DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to create intangible assets resource",
                      ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -81,7 +78,7 @@ public class IntangibleAssetsController {
             ResponseObject<IntangibleAssets> response = intangibleAssetsService.find(companyAccountId, request);
             return  apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retreive intangible assets resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve intangible assets resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -111,7 +108,7 @@ public class IntangibleAssetsController {
 
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update tangible assets resource", ex, request);
+                    "Failed to update intangible assets resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
