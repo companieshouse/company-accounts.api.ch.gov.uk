@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -114,8 +113,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(errors, response.getBody());
-
-        verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(bindingResult);
     }
 
     @Test
@@ -246,8 +243,6 @@ public class IntangibleAssetsControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(errors, response.getBody());
-
-        verify(errorMapper, times(1)).mapBindingResultErrorsToErrorModel(bindingResult);
     }
 
     @Test
