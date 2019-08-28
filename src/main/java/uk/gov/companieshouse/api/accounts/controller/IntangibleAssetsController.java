@@ -27,6 +27,7 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/intangible-assets", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,7 +43,7 @@ public class IntangibleAssetsController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody IntangibleAssets intangibleAssets,
+    public ResponseEntity create(@Valid @RequestBody IntangibleAssets intangibleAssets,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -84,7 +85,7 @@ public class IntangibleAssetsController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody IntangibleAssets intangibleAssets, BindingResult bindingResult,
+    public ResponseEntity update(@RequestBody @Valid IntangibleAssets intangibleAssets, BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
