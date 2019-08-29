@@ -58,9 +58,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             verifySubResourcesAreValid(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             verifyNoteNotEmpty(intangibleAssets, errors, isMultipleYearFiler);
             validateSubResourceTotals(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
-            if(errors.hasErrors()) {
-                return errors;
-            }
 
         } catch(ServiceException se) {
             throw new DataException(se.getMessage(), se);
