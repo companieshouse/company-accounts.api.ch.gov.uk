@@ -26,14 +26,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private CompanyService companyService;
 
-    private CurrentPeriodService currentPeriodService;
-
     @Autowired
-    public IntangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService) {
+    public IntangibleAssetsValidator(CompanyService companyService) {
 
         this.companyService = companyService;
-
-        this.currentPeriodService = currentPeriodService;
 
     }
 
