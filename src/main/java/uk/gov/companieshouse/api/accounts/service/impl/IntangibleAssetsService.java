@@ -12,12 +12,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.IntangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.IntangibleAssetsRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.IntangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.IntangibleAssetsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,23 +31,29 @@ public class IntangibleAssetsService implements ResourceService<IntangibleAssets
 
     private IntangibleAssetsRepository repository;
     private IntangibleAssetsTransformer transformer;
+    private IntangibleAssetsValidator validator;
     private SmallFullService smallFullService;
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
     public IntangibleAssetsService(IntangibleAssetsRepository repository, IntangibleAssetsTransformer transformer,
-                                   SmallFullService smallFullService, KeyIdGenerator keyIdGenerator) {
+                                   SmallFullService smallFullService, KeyIdGenerator keyIdGenerator, IntangibleAssetsValidator validator) {
         this.repository = repository;
         this.transformer = transformer;
         this.smallFullService = smallFullService;
         this.keyIdGenerator = keyIdGenerator;
+        this.validator = validator;
     }
-
-
 
 
     @Override
     public ResponseObject<IntangibleAssets> create(IntangibleAssets rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateIntangibleAssets(rest, transaction, companyAccountId, request);
+        if(errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         IntangibleAssetsEntity entity = transformer.transform(rest);
@@ -70,6 +78,12 @@ public class IntangibleAssetsService implements ResourceService<IntangibleAssets
 
     @Override
     public ResponseObject<IntangibleAssets> update(IntangibleAssets rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = validator.validateIntangibleAssets(rest, transaction, companyAccountId, request);
+        if(errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         IntangibleAssetsEntity entity = transformer.transform(rest);
