@@ -11,7 +11,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Intangible
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +92,8 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         if(intangibleAssetsResource != null) {
 
             if(isMultipleYearFiler) {
-                //TODO
+
+                /* TODO - SFA-1772 */
             }
             else {
                 validatePresenceOfSingleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
@@ -112,7 +112,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
             validateSubResourceTotal(intangibleAssets.getOtherIntangibleAssets(), errors, isMultipleYearFiler, IntangibleSubResource.OTHER_INTANGIBLE_ASSETS);
         }
-
 
     }
 
@@ -238,18 +237,13 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private boolean hasSingleYearFilerNonNetBookValueFieldsSet(IntangibleAssetsResource intangibleAssetsResource) {
 
-        if (intangibleAssetsResource.getCost() != null &&
+        return intangibleAssetsResource.getCost() != null &&
                 Stream.of(intangibleAssetsResource.getCost().getAdditions(),
                         intangibleAssetsResource.getCost().getDisposals(),
                         intangibleAssetsResource.getCost().getRevaluations(),
                         intangibleAssetsResource.getCost().getTransfers(),
-                        intangibleAssetsResource.getCost().getAtPeriodEnd()).anyMatch(Objects::nonNull)
-        ) {
+                        intangibleAssetsResource.getCost().getAtPeriodEnd()).anyMatch(Objects::nonNull);
 
-            return true;
-        }
-
-        return false;
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {

@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.apache.http.impl.execchain.ServiceUnavailableRetryExec;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -8,36 +7,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.service.TransactionService;
-import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.sql.rowset.serial.SerialException;
-import javax.swing.tree.TreeNode;
-import javax.xml.ws.Service;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.intThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,9 +36,6 @@ class IntangibleAssetsValidatorTest {
     @Mock
     private CompanyService companyService;
 
-    @Mock
-    private CurrentPeriodService currentPeriodService;
-
     @InjectMocks
     private IntangibleAssetsValidator validator;
 
@@ -69,7 +49,6 @@ class IntangibleAssetsValidatorTest {
     private static final String INCORRECT_TOTAL = "incorrect_total";
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-
 
     @Test
     @DisplayName("First year filer - provides only additional info in note")
@@ -86,8 +65,6 @@ class IntangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-
-
 
     }
 
@@ -138,7 +115,6 @@ class IntangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
-
 
     }
 
@@ -240,46 +216,10 @@ class IntangibleAssetsValidatorTest {
 
     }
 
-    private IntangibleAssetsResource createValidSubResource(boolean isMultipleYearFiler) {
-
-        IntangibleAssetsResource resource = new IntangibleAssetsResource();
-
-        Cost cost = new Cost();
-        if(isMultipleYearFiler) {
-            cost.setAtPeriodStart(1L);
-        }
-
-        cost.setAdditions(1L);
-        cost.setDisposals(1L);
-        cost.setRevaluations(1L);
-        cost.setTransfers(1L);
-        cost.setAtPeriodEnd(isMultipleYearFiler ? 3L : 2L);
-        resource.setCost(cost);
-
-        Amortisation amortisation = new Amortisation();
-        if(isMultipleYearFiler) {
-            amortisation.setAtPeriodStart(1L);
-        }
-        amortisation.setChargeForYear(1L);
-        amortisation.setOnDisposals(1L);
-        amortisation.setOtherAdjustments(1L);
-        amortisation.setAtPeriodEnd(isMultipleYearFiler ? 2L : 1L);
-        resource.setAmortisation(amortisation);
-
-        resource.setNetBookValueAtEndOfCurrentPeriod(1L);
-
-        if(isMultipleYearFiler) {
-            resource.setNetBookValueAtEndOfPreviousPeriod(0L);
-        }
-
-        return resource;
-    }
-
     private Error createError(String error,  String path) {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
         ErrorType.VALIDATION.getType());
     }
-
 
 }
