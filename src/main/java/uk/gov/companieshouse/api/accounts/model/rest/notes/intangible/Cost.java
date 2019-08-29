@@ -7,21 +7,31 @@ import org.hibernate.validator.constraints.Range;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Cost {
 
+    private static final int MAX_RANGE = 99999999;
+    private static final int ZERO = 0;
+    private static final int MIN_RANGE = -99999999;
+
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("additions")
     private Long additions;
 
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("at_period_end")
     private Long atPeriodEnd;
 
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("at_period_start")
     private Long atPeriodStart;
 
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("disposals")
     private Long disposals;
 
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("revaluations")
     private Long revaluations;
 
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("transfers")
     private Long transfers;
 

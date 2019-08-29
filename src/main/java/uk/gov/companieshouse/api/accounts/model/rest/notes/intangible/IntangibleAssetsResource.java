@@ -2,19 +2,29 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.intangible;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.Valid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IntangibleAssetsResource {
 
+    private static final int MAX_RANGE = 999999999;
+    private static final int MIN_RANGE = 0;
+
+    @Valid
     @JsonProperty("cost")
     private Cost cost;
 
+    @Valid
     @JsonProperty("amortisation")
     private Amortisation amortisation;
 
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("net_book_value_at_end_of_current_period")
     private Long netBookValueAtEndOfCurrentPeriod;
 
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("net_book_value_at_end_of_previous_period")
     private Long netBookValueAtEndOfPreviousPeriod;
 
