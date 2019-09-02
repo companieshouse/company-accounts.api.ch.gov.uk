@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -137,6 +138,127 @@ class IntangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - provides only additional info in note")
+    void multipleYearFilerProvidesOnlyAdditionalInfo() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setAdditionalInformation("additionalInfo");
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - doesn't provide cost in sub resource")
+    void multipleYearFilerDoesNotProvideCostInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multi year filer - doesn't provide cost at period start in sub resource")
+    void multiYearFilerDoesNotProvideCostAtPeriodStartInSubResource() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+
+        Cost cost = new Cost();
+        cost.setAtPeriodEnd(1L);
+        goodwill.setCost(cost);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
+
+    }
+
+    @Test
+    @DisplayName("Multi year filer - doesn't provide cost at period end in sub resource")
+    void multiYearFilerDoesNotProvideCostAtPeriodEndInSubResource() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        goodwill.setCost(cost);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - cost fields do not total in sub resource")
+    void multipleYearFilerCostFieldDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(3L);
+        goodwill.setCost(cost);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(3L);
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
+
     }
 
 
