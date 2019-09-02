@@ -190,6 +190,11 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             subResourceInvalid = true;
         }
 
+        if(intangibleAssetsResource.getCost() != null && intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+
         if(subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
         }
