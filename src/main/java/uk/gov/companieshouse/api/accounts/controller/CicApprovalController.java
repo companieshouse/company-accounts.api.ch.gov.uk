@@ -79,9 +79,6 @@ public class CicApprovalController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        final Map<String, Object> debugMap = new HashMap<>();
-        debugMap.put("transaction_id", transaction.getId());
-
         try {
             ResponseObject<CicApproval> response = cicApprovalService
                 .find(companyAccountId, request);

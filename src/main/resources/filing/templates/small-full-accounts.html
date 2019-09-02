@@ -3248,6 +3248,63 @@
     {{- end -}}
     <!-- POST BALANCE SHEET EVENTS NOTE END -->
   </div>
+
+  {{if .cic_report}}
+
+  <!--CIC REPORT SECTION START-->
+  <div class="page" id="cicReport">
+    <div class="header">
+      <h1 class="text--center">
+        <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+      </h1>
+      <h2 class="text--center">Community Interest Annual Report</h2>
+    </div>
+
+    {{if $cicStatements := .cic_report.statements}}
+    <div>
+
+      {{if $companyActivitiesAndImpact := $cicStatements.company_activities_and_impact}}
+      <div>
+        <span class="strong">Company activities and impact</span>
+        <p class="text-area-display">{{$companyActivitiesAndImpact}}</p>
+      </div>
+      {{end}}
+
+      {{if $consultationWithStakeholders := $cicStatements.consultation_with_stakeholders}}
+      <div>
+        <span class="strong">Consultation with stakeholders</span>
+        <p class="text-area-display">{{$consultationWithStakeholders}}</p>
+      </div>
+      {{end}}
+
+      {{if $directorsRemuneration := $cicStatements.directors_remuneration}}
+      <div>
+        <span class="strong">Directors' remuneration</span>
+        <p class="text-area-display">{{$directorsRemuneration}}</p>
+      </div>
+      {{end}}
+
+      {{if $transferOfAssets := $cicStatements.transfer_of_assets}}
+      <div>
+        <span class="strong">Transfer of assets</span>
+        <p class="text-area-display">{{$transferOfAssets}}</p>
+      </div>
+      {{end}}
+
+    </div>
+    {{end}}
+
+    {{if $approvalData := .cic_report.approval}}
+    <div>
+      <p>{{$approvalData.name}}</p>
+      <p>{{$approvalData.date}} </p>
+    </div>
+    {{end}}
+
+  </div>
+  <!--CIC REPORT SECTION END-->
+  {{end}}
+
 </div>
 </body>
 </html>

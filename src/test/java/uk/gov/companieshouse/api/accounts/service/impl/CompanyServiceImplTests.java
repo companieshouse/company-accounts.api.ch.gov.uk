@@ -19,6 +19,7 @@ import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.company.CompanyResourceHandler;
@@ -50,6 +51,9 @@ public class CompanyServiceImplTests {
     @Mock
     private CompanyProfileApi mockCompanyProfileApi;
 
+    @Mock
+    private ApiResponse<CompanyProfileApi> apiResponse;
+
     @InjectMocks
     private CompanyService companyService = new CompanyServiceImpl();
 
@@ -71,7 +75,8 @@ public class CompanyServiceImplTests {
     @DisplayName("Get Company Profile - Success Path")
     void getCompanyProfileSuccess() throws Exception {
 
-        when(mockCompanyGet.execute()).thenReturn(new CompanyProfileApi());
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
         CompanyProfileApi companyProfile = companyService.getCompanyProfile(COMPANY_NUMBER);
 
         assertNotNull(companyProfile);
@@ -103,7 +108,8 @@ public class CompanyServiceImplTests {
     void multipleYearFilerReturnsTrue() throws ServiceException, ApiErrorResponseException,
             URIValidationException {
 
-        when(mockCompanyGet.execute()).thenReturn(generateMultipleYearFiler());
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(generateMultipleYearFiler());
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
 
         assertTrue(companyService.isMultipleYearFiler(mockTransaction));
@@ -115,7 +121,8 @@ public class CompanyServiceImplTests {
     void firstYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
             URIValidationException {
 
-        when(mockCompanyGet.execute()).thenReturn(new CompanyProfileApi());
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
 
         assertFalse(companyService.isMultipleYearFiler(mockTransaction));
@@ -139,7 +146,8 @@ public class CompanyServiceImplTests {
             URIValidationException {
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
         when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(true);
 
         assertTrue(companyService.isCIC(mockTransaction));
@@ -151,7 +159,8 @@ public class CompanyServiceImplTests {
             URIValidationException {
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
         when(mockCompanyProfileApi.isCommunityInterestCompany()).thenReturn(false);
 
         assertFalse(companyService.isCIC(mockTransaction));
@@ -163,7 +172,8 @@ public class CompanyServiceImplTests {
             throws ApiErrorResponseException, URIValidationException, ServiceException {
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
         when(mockCompanyProfileApi.getType()).thenReturn(LIMITED_BY_GUARANTEE);
 
         assertTrue(companyService.isLBG(mockTransaction));
@@ -175,7 +185,8 @@ public class CompanyServiceImplTests {
             throws ApiErrorResponseException, URIValidationException, ServiceException {
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
         when(mockCompanyProfileApi.getType()).thenReturn(LIMITED_BY_GUARANTEE_EXEMPT);
 
         assertTrue(companyService.isLBG(mockTransaction));
@@ -187,7 +198,8 @@ public class CompanyServiceImplTests {
             throws ApiErrorResponseException, URIValidationException, ServiceException {
 
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-        when(mockCompanyGet.execute()).thenReturn(mockCompanyProfileApi);
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
         when(mockCompanyProfileApi.getType()).thenReturn(PLC);
 
         assertFalse(companyService.isLBG(mockTransaction));

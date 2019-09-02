@@ -4,7 +4,8 @@ public enum TransactionLinkType implements LinkType {
 
     SELF("self"),
     PAYMENTS("payments"),
-    RESOURCE("resource");
+    RESOURCE("resource"),
+    COSTS("costs");
 
     private String link;
 
