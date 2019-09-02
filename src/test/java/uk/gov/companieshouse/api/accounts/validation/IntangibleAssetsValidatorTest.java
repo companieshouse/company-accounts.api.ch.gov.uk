@@ -93,30 +93,6 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.cost.at_period_start")));
     }
 
-//    @Test
-//    @DisplayName("First year filer - provides only cost fields in sub resource")
-//    void firstYearFilerProvidesOnlyCostFieldsInSubResource() throws ServiceException, DataException {
-//
-//        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
-//
-//        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
-//
-//        Cost cost = new Cost();
-//        cost.setAdditions(1L);
-//
-//        goodwill.setCost(cost);
-//
-//        IntangibleAssets intangibleAssets = new IntangibleAssets();
-//        intangibleAssets.setGoodwill(goodwill);
-//
-//        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
-//
-//        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-//
-//        assertEquals(1, errors.getErrorCount());
-//        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
-//    }
-
     @Test
     @DisplayName("Single year filer - cost fields don't total in sub resource")
     void singleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
@@ -150,9 +126,7 @@ class IntangibleAssetsValidatorTest {
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
 
-        Cost cost = new Cost();
-
-        goodwill.setCost(cost);
+        goodwill.setCost(new Cost());
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
