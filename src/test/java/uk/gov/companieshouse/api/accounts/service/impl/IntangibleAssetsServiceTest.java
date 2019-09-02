@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -27,11 +28,13 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.IntangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.IntangibleAssetsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.IntangibleAssetsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.IntangibleAssetsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -73,6 +76,12 @@ public class IntangibleAssetsServiceTest {
     @Mock
     private Map<String, String> links;
 
+    @Mock
+    private IntangibleAssetsValidator validator;
+
+    @Mock
+    private Errors errors;
+
     @InjectMocks
     private IntangibleAssetsService intangibleAssetsService;
 
@@ -84,6 +93,9 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the successful creation of a Intangible Assets resource")
     void createIntangibleAssetsSuccess() throws DataException {
 
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
@@ -110,6 +122,10 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a duplicate key exception")
     void createIntangibleAssetsDuplicateKeyException() throws DataException {
 
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -133,6 +149,10 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a Mongo exception")
     void createIntangibleAssetsMongoException() throws DataException {
 
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -151,8 +171,28 @@ public class IntangibleAssetsServiceTest {
     }
 
     @Test
+    @DisplayName("Tests the creation of an Intangible Assets resource where validation errors are present")
+    void createIntangibleAssetsWithValidationErrors() throws DataException {
+
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.create(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(repository, never()).insert(any(IntangibleAssetsEntity.class));
+        assertWhetherSmallFullServiceCalledToAddLink(false);
+    }
+
+    @Test
     @DisplayName("Tests the successful update of a Intangible Assets resource")
     void updateIntangibleAssetsSuccess() throws DataException {
+
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
@@ -175,6 +215,10 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the update of a Intangible Assets resource where the repository throws a Mongo exception")
     void updateIntangibleAssetsMongoException() throws DataException {
 
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(intangibleAssets)).thenReturn(intangibleAssetsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.INTANGIBLE_ASSETS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -189,6 +233,21 @@ public class IntangibleAssetsServiceTest {
         assertMetaDataSetOnRestObject();
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the update of an Intangible Assets resource where validation errors are present")
+    void updateIntangibleAssetsWithValidationErrors() throws DataException {
+
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<IntangibleAssets> response =
+                intangibleAssetsService.update(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(repository, never()).save(any(IntangibleAssetsEntity.class));
     }
 
     @Test
