@@ -63,14 +63,16 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private void verifyNoteNotEmpty(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler) {
 
-        if(intangibleAssets.getGoodwill() == null &&
+        if (intangibleAssets.getGoodwill() == null &&
                 intangibleAssets.getOtherIntangibleAssets() == null &&
                 intangibleAssets.getTotal() == null) {
 
             addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
-        }
-        if (isMultipleYearFiler) {
-            addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+
+            if (isMultipleYearFiler) {
+                addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+            }
+
         }
     }
 
@@ -87,11 +89,30 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
             if(isMultipleYearFiler) {
 
-                /* TODO - SFA-1772 */
+                validatePresenceOfMultipleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
             }
             else {
                 validatePresenceOfSingleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
             }
+        }
+    }
+
+    private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+
+        boolean subResourceInvalid = false;
+
+        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
+            subResourceInvalid = true;
+        }
+
+        if(subResourceInvalid) {
+            invalidSubResource.add(intangibleSubResource);
         }
     }
 
