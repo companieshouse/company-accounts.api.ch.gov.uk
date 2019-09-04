@@ -38,6 +38,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private static final String INTANGIBLE_NOTE = "$.intangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
+    private static final String ADDITIONS = ".cost.additions";
+    private static final String DISPOSALS = ".cost.disposals";
+    private static final String REVALUATIONS = ".cost.revaluations";
+    private static final String TRANSFERS = ".cost.transfers";
     private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
@@ -53,6 +57,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             verifySubResourcesAreValid(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             verifyNoteNotEmpty(intangibleAssets, errors, isMultipleYearFiler);
             validateSubResourceTotals(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+            if (errors.hasErrors()) {
+                return errors;
+            }
+            validateTotalFieldsMatch(errors, intangibleAssets, isMultipleYearFiler);
 
         } catch(ServiceException se) {
             throw new DataException(se.getMessage(), se);
@@ -136,12 +144,114 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     }
 
-    private Long getCostAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
+    private void validateAdditionsTotal(Errors errors, IntangibleAssets intangibleAssets) {
 
-        return Optional.ofNullable(intangibleAssetsResource)
-                .map(IntangibleAssetsResource::getCost)
-                .map(Cost::getAtPeriodEnd)
-                .orElse(0L);
+        Long goodwillAdditions =
+                getAdditions(intangibleAssets.getGoodwill());
+
+        Long otherAdditions =
+                getAdditions(intangibleAssets.getOtherIntangibleAssets());
+
+
+        Long resourceAdditionsTotal = goodwillAdditions + otherAdditions;
+
+        Long additions = getAdditions(intangibleAssets.getTotal());
+
+        if (!additions.equals(resourceAdditionsTotal)) {
+
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+        }
+    }
+
+    private void validateDisposalsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillDisposals =
+                getDisposals(intangibleAssets.getGoodwill());
+
+        Long otherDisposals =
+                getDisposals(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceDisposalsTotal = goodwillDisposals + otherDisposals;
+
+        Long disposals = getDisposals(intangibleAssets.getTotal());
+
+        if (!disposals.equals(resourceDisposalsTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, DISPOSALS));
+        }
+    }
+
+    private void validateRevaluationsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillRevaluations =
+                getRevaluations(intangibleAssets.getGoodwill());
+
+        Long otherRevaluations =
+                getRevaluations(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceRevaluationsTotal = goodwillRevaluations + otherRevaluations;
+
+        Long revaluations = getRevaluations(intangibleAssets.getTotal());
+
+        if (!revaluations.equals(resourceRevaluationsTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, REVALUATIONS));
+        }
+    }
+
+    private void validateTransfersTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillTransfers = getTransfers(intangibleAssets.getGoodwill());
+
+        Long otherTransfers = getTransfers(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceTransfersTotal = goodwillTransfers + otherTransfers;
+
+        Long transfers = getTransfers(intangibleAssets.getTotal());
+
+        if (!transfers.equals(resourceTransfersTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, TRANSFERS));
+        }
+    }
+
+    private void validateCostAtEndTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillCostAtEnd = getCostAtPeriodEnd(intangibleAssets.getGoodwill());
+
+        Long otherCostAtEnd = getCostAtPeriodEnd(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceCostAtEndTotal = goodwillCostAtEnd + otherCostAtEnd;
+
+        Long costAtEnd = getCostAtPeriodEnd(intangibleAssets.getTotal());
+
+        if (!costAtEnd.equals(resourceCostAtEndTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, COST_AT_PERIOD_END));
+        }
+    }
+
+    private void validateCostAtStartTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillCostAtStart = getCostAtPeriodStart(intangibleAssets.getGoodwill());
+
+        Long otherCostAtStart = getCostAtPeriodStart(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceCostAtStartTotal = goodwillCostAtStart + otherCostAtStart;
+
+        Long costAtStart = getCostAtPeriodStart(intangibleAssets.getTotal());
+
+        if (!costAtStart.equals(resourceCostAtStartTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, COST_AT_PERIOD_START));
+        }
+    }
+
+    private void validateTotalFieldsMatch(Errors errors, IntangibleAssets intangibleAssets, boolean isMultipleYearFiler) {
+
+        if (isMultipleYearFiler) {
+            validateCostAtStartTotal(errors, intangibleAssets);
+        }
+        validateAdditionsTotal(errors, intangibleAssets);
+        validateDisposalsTotal(errors, intangibleAssets);
+        validateRevaluationsTotal(errors, intangibleAssets);
+        validateTransfersTotal(errors, intangibleAssets);
+        validateCostAtEndTotal(errors, intangibleAssets);
     }
 
     private void validateCosts(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -161,6 +271,14 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         if(!getCostAtPeriodEnd(intangibleAssetsResource).equals(calculatedAtPeriodEnd)) {
             addError(errors, incorrectTotal, getJsonPath(subResource, COST_AT_PERIOD_END));
         }
+    }
+
+    private Long getCostAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getCost)
+                .map(Cost::getAtPeriodEnd)
+                .orElse(0L);
     }
 
     private Long getTransfers(IntangibleAssetsResource intangibleAssetsResource) {
