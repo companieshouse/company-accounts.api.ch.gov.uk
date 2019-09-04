@@ -10,12 +10,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +43,12 @@ class IntangibleAssetsValidatorTest {
 
     @Mock
     private CompanyService companyService;
+
+    @Mock
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
 
     @InjectMocks
     private IntangibleAssetsValidator validator;
@@ -261,10 +274,122 @@ class IntangibleAssetsValidatorTest {
 
     }
 
+    @Test
+    @DisplayName("Single year filer - no total fields match")
+    void singleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost goodwillCost = new Cost();
+        goodwillCost.setAdditions(1L);
+        goodwillCost.setDisposals(1L);
+        goodwillCost.setRevaluations(1L);
+        goodwillCost.setTransfers(1L);
+        goodwillCost.setAtPeriodEnd(2L);
+        goodwill.setCost(goodwillCost);
+
+        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
+
+        Cost otherIntangibleAssetsCost = new Cost();
+        otherIntangibleAssetsCost.setAdditions(1L);
+        otherIntangibleAssetsCost.setDisposals(1L);
+        otherIntangibleAssetsCost.setRevaluations(1L);
+        otherIntangibleAssetsCost.setTransfers(1L);
+        otherIntangibleAssetsCost.setAtPeriodEnd(2L);
+        otherIntangibleAssets.setCost(otherIntangibleAssetsCost);
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(3L);
+        totalCost.setDisposals(3L);
+        totalCost.setRevaluations(3L);
+        totalCost.setTransfers(3L);
+        totalCost.setAtPeriodEnd(3L);
+        total.setCost(totalCost);
+
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+        intangibleAssets.setTotal(total);
+        intangibleAssets.setOtherIntangibleAssets((otherIntangibleAssets));
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(5, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - no total fields match")
+    void multipleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost goodwillCost = new Cost();
+        goodwillCost.setAtPeriodStart(1L);
+        goodwillCost.setAdditions(1L);
+        goodwillCost.setDisposals(1L);
+        goodwillCost.setRevaluations(1L);
+        goodwillCost.setTransfers(1L);
+        goodwillCost.setAtPeriodEnd(3L);
+        goodwill.setCost(goodwillCost);
+
+        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
+
+        Cost OtherIntangibleAssetsCost = new Cost();
+        OtherIntangibleAssetsCost.setAtPeriodStart(3L);
+        OtherIntangibleAssetsCost.setAdditions(2L);
+        OtherIntangibleAssetsCost.setDisposals(2L);
+        OtherIntangibleAssetsCost.setRevaluations(2L);
+        OtherIntangibleAssetsCost.setTransfers(2L);
+        OtherIntangibleAssetsCost.setAtPeriodEnd(7L);
+        otherIntangibleAssets.setCost(OtherIntangibleAssetsCost);
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(3L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(7L);
+        total.setCost(totalCost);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+        intangibleAssets.setOtherIntangibleAssets(otherIntangibleAssets);
+        intangibleAssets.setTotal(total);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(6, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
+    }
+
 
     private Error createError(String error,  String path) {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
         ErrorType.VALIDATION.getType());
     }
+
 }

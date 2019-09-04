@@ -38,8 +38,11 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private static final String INTANGIBLE_NOTE = "$.intangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
-    private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String ADDITIONS = ".cost.additions";
+    private static final String DISPOSALS = ".cost.disposals";
+    private static final String REVALUATIONS = ".cost.revaluations";
+    private static final String TRANSFERS = ".cost.transfers";
+    private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
 
@@ -170,7 +173,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long disposals = getDisposals(intangibleAssets.getTotal());
 
         if (!disposals.equals(resourceDisposalsTotal)) {
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, DISPOSALS));
         }
     }
 
@@ -187,7 +190,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long revaluations = getRevaluations(intangibleAssets.getTotal());
 
         if (!revaluations.equals(resourceRevaluationsTotal)) {
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, REVALUATIONS));
         }
     }
 
@@ -202,7 +205,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long transfers = getTransfers(intangibleAssets.getTotal());
 
         if (!transfers.equals(resourceTransfersTotal)) {
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, TRANSFERS));
         }
     }
 
@@ -217,7 +220,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long costAtEnd = getCostAtPeriodEnd(intangibleAssets.getTotal());
 
         if (!costAtEnd.equals(resourceCostAtEndTotal)) {
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, COST_AT_PERIOD_END));
         }
     }
 
@@ -232,7 +235,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long costAtStart = getCostAtPeriodStart(intangibleAssets.getTotal());
 
         if (!costAtStart.equals(resourceCostAtStartTotal)) {
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, COST_AT_PERIOD_START));
         }
     }
 
