@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
@@ -15,10 +16,13 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Component
 public class IntangibleAssetsValidator  extends BaseValidator  {
+
 
 
     private CompanyService companyService;
@@ -45,6 +49,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
+    private static final String AMORTISATION_AT_PERIOD_END = ".amortisation.at_period_end";
 
     public Errors validateIntangibleAssets(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
     throws DataException {
@@ -141,6 +146,56 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private void validateSubResourceTotal(IntangibleAssetsResource intangibleAssetsResource, Errors errors, boolean isMultipleYearFiler, IntangibleSubResource subResource) {
 
         validateCosts(intangibleAssetsResource, errors, subResource);
+        validateAmortisation(intangibleAssetsResource, errors, subResource);
+
+    }
+
+    private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
+
+        Long chargeForYear = getChargeForYear(intangibleAssetsResource);
+        Long onDisposal = getOnDisposals(intangibleAssetsResource);
+        Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
+
+        Long calculatedAtPeriodEnd = chargeForYear + onDisposal + otherAdjustments;
+
+        Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
+
+        if(!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
+            addError(errors, incorrectTotal, getJsonPath(subResource, AMORTISATION_AT_PERIOD_END));
+        }
+    }
+
+    private Long getAmortisationAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getAtPeriodEnd)
+                .orElse(0L);
+
+    }
+
+    private Long getOtherAdjustments(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getOtherAdjustments)
+                .orElse(0L);
+    }
+
+    private Long getOnDisposals(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getOnDisposals)
+                .orElse(0L);
+    }
+
+    private Long getChargeForYear(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getChargeForYear)
+                .orElse(0L);
 
     }
 
@@ -329,14 +384,36 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getCost() != null && intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+        if(intangibleAssetsResource.getCost() != null
+                && intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getAmortisation() != null
+                && intangibleAssetsResource.getAmortisation().getAtPeriodStart() != null) {
+            addError(errors, unexpectedData, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getAmortisation() != null
+                && hasAmortisationFieldsSet(intangibleAssetsResource.getAmortisation())
+                && intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
             subResourceInvalid = true;
         }
 
         if(subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
         }
+    }
+
+    private boolean hasAmortisationFieldsSet(Amortisation amortisation) {
+        return Stream.of(amortisation.getChargeForYear(),
+                amortisation.getOnDisposals(),
+                amortisation.getOtherAdjustments())
+                .anyMatch(Objects::nonNull);
+
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
