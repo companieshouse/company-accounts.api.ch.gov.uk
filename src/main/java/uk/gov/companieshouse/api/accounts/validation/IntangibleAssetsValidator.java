@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 @Component
 public class IntangibleAssetsValidator  extends BaseValidator  {
 
-
-
     private CompanyService companyService;
 
     @Autowired
@@ -50,6 +48,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
     private static final String AMORTISATION_AT_PERIOD_END = ".amortisation.at_period_end";
+    private static final String AMORTISATION_AT_PERIOD_START = ".amortisation.at_period_start";
 
     public Errors validateIntangibleAssets(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
     throws DataException {
@@ -147,7 +146,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
         validateCosts(intangibleAssetsResource, errors, subResource);
         validateAmortisation(intangibleAssetsResource, errors, subResource);
-
     }
 
     private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -392,7 +390,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
         if(intangibleAssetsResource.getAmortisation() != null
                 && intangibleAssetsResource.getAmortisation().getAtPeriodStart() != null) {
-            addError(errors, unexpectedData, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
+            addError(errors, unexpectedData, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 

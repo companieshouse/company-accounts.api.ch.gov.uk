@@ -396,6 +396,57 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
+    @Test
+    @DisplayName("First year filer - incorrect total for amortisation at period end")
+    void firstYearFilerIncorrectTotalAmortisationAtPeriodEnd() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setChargeForYear(1L);
+        amortisation.setOnDisposals(1L);
+        amortisation.setOtherAdjustments(1L);
+
+        amortisation.setAtPeriodEnd(7L);
+
+        goodwill.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("First year filer - provides amortisation at period start in sub resource")
+    void firstYearFilerProvidesAmortisationAtPeriodStartInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodStart(1L);
+        amortisation.setAtPeriodEnd(1L);
+
+        goodwill.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.amortisation.at_period_start")));
+    }
     private Error createError(String error,  String path) {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
