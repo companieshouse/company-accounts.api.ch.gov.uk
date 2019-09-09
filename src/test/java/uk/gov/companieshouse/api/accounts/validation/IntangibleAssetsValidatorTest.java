@@ -17,8 +17,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Intangible
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
@@ -200,6 +198,13 @@ class IntangibleAssetsValidatorTest {
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Amortisation amortisation = new Amortisation();
+
+        amortisation.setAtPeriodEnd(1L);
+        amortisation.setAtPeriodStart(1L);
+        goodwill.setAmortisation(amortisation);
+
         goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
         goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
 
@@ -227,7 +232,13 @@ class IntangibleAssetsValidatorTest {
 
         Cost cost = new Cost();
         cost.setAtPeriodEnd(1L);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodEnd(1L);
+        amortisation.setAtPeriodStart(1L);
+
         goodwill.setCost(cost);
+        goodwill.setAmortisation(amortisation);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -238,7 +249,6 @@ class IntangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
-
     }
 
     @Test
@@ -254,6 +264,11 @@ class IntangibleAssetsValidatorTest {
         Cost cost = new Cost();
         cost.setAtPeriodStart(1L);
         goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodEnd(1L);
+        amortisation.setAtPeriodStart(1L);
+        goodwill.setAmortisation(amortisation);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -280,6 +295,11 @@ class IntangibleAssetsValidatorTest {
         cost.setAdditions(1L);
         cost.setAtPeriodEnd(3L);
         goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodEnd(1L);
+        amortisation.setAtPeriodStart(1L);
+        goodwill.setAmortisation(amortisation);
 
         goodwill.setNetBookValueAtEndOfCurrentPeriod(3L);
         goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
@@ -343,14 +363,14 @@ class IntangibleAssetsValidatorTest {
         goodwillCost.setTransfers(1L);
         goodwillCost.setAtPeriodEnd(2L);
         goodwill.setCost(goodwillCost);
-        
+
         Amortisation goodwillAmortisation = new Amortisation();
         goodwillAmortisation.setChargeForYear(1L);
         goodwillAmortisation.setOnDisposals(1L);
         goodwillAmortisation.setOtherAdjustments(1L);
         goodwillAmortisation.setAtPeriodEnd(1L);
         goodwill.setAmortisation(goodwillAmortisation);
-        
+
 
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
@@ -361,7 +381,7 @@ class IntangibleAssetsValidatorTest {
         totalCost.setTransfers(2L);
         totalCost.setAtPeriodEnd(4L);
         total.setCost(totalCost);
-        
+
         Amortisation totalAmortisation = new Amortisation();
         totalAmortisation.setChargeForYear(2L);
         totalAmortisation.setOnDisposals(2L);
@@ -397,6 +417,11 @@ class IntangibleAssetsValidatorTest {
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
 
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodEnd(1L);
+        amortisation.setAtPeriodStart(1L);
+
+
         Cost goodwillCost = new Cost();
         goodwillCost.setAtPeriodStart(1L);
         goodwillCost.setAdditions(1L);
@@ -405,6 +430,7 @@ class IntangibleAssetsValidatorTest {
         goodwillCost.setTransfers(1L);
         goodwillCost.setAtPeriodEnd(3L);
         goodwill.setCost(goodwillCost);
+        goodwill.setAmortisation(amortisation);
 
         Amortisation goodwillAmortisation = new Amortisation();
         goodwillAmortisation.setAtPeriodStart(1L);
@@ -413,7 +439,7 @@ class IntangibleAssetsValidatorTest {
         goodwillAmortisation.setOtherAdjustments(1L);
         goodwillAmortisation.setAtPeriodEnd(2L);
         goodwill.setAmortisation(goodwillAmortisation);
-        
+
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
@@ -424,6 +450,7 @@ class IntangibleAssetsValidatorTest {
         totalCost.setTransfers(2L);
         totalCost.setAtPeriodEnd(7L);
         total.setCost(totalCost);
+        total.setAmortisation(amortisation);
 
         Amortisation totalAmortisation = new Amortisation();
         totalAmortisation.setAtPeriodStart(3L);
@@ -533,6 +560,65 @@ class IntangibleAssetsValidatorTest {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
         ErrorType.VALIDATION.getType());
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - Does not provide amortisation at period start in sub resource")
+    void multipleYearFilerDoesNotProvideAmortisationAtPeriodStartInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAtPeriodEnd(1L);
+
+       Amortisation amortisation = new Amortisation();
+       amortisation.setAtPeriodEnd(1L);
+
+        goodwill.setCost(cost);
+        goodwill.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_start")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - Does not provide amortisation at period end in sub resource")
+    void multipleYearFilerDoesNotProvideAmortisationAtPeriodEndInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAtPeriodEnd(1L);
+
+        goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodStart(1L);
+
+        goodwill.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
 }
