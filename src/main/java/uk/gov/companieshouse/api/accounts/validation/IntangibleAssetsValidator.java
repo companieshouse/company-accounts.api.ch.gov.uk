@@ -132,11 +132,11 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
 
         Long chargeForYear = getChargeForYear(intangibleAssetsResource);
-        Long onDisposal = getOnDisposals(intangibleAssetsResource);
+        Long onDisposals = getOnDisposals(intangibleAssetsResource);
         Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
         Long atPeriodStart = getAmortisationAtPeriodStart(intangibleAssetsResource);
 
-        Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear + onDisposal + otherAdjustments;
+        Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear - onDisposals + otherAdjustments;
 
         Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
 
