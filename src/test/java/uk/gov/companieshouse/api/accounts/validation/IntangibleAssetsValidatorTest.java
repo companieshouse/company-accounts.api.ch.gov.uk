@@ -17,6 +17,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Intangible
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
@@ -118,6 +120,37 @@ class IntangibleAssetsValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - amortisation fields don't total in sub resource")
+    void singleYearFilerAmortisationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(1L);
+        goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setChargeForYear(2L);
+        amortisation.setAtPeriodEnd(1L);
+        goodwill.setAmortisation(amortisation);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(0L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
@@ -263,6 +296,39 @@ class IntangibleAssetsValidatorTest {
     }
 
     @Test
+    @DisplayName("Multiple year filer - amortisation fields don't total in sub resource")
+    void multipleYearFilerAmortisationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setAtPeriodStart(1L);
+        amortisation.setChargeForYear(2L);
+        amortisation.setAtPeriodEnd(1L);
+        goodwill.setAmortisation(amortisation);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+    }
+
+    @Test
     @DisplayName("Single year filer - no total fields match")
     void singleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
 
@@ -277,43 +343,50 @@ class IntangibleAssetsValidatorTest {
         goodwillCost.setTransfers(1L);
         goodwillCost.setAtPeriodEnd(2L);
         goodwill.setCost(goodwillCost);
-
-        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
-
-        Cost otherIntangibleAssetsCost = new Cost();
-        otherIntangibleAssetsCost.setAdditions(1L);
-        otherIntangibleAssetsCost.setDisposals(1L);
-        otherIntangibleAssetsCost.setRevaluations(1L);
-        otherIntangibleAssetsCost.setTransfers(1L);
-        otherIntangibleAssetsCost.setAtPeriodEnd(2L);
-        otherIntangibleAssets.setCost(otherIntangibleAssetsCost);
+        
+        Amortisation goodwillAmortisation = new Amortisation();
+        goodwillAmortisation.setChargeForYear(1L);
+        goodwillAmortisation.setOnDisposals(1L);
+        goodwillAmortisation.setOtherAdjustments(1L);
+        goodwillAmortisation.setAtPeriodEnd(1L);
+        goodwill.setAmortisation(goodwillAmortisation);
+        
 
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
-        totalCost.setAdditions(3L);
-        totalCost.setDisposals(3L);
-        totalCost.setRevaluations(3L);
-        totalCost.setTransfers(3L);
-        totalCost.setAtPeriodEnd(3L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(4L);
         total.setCost(totalCost);
-
+        
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(2L);
+        total.setAmortisation(totalAmortisation);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
         intangibleAssets.setTotal(total);
-        intangibleAssets.setOtherIntangibleAssets((otherIntangibleAssets));
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(5, errors.getErrorCount());
+        assertEquals(9, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
     }
 
     @Test
@@ -333,17 +406,14 @@ class IntangibleAssetsValidatorTest {
         goodwillCost.setAtPeriodEnd(3L);
         goodwill.setCost(goodwillCost);
 
-        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
-
-        Cost OtherIntangibleAssetsCost = new Cost();
-        OtherIntangibleAssetsCost.setAtPeriodStart(3L);
-        OtherIntangibleAssetsCost.setAdditions(2L);
-        OtherIntangibleAssetsCost.setDisposals(2L);
-        OtherIntangibleAssetsCost.setRevaluations(2L);
-        OtherIntangibleAssetsCost.setTransfers(2L);
-        OtherIntangibleAssetsCost.setAtPeriodEnd(7L);
-        otherIntangibleAssets.setCost(OtherIntangibleAssetsCost);
-
+        Amortisation goodwillAmortisation = new Amortisation();
+        goodwillAmortisation.setAtPeriodStart(1L);
+        goodwillAmortisation.setChargeForYear(1L);
+        goodwillAmortisation.setOnDisposals(1L);
+        goodwillAmortisation.setOtherAdjustments(1L);
+        goodwillAmortisation.setAtPeriodEnd(2L);
+        goodwill.setAmortisation(goodwillAmortisation);
+        
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
@@ -355,22 +425,34 @@ class IntangibleAssetsValidatorTest {
         totalCost.setAtPeriodEnd(7L);
         total.setCost(totalCost);
 
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setAtPeriodStart(3L);
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(4L);
+        total.setAmortisation(totalAmortisation);
+
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
-        intangibleAssets.setOtherIntangibleAssets(otherIntangibleAssets);
         intangibleAssets.setTotal(total);
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(6, errors.getErrorCount());
+        assertEquals(11, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_start")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
     }
 
     @Test
