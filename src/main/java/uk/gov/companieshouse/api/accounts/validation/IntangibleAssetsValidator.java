@@ -154,7 +154,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long onDisposal = getOnDisposals(intangibleAssetsResource);
         Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
 
-        Long calculatedAtPeriodEnd = chargeForYear + onDisposal + otherAdjustments;
+        Long calculatedAtPeriodEnd = chargeForYear - onDisposal + otherAdjustments;
 
         Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
 
