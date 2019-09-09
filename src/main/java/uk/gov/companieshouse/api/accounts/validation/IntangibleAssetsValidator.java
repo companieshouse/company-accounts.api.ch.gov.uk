@@ -109,25 +109,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         }
     }
 
-    private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
-
-        boolean subResourceInvalid = false;
-
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
-            subResourceInvalid = true;
-        }
-
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
-            subResourceInvalid = true;
-        }
-
-        if(subResourceInvalid) {
-            invalidSubResource.add(intangibleSubResource);
-        }
-    }
-
     private void validateSubResourceTotals(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler, List<IntangibleSubResource> invalidSubResources) {
 
         if(intangibleAssets.getGoodwill() != null && !invalidSubResources.contains(IntangibleSubResource.GOODWILL)) {
@@ -153,14 +134,23 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long chargeForYear = getChargeForYear(intangibleAssetsResource);
         Long onDisposal = getOnDisposals(intangibleAssetsResource);
         Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
+        Long atPeriodStart = getAmortisationAtPeriodStart(intangibleAssetsResource);
 
-        Long calculatedAtPeriodEnd = chargeForYear + onDisposal + otherAdjustments;
+        Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear + onDisposal + otherAdjustments;
 
         Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
 
         if(!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
             addError(errors, incorrectTotal, getJsonPath(subResource, AMORTISATION_AT_PERIOD_END));
         }
+    }
+
+    private Long getAmortisationAtPeriodStart(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getAtPeriodStart)
+                .orElse(0L);
     }
 
     private Long getAmortisationAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
@@ -397,6 +387,37 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         if(intangibleAssetsResource.getAmortisation() != null
                 && hasAmortisationFieldsSet(intangibleAssetsResource.getAmortisation())
                 && intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+
+        if(subResourceInvalid) {
+            invalidSubResource.add(intangibleSubResource);
+        }
+    }
+
+    private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+
+        boolean subResourceInvalid = false;
+
+        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodStart() == null) {
+
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
+            subResourceInvalid = true;
+        }
+
+        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
+
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
             subResourceInvalid = true;
         }
