@@ -45,6 +45,9 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private static final String REVALUATIONS = ".cost.revaluations";
     private static final String TRANSFERS = ".cost.transfers";
     private static final String COST_AT_PERIOD_END = ".cost.at_period_end";
+    private static final String CHARGE_FOR_YEAR = ".amortisation.charge_for_year";
+    private static final String ON_DISPOSALS = ".amortisation.on_disposals";
+    private static final String OTHER_ADJUSTMENTS = ".amortisation.other_adjustments";
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
     private static final String AMORTISATION_AT_PERIOD_END = ".amortisation.at_period_end";
@@ -136,7 +139,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
         Long atPeriodStart = getAmortisationAtPeriodStart(intangibleAssetsResource);
 
-
         Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear - onDisposals + otherAdjustments;
 
         Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
@@ -146,14 +148,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         }
     }
 
-    private Long getAmortisationAtPeriodStart(IntangibleAssetsResource intangibleAssetsResource) {
-
-        return Optional.ofNullable(intangibleAssetsResource)
-                .map(IntangibleAssetsResource::getAmortisation)
-                .map(Amortisation::getAtPeriodStart)
-                .orElse(0L);
-    }
-
     private Long getAmortisationAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
 
         return Optional.ofNullable(intangibleAssetsResource)
@@ -161,6 +155,14 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
                 .map(Amortisation::getAtPeriodEnd)
                 .orElse(0L);
 
+    }
+
+    private Long getAmortisationAtPeriodStart(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+                .map(IntangibleAssetsResource::getAmortisation)
+                .map(Amortisation::getAtPeriodStart)
+                .orElse(0L);
     }
 
     private Long getOtherAdjustments(IntangibleAssetsResource intangibleAssetsResource) {
@@ -286,16 +288,102 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         }
     }
 
+    private void validateAmortisationAtPeriodStartTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillAmortisationAtPeriodStart =
+                getAmortisationAtPeriodStart(intangibleAssets.getGoodwill());
+
+        Long otherAmortisationAtPeriodStart =
+                getAmortisationAtPeriodStart(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceAmortisationAtPeriodStartTotal = goodwillAmortisationAtPeriodStart + otherAmortisationAtPeriodStart;
+
+        Long amortisationAtPeriodStart = getAmortisationAtPeriodStart(intangibleAssets.getTotal());
+
+        if (!amortisationAtPeriodStart.equals(resourceAmortisationAtPeriodStartTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, AMORTISATION_AT_PERIOD_START));
+        }
+
+    }
+
+    private void validateChargeForYearTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillChargeForYear = getChargeForYear(intangibleAssets.getGoodwill());
+
+        Long otherChargeForYear = getChargeForYear(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceChargeForYearTotal = goodwillChargeForYear + otherChargeForYear;
+
+        Long chargeForYear = getChargeForYear(intangibleAssets.getTotal());
+
+        if (!chargeForYear.equals(resourceChargeForYearTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, CHARGE_FOR_YEAR));
+        }
+    }
+
+    private void validateOtherAdjustmentsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillOtherAdjustments = getOtherAdjustments(intangibleAssets.getGoodwill());
+
+        Long otherOtherAdjustments = getOtherAdjustments(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceOtherAdjustmentsTotal = goodwillOtherAdjustments + otherOtherAdjustments;
+
+        Long otherAdjustments = getOtherAdjustments(intangibleAssets.getTotal());
+
+        if (!otherAdjustments.equals(resourceOtherAdjustmentsTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, OTHER_ADJUSTMENTS));
+        }
+    }
+
+    private void validateOnDisposalsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillOnDisposals = getOnDisposals(intangibleAssets.getGoodwill());
+
+        Long otherOnDisposals = getOnDisposals(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceOnDisposalsTotal = goodwillOnDisposals + otherOnDisposals;
+
+        Long onDisposals = getOnDisposals(intangibleAssets.getTotal());
+
+        if (!onDisposals.equals(resourceOnDisposalsTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ON_DISPOSALS));
+        }
+    }
+
+    private void validateAmortisationAtPeriodEndTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillAmortisationAtPeriodEnd =
+                getAmortisationAtPeriodEnd(intangibleAssets.getGoodwill());
+
+        Long otherAmortisationAtPeriodEnd =
+                getAmortisationAtPeriodEnd(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceAmortisationAtPeriodEndTotal = goodwillAmortisationAtPeriodEnd + otherAmortisationAtPeriodEnd;
+
+        Long amortisationAtPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssets.getTotal());
+
+        if (!amortisationAtPeriodEnd.equals(resourceAmortisationAtPeriodEndTotal)) {
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, AMORTISATION_AT_PERIOD_END));
+        }
+    }
+
+
     private void validateTotalFieldsMatch(Errors errors, IntangibleAssets intangibleAssets, boolean isMultipleYearFiler) {
 
         if (isMultipleYearFiler) {
             validateCostAtStartTotal(errors, intangibleAssets);
+            validateAmortisationAtPeriodStartTotal(errors, intangibleAssets);
         }
         validateAdditionsTotal(errors, intangibleAssets);
         validateDisposalsTotal(errors, intangibleAssets);
         validateRevaluationsTotal(errors, intangibleAssets);
         validateTransfersTotal(errors, intangibleAssets);
         validateCostAtEndTotal(errors, intangibleAssets);
+        validateAmortisationAtPeriodEndTotal(errors, intangibleAssets);
+        validateChargeForYearTotal(errors, intangibleAssets);
+        validateOtherAdjustmentsTotal(errors, intangibleAssets);
+        validateOnDisposalsTotal(errors, intangibleAssets);
     }
 
     private void validateCosts(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
