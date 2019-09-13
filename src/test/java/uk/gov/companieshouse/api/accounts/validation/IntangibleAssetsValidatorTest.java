@@ -621,4 +621,40 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
+    @Test
+    @DisplayName("Multiple year filer - Total does not match for sub resources")
+    void multipleYearFilerTotalDoesNotMatchForSubResources() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAtPeriodStart(1L);
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(2L);
+        goodwill.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setOnDisposals(1L);
+        amortisation.setOtherAdjustments(1L);
+        amortisation.setChargeForYear(1L);
+        amortisation.setAtPeriodEnd(5L);
+        amortisation.setAtPeriodStart(1L);
+        goodwill.setAmortisation(amortisation);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(5L);
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+    }
+
 }
