@@ -657,4 +657,51 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
+    @Test
+    @DisplayName("First year filer - provides net book value at previous period end in sub resource")
+    void firstYearFilerProvidesNetBookValueAtPreviousEndInSubResource() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
+    void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(1L);
+        goodwill.setCost(cost);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
+
+    }
 }
