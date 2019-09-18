@@ -384,7 +384,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         validateChargeForYearTotal(errors, intangibleAssets);
         validateOtherAdjustmentsTotal(errors, intangibleAssets);
         validateOnDisposalsTotal(errors, intangibleAssets);
-        validateCurrentNetBookValuesTotal(errors, intangibleAssets);
     }
 
     private void validateCosts(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -532,22 +531,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             subResourceInvalid = true;
         }
         return subResourceInvalid;
-    }
-
-    private void validateCurrentNetBookValuesTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
-        Long goodwillNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getGoodwill());
-
-        Long otherIntangibleAssetsNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getOtherIntangibleAssets());
-
-        Long resourceNetBookValueTotal = goodwillNetBookValue + otherIntangibleAssetsNetBookValue;
-
-        Long netBookValueAtEndOfCurrentPeriod = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getTotal());
-
-        if(!netBookValueAtEndOfCurrentPeriod.equals(resourceNetBookValueTotal)) {
-
-            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
-        }
     }
 
     private void validateCurrentNetBookValue(Errors errors, IntangibleAssetsResource intangibleAssetsResource, IntangibleSubResource intangibleSubResource) {
