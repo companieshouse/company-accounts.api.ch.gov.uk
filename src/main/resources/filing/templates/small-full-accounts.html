@@ -1965,7 +1965,7 @@
 
       <!-- INTANGIBLE ASSETS NOTE START -->
 
-      {{ if $intangibleAssetNote := $balanceSheetNotes.intangible_assets }}
+      {{ if $intangibleAssetsNote := $balanceSheetNotes.intangible_assets }}
       {{ incValue "notes-page-count" }}
       {{ setValue "intangible-notes-id" ( getValue "notes-page-count" ) }}
       <div class="page">
@@ -1981,7 +1981,7 @@
         </p>
         <h2>{{getValue "notes-page-count"}}. Intangible assets</h2>
 
-      <table class="wrap">
+        <table class="wrap">
         <thead>
         <tr>
           <th class="text--right figure"></th>
@@ -1997,16 +1997,14 @@
         <tbody>
         <tr>
           <th>Cost</th>
-          <td class="text--center">&#163;</td>
-          <td class="text--center">&#163;</td>
-          <td class="text--center">&#163;</td>
-          <td class="text--center">&#163;</td>
-          <td class="text--center">&#163;</td>
-          <td class="text--center">&#163;</td>
+          <td class="table-heading">&#163;</td>
+          <td class="table-heading">&#163;</td>
+          <td class="table-heading">&#163;</td>
         </tr>
+
         {{if $previousPeriod}}
         <tr class="figures">
-          <td id="intangible-cost-at-period-start">At {{$period.current_period_start_on_formatted</td>
+          <td id="intangible-cost-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
           <td id="intangible-cost-at-period-start-goodwill" class="strong figure">
             {{if isNotEmpty $cost.at_period_start.goodwill}}
             {{emitIfNegative $cost.at_period_start.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.goodwill}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.goodwill ")" }}
@@ -2014,7 +2012,7 @@
           </td>
           <td id="intangible-cost-at-period-start-other-intangible-assets" class="strong figure">
             {{if isNotEmpty $cost.at_period_start.other_intangible_assets}}
-            {{emitIfNegative $cost.at_period_start.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.other_intangible_assets</ix:nonFraction>{{emitIfNegative $cost.at_period_start.other_intangible_assets ")" }}
+            {{emitIfNegative $cost.at_period_start.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.other_intangible_assets ")" }}
             {{end}}
           </td>
           <td id="intangible-cost-at-period-start-total" class="strong figure">
@@ -2148,9 +2146,6 @@
           <td class="text--center"></td>
           <td class="text--center"></td>
           <td class="text--center"></td>
-          <td class="text--center"></td>
-          <td class="text--center"></td>
-          <td class="text--center"></td>
         </tr>
 
         {{if $previousPeriod}}
@@ -2273,9 +2268,6 @@
           <td class="text--center"></td>
           <td class="text--center"></td>
           <td class="text--center"></td>
-          <td class="text--center"></td>
-          <td class="text--center"></td>
-          <td class="text--center"></td>
         </tr>
 
         <tr class="figures">
@@ -2322,14 +2314,14 @@
 
       <div class="text-area-display">
         <p class="text-area-display">
-          <ix:nonNumeric contextRef="CY" name="core:PropertyPlantEquipmentFree-textComment">{{$tangibleAssetsNote.additional_information}}</ix:nonNumeric>
+          <ix:nonNumeric contextRef="CY" name="core:IntangibleAssetsFree-textComment">{{$intangibleAssetsNote.additional_information}}</ix:nonNumeric>
         </p>
       </div>
     </div>
 
-    {{ end }}
+      {{ end }}
 
-    <!-- INTANGIBLE ASSETS NOTE END -->
+      <!-- INTANGIBLE ASSETS NOTE END -->
 
       <!-- TANGIBLE ASSETS NOTE START -->
 
