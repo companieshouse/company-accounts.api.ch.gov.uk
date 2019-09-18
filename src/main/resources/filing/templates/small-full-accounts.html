@@ -1963,6 +1963,374 @@
 
       <div id="BalanceSheetNotesSection" class="section-marker"></div>
 
+      <!-- INTANGIBLE ASSETS NOTE START -->
+
+      {{ if $intangibleAssetNote := $balanceSheetNotes.intangible_assets }}
+      {{ incValue "notes-page-count" }}
+      {{ setValue "intangible-notes-id" ( getValue "notes-page-count" ) }}
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+        <h2>{{getValue "notes-page-count"}}. Intangible assets</h2>
+
+      <table class="wrap">
+        <thead>
+        <tr>
+          <th class="text--right figure"></th>
+          <th class="text--right figure">Goodwill</th>
+          <th class="text--right figure">Other intangible assets</th>
+          <th class="text--right figure">Total</th>
+        </tr>
+        </thead>
+
+        {{$cost := $intangibleAssetsNote.cost}}
+        {{$amortisation := $intangibleAssetsNote.amortisation}}
+        {{$netBookValue := $intangibleAssetsNote.netBookValue}}
+        <tbody>
+        <tr>
+          <th>Cost</th>
+          <td class="text--center">&#163;</td>
+          <td class="text--center">&#163;</td>
+          <td class="text--center">&#163;</td>
+          <td class="text--center">&#163;</td>
+          <td class="text--center">&#163;</td>
+          <td class="text--center">&#163;</td>
+        </tr>
+        {{if $previousPeriod}}
+        <tr class="figures">
+          <td id="intangible-cost-at-period-start">At {{$period.current_period_start_on_formatted</td>
+          <td id="intangible-cost-at-period-start-goodwill" class="strong figure">
+            {{if isNotEmpty $cost.at_period_start.goodwill}}
+            {{emitIfNegative $cost.at_period_start.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.goodwill}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.goodwill ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-cost-at-period-start-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $cost.at_period_start.other_intangible_assets}}
+            {{emitIfNegative $cost.at_period_start.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.other_intangible_assets</ix:nonFraction>{{emitIfNegative $cost.at_period_start.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-cost-at-period-start-total" class="strong figure">
+            {{if isNotEmpty $cost.at_period_start.total}}
+            {{emitIfNegative $cost.at_period_start.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_start.total}}</ix:nonFraction>{{emitIfNegative $cost.at_period_start.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+        {{end}}
+
+        <tr class="figures">
+          <td id="intangible-cost-additions">Additions</td>
+          <td id="intangible-cost-additions-goodwill" class="strong figure">
+            {{if isNotEmpty $cost.additions.goodwill}}
+            <ix:nonfraction contextref="NetGoodwill_CY" decimals="0" unitref="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.additions.goodwill}}</ix:nonfraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-additions-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $cost.additions.other_intangible_assets}}
+            <ix:nonfraction contextref="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitref="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.additions.other_intangible_assets}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-additions-total" class="strong figure">
+            {{if isNotEmpty $cost.additions.total}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:TotalAdditionsIncludingFromBusinessCombinationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.additions.total}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-cost-disposals">Disposals</td>
+          <td id="intangible-cost-disposals-goodwill" class="strong figure">
+            {{if isNotEmpty $cost.disposals.goodwill}}
+            {{emitIfPositive $cost.disposals.goodwill "("}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:DisposalsIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.goodwill}}</ix:nonFraction>
+            {{emitIfPositive $cost.disposals.goodwill ")"}}
+            {{end}}
+          </td>
+          <td id="intangible-cost-disposals-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $cost.disposals.other_intangible_assets}}
+            {{emitIfPositive $cost.disposals.other_intangible_assets "("}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:DisposalsIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.other_intangible_assets}}</ix:nonFraction>
+            {{emitIfPositive $cost.disposals.other_intangible_assets ")"}}
+            {{end}}
+          </td>
+          <td id="intangible-cost-disposals-total" class="strong figure">
+            {{if isNotEmpty $cost.disposals.total}}
+            {{emitIfPositive $cost.disposals.total "("}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.disposals.total}}</ix:nonFraction>
+            {{emitIfPositive $cost.disposals.total ")"}}
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-cost-revaluations">Revaluations</td>
+          <td id="intangible-cost-revaluations-goodwill" class="strong figure">
+            {{if isNotEmpty $cost.revaluations.goodwill}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.revaluations.goodwill}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-revaluations-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $cost.revaluations.other_intangible_assets}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.revaluations.other_intangible_assets}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-revaluations-total" class="strong figure">
+            {{if isNotEmpty $cost.revaluations.total}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:TotalIncreaseDecreaseFromRevaluationsIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.revaluations.total}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-cost-transfers" >Transfers</td>
+          <td id="intangible-cost-transfers-goodwill" class="strong figure">
+            {{if isNotEmpty $cost.transfers.goodwill}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.transfers.goodwill}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $cost.transfers.other_intangible_assets}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.transfers.other_intangible_assets}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-cost-transfers-total" class="strong figure">
+            {{if isNotEmpty $cost.transfers.total}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:IncreaseDecreaseDueToTransfersBetweenClassesIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $cost.transfers.total}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-cost-at-period-end">At {{$period.current_period_end_on_formatted}}</td>
+          <td id="intangible-cost-at-period-goodwill" class="strong grandtotal">
+            {{if isNotEmpty $cost.at_period_end.goodwill}}
+            {{emitIfNegative $cost.at_period_end.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetsGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.goodwill}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.goodwill ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-cost-at-period-other-intangible-assets" class="strong grandtotal">
+            {{if isNotEmpty $cost.at_period_end.other_intangible_assets}}
+            {{emitIfNegative $cost.at_period_end.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetsGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-cost-at-period-end-total" class="strong grandtotal">
+            {{if isNotEmpty $cost.at_period_end.total}}
+            {{emitIfNegative $cost.at_period_end.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssetsGrossCost" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $cost.at_period_end.total}}</ix:nonFraction>{{emitIfNegative $cost.at_period_end.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+
+        <tr>
+          <th>Amortisation</th>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+        </tr>
+
+        {{if $previousPeriod}}
+        <tr class="figures">
+          <td id="intangible-amortisation-at-period-start">At {{$period.current_period_start_on_formatted}}</td>
+          <td id="intangible-amortisation-at-period-start-goodwill" class="strong figure">
+            {{if isNotEmpty $amortisation.at_period_start.goodwill}}
+            {{emitIfNegative $amortisation.at_period_start.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_start.goodwill}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_start.goodwill ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-at-period-start-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $amortisation.at_period_start.other_intangible_assets}}
+            {{emitIfNegative $amortisation.at_period_start.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_start.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_start.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-at-period-start-total" class="strong figure">
+            {{if isNotEmpty $amortisation.at_period_start.total}}
+            {{emitIfNegative $amortisation.at_period_start.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_start.total}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_start.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+        {{end}}
+
+        <tr class="figures">
+          <td id="intangible-amortisation-charge">Charge for year</td>
+          <td id="intangible-amortisation-charge-goodwill" class="strong figure">
+            {{if isNotEmpty $amortisation.charge_for_year.goodwill}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromAmortisationChargeForYearIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.charge_for_year.goodwill}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="tangible-depreciation-charge-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $amortisation.charge_for_year.other_intangible_assets}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:IncreaseFromAmortisationChargeForYearIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.charge_for_year.other_intangible_assets}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-charge-total" class="strong figure">
+            {{if isNotEmpty $amortisation.charge_for_year.total}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:IncreaseFromAmortisationChargeForYearIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.charge_for_year.total}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-amortisation-on-disposals">On disposals</td>
+          <td id="intangible-amortisation-on-disposals-goodwill" class="strong figure">
+            {{if isNotEmpty $amortisation.on_disposals.goodwill}}
+            {{emitIfPositive $amortisation.on_disposals.goodwill "("}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.on_disposals.goodwill}}</ix:nonFraction>
+            {{emitIfPositive $amortisation.on_disposals.goodwill ")"}}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-on-disposals-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $amortisation.on_disposals.other_intangible_assets}}
+            {{emitIfPositive $amortisation.on_disposals.other_intangible_assets "("}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.on_disposals.other_intangible_assets}}</ix:nonFraction>
+            {{emitIfPositive $amortisation.on_disposals.other_intangible_assets ")"}}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-on-disposals-total" class="strong figure">
+            {{if isNotEmpty $amortisation.on_disposals.total}}
+            {{emitIfPositive $amortisation.on_disposals.total "("}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:DisposalsDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.on_disposals.total}}</ix:nonFraction>
+            {{emitIfPositive $amortisation.on_disposals.total ")"}}
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-amortisation-other-adjustments">Other adjustments</td>
+          <td id="intangible-amortisation-other-adjustments-goodwill" class="strong figure">
+            {{if isNotEmpty $amortisation.other_adjustments.goodwill}}
+            <ix:nonFraction contextRef="NetGoodwill_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.other_adjustments.goodwill}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-other-adjustments-other-intangible-assets" class="strong figure">
+            {{if isNotEmpty $amortisation.other_adjustments.other_intangible_assets}}
+            <ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.other_adjustments.other_intangible_assets}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-other-adjustments-total" class="strong figure">
+            {{if isNotEmpty $amortisation.other_adjustments.total}}
+            <ix:nonFraction contextRef="CY" decimals="0" unitRef="GBP" name="core:OtherIncreaseDecreaseInAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">
+              {{getMagnitudeFormatted $amortisation.other_adjustments.total}}
+            </ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        <tr class="figures">
+          <td id="intangible-amortisation-at-period-end">At {{$period.current_period_end_on_formatted}}</td>
+          <td id="intangible-amortisation-at-period-end-goodwill" class="strong grandtotal">
+            {{if isNotEmpty $amortisation.at_period_end.goodwill}}
+            {{emitIfNegative $amortisation.at_period_end.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_end.goodwill}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_end.goodwill ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-at-period-end-other-intangible-assets" class="strong grandtotal">
+            {{if isNotEmpty $amortisation.at_period_end.other_intangible_assets}}
+            {{emitIfNegative $amortisation.at_period_end.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_end.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_end.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-amortisation-at-period-end-total" class="strong grandtotal">
+            {{if isNotEmpty $amortisation.at_period_end.total}}
+            {{emitIfNegative $amortisation.at_period_end.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:AccumulatedAmortisationImpairmentIntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $amortisation.at_period_end.total}}</ix:nonFraction>{{emitIfNegative $amortisation.at_period_end.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+
+        <tr>
+          <th>Net book value</th>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+          <td class="text--center"></td>
+        </tr>
+
+        <tr class="figures">
+          <td id ="intangible-net-book-value-current-period">At {{$period.current_period_end_on_formatted}}</td>
+          <td  id="intangible-net-book-value-current-period-goodwill" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.current_period.goodwill}}
+            {{emitIfNegative $netBookValue.current_period.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.goodwill}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.goodwill ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-net-book-value-current-period-other-intangible-assets" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.current_period.other_intangible_assets}}
+            {{emitIfNegative $netBookValue.current_period.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-net-book-value-current-period-total" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.current_period.total}}
+            {{emitIfNegative $netBookValue.current_period.total "(" }}<ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.current_period.total}}</ix:nonFraction>{{emitIfNegative $netBookValue.current_period.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+
+        {{if $previousPeriod}}
+        <tr class="figures">
+          <td id="intangible-net-book-value-previous_period">At {{$period.previous_period_end_on_formatted}}</td>
+          <td id="intangible-net-book-value-previous_period-goodwill" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.previous_period.goodwill}}
+            {{emitIfNegative $netBookValue.previous_period.goodwill "(" }}<ix:nonFraction contextRef="NetGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.goodwill}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.goodwill ")" }}
+            {{end}}
+          </td>
+          <td  id="intangible-net-book-value-previous_period-other-intangible-assets" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.previous_period.other_intangible_assets}}
+            {{emitIfNegative $netBookValue.previous_period.other_intangible_assets "(" }}<ix:nonFraction contextRef="IntangibleAssetsOtherThanGoodwill_PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.other_intangible_assets}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.other_intangible_assets ")" }}
+            {{end}}
+          </td>
+          <td id="intangible-net-book-value-previous_period-total" class="strong grandtotal">
+            {{if isNotEmpty $netBookValue.previous_period.total}}
+            {{emitIfNegative $netBookValue.previous_period.total "(" }}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $netBookValue.previous_period.total}}</ix:nonFraction>{{emitIfNegative $netBookValue.previous_period.total ")" }}
+            {{end}}
+          </td>
+        </tr>
+        {{end}}
+        </tbody>
+      </table>
+
+      <div class="text-area-display">
+        <p class="text-area-display">
+          <ix:nonNumeric contextRef="CY" name="core:PropertyPlantEquipmentFree-textComment">{{$tangibleAssetsNote.additional_information}}</ix:nonNumeric>
+        </p>
+      </div>
+    </div>
+
+    {{ end }}
+
+    <!-- INTANGIBLE ASSETS NOTE END -->
+
       <!-- TANGIBLE ASSETS NOTE START -->
 
       {{ if $tangibleAssetsNote := $balanceSheetNotes.tangible_assets }}
