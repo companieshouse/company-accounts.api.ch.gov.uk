@@ -703,6 +703,31 @@ class IntangibleAssetsValidatorTest {
     }
 
     @Test
+    @DisplayName("First year filer - fields exist but Current Net Book Value is not provided")
+    void firstYearFilerProvidesAmortisationButNoNetBookValue() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setOnDisposals(1L);
+        amortisation.setAtPeriodEnd(1L);
+
+        otherIntangibleAssets.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setOtherIntangibleAssets(otherIntangibleAssets);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
     @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
     void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
 
