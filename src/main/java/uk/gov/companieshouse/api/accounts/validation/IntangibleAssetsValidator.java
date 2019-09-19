@@ -129,7 +129,9 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         validateCosts(intangibleAssetsResource, errors, subResource);
         validateAmortisation(intangibleAssetsResource, errors, subResource);
         validateCurrentNetBookValue(errors, intangibleAssetsResource, subResource);
-        validatePreviousNetBookValue(errors, intangibleAssetsResource, subResource);
+        if(isMultipleYearFiler) {
+            validatePreviousNetBookValue(errors, intangibleAssetsResource, subResource);
+        }
     }
 
     private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -710,13 +712,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
             addError(errors, incorrectTotal, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
-    }
-
-    private Long getNetBookValueAtEndOfPreviousPeriod(IntangibleAssetsResource intangibleAssetsResource) {
-
-        return Optional.ofNullable(intangibleAssetsResource)
-            .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
-            .orElse(0L);
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
