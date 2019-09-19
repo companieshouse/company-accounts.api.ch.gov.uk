@@ -547,13 +547,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         }
     }
 
-    private Long getNetBookValueAtEndOfCurrentPeriod(IntangibleAssetsResource intangibleAssetsResource) {
-
-        return Optional.ofNullable(intangibleAssetsResource)
-            .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
-            .orElse(0L);
-    }
-
     private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
 
         boolean subResourceInvalid = false;
