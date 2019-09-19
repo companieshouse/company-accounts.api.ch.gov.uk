@@ -376,6 +376,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         if (isMultipleYearFiler) {
             validateCostAtStartTotal(errors, intangibleAssets);
             validateAmortisationAtPeriodStartTotal(errors, intangibleAssets);
+            validatePreviousNetBookValuesTotal(errors, intangibleAssets);
         }
         validateAdditionsTotal(errors, intangibleAssets);
         validateDisposalsTotal(errors, intangibleAssets);
@@ -386,6 +387,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         validateChargeForYearTotal(errors, intangibleAssets);
         validateOtherAdjustmentsTotal(errors, intangibleAssets);
         validateOnDisposalsTotal(errors, intangibleAssets);
+        validateCurrentNetBookValuesTotal(errors, intangibleAssets);
     }
 
     private void validateCosts(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -705,6 +707,52 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
             addError(errors, incorrectTotal, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
+    }
+
+    private void validateCurrentNetBookValuesTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getGoodwill());
+
+        Long otherIntangibleAssetsNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceNetBookValueTotal = goodwillNetBookValue + otherIntangibleAssetsNetBookValue;
+
+        Long netBookValueAtEndOfCurrentPeriod = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getTotal());
+
+        if(!netBookValueAtEndOfCurrentPeriod.equals(resourceNetBookValueTotal)) {
+
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
+        }
+    }
+
+    private void validatePreviousNetBookValuesTotal(Errors errors, IntangibleAssets intangibleAssets) {
+
+        Long goodwillNetBookValue = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getGoodwill());
+
+        Long otherIntangibleAssetsNetBookValue = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getOtherIntangibleAssets());
+
+        Long resourceNetBookValueTotal = goodwillNetBookValue + otherIntangibleAssetsNetBookValue;
+
+        Long netBookValueAtEndOfPreviousPeriod = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getTotal());
+
+        if(!netBookValueAtEndOfPreviousPeriod.equals(resourceNetBookValueTotal)) {
+
+            addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+        }
+    }
+
+    private Long getNetBookValueAtEndOfCurrentPeriod(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+            .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
+            .orElse(0L);
+    }
+
+    private Long getNetBookValueAtEndOfPreviousPeriod(IntangibleAssetsResource intangibleAssetsResource) {
+
+        return Optional.ofNullable(intangibleAssetsResource)
+            .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
+            .orElse(0L);
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
