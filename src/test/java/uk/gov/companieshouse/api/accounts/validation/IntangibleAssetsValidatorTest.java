@@ -83,6 +83,7 @@ class IntangibleAssetsValidatorTest {
         cost.setAtPeriodEnd(1L);
 
         goodwill.setCost(cost);
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -301,7 +302,7 @@ class IntangibleAssetsValidatorTest {
         amortisation.setAtPeriodStart(1L);
         goodwill.setAmortisation(amortisation);
 
-        goodwill.setNetBookValueAtEndOfCurrentPeriod(3L);
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(2L);
         goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -371,6 +372,7 @@ class IntangibleAssetsValidatorTest {
         goodwillAmortisation.setAtPeriodEnd(1L);
         goodwill.setAmortisation(goodwillAmortisation);
 
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
 
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
@@ -388,6 +390,8 @@ class IntangibleAssetsValidatorTest {
         totalAmortisation.setOtherAdjustments(2L);
         totalAmortisation.setAtPeriodEnd(2L);
         total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -440,6 +444,8 @@ class IntangibleAssetsValidatorTest {
         goodwillAmortisation.setAtPeriodEnd(2L);
         goodwill.setAmortisation(goodwillAmortisation);
 
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
@@ -459,6 +465,8 @@ class IntangibleAssetsValidatorTest {
         totalAmortisation.setOtherAdjustments(2L);
         totalAmortisation.setAtPeriodEnd(4L);
         total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -494,6 +502,7 @@ class IntangibleAssetsValidatorTest {
         amortisation.setChargeForYear(1L);
 
         goodwill.setAmortisation(amortisation);
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -501,7 +510,8 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-        assertEquals(1, errors.getErrorCount());
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
@@ -513,6 +523,10 @@ class IntangibleAssetsValidatorTest {
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
 
+        Cost cost = new Cost();
+        cost.setAdditions(9L);
+        cost.setAtPeriodEnd(9L);
+
         Amortisation amortisation = new Amortisation();
         amortisation.setChargeForYear(1L);
         amortisation.setOnDisposals(1L);
@@ -520,7 +534,9 @@ class IntangibleAssetsValidatorTest {
 
         amortisation.setAtPeriodEnd(7L);
 
+        goodwill.setCost(cost);
         goodwill.setAmortisation(amortisation);
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(2L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -540,11 +556,18 @@ class IntangibleAssetsValidatorTest {
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
 
+        Cost cost = new Cost();
+        cost.setAdditions(9L);
+        cost.setAtPeriodEnd(9L);
+
         Amortisation amortisation = new Amortisation();
         amortisation.setAtPeriodStart(1L);
         amortisation.setAtPeriodEnd(1L);
 
+        goodwill.setCost(cost);
         goodwill.setAmortisation(amortisation);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(7L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -653,8 +676,81 @@ class IntangibleAssetsValidatorTest {
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(1, errors.getErrorCount());
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
     }
 
+    @Test
+    @DisplayName("First year filer - provides net book value at previous period end in sub resource")
+    void firstYearFilerProvidesNetBookValueAtPreviousEndInSubResource() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("First year filer - fields exist but Current Net Book Value is not provided")
+    void firstYearFilerProvidesAmortisationButNoNetBookValue() throws ServiceException, DataException{
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
+
+        Amortisation amortisation = new Amortisation();
+        amortisation.setOnDisposals(1L);
+        amortisation.setAtPeriodEnd(1L);
+
+        otherIntangibleAssets.setAmortisation(amortisation);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setOtherIntangibleAssets(otherIntangibleAssets);
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
+    void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        cost.setAdditions(1L);
+        cost.setAtPeriodEnd(1L);
+        goodwill.setCost(cost);
+
+        goodwill.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(goodwill);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
+
+    }
 }

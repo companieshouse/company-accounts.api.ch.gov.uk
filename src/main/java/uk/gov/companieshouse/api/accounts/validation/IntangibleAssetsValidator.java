@@ -105,8 +105,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             if(isMultipleYearFiler) {
 
                 validatePresenceOfMultipleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
-            }
-            else {
+            } else {
                 validatePresenceOfSingleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
             }
         }
@@ -130,6 +129,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
         validateCosts(intangibleAssetsResource, errors, subResource);
         validateAmortisation(intangibleAssetsResource, errors, subResource);
+        validateCurrentNetBookValue(errors, intangibleAssetsResource, subResource);
     }
 
     private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
@@ -456,6 +456,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private void validatePresenceOfSingleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
 
         boolean subResourceInvalid = false;
+
         if(intangibleAssetsResource.getCost() != null && intangibleAssetsResource.getCost().getAtPeriodStart() != null) {
             addError(errors, unexpectedData, getJsonPath (intangibleSubResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
@@ -480,8 +481,69 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             subResourceInvalid = true;
         }
 
+        if (intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
+
+            addError(errors, unexpectedData,
+                getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+            subResourceInvalid = true;
+        }
+
+        if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
+
+            subResourceInvalid = isCostSingleYearSubResourceInvalid(errors, intangibleAssetsResource.getCost(),
+                intangibleSubResource, subResourceInvalid);
+
+            subResourceInvalid = isAmortisationSingleYearSubResourceInvalid(errors,
+                intangibleAssetsResource.getAmortisation(), intangibleSubResource,
+                subResourceInvalid);
+        } else {
+
+            if (hasSingleYearFilerNonNetBookValueFieldsSet(intangibleAssetsResource)) {
+
+                addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
+                subResourceInvalid = true;
+            }
+        }
+
         if(subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
+        }
+    }
+
+    private boolean isCostSingleYearSubResourceInvalid(Errors errors, Cost cost, IntangibleSubResource intangibleSubResource,
+        boolean subResourceInvalid) {
+
+        if(cost == null || cost.getAtPeriodEnd() == null) {
+
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+        return subResourceInvalid;
+    }
+
+    private boolean isAmortisationSingleYearSubResourceInvalid(Errors errors, Amortisation amortisation, IntangibleSubResource intangibleSubResource,
+        boolean subResourceInvalid) {
+
+        if (amortisation != null && hasAmortisationFieldsSet(amortisation)
+            && amortisation.getAtPeriodEnd() == null) {
+
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
+            subResourceInvalid = true;
+        }
+        return subResourceInvalid;
+    }
+
+    private void validateCurrentNetBookValue(Errors errors, IntangibleAssetsResource intangibleAssetsResource, IntangibleSubResource intangibleSubResource) {
+
+        Long costAtPeriodEnd = getCostAtPeriodEnd(intangibleAssetsResource);
+
+        Long amortisationAtPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
+
+        Long calculatedCurrentNetBookValue = costAtPeriodEnd - amortisationAtPeriodEnd;
+
+        if(!intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod().equals(calculatedCurrentNetBookValue)) {
+
+            addError(errors, incorrectTotal, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
@@ -522,6 +584,27 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
                 amortisation.getOtherAdjustments())
                 .anyMatch(Objects::nonNull);
 
+    }
+
+    private boolean hasSingleYearFilerNonNetBookValueFieldsSet(IntangibleAssetsResource intangibleAssetsResource) {
+
+        if (intangibleAssetsResource.getCost() != null &&
+            Stream.of(intangibleAssetsResource.getCost().getAdditions(),
+                intangibleAssetsResource.getCost().getDisposals(),
+                intangibleAssetsResource.getCost().getRevaluations(),
+                intangibleAssetsResource.getCost().getTransfers(),
+                intangibleAssetsResource.getCost().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull)) {
+
+            return true;
+        }
+
+        return intangibleAssetsResource.getAmortisation() != null &&
+            Stream.of(intangibleAssetsResource.getAmortisation().getChargeForYear(),
+                intangibleAssetsResource.getAmortisation().getOnDisposals(),
+                intangibleAssetsResource.getAmortisation().getOtherAdjustments(),
+                intangibleAssetsResource.getAmortisation().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull);
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
