@@ -1432,13 +1432,13 @@
           <td class="figure noteIndex" id="uk-busTotalAssetsLessCurrentLiabilitiesCY_ENDNoteIndexes"></td>
 
           {{if isNotEmpty $total_assets_less_current_liabilities.current_amount}}
-          <td id="total-assets-less-current-liabilities-curr-val" class="strong figure">
+          <td id="total-assets-less-current-liabilities-curr-val" class="strong total">
             {{emitIfNegative $total_assets_less_current_liabilities.current_amount "("}}<ix:nonFraction {{if (lt $total_assets_less_current_liabilities.current_amount 0.0)}} sign="-"{{end}} contextRef="CY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted  $total_assets_less_current_liabilities.current_amount}}</ix:nonFraction>{{emitIfNegative $total_assets_less_current_liabilities.current_amount ")"}}
           </td>
           {{end}}
 
           {{if isNotEmpty $total_assets_less_current_liabilities.previous_amount}}
-          <td id="total-assets-less-current-liabilities-prev-val" class="figure">
+          <td id="total-assets-less-current-liabilities-prev-val" class="total">
 
             {{emitIfNegative $total_assets_less_current_liabilities.previous_amount "("}} <ix:nonFraction {{if (lt $total_assets_less_current_liabilities.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY_END" decimals="0" unitRef="GBP" name="core:TotalAssetsLessCurrentLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted  $total_assets_less_current_liabilities.previous_amount}}</ix:nonFraction>{{emitIfNegative $total_assets_less_current_liabilities.previous_amount ")"}}
           </td>
