@@ -72,7 +72,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         } catch(ServiceException se) {
             throw new DataException(se.getMessage(), se);
         }
-
         return errors;
     }
 
@@ -87,7 +86,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             if (isMultipleYearFiler) {
                 addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             }
-
         }
     }
 
