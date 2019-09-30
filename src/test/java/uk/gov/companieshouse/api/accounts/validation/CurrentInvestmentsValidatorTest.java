@@ -77,10 +77,10 @@ public class CurrentInvestmentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Error thrown when note submitted with no balance sheet values")
-    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException,
+    @DisplayName("Error thrown when note submitted with no current assets values in the balance sheet")
+    void testValidationWhenNoteSubmittedNoCurrentAssetsInBalanceSheetValues() throws DataException,
         ServiceException {
-
+        mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments();
         currentAssetsInvestments.setDetails("test");
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
@@ -91,6 +91,17 @@ public class CurrentInvestmentsValidatorTest {
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
             CURRENT_ASSETS_DETAILS_PATH)));
+
+    }
+
+    @Test
+    @DisplayName("Valid note submitted when no balance sheet")
+    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException,
+            ServiceException {
+
+        currentAssetsInvestments.setDetails("test");
+        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        assertFalse(errors.hasErrors());
 
     }
 
@@ -154,8 +165,29 @@ public class CurrentInvestmentsValidatorTest {
         return currentPeriodResponseObject;
     }
 
+    private ResponseObject<CurrentPeriod> generateValidCurrentPeriodResponseObjectWithoutCurrentAssets() {
+        ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
+                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
+                        ResponseStatus.FOUND);
+
+        uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
+                new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
+
+        BalanceSheet balanceSheet = new BalanceSheet();
+
+        currentPeriodTest.setBalanceSheet(balanceSheet);
+
+        currentPeriodResponseObject.setData(currentPeriodTest);
+        return currentPeriodResponseObject;
+    }
+
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find(
             "", mockRequest);
+    }
+
+    private void mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments() throws DataException {
+        doReturn(generateValidCurrentPeriodResponseObjectWithoutCurrentAssets()).when(mockCurrentPeriodService).find(
+                "", mockRequest);
     }
 }
