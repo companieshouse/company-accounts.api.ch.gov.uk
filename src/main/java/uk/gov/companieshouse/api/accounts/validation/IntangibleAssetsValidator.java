@@ -6,14 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +52,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     private static final String AMORTISATION_AT_PERIOD_END = ".amortisation.at_period_end";
     private static final String AMORTISATION_AT_PERIOD_START = ".amortisation.at_period_start";
 
-    public Errors validateIntangibleAssets(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
+    public Errors validateIntangibleAssets(IntangibleAssets intangibleAssets, Transaction transaction)
     throws DataException {
         Errors errors = new Errors();
 
@@ -553,27 +552,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
         boolean subResourceInvalid = false;
 
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
-            subResourceInvalid = true;
-        }
-
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
-            subResourceInvalid = true;
-        }
-
-        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodStart() == null) {
-
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
-            subResourceInvalid = true;
-        }
-
-        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
-
-            addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
-            subResourceInvalid = true;
-        }
+         validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_END, errors, intangibleSubResource, invalidSubResource);
+         validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_START, errors, intangibleSubResource, invalidSubResource);
+         validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_START, errors, intangibleSubResource, invalidSubResource);
+         validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_END, errors, intangibleSubResource, invalidSubResource);
 
         if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null  || intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
 
@@ -605,6 +587,39 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             }
         }
 
+        if(subResourceInvalid) {
+            invalidSubResource.add(intangibleSubResource);
+        }
+    }
+
+    private void validateSubResourceCost(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+
+        boolean subResourceInvalid = false;
+
+        if (resource.getCost() != null) {
+
+            Long periods = period.equals(COST_AT_PERIOD_START) ? resource.getCost().getAtPeriodStart() : resource.getCost().getAtPeriodEnd();
+            if(periods == null) {
+                addError(errors, valueRequired, getJsonPath(intangibleSubResource, period));
+                subResourceInvalid = true;
+            }
+
+        }
+        if(subResourceInvalid) {
+            invalidSubResource.add(intangibleSubResource);
+        }
+    }
+
+    private void validateSubResourceAmortisation(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+
+        boolean subResourceInvalid = false;
+        if(resource.getAmortisation() != null) {
+            Long periods = period.equals(AMORTISATION_AT_PERIOD_START) ? resource.getAmortisation().getAtPeriodStart() : resource.getAmortisation().getAtPeriodEnd();
+            if(periods == null){
+                addError(errors, valueRequired, getJsonPath(intangibleSubResource, period));
+                subResourceInvalid = true;
+            }
+        }
         if(subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
         }

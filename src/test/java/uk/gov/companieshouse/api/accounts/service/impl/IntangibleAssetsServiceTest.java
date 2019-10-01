@@ -1,17 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +29,18 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -93,7 +93,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the successful creation of a Intangible Assets resource")
     void createIntangibleAssetsSuccess() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -122,7 +122,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a duplicate key exception")
     void createIntangibleAssetsDuplicateKeyException() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -149,7 +149,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the creation of a Intangible Assets resource where the repository throws a Mongo exception")
     void createIntangibleAssetsMongoException() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -174,7 +174,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the creation of an Intangible Assets resource where validation errors are present")
     void createIntangibleAssetsWithValidationErrors() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
@@ -190,7 +190,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the successful update of a Intangible Assets resource")
     void updateIntangibleAssetsSuccess() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -215,7 +215,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the update of a Intangible Assets resource where the repository throws a Mongo exception")
     void updateIntangibleAssetsMongoException() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -239,7 +239,7 @@ public class IntangibleAssetsServiceTest {
     @DisplayName("Tests the update of an Intangible Assets resource where validation errors are present")
     void updateIntangibleAssetsWithValidationErrors() throws DataException {
 
-        when(validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(validator.validateIntangibleAssets(intangibleAssets, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 

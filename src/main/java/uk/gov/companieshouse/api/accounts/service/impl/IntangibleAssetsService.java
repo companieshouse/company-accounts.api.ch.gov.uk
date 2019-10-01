@@ -49,7 +49,7 @@ public class IntangibleAssetsService implements ResourceService<IntangibleAssets
     @Override
     public ResponseObject<IntangibleAssets> create(IntangibleAssets rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateIntangibleAssets(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateIntangibleAssets(rest, transaction);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -79,7 +79,7 @@ public class IntangibleAssetsService implements ResourceService<IntangibleAssets
     @Override
     public ResponseObject<IntangibleAssets> update(IntangibleAssets rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = validator.validateIntangibleAssets(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateIntangibleAssets(rest, transaction);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
