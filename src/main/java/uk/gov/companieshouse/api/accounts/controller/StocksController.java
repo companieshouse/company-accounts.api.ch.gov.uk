@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,18 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.StocksService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -34,13 +24,15 @@ import javax.validation.Valid;
 public class StocksController {
 
     @Autowired
-    private StocksService stocksService;
+    public StocksController(StocksService stocksService) {
 
-    @Autowired
-    private ApiResponseMapper apiResponseMapper;
+        this.smallFullResourceController =
+                new SmallFullResourceController<>(
+                        stocksService,
+                                SmallFullLinkType.STOCKS_NOTE);
+    }
 
-    @Autowired
-    private ErrorMapper errorMapper;
+    private SmallFullResourceController<Stocks> smallFullResourceController;
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Stocks stocks,
@@ -48,26 +40,7 @@ public class StocksController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        if (bindingResult.hasErrors()) {
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<Stocks> response = stocksService
-                    .create(stocks, transaction, companyAccountId, request);
-
-            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to create stocks resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return smallFullResourceController.create(stocks, bindingResult, companyAccountId, request);
     }
 
     @PutMapping
@@ -76,73 +49,20 @@ public class StocksController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (bindingResult.hasErrors()) {
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<Stocks> response = stocksService
-                    .update(stocks, transaction, companyAccountId, request);
-
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update stocks resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return smallFullResourceController.update(stocks, bindingResult, companyAccountId, request);
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<Stocks> response = stocksService
-                    .find(companyAccountId, request);
-
-            return apiResponseMapper.mapGetResponse(response.getData(), request);
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to retrieve stocks resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return smallFullResourceController.get(companyAccountId, request);
     }
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                  HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<Stocks> response = stocksService
-                    .delete(companyAccountsId, request);
-
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountsId, transaction,
-                    "Failed to delete stocks resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return smallFullResourceController.delete(companyAccountsId, request);
     }
 }
