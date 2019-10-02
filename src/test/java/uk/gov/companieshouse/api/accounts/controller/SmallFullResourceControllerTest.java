@@ -65,7 +65,7 @@ public class SmallFullResourceControllerTest {
 
     @InjectMocks
     private SmallFullResourceController<RestObject> controller
-            = new SmallFullResourceController<>(resourceService, SmallFullLinkType.SELF);
+            = new SmallFullResourceController<>(resourceService, SmallFullLinkType.SELF, errorMapper, apiResponseMapper);
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 

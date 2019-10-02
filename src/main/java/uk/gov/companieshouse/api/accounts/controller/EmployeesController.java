@@ -17,18 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
 import uk.gov.companieshouse.api.accounts.service.impl.EmployeesService;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/employees", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EmployeesController {
 
     @Autowired
-    public EmployeesController(EmployeesService employeesService) {
+    public EmployeesController(EmployeesService employeesService, ErrorMapper errorMapper, ApiResponseMapper apiResponseMapper) {
 
         this.smallFullResourceController =
                 new SmallFullResourceController<>(
                         employeesService,
-                                SmallFullLinkType.EMPLOYEES_NOTE);
+                                SmallFullLinkType.EMPLOYEES_NOTE,
+                                        errorMapper,
+                                                apiResponseMapper);
     }
 
     private SmallFullResourceController<Employees> smallFullResourceController;

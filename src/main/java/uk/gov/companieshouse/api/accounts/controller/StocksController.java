@@ -18,18 +18,22 @@ import uk.gov.companieshouse.api.accounts.service.impl.StocksService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/stocks", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StocksController {
 
     @Autowired
-    public StocksController(StocksService stocksService) {
+    public StocksController(StocksService stocksService, ErrorMapper errorMapper, ApiResponseMapper apiResponseMapper) {
 
         this.smallFullResourceController =
                 new SmallFullResourceController<>(
                         stocksService,
-                                SmallFullLinkType.STOCKS_NOTE);
+                                SmallFullLinkType.STOCKS_NOTE,
+                                        errorMapper,
+                                                apiResponseMapper);
     }
 
     private SmallFullResourceController<Stocks> smallFullResourceController;
