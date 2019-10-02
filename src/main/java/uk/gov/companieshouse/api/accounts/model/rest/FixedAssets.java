@@ -14,6 +14,10 @@ public class FixedAssets {
     @JsonProperty("tangible")
     private Long tangible;
 
+    @Range(min=MIN_RANGE, max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("intangible")
+    private Long intangible;
+
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("investments")
     private Long investments;
@@ -27,6 +31,14 @@ public class FixedAssets {
 
     public void setTangible(Long tangible) {
         this.tangible = tangible;
+    }
+
+    public Long getIntangible() {
+        return intangible;
+    }
+
+    public void setIntangible(Long intangible) {
+        this.intangible = intangible;
     }
 
     public Long getInvestments() {

@@ -68,10 +68,11 @@ public class BalanceSheetValidator extends BaseValidator {
         if (fixedAssets != null) {
 
             Long tangible = Optional.ofNullable(fixedAssets.getTangible()).orElse(0L);
+            Long intangible = Optional.ofNullable(fixedAssets.getIntangible()).orElse(0L);
             Long investments = Optional.ofNullable(fixedAssets.getInvestments()).orElse(0L);
             Long fixedAssetsTotal = Optional.ofNullable(fixedAssets.getTotal()).orElse(0L);
 
-            Long calculatedTotal = tangible + investments;
+            Long calculatedTotal = intangible + tangible + investments;
 
             validateAggregateTotal(fixedAssetsTotal, calculatedTotal, periodPath + FIXED_ASSETS_TOTAL_PATH, errors);
         }
