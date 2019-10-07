@@ -821,7 +821,7 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
                 Optional.ofNullable(previousPeriod)
                         .map(PreviousPeriod::getBalanceSheet)
                         .map(BalanceSheet::getFixedAssets)
-                        .map(FixedAssets::getTangible)
+                        .map(FixedAssets::getIntangible)
                         .orElse(null);
 
         Long previousNetBookValueTotal =
