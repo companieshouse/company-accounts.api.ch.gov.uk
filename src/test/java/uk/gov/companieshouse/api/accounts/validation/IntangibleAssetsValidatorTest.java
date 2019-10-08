@@ -10,6 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
@@ -17,10 +21,15 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Intangible
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -38,6 +47,12 @@ class IntangibleAssetsValidatorTest {
     @Mock
     private CompanyService companyService;
 
+    @Mock
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
+
     @InjectMocks
     private IntangibleAssetsValidator validator;
 
@@ -49,6 +64,12 @@ class IntangibleAssetsValidatorTest {
 
     private static final String INCORRECT_TOTAL_KEY = "incorrectTotal";
     private static final String INCORRECT_TOTAL = "incorrect_total";
+
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY = "currentBalanceSheetNotEqual";
+    private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL = "value_not_equal_to_current_period_on_balance_sheet";
+
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY = "previousBalanceSheetNotEqual";
+    private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL = "value_not_equal_to_previous_period_on_balance_sheet";
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
@@ -392,7 +413,7 @@ class IntangibleAssetsValidatorTest {
         totalAmortisation.setAtPeriodEnd(2L);
         total.setAmortisation(totalAmortisation);
 
-        total.setNetBookValueAtEndOfCurrentPeriod(1L);
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -400,9 +421,16 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(2L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(9, errors.getErrorCount());
+        assertEquals(10, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
@@ -412,6 +440,7 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
@@ -468,8 +497,8 @@ class IntangibleAssetsValidatorTest {
         totalAmortisation.setAtPeriodEnd(4L);
         total.setAmortisation(totalAmortisation);
 
-        total.setNetBookValueAtEndOfCurrentPeriod(1L);
-        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+        total.setNetBookValueAtEndOfCurrentPeriod(3L);
+        total.setNetBookValueAtEndOfPreviousPeriod(1L);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setGoodwill(goodwill);
@@ -477,9 +506,15 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(3L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(1L));
+
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(11, errors.getErrorCount());
+        assertEquals(13, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_start")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
@@ -491,6 +526,8 @@ class IntangibleAssetsValidatorTest {
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
@@ -923,103 +960,344 @@ class IntangibleAssetsValidatorTest {
     }
 
     @Test
-    @DisplayName("Single Year Filer - Net Book Value Current Total doesn't match")
-    void singleFilerNetBookValueCurrentTotalsDoesNotMatch() throws ServiceException, DataException {
+    @DisplayName("Single year filer - no current period to validate against")
+    void singleYearFilerWithoutCurrentPeriod() throws ServiceException, DataException {
 
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
-        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
-
-        Cost goodwillCost = new Cost();
-
-        goodwillCost.setAdditions(2L);
-        goodwillCost.setAtPeriodEnd(2L);
-        goodwill.setCost(goodwillCost);
-
-        Amortisation goodwillAmortisation = new Amortisation();
-        goodwillAmortisation.setChargeForYear(1L);
-        goodwillAmortisation.setAtPeriodEnd(1L);
-        goodwill.setAmortisation(goodwillAmortisation);
-
-        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(false));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(false));
 
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
         totalCost.setAdditions(2L);
-        totalCost.setAtPeriodEnd(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(4L);
         total.setCost(totalCost);
 
         Amortisation totalAmortisation = new Amortisation();
-        totalAmortisation.setChargeForYear(3L);
-        totalAmortisation.setAtPeriodEnd(3L);
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(2L);
         total.setAmortisation(totalAmortisation);
 
-        total.setNetBookValueAtEndOfCurrentPeriod(3L);
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
 
-        IntangibleAssets intangibleAssets = new IntangibleAssets();
-
-        intangibleAssets.setGoodwill(goodwill);
         intangibleAssets.setTotal(total);
 
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(3, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.charge_for_year")));
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
-    @DisplayName("Multiple Year Filer - Net Book Value Current Total doesn't match")
-    void multipleFilerNetBookValueCurrentTotalsDoesNotMatch() throws ServiceException, DataException {
+    @DisplayName("Single year filer - current period does not match note")
+    void singleYearFilerCurrentPeriodDoesNotMatchNote() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(false));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(false));
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(4L);
+        total.setCost(totalCost);
+
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(2L);
+        total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        intangibleAssets.setTotal(total);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(100L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - no current or previous period to validate against")
+    void multipleYearFilerWithoutCurrentOrPreviousPeriod() throws ServiceException, DataException {
 
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
-        IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(true));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(true));
 
-        Cost goodwillCost = new Cost();
-
-        goodwillCost.setAtPeriodStart(2L);
-        goodwillCost.setAtPeriodEnd(2L);
-        goodwill.setCost(goodwillCost);
-
-        Amortisation goodwillAmortisation = new Amortisation();
-        goodwillAmortisation.setAtPeriodStart(1L);
-        goodwillAmortisation.setAtPeriodEnd(1L);
-        goodwill.setAmortisation(goodwillAmortisation);
-
-        goodwill.setNetBookValueAtEndOfCurrentPeriod(1L);
-        goodwill.setNetBookValueAtEndOfPreviousPeriod(1L);
 
         IntangibleAssetsResource total = new IntangibleAssetsResource();
 
         Cost totalCost = new Cost();
         totalCost.setAtPeriodStart(2L);
-        totalCost.setAtPeriodEnd(2L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(6L);
         total.setCost(totalCost);
 
         Amortisation totalAmortisation = new Amortisation();
-        totalAmortisation.setAtPeriodStart(1L);
-        totalAmortisation.setAtPeriodEnd(1L);
+        totalAmortisation.setAtPeriodStart(2L);
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(4L);
         total.setAmortisation(totalAmortisation);
 
-        total.setNetBookValueAtEndOfCurrentPeriod(3L);
-        total.setNetBookValueAtEndOfPreviousPeriod(3L);
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
 
-        IntangibleAssets intangibleAssets = new IntangibleAssets();
-
-        intangibleAssets.setGoodwill(goodwill);
         intangibleAssets.setTotal(total);
 
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
+
+    @Test
+    @DisplayName("Multiple year filer - neither current nor previous period match note")
+    void multipleYearFilerCurrentAndPreviousPeriodDoNotMatchNote() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(true));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(true));
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(2L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(6L);
+        total.setCost(totalCost);
+
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setAtPeriodStart(2L);
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(4L);
+        total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        intangibleAssets.setTotal(total);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(100L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(100L));
+
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(2, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+    }
+
+    @Test
+    @DisplayName("Single year filer - valid submission")
+    void singleYearFilerValidSubmission() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(false));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(false));
+
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(4L);
+        total.setCost(totalCost);
+
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(2L);
+        total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+
+        intangibleAssets.setTotal(total);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(2L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Multiple year filer - valid submission")
+    void multipleYearFilerValidSubmission() throws ServiceException, DataException {
+
+        when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
+
+        IntangibleAssets intangibleAssets = new IntangibleAssets();
+        intangibleAssets.setGoodwill(createValidSubResource(true));
+        intangibleAssets.setOtherIntangibleAssets(createValidSubResource(true));
+
+        IntangibleAssetsResource total = new IntangibleAssetsResource();
+
+        Cost totalCost = new Cost();
+        totalCost.setAtPeriodStart(2L);
+        totalCost.setAdditions(2L);
+        totalCost.setDisposals(2L);
+        totalCost.setRevaluations(2L);
+        totalCost.setTransfers(2L);
+        totalCost.setAtPeriodEnd(6L);
+        total.setCost(totalCost);
+
+        Amortisation totalAmortisation = new Amortisation();
+        totalAmortisation.setAtPeriodStart(2L);
+        totalAmortisation.setChargeForYear(2L);
+        totalAmortisation.setOnDisposals(2L);
+        totalAmortisation.setOtherAdjustments(2L);
+        totalAmortisation.setAtPeriodEnd(4L);
+        total.setAmortisation(totalAmortisation);
+
+        total.setNetBookValueAtEndOfCurrentPeriod(2L);
+        total.setNetBookValueAtEndOfPreviousPeriod(0L);
+
+        intangibleAssets.setTotal(total);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createCurrentPeriodResponseObject(2L));
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(createPreviousPeriodResponseObject(0L));
+
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+
+    private IntangibleAssetsResource createValidSubResource(boolean isMultipleYearFiler) {
+
+        IntangibleAssetsResource resource = new IntangibleAssetsResource();
+
+        Cost cost = new Cost();
+        if (isMultipleYearFiler) {
+            cost.setAtPeriodStart(1L);
+        }
+        cost.setAdditions(1L);
+        cost.setDisposals(1L);
+        cost.setRevaluations(1L);
+        cost.setTransfers(1L);
+        cost.setAtPeriodEnd(isMultipleYearFiler ? 3L : 2L);
+        resource.setCost(cost);
+
+        Amortisation amortisation = new Amortisation();
+        if (isMultipleYearFiler) {
+            amortisation.setAtPeriodStart(1L);
+        }
+        amortisation.setChargeForYear(1L);
+        amortisation.setOnDisposals(1L);
+        amortisation.setOtherAdjustments(1L);
+        amortisation.setAtPeriodEnd(isMultipleYearFiler ? 2L : 1L);
+        resource.setAmortisation(amortisation);
+
+        resource.setNetBookValueAtEndOfCurrentPeriod(1L);
+        if (isMultipleYearFiler) {
+            resource.setNetBookValueAtEndOfPreviousPeriod(0L);
+        }
+
+        return resource;
+    }
+
+    private ResponseObject<CurrentPeriod> createCurrentPeriodResponseObject(Long currentPeriodIntangible) {
+
+        FixedAssets currentFixedAssets = new FixedAssets();
+        currentFixedAssets.setIntangible(currentPeriodIntangible);
+
+        BalanceSheet currentBalanceSheet = new BalanceSheet();
+        currentBalanceSheet.setFixedAssets(currentFixedAssets);
+
+        CurrentPeriod currentPeriod = new CurrentPeriod();
+        currentPeriod.setBalanceSheet(currentBalanceSheet);
+
+        return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
+    }
+
+    private ResponseObject<PreviousPeriod> createPreviousPeriodResponseObject(Long previousPeriodIntangible) {
+
+        FixedAssets previousFixedAssets = new FixedAssets();
+        previousFixedAssets.setIntangible(previousPeriodIntangible);
+
+        BalanceSheet previousBalanceSheet = new BalanceSheet();
+        previousBalanceSheet.setFixedAssets(previousFixedAssets);
+
+        PreviousPeriod previousPeriod = new PreviousPeriod();
+        previousPeriod.setBalanceSheet(previousBalanceSheet);
+
+        return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
+    }
+    
 }
