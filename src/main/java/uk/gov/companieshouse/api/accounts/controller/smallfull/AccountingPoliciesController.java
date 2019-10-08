@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.controller;
+package uk.gov.companieshouse.api.accounts.controller.smallfull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
 import uk.gov.companieshouse.api.accounts.resource.SmallFullResource;
