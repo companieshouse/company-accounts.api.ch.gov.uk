@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,16 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.resource.SmallFullResource;
 import uk.gov.companieshouse.api.accounts.service.impl.AccountingPoliciesService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
@@ -32,13 +25,22 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 public class AccountingPoliciesController {
 
     @Autowired
-    private AccountingPoliciesService accountingPoliciesService;
+    public AccountingPoliciesController(AccountingPoliciesService accountingPoliciesService,
+                                        SmallFullResource smallFullResource,
+                                        ErrorMapper errorMapper,
+                                        ApiResponseMapper apiResponseMapper) {
 
-    @Autowired
-    private ApiResponseMapper apiResponseMapper;
+        this.baseController =
+                new BaseController<>(
+                        accountingPoliciesService,
+                        smallFullResource,
+                        SmallFullLinkType.ACCOUNTING_POLICY_NOTE,
+                        errorMapper,
+                        apiResponseMapper);
+    }
 
-    @Autowired
-    private ErrorMapper errorMapper;
+    private BaseController<AccountingPolicies> baseController;
+
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody AccountingPolicies accountingPolicies,
@@ -46,49 +48,14 @@ public class AccountingPoliciesController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        if (bindingResult.hasErrors()) {
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<AccountingPolicies> response = accountingPoliciesService
-                    .create(accountingPolicies, transaction, companyAccountId, request);
-
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to create accounting policies resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return baseController.create(accountingPolicies, bindingResult, companyAccountId, request);
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<AccountingPolicies> response = accountingPoliciesService
-                    .find(companyAccountId, request);
-
-            return apiResponseMapper.mapGetResponse(response.getData(), request);
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to retrieve accounting policies resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return baseController.get(companyAccountId, request);
     }
 
     @PutMapping
@@ -97,32 +64,7 @@ public class AccountingPoliciesController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFull.getLinks().get(SmallFullLinkType.ACCOUNTING_POLICY_NOTE.getLink()) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (bindingResult.hasErrors()) {
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
-
-        try {
-            ResponseObject<AccountingPolicies> response = accountingPoliciesService
-                    .update(accountingPolicies, transaction, companyAccountId, request);
-
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
-        } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update accounting policies resource", ex, request);
-            return apiResponseMapper.getErrorResponse();
-        }
+        return baseController.update(accountingPolicies, bindingResult, companyAccountId, request);
     }
 
 }
