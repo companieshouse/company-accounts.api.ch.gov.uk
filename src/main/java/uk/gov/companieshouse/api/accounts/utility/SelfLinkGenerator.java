@@ -12,7 +12,7 @@ public class SelfLinkGenerator {
 
         String link =
                 transaction.getLinks().getSelf() + "/" +
-                ResourceName.COMPANY_ACCOUNT + "/" +
+                ResourceName.COMPANY_ACCOUNT.getName() + "/" +
                 companyAccountsId + "/" +
                 parentResource.getName() + "/";
 

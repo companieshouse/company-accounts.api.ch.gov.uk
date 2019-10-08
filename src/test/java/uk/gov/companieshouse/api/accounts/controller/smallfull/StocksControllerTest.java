@@ -23,7 +23,7 @@ public class StocksControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
-    private static final String INJECTED_CONTROLLER = "controller";
+    private static final String INJECTED_CONTROLLER = "baseController";
 
     @Mock
     private BindingResult bindingResult;

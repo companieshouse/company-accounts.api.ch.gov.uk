@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,7 +23,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPer
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.accounts.validation.smallfull.EmployeesValidator;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,44 +32,37 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public class EmployeesValidatorTest {
 
     private static final String EMPLOYEES_PATH = "$.employees";
-    private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH = EMPLOYEES_PATH +
-            ".previous_period";
+    private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH = EMPLOYEES_PATH + ".previous_period";
+
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
-    private static final String EMPTY_RESOURCE_VALUE =
-            "empty_resource";
+    private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Mock
-    CompanyService mockCompanyService;
+    private CompanyService companyService;
 
     @Mock
-    Transaction mockTransaction;
+    private Transaction transaction;
 
     @Mock
-    private ServiceException mockServiceException;
-
-    private Employees employees;
-    private Errors errors;
+    private HttpServletRequest request;
+    
+    @InjectMocks
     private EmployeesValidator validator;
-
-    @BeforeEach
-    void setup() {
-        employees = new Employees();
-        errors = new Errors();
-        validator = new EmployeesValidator(mockCompanyService);
-    }
 
     @Test
     @DisplayName("Note validation with valid note for first year filer")
     void testSuccessfulFirstYearNoteValidation() throws DataException, ServiceException {
 
-        createValidNoteCurrentPeriod();
+        Employees employees = createNote(true, false);
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        Errors errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -75,14 +70,15 @@ public class EmployeesValidatorTest {
     @Test
     @DisplayName("Note validation when empty note submitted")
     void testEmptyResourceValidation() throws DataException, ServiceException {
-        Employees employees = new Employees();
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+        Employees employees = createNote(false, false);
+
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        Errors errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
                 EMPLOYEES_PATH)));
@@ -92,12 +88,11 @@ public class EmployeesValidatorTest {
     @DisplayName("Note validation with valid note for multiple year filer")
     void testSuccessfulMultipleYearNoteValidation() throws DataException, ServiceException {
 
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
+        Employees employees = createNote(true, true);
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        Errors errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -106,15 +101,14 @@ public class EmployeesValidatorTest {
     @DisplayName("Error returned for first year filer if previous period provided in note")
     void testUnexpectedDataErrorReturnedForFirstYearFiler() throws ServiceException, DataException {
 
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
+        Employees employees = createNote(true, true);
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
                 UNEXPECTED_DATA_VALUE);
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        Errors errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -125,27 +119,31 @@ public class EmployeesValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
+        when(companyService.isMultipleYearFiler(transaction)).thenThrow(ServiceException.class);
 
         assertThrows(DataException.class,
-                () -> validator.validateEmployees(employees, mockTransaction));
+                () -> validator.validateSubmission(new Employees(), transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
-    private Employees createValidNoteCurrentPeriod() {
-        CurrentPeriod currentPeriod = new CurrentPeriod();
-        currentPeriod.setAverageNumberOfEmployees(5L);
-        currentPeriod.setDetails("test");
+    private Employees createNote(boolean includeCurrentPeriod, boolean includePreviousPeriod) {
 
-        employees.setCurrentPeriod(currentPeriod);
+        Employees employees = new Employees();
 
-        return employees;
-    }
+        if (includeCurrentPeriod) {
 
-    private Employees createValidNotePreviousPeriod() {
-        PreviousPeriod previousPeriod = new PreviousPeriod();
-        previousPeriod.setAverageNumberOfEmployees(10L);
+            CurrentPeriod currentPeriod = new CurrentPeriod();
+            currentPeriod.setAverageNumberOfEmployees(5L);
+            currentPeriod.setDetails("test");
 
-        employees.setPreviousPeriod(previousPeriod);
+            employees.setCurrentPeriod(currentPeriod);
+        }
+
+        if (includePreviousPeriod) {
+            PreviousPeriod previousPeriod = new PreviousPeriod();
+            previousPeriod.setAverageNumberOfEmployees(10L);
+
+            employees.setPreviousPeriod(previousPeriod);
+        }
 
         return employees;
     }
