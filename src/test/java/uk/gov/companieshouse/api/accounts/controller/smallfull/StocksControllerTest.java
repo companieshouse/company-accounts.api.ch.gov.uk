@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.controller;
+package uk.gov.companieshouse.api.accounts.controller.smallfull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
+import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +23,7 @@ public class StocksControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
-    private static final String SMALL_FULL_RESOURCE_CONTROLLER = "smallFullResourceController";
+    private static final String INJECTED_CONTROLLER = "controller";
 
     @Mock
     private BindingResult bindingResult;
@@ -37,7 +38,7 @@ public class StocksControllerTest {
     private ResponseEntity responseEntity;
 
     @Mock
-    private SmallFullResourceController<Stocks> smallFullResourceController;
+    private BaseController<Stocks> baseController;
 
     @InjectMocks
     private StocksController stocksController;
@@ -46,9 +47,9 @@ public class StocksControllerTest {
     @DisplayName("Create stocks resource")
     void createStocksResource() {
 
-        ReflectionTestUtils.setField(stocksController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(stocksController, INJECTED_CONTROLLER, baseController);
 
-        when(smallFullResourceController
+        when(baseController
                 .create(stocks, bindingResult, COMPANY_ACCOUNTS_ID, request))
                         .thenReturn(responseEntity);
 
@@ -61,9 +62,9 @@ public class StocksControllerTest {
     @DisplayName("Update stocks resource")
     void updateStocksResource() {
 
-        ReflectionTestUtils.setField(stocksController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(stocksController, INJECTED_CONTROLLER, baseController);
 
-        when(smallFullResourceController
+        when(baseController
                 .update(stocks, bindingResult, COMPANY_ACCOUNTS_ID, request))
                         .thenReturn(responseEntity);
 
@@ -76,9 +77,9 @@ public class StocksControllerTest {
     @DisplayName("Get stocks resource")
     void getStocksResource() {
 
-        ReflectionTestUtils.setField(stocksController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(stocksController, INJECTED_CONTROLLER, baseController);
 
-        when(smallFullResourceController.get(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
+        when(baseController.get(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
 
         assertEquals(responseEntity,
                 stocksController.get(COMPANY_ACCOUNTS_ID, request));
@@ -88,9 +89,9 @@ public class StocksControllerTest {
     @DisplayName("Delete stocks resource")
     void deleteStocksResource() {
 
-        ReflectionTestUtils.setField(stocksController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(stocksController, INJECTED_CONTROLLER, baseController);
 
-        when(smallFullResourceController.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
+        when(baseController.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
 
         assertEquals(responseEntity,
                 stocksController.delete(COMPANY_ACCOUNTS_ID, request));

@@ -20,13 +20,14 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.StocksRepository;
+import uk.gov.companieshouse.api.accounts.service.impl.smallfull.StocksService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StocksTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
-import uk.gov.companieshouse.api.accounts.validation.StocksValidator;
+import uk.gov.companieshouse.api.accounts.validation.smallfull.StocksValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;

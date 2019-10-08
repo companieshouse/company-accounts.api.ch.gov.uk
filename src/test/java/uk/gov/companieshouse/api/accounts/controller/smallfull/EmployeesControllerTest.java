@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.controller;
+package uk.gov.companieshouse.api.accounts.controller.smallfull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
+import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +23,7 @@ public class EmployeesControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
-    private static final String SMALL_FULL_RESOURCE_CONTROLLER = "smallFullResourceController";
+    private static final String INJECTED_CONTROLLER = "controller";
 
     @Mock
     private BindingResult bindingResult;
@@ -37,7 +38,7 @@ public class EmployeesControllerTest {
     private ResponseEntity responseEntity;
 
     @Mock
-    private SmallFullResourceController<Employees> smallFullResourceController;
+    private BaseController<Employees> baseController;
 
     @InjectMocks
     private EmployeesController employeesController;
@@ -46,9 +47,10 @@ public class EmployeesControllerTest {
     @DisplayName("Create employees resource")
     void createEmployeesResource() {
 
-        ReflectionTestUtils.setField(employeesController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(employeesController, INJECTED_CONTROLLER,
+                baseController);
 
-        when(smallFullResourceController
+        when(baseController
                 .create(employees, bindingResult, COMPANY_ACCOUNTS_ID, request))
                         .thenReturn(responseEntity);
 
@@ -61,9 +63,10 @@ public class EmployeesControllerTest {
     @DisplayName("Update employees resource")
     void updateEmployeesResource() {
 
-        ReflectionTestUtils.setField(employeesController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(employeesController, INJECTED_CONTROLLER,
+                baseController);
 
-        when(smallFullResourceController
+        when(baseController
                 .update(employees, bindingResult, COMPANY_ACCOUNTS_ID, request))
                         .thenReturn(responseEntity);
 
@@ -76,9 +79,10 @@ public class EmployeesControllerTest {
     @DisplayName("Get employees resource")
     void getEmployeesResource() {
 
-        ReflectionTestUtils.setField(employeesController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(employeesController, INJECTED_CONTROLLER,
+                baseController);
 
-        when(smallFullResourceController.get(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
+        when(baseController.get(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
 
         assertEquals(responseEntity,
                 employeesController.get(COMPANY_ACCOUNTS_ID, request));
@@ -88,9 +92,10 @@ public class EmployeesControllerTest {
     @DisplayName("Delete employees resource")
     void deleteEmployeesResource() {
 
-        ReflectionTestUtils.setField(employeesController, SMALL_FULL_RESOURCE_CONTROLLER, smallFullResourceController);
+        ReflectionTestUtils.setField(employeesController, INJECTED_CONTROLLER,
+                baseController);
 
-        when(smallFullResourceController.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
+        when(baseController.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseEntity);
 
         assertEquals(responseEntity,
                 employeesController.delete(COMPANY_ACCOUNTS_ID, request));

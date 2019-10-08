@@ -22,6 +22,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPer
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.validation.smallfull.EmployeesValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)

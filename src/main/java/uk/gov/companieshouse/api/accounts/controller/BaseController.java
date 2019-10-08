@@ -7,10 +7,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.resource.ParentResource;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -18,29 +18,33 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-public class SmallFullResourceController<T extends RestObject> {
+public class BaseController<T extends RestObject> {
 
     private ResourceService<T> resourceService;
 
-    private SmallFullLinkType smallFullLinkType;
+    private ParentResource parentResource;
+
+    private LinkType linkType;
 
     private ErrorMapper errorMapper;
 
     private ApiResponseMapper apiResponseMapper;
 
-    public SmallFullResourceController(ResourceService<T> resourceService,
-                                       SmallFullLinkType smallFullLinkType,
-                                       ErrorMapper errorMapper,
-                                       ApiResponseMapper apiResponseMapper) {
+    public BaseController(ResourceService<T> resourceService,
+                          ParentResource parentResource,
+                          LinkType linkType,
+                          ErrorMapper errorMapper,
+                          ApiResponseMapper apiResponseMapper) {
 
         this.resourceService = resourceService;
-        this.smallFullLinkType = smallFullLinkType;
+        this.parentResource = parentResource;
+        this.linkType = linkType;
         this.errorMapper = errorMapper;
         this.apiResponseMapper = apiResponseMapper;
 
     }
 
-    private SmallFullResourceController() {}
+    private BaseController() {}
 
     public ResponseEntity create(T data,
                                  BindingResult bindingResult,
@@ -64,7 +68,7 @@ public class SmallFullResourceController<T extends RestObject> {
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to create resource: " + smallFullLinkType.getLink(), ex, request);
+                    "Failed to create resource: " + linkType.getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -83,7 +87,7 @@ public class SmallFullResourceController<T extends RestObject> {
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to retrieve resource: " + smallFullLinkType.getLink(), ex, request);
+                    "Failed to retrieve resource: " + linkType.getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -93,8 +97,7 @@ public class SmallFullResourceController<T extends RestObject> {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if (smallFull.getLinks().get(smallFullLinkType.getLink()) == null) {
+        if (!parentResource.hasLink(request, linkType)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -115,7 +118,7 @@ public class SmallFullResourceController<T extends RestObject> {
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update resource: " + smallFullLinkType.getLink(), ex, request);
+                    "Failed to update resource: " + linkType.getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -135,7 +138,7 @@ public class SmallFullResourceController<T extends RestObject> {
         } catch (DataException ex) {
 
             LoggingHelper.logException(companyAccountsId, transaction,
-                    "Failed to delete resource: " + smallFullLinkType.getLink(), ex, request);
+                    "Failed to delete resource: " + linkType.getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

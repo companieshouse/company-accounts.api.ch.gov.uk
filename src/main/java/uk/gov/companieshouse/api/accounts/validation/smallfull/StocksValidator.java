@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,8 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
+import uk.gov.companieshouse.api.accounts.validation.Validator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +23,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class StocksValidator extends BaseValidator implements CrossValidator<Stocks> {
+public class StocksValidator extends BaseValidator implements Validator<Stocks> {
 
     private static final String STOCKS_PATH = "$.stocks";
     private static final String STOCKS_CURRENT_PERIOD_PATH =
@@ -45,7 +47,8 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateStocks(@Valid Stocks stocks, Transaction transaction,
+    @Override
+    public Errors validateSubmission(@Valid Stocks stocks, Transaction transaction,
                                  String companyAccountsId,
                                  HttpServletRequest request) throws DataException {
 
@@ -229,7 +232,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         validateAggregateTotal(total, sum, STOCKS_CURRENT_PERIOD_TOTAL_PATH, errors);
     }
 
-    @Override
     public Errors crossValidate(Stocks stocks,
                                 HttpServletRequest request,
                                 String companyAccountsId,

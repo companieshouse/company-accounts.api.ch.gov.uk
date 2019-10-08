@@ -3,10 +3,8 @@ package uk.gov.companieshouse.api.accounts.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.resource.ParentResource;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -34,7 +32,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SmallFullResourceControllerTest {
+public class ControllerTest {
 
     @Mock
     private RestObject restObject;
@@ -49,13 +47,13 @@ public class SmallFullResourceControllerTest {
     private Transaction transaction;
 
     @Mock
-    private SmallFull smallFull;
-
-    @Mock
-    private Map<String, String> smallFullLinks;
-
-    @Mock
     private ResourceService<RestObject> resourceService;
+
+    @Mock
+    private ParentResource parentResource;
+
+    @Mock
+    private LinkType linkType;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -64,8 +62,8 @@ public class SmallFullResourceControllerTest {
     private ErrorMapper errorMapper;
 
     @InjectMocks
-    private SmallFullResourceController<RestObject> controller
-            = new SmallFullResourceController<>(resourceService, SmallFullLinkType.SELF, errorMapper, apiResponseMapper);
+    private BaseController<RestObject> baseController
+            = new BaseController<>(resourceService, parentResource, linkType, errorMapper, apiResponseMapper);
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
@@ -77,7 +75,7 @@ public class SmallFullResourceControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-                controller.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -100,7 +98,7 @@ public class SmallFullResourceControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -122,7 +120,7 @@ public class SmallFullResourceControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.create(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -145,7 +143,7 @@ public class SmallFullResourceControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.get(COMPANY_ACCOUNTS_ID, request);
+                baseController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -164,7 +162,7 @@ public class SmallFullResourceControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity returnedResponse = baseController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -172,15 +170,13 @@ public class SmallFullResourceControllerTest {
     }
 
     @Test
-    @DisplayName("Update - no small full link")
-    void updateNoSmallFullLink() {
+    @DisplayName("Update - no parent resource link")
+    void updateNoParentResourceLink() {
 
-        when(request.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.SELF.getLink())).thenReturn(null);
+        when(parentResource.hasLink(request, linkType)).thenReturn(false);
 
         ResponseEntity responseEntity =
-                controller.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -191,14 +187,12 @@ public class SmallFullResourceControllerTest {
     @DisplayName("Update - has binding errors")
     void updateHasBindingErrors() {
 
-        when(request.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.SELF.getLink())).thenReturn("");
+        when(parentResource.hasLink(request, linkType)).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
-                controller.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -209,10 +203,10 @@ public class SmallFullResourceControllerTest {
     @DisplayName("Update - success")
     void updateSuccess() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.SELF.getLink())).thenReturn("");
+        when(parentResource.hasLink(request, linkType)).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(false);
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, restObject);
         when(resourceService.update(restObject, transaction, COMPANY_ACCOUNTS_ID, request))
@@ -223,7 +217,7 @@ public class SmallFullResourceControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -234,10 +228,10 @@ public class SmallFullResourceControllerTest {
     @DisplayName("Update - data exception thrown")
     void updateDataException() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.SELF.getLink())).thenReturn("");
+        when(parentResource.hasLink(request, linkType)).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(false);
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(resourceService.update(restObject, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(new DataException(""));
@@ -246,7 +240,7 @@ public class SmallFullResourceControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                controller.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
+                baseController.update(restObject, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
