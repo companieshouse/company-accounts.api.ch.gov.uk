@@ -60,11 +60,31 @@ public class BaseService<R extends RestObject, E extends BaseEntity, L extends L
         this.resourceName = resourceName;
     }
 
+    public BaseService(MongoRepository<E, String> repository,
+                       GenericTransformer<R, E> transformer,
+                       KeyIdGenerator keyIdGenerator,
+                       ParentService<?, L> parentService,
+                       L linkType,
+                       Kind kind,
+                       ResourceName resourceName) {
+
+        this.repository = repository;
+        this.transformer = transformer;
+        this.keyIdGenerator = keyIdGenerator;
+        this.parentService = parentService;
+        this.linkType = linkType;
+        this.kind = kind;
+        this.resourceName = resourceName;
+    }
+
     public ResponseObject<R> create(R rest, Transaction transaction, String companyAccountId, HttpServletRequest request, String selfLink) throws DataException {
 
-        Errors errors = validator.validateSubmission(rest, transaction, companyAccountId, request);
-        if (errors.hasErrors()) {
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        if (validator != null) {
+            Errors errors = validator
+                    .validateSubmission(rest, transaction, companyAccountId, request);
+            if (errors.hasErrors()) {
+                return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+            }
         }
 
         setMetadataOnRestObject(rest, selfLink);
@@ -87,9 +107,12 @@ public class BaseService<R extends RestObject, E extends BaseEntity, L extends L
 
     public ResponseObject<R> update(R rest, Transaction transaction, String companyAccountId, HttpServletRequest request, String selfLink) throws DataException {
 
-        Errors errors = validator.validateSubmission(rest, transaction, companyAccountId, request);
-        if (errors.hasErrors()) {
-            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        if (validator != null) {
+            Errors errors = validator
+                    .validateSubmission(rest, transaction, companyAccountId, request);
+            if (errors.hasErrors()) {
+                return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+            }
         }
 
         setMetadataOnRestObject(rest, selfLink);

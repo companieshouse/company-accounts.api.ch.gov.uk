@@ -17,7 +17,7 @@ import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
 import uk.gov.companieshouse.api.accounts.resource.SmallFullResource;
-import uk.gov.companieshouse.api.accounts.service.impl.AccountingPoliciesService;
+import uk.gov.companieshouse.api.accounts.service.impl.smallfull.AccountingPoliciesService;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 

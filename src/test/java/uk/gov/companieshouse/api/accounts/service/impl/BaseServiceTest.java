@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -121,6 +122,30 @@ public class BaseServiceTest {
     }
 
     @Test
+    @DisplayName("Tests the successful creation of a resource without performing any validation")
+    void createSuccessWithoutValidation() throws DataException {
+
+        ReflectionTestUtils.setField(baseService, "validator", null);
+
+        when(transformer.transform(rest)).thenReturn(entity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + resourceName.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(rest.getLinks()).thenReturn(links);
+        when(links.get(BasicLinkType.SELF.getLink())).thenReturn(SELF_LINK);
+
+        ResponseObject<RestObject> response =
+                baseService.create(rest, transaction, COMPANY_ACCOUNTS_ID, request, SELF_LINK);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherParentServiceCalledToAddLink(true);
+        assertEquals(ResponseStatus.CREATED, response.getStatus());
+        assertEquals(rest, response.getData());
+    }
+
+    @Test
     @DisplayName("Tests the creation of a resource where the repository throws a duplicate key exception")
     void createDuplicateKeyException() throws DataException {
 
@@ -189,6 +214,26 @@ public class BaseServiceTest {
         when(validator.validateSubmission(rest, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
+
+        when(transformer.transform(rest)).thenReturn(entity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + resourceName.getName()))
+                .thenReturn(GENERATED_ID);
+
+        ResponseObject<RestObject> response =
+                baseService.update(rest, transaction, COMPANY_ACCOUNTS_ID, request, SELF_LINK);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryUpdateCalled();
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertEquals(rest, response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the successful update of a resource without performing any validation")
+    void updateSuccessWithoutValidation() throws DataException {
+
+        ReflectionTestUtils.setField(baseService, "validator", null);
 
         when(transformer.transform(rest)).thenReturn(entity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + resourceName.getName()))
