@@ -853,11 +853,10 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
         currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
 
-        if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
-            return currentPeriodResponseObject.getData().getBalanceSheet();
-        } else {
-            return null;
-        }
+        return Optional.of(currentPeriodResponseObject)
+                .map(ResponseObject::getData)
+                .map(CurrentPeriod::getBalanceSheet)
+                .orElse(null);
     }
 
     private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
@@ -866,11 +865,10 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
         ResponseObject<PreviousPeriod> previousPeriodResponseObject;
         previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
 
-        if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
-            return previousPeriodResponseObject.getData().getBalanceSheet();
-        } else {
-            return null;
-        }
+        return Optional.of(previousPeriodResponseObject)
+                .map(ResponseObject::getData)
+                .map(PreviousPeriod::getBalanceSheet)
+                .orElse(null);
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
