@@ -999,9 +999,8 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        assertFalse(errors.hasErrors());
 
-        assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
@@ -1094,10 +1093,7 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-
-        assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertFalse(errors.hasErrors());
     }
 
     @Test
