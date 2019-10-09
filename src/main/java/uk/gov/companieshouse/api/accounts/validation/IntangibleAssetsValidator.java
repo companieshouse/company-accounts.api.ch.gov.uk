@@ -775,9 +775,17 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
                                 String companyAccountsId,
                                 Errors errors) throws DataException {
 
-        crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
-        crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
 
+        if (currentPeriodBalanceSheet != null) {
+            crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
+        }
+        if (previousPeriodBalanceSheet != null) {
+            crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
+        }
         return errors;
     }
 
@@ -836,6 +844,32 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
                         (!previousPeriodIntangible.equals(previousNetBookValueTotal)))) {
             addError(errors, previousBalanceSheetNotEqual,
                     getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+        }
+    }
+
+    private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
+                                                      String companyAccountsId) throws DataException {
+
+        ResponseObject<CurrentPeriod> currentPeriodResponseObject;
+        currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
+
+        if (currentPeriodResponseObject != null && currentPeriodResponseObject.getData() != null) {
+            return currentPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+            return null;
+        }
+    }
+
+    private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
+                                                      String companyAccountsId) throws DataException {
+
+        ResponseObject<PreviousPeriod> previousPeriodResponseObject;
+        previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
+
+        if (previousPeriodResponseObject != null && previousPeriodResponseObject.getData() != null) {
+            return previousPeriodResponseObject.getData().getBalanceSheet();
+        } else {
+            return null;
         }
     }
 
