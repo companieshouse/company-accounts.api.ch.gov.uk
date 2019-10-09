@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +22,9 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,8 +40,9 @@ public class CurrentInvestmentsValidatorTest {
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
-        "mandatory_element_missing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE = "mandatory_element_missing";
+    
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -49,6 +53,8 @@ public class CurrentInvestmentsValidatorTest {
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
 
+    @Mock
+    private Transaction transaction;
 
     private CurrentAssetsInvestments currentAssetsInvestments;
     private Errors errors;
@@ -71,7 +77,7 @@ public class CurrentInvestmentsValidatorTest {
 
         currentAssetsInvestments.setDetails("test");
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -86,7 +92,7 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
             UNEXPECTED_DATA_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -100,7 +106,7 @@ public class CurrentInvestmentsValidatorTest {
             ServiceException {
 
         currentAssetsInvestments.setDetails("test");
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, COMPANY_ACCOUNTS_ID, mockRequest);
         assertFalse(errors.hasErrors());
 
     }
@@ -114,7 +120,7 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
             MANDATORY_ELEMENT_MISSING_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -130,7 +136,7 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
             EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
@@ -183,11 +189,11 @@ public class CurrentInvestmentsValidatorTest {
 
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
         doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find(
-            "", mockRequest);
+            COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
     private void mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments() throws DataException {
         doReturn(generateValidCurrentPeriodResponseObjectWithoutCurrentAssets()).when(mockCurrentPeriodService).find(
-                "", mockRequest);
+                COMPANY_ACCOUNTS_ID, mockRequest);
     }
 }
