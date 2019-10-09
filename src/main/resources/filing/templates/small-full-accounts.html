@@ -1133,6 +1133,30 @@
           <th class = "strong" id="fixed-assets-heading">Fixed assets</th>
         </tr>
 
+        {{if $fixedAssets.intangible}}
+        <tr class = "figures">
+          <td id = "intangible-assets-label">Intangible assets:</td>
+          {{if .small_full_accounts.balance_sheet_notes.intangible_assets}}
+          <td class="figure noteIndex" id="uk-busIntangibleAssetsCY_ENDNoteIndexes">{{getValue "intangible-notes-id" }}</td>
+          {{else}}
+          <td class="figure noteIndex" id="uk-busIntangibleAssetsCY_ENDNoteIndexes1">&#160;</td>
+          {{end}}
+
+          <td id="intangible-curr" class="strong figure">
+            {{if isNotEmpty $fixedAssets.intangible.current_amount}}
+            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.intangible.current_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+
+          <td id="intangible-prev" class="text--right">
+            {{if isNotEmpty $fixedAssets.intangible.previous_amount}}
+            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:IntangibleAssets" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $fixedAssets.intangible.previous_amount}}</ix:nonFraction>
+            {{end}}
+          </td>
+        </tr>
+
+        {{end}}
+
         {{if $fixedAssets.tangible}}
         <tr class = "figures">
           <td id = "tangible-assets-label">Tangible assets:</td>
@@ -1994,7 +2018,7 @@
 
         {{$cost := $intangibleAssetsNote.cost}}
         {{$amortisation := $intangibleAssetsNote.amortisation}}
-        {{$netBookValue := $intangibleAssetsNote.netBookValue}}
+        {{$netBookValue := $intangibleAssetsNote.net_book_value}}
         <tbody>
         <tr>
           <th>Cost</th>
