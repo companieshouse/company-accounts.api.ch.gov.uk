@@ -990,7 +990,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1035,7 +1035,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1135,7 +1135,7 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1180,7 +1180,7 @@ class IntangibleAssetsValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction);
 
         assertFalse(errors.hasErrors());
     }
