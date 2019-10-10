@@ -601,10 +601,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
                 isInvalid = true;
             }
         }
-        else {
-
-            isInvalid = true;
-        }
 
        return isInvalid;
     }
@@ -618,9 +614,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
                 isInvalid = true;
             }
         }
-            else {
-                isInvalid = true;
-        }
+
         return isInvalid;
     }
 
