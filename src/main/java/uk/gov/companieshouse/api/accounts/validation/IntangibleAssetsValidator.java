@@ -552,10 +552,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
         boolean subResourceInvalid = false;
 
-         validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_END, errors, intangibleSubResource, invalidSubResource);
-         validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_START, errors, intangibleSubResource, invalidSubResource);
-         validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_START, errors, intangibleSubResource, invalidSubResource);
-         validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_END, errors, intangibleSubResource, invalidSubResource);
+         subResourceInvalid = validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_END, errors, intangibleSubResource, subResourceInvalid);
+         subResourceInvalid = validateSubResourceCost(intangibleAssetsResource, COST_AT_PERIOD_START, errors, intangibleSubResource, subResourceInvalid);
+         subResourceInvalid = validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_START, errors, intangibleSubResource, subResourceInvalid);
+         subResourceInvalid = validateSubResourceAmortisation(intangibleAssetsResource, AMORTISATION_AT_PERIOD_END, errors, intangibleSubResource, subResourceInvalid);
 
         if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null  || intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
 
@@ -592,37 +592,40 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         }
     }
 
-    private void validateSubResourceCost(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+    private boolean validateSubResourceCost(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, boolean isInvalid) {
 
-        boolean subResourceInvalid = false;
+        isInvalid = false;
 
         if (resource.getCost() != null) {
-
             Long periods = period.equals(COST_AT_PERIOD_START) ? resource.getCost().getAtPeriodStart() : resource.getCost().getAtPeriodEnd();
             if(periods == null) {
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, period));
-                subResourceInvalid = true;
+                isInvalid = true;
             }
+        }
+        else {
 
+            isInvalid = true;
         }
-        if(subResourceInvalid) {
-            invalidSubResource.add(intangibleSubResource);
-        }
+
+       return isInvalid;
     }
 
-    private void validateSubResourceAmortisation(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
+    private boolean validateSubResourceAmortisation(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, boolean isInvalid) {
 
-        boolean subResourceInvalid = false;
+        isInvalid = false;
+
         if(resource.getAmortisation() != null) {
             Long periods = period.equals(AMORTISATION_AT_PERIOD_START) ? resource.getAmortisation().getAtPeriodStart() : resource.getAmortisation().getAtPeriodEnd();
-            if(periods == null){
+            if (periods == null) {
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, period));
-                subResourceInvalid = true;
+                isInvalid = true;
             }
         }
-        if(subResourceInvalid) {
-            invalidSubResource.add(intangibleSubResource);
+            else {
+                isInvalid = true;
         }
+        return isInvalid;
     }
 
     private boolean hasAmortisationFieldsSet(Amortisation amortisation) {
