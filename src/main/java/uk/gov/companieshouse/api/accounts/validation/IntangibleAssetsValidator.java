@@ -594,8 +594,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
 
     private boolean validateSubResourceCost(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, boolean isInvalid) {
 
-        isInvalid = false;
-
         if (resource.getCost() != null) {
             Long periods = period.equals(COST_AT_PERIOD_START) ? resource.getCost().getAtPeriodStart() : resource.getCost().getAtPeriodEnd();
             if(periods == null) {
@@ -612,8 +610,6 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
     }
 
     private boolean validateSubResourceAmortisation(IntangibleAssetsResource resource, String period, Errors errors, IntangibleSubResource intangibleSubResource, boolean isInvalid) {
-
-        isInvalid = false;
 
         if(resource.getAmortisation() != null) {
             Long periods = period.equals(AMORTISATION_AT_PERIOD_START) ? resource.getAmortisation().getAtPeriodStart() : resource.getAmortisation().getAtPeriodEnd();
