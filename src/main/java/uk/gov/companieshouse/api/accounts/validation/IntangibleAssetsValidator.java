@@ -5,12 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import java.util.ArrayList;
@@ -20,14 +27,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component
-public class IntangibleAssetsValidator  extends BaseValidator  {
+public class IntangibleAssetsValidator  extends BaseValidator implements CrossValidator<IntangibleAssets>   {
 
     private CompanyService companyService;
 
+    private CurrentPeriodService currentPeriodService;
+
+    private PreviousPeriodService previousPeriodService;
+
     @Autowired
-    public IntangibleAssetsValidator(CompanyService companyService) {
+    public IntangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
 
         this.companyService = companyService;
+        this.currentPeriodService = currentPeriodService;
+        this.previousPeriodService = previousPeriodService;
 
     }
 
@@ -60,6 +73,7 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
             boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
 
             List<IntangibleSubResource> invalidSubResources = new ArrayList<>();
+
             verifySubResourcesAreValid(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
             verifyNoteNotEmpty(intangibleAssets, errors, isMultipleYearFiler);
             validateSubResourceTotals(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
@@ -67,8 +81,10 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
                 return errors;
             }
             validateTotalFieldsMatch(errors, intangibleAssets, isMultipleYearFiler);
+            crossValidate(intangibleAssets, request, companyAccountsId, errors);
 
-        } catch(ServiceException se) {
+        } catch (ServiceException se) {
+
             throw new DataException(se.getMessage(), se);
         }
         return errors;
@@ -759,6 +775,76 @@ public class IntangibleAssetsValidator  extends BaseValidator  {
         return Optional.ofNullable(intangibleAssetsResource)
             .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
             .orElse(0L);
+    }
+
+    @Override
+    public Errors crossValidate(IntangibleAssets intangibleAssets,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
+
+        crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
+        crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
+
+        return errors;
+    }
+
+    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
+                                            IntangibleAssets intangibleAssets) throws DataException {
+
+        ResponseObject<CurrentPeriod> currentPeriodResponseObject =
+                currentPeriodService.find(companyAccountsId, request);
+        CurrentPeriod currentPeriod = currentPeriodResponseObject.getData();
+
+        Long currentPeriodIntangible =
+                Optional.ofNullable(currentPeriod)
+                        .map(CurrentPeriod::getBalanceSheet)
+                        .map(BalanceSheet::getFixedAssets)
+                        .map(FixedAssets::getIntangible)
+                        .orElse(null);
+
+        Long currentNetBookValueTotal =
+                Optional.ofNullable(intangibleAssets)
+                        .map(IntangibleAssets::getTotal)
+                        .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
+                        .orElse(null);
+
+        if ((currentPeriodIntangible != null || currentNetBookValueTotal != null) && (
+                (currentPeriodIntangible != null && currentNetBookValueTotal == null)
+                        || currentPeriodIntangible == null ||
+                        (!currentPeriodIntangible.equals(currentNetBookValueTotal)))) {
+            addError(errors, currentBalanceSheetNotEqual,
+                    getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
+        }
+    }
+
+    private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
+                                             IntangibleAssets intangibleAssets) throws DataException {
+
+        ResponseObject<PreviousPeriod> previousPeriodResponseObject =
+                previousPeriodService.find(companyAccountsId, request);
+        PreviousPeriod previousPeriod = previousPeriodResponseObject.getData();
+
+        Long previousPeriodIntangible =
+                Optional.ofNullable(previousPeriod)
+                        .map(PreviousPeriod::getBalanceSheet)
+                        .map(BalanceSheet::getFixedAssets)
+                        .map(FixedAssets::getIntangible)
+                        .orElse(null);
+
+        Long previousNetBookValueTotal =
+                Optional.ofNullable(intangibleAssets)
+                        .map(IntangibleAssets::getTotal)
+                        .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
+                        .orElse(null);
+
+        if ((previousPeriodIntangible != null || previousNetBookValueTotal != null) && (
+                (previousPeriodIntangible != null && previousNetBookValueTotal == null)
+                        || previousPeriodIntangible == null ||
+                        (!previousPeriodIntangible.equals(previousNetBookValueTotal)))) {
+            addError(errors, previousBalanceSheetNotEqual,
+                    getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+        }
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
