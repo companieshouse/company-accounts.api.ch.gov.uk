@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.controller.smallfull;
+package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
-import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
 
 @ExtendWith(MockitoExtension.class)

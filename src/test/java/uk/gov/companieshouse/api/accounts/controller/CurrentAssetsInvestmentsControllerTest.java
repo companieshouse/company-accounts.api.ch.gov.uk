@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.controller.smallfull;
+package uk.gov.companieshouse.api.accounts.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
-import uk.gov.companieshouse.api.accounts.controller.BaseController;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.CurrentAssetsInvestments;
 
 import javax.servlet.http.HttpServletRequest;
