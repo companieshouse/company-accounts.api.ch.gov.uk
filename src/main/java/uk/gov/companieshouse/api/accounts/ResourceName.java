@@ -20,7 +20,8 @@ public enum ResourceName {
     EMPLOYEES("employees"),
     CIC_REPORT("cic-report"),
     CIC_APPROVAL("cic-approval"),
-    CIC_STATEMENTS("cic-statements");
+    CIC_STATEMENTS("cic-statements"),
+    PROFIT_LOSS("profit-loss");
 
     private String name;
 

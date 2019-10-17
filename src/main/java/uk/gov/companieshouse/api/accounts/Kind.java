@@ -20,7 +20,8 @@ public enum Kind {
     EMPLOYEES_NOTE("small-full-accounts-note#employees"),
     CIC_REPORT("cic-report#cic-report"),
     CIC_APPROVAL("cic-report#approval"),
-    CIC_STATEMENTS("cic-report#cic-statements");
+    CIC_STATEMENTS("cic-report#cic-statements"),
+    PROFIT_LOSS("small-full-profit-loss");
 
     private String value;
 
