@@ -7,4 +7,5 @@ import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossEnti
 @Repository
 public interface ProfitLossRepository extends MongoRepository<ProfitLossEntity, String> {
 
+    
 }
