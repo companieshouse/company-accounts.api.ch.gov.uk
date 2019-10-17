@@ -957,6 +957,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         if (currentPeriodBalanceSheet != null) {
             crossValidateCurrentPeriod(errors, request, companyAccountsId, tangibleAssets);
         }
+        
         if (previousPeriodBalanceSheet != null) {
             crossValidatePreviousPeriod(errors, request, companyAccountsId, tangibleAssets);
         }

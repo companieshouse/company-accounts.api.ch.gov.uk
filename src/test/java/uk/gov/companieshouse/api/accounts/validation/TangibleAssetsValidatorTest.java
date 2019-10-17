@@ -962,8 +962,8 @@ public class TangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-
         assertFalse(errors.hasErrors());
+
     }
 
     @Test
