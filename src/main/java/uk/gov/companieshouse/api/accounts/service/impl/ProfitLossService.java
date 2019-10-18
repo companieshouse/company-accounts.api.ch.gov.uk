@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossEntity;
+import uk.gov.companieshouse.api.accounts.model.filing.Data;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitLoss;
 import uk.gov.companieshouse.api.accounts.repository.ProfitLossRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
@@ -56,7 +57,10 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.PROFIT_LOSS.getValue());
+        //Deal with these
+        rest.setKind(Kind.PROFIT_LOSS_CURRENT.getValue());
+        rest.setKind(Kind.PROFIT_LOSS_PREVIOUS.getValue());
+
         ProfitLossEntity profitLossEntity = profitLossTransformer.transform(rest);
 
         String id = generateID(companyAccountId);
@@ -75,6 +79,63 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
                 .addLink(companyAccountId, SmallFullLinkType.PROFIT_LOSS, selfLink, request);
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
+
+    @Override
+    public ResponseObject<ProfitLoss> update(ProfitLoss rest, Transaction transaction,
+                                             String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        ProfitLossEntity profitLossEntity = profitLossTransformer.transform(rest);
+        profitLossEntity.setId(generateID(companyAccountId));
+
+        try {
+            profitLossRepository.save(profitLossEntity);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
+
+    }
+
+    @Override
+    public ResponseObject<ProfitLoss> find(String companyAccountsId, HttpServletRequest request)
+        throws DataException {
+
+        ProfitLossEntity profitLossEntity;
+
+        try {
+            profitLossEntity = profitLossRepository.findById(generateID(companyAccountsId)).orElse(null);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+
+        if (profitLossEntity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, profitLossTransformer.transform(profitLossEntity));
+    }
+
+    @Override
+    public ResponseObject<ProfitLoss> delete(String companyAccountsId, HttpServletRequest request)
+        throws DataException {
+
+        String profitLossId = generateID(companyAccountsId);
+
+        try {
+            if (profitLossRepository.existsById(profitLossId)) {
+                profitLossRepository.deleteById(profitLossId);
+                smallFullService.removeLink(companyAccountsId, SmallFullLinkType.PROFIT_LOSS, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+    }
+
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {
         return transaction.getLinks().getSelf() + "/"
