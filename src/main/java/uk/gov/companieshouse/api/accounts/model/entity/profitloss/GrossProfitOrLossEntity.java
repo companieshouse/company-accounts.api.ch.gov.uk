@@ -42,7 +42,7 @@ public class GrossProfitOrLossEntity {
         return "GrossProfitOrLoss{" +
                 "turnover=" + turnover +
                 ", costOfSales=" + costOfSales +
-                ", grossTotal" + grossTotal +
-                '}';
+                ", grossTotal=" + grossTotal +
+                "}";
     }
 }

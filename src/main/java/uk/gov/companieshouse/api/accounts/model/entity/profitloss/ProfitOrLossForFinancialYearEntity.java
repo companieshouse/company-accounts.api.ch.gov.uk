@@ -30,6 +30,6 @@ public class ProfitOrLossForFinancialYearEntity {
         return "ProfitOrLossForFinancialYear{" +
                 "taxOnProfit=" + taxOnProfit +
                 ", totalProfitOrLossForFinancialYear=" + totalProfitOrLossForFinancialYear +
-                '}';
+                "}";
     }
 }

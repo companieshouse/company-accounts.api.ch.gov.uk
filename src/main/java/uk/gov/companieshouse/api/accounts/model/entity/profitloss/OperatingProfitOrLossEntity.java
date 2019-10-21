@@ -56,7 +56,7 @@ public class OperatingProfitOrLossEntity {
                 ", administrativeExpenses=" + administrativeExpenses +
                 ", otherOperatingIncome=" + otherOperatingIncome +
                 ", operatingTotal=" + operatingTotal +
-                '}';
+                "}";
 
     }
 }
