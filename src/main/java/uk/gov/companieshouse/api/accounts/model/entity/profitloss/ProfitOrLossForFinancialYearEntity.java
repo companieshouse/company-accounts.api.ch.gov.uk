@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.entity.profitloss;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class ProfitOrLossForFinancialYear {
+public class ProfitOrLossForFinancialYearEntity {
 
     @Field("tax_on_profit")
     private Long taxOnProfit;

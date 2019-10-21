@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.entity.profitloss;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class OperatingProfitOrLoss {
+public class OperatingProfitOrLossEntity {
 
     @Field("distribution_costs")
     private Long distributionCosts;

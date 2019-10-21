@@ -7,46 +7,46 @@ import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 public class ProfitLossDataEntity extends BaseDataEntity {
 
     @Field("gross_profit_or_loss")
-    private GrossProfitOrLoss grossProfitOrLoss;
+    private GrossProfitOrLossEntity grossProfitOrLoss;
 
     @Field("operating_profit_or_loss")
-    private OperatingProfitOrLoss operatingProfitOrLoss;
+    private OperatingProfitOrLossEntity operatingProfitOrLoss;
 
     @Field("profit_or_loss_before_tax")
-    private ProfitOrLossBeforeTax profitOrLossBeforeTax;
+    private ProfitOrLossBeforeTaxEntity profitOrLossBeforeTax;
 
     @Field("profit_or_loss_financial_year")
-    private ProfitOrLossForFinancialYear profitOrLossForFinancialYear;
+    private ProfitOrLossForFinancialYearEntity profitOrLossForFinancialYear;
 
-    public GrossProfitOrLoss getGrossProfitOrLoss() {
+    public GrossProfitOrLossEntity getGrossProfitOrLoss() {
         return grossProfitOrLoss;
     }
 
-    public void setGrossProfitOrLoss(GrossProfitOrLoss grossProfitOrLoss) {
+    public void setGrossProfitOrLoss(GrossProfitOrLossEntity grossProfitOrLoss) {
         this.grossProfitOrLoss = grossProfitOrLoss;
     }
 
-    public OperatingProfitOrLoss getOperatingProfitOrLoss() {
+    public OperatingProfitOrLossEntity getOperatingProfitOrLoss() {
         return operatingProfitOrLoss;
     }
 
-    public void setOperatingProfitOrLoss(OperatingProfitOrLoss operatingProfitOrLoss) {
+    public void setOperatingProfitOrLoss(OperatingProfitOrLossEntity operatingProfitOrLoss) {
         this.operatingProfitOrLoss = operatingProfitOrLoss;
     }
 
-    public ProfitOrLossBeforeTax getProfitOrLossBeforeTax() {
+    public ProfitOrLossBeforeTaxEntity getProfitOrLossBeforeTax() {
         return profitOrLossBeforeTax;
     }
 
-    public void setProfitOrLossBeforeTax(ProfitOrLossBeforeTax profitOrLossBeforeTax) {
+    public void setProfitOrLossBeforeTax(ProfitOrLossBeforeTaxEntity profitOrLossBeforeTax) {
         this.profitOrLossBeforeTax = profitOrLossBeforeTax;
     }
 
-    public ProfitOrLossForFinancialYear getProfitOrLossForFinancialYear() {
+    public ProfitOrLossForFinancialYearEntity getProfitOrLossForFinancialYear() {
         return profitOrLossForFinancialYear;
     }
 
-    public void setProfitOrLossForFinancialYear(ProfitOrLossForFinancialYear profitOrLossForFinancialYear) {
+    public void setProfitOrLossForFinancialYear(ProfitOrLossForFinancialYearEntity profitOrLossForFinancialYear) {
         this.profitOrLossForFinancialYear = profitOrLossForFinancialYear;
     }
 
@@ -57,7 +57,7 @@ public class ProfitLossDataEntity extends BaseDataEntity {
                 ", operatingProfitOrLoss=" + operatingProfitOrLoss +
                 ", profitOrLossBeforeTax=" + profitOrLossBeforeTax +
                 ", profitOrLossForFinancialYear=" + profitOrLossForFinancialYear +
-                '\'' + '}';
+                "}";
 
 
     }

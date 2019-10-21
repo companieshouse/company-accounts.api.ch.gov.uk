@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ import java.util.Map;
 @Service
 public class ProfitLossService implements ResourceService<ProfitLoss> {
 
+    private static final Pattern CURRENT_PERIOD_PATTERN =
+            Pattern.compile("/transactions/[^/].*/company-accounts/[^/].*/small-full/current-period/profit-and-loss");
+
     private ProfitLossRepository profitLossRepository;
 
     private ProfitLossTransformer profitLossTransformer;
@@ -52,32 +56,30 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
                                              String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-
         String selfLink = createSelfLink(transaction, companyAccountId, request);
-        initLinks(rest, selfLink);
-        rest.setEtag(GenerateEtagUtil.generateEtag());
+        setMetaData(rest, selfLink, request);
 
-        if (request.getRequestURI().contains("current-period")) {
-            rest.setKind(Kind.PROFIT_LOSS_CURRENT.getValue());
-        } else {
-            rest.setKind(Kind.PROFIT_LOSS_PREVIOUS.getValue());
-        }
         ProfitLossEntity profitLossEntity = profitLossTransformer.transform(rest);
-
-        String id = generateID(companyAccountId, request);
-        profitLossEntity.setId(id);
-
+        profitLossEntity.setId(generateID(companyAccountId, request));
 
         try {
             profitLossRepository.insert(profitLossEntity);
+
         } catch (DuplicateKeyException dke) {
+
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
+
             throw new DataException(e);
         }
 
-        smallFullService
-                .addLink(companyAccountId, SmallFullLinkType.PROFIT_LOSS, selfLink, request);
+        if (isCurrentPeriod(request)) {
+            smallFullService
+                    .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS, selfLink, request);
+        } else {
+            smallFullService
+                    .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS, selfLink, request);
+        }
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -86,12 +88,17 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
                                              String companyAccountId, HttpServletRequest request)
         throws DataException {
 
+        String selfLink = createSelfLink(transaction, companyAccountId, request);
+        setMetaData(rest, selfLink, request);
+
         ProfitLossEntity profitLossEntity = profitLossTransformer.transform(rest);
         profitLossEntity.setId(generateID(companyAccountId, request));
 
         try {
             profitLossRepository.save(profitLossEntity);
+
         } catch (MongoException e) {
+
             throw new DataException(e);
         }
 
@@ -106,8 +113,11 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
         ProfitLossEntity profitLossEntity;
 
         try {
-            profitLossEntity = profitLossRepository.findById(generateID(companyAccountsId, request)).orElse(null);
+            profitLossEntity =
+                    profitLossRepository.findById(generateID(companyAccountsId, request))
+                            .orElse(null);
         } catch (MongoException e) {
+
             throw new DataException(e);
         }
 
@@ -127,22 +137,42 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
         try {
             if (profitLossRepository.existsById(profitLossId)) {
                 profitLossRepository.deleteById(profitLossId);
-                smallFullService.removeLink(companyAccountsId, SmallFullLinkType.PROFIT_LOSS, request);
+                if (isCurrentPeriod(request)) {
+                    smallFullService
+                            .removeLink(companyAccountsId, SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS, request);
+                } else {
+                    smallFullService
+                            .removeLink(companyAccountsId, SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS, request);
+                }
                 return new ResponseObject<>(ResponseStatus.UPDATED);
+
             } else {
+
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
+
             throw new DataException(e);
         }
     }
 
+    private void setMetaData(ProfitLoss rest, String selfLink, HttpServletRequest request) {
 
-    public String createSelfLink(Transaction transaction, String companyAccountId, HttpServletRequest request) {
+        initLinks(rest, selfLink);
+        rest.setEtag(GenerateEtagUtil.generateEtag());
+
+        if (isCurrentPeriod(request)) {
+            rest.setKind(Kind.PROFIT_LOSS_CURRENT.getValue());
+        } else {
+            rest.setKind(Kind.PROFIT_LOSS_PREVIOUS.getValue());
+        }
+    }
+
+    private String createSelfLink(Transaction transaction, String companyAccountId, HttpServletRequest request) {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/" +
-                (request.getRequestURI().contains("current-period") ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) + "/"
+                (isCurrentPeriod(request) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) + "/"
                 + ResourceName.PROFIT_LOSS.getName();
     }
 
@@ -153,10 +183,14 @@ public class ProfitLossService implements ResourceService<ProfitLoss> {
     }
 
     private String generateID(String companyAccountId, HttpServletRequest request) {
-        if (request.getRequestURI().contains("current-period")) {
-            return keyIdGenerator.generate(companyAccountId + "-" + "current-profit-loss");
-        } else {
-            return keyIdGenerator.generate(companyAccountId + "-" + "previous-profit-loss");
-        }
+
+        return keyIdGenerator.generate(companyAccountId + "-" +
+                (isCurrentPeriod(request) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) +
+                "-" + ResourceName.PROFIT_LOSS.getName());
+    }
+
+    private boolean isCurrentPeriod(HttpServletRequest request) {
+
+        return CURRENT_PERIOD_PATTERN.matcher(request.getRequestURI()).matches();
     }
 }
