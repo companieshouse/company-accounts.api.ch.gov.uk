@@ -18,16 +18,32 @@ public class OperatingProfitOrLoss {
     @JsonProperty("other_operating_income")
     private Long otherOperatingIncome;
 
+    public Long getAdministrativeExpenses() {
+        return administrativeExpenses;
+    }
+
     public void setAdministrativeExpenses(Long administrativeExpenses) {
         this.administrativeExpenses = administrativeExpenses;
+    }
+
+    public Long getDistributionCosts() {
+        return distributionCosts;
     }
 
     public void setDistributionCosts(Long distributionCosts) {
         this.distributionCosts = distributionCosts;
     }
 
+    public Long getOperatingTotal() {
+        return operatingTotal;
+    }
+
     public void setOperatingTotal(Long operatingTotal) {
         this.operatingTotal = operatingTotal;
+    }
+
+    public Long getOtherOperatingIncome() {
+        return otherOperatingIncome;
     }
 
     public void setOtherOperatingIncome(Long otherOperatingIncome) {
