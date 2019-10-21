@@ -50,7 +50,7 @@ public class ProfitLossController {
 
         if(bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return  new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());

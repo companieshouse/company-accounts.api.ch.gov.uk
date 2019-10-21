@@ -178,8 +178,6 @@ public class ProfitLossControllerTest {
         assertNull(response.getBody());
     }
 
-
-
     @Test
     @DisplayName("Tests the successful update of a profit and loss resource")
     void updateProfitLossSuccess() throws DataException {
