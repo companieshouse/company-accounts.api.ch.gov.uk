@@ -118,13 +118,14 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     @Override
     public void addLink(String id, PreviousPeriodLinkType linkType, String link, HttpServletRequest request)
             throws DataException {
-        String smallFullId = generateID(id);
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(smallFullId)
+        String previousPeriodId = generateID(id);
+        try {
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(previousPeriodId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get profit and loss entity to add link"));
         previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
 
-        try {
+
             previousPeriodRepository.save(previousPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);

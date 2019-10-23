@@ -13,7 +13,8 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
@@ -49,7 +50,10 @@ public class ProfitAndLossServiceTest {
     private ProfitAndLossRepository repository;
 
     @Mock
-    private SmallFullService smallFullService;
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
 
     @Mock
     private KeyIdGenerator keyIdGenerator;
@@ -410,14 +414,14 @@ public class ProfitAndLossServiceTest {
 
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         if (currentPeriod) {
-            verify(smallFullService, timesExpected)
+            verify(currentPeriodService, timesExpected)
                     .addLink(COMPANY_ACCOUNTS_ID,
-                           SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS,
+                           CurrentPeriodLinkType.PROFIT_AND_LOSS,
                                     CURRENT_PERIOD_URI, request);
         } else {
-            verify(smallFullService, timesExpected)
+            verify(previousPeriodService, timesExpected)
                     .addLink(COMPANY_ACCOUNTS_ID,
-                            SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS,
+                            PreviousPeriodLinkType.PROFIT_AND_LOSS,
                                     PREVIOUS_PERIOD_URI, request);
         }
     }
@@ -426,14 +430,14 @@ public class ProfitAndLossServiceTest {
 
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         if (currentPeriod) {
-            verify(smallFullService, timesExpected)
+            verify(currentPeriodService, timesExpected)
                     .removeLink(COMPANY_ACCOUNTS_ID,
-                            SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS,
+                            CurrentPeriodLinkType.PROFIT_AND_LOSS,
                                     request);
         } else {
-            verify(smallFullService, timesExpected)
+            verify(previousPeriodService, timesExpected)
                     .removeLink(COMPANY_ACCOUNTS_ID,
-                            SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS,
+                            PreviousPeriodLinkType.PROFIT_AND_LOSS,
                                     request);
         }
     }
