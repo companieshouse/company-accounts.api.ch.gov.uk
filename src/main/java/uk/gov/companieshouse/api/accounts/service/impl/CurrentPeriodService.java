@@ -138,12 +138,13 @@ public class CurrentPeriodService implements
     public void addLink(String id, CurrentPeriodLinkType linkType, String link, HttpServletRequest request) throws DataException {
 
         String smallFullId = generateID(id);
+        try {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get profit and loss entity to add link"));
         currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
 
-        try {
+
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);
@@ -154,8 +155,8 @@ public class CurrentPeriodService implements
     @Override
     public void removeLink(String id, CurrentPeriodLinkType linkType, HttpServletRequest request) throws DataException {
 
-        String smallFullId = generateID(id);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
+        String currentPeriodId = generateID(id);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get profit and loss entity from which to remove link"));
         currentPeriodEntity.getData().getLinks().remove(linkType.getLink());

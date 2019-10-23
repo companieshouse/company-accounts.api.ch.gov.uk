@@ -1,16 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,17 +14,33 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -79,12 +85,21 @@ public class PreviousPeriodServiceTest {
     @Mock
     private KeyIdGenerator keyIdGenerator;
 
+    @Mock
+    private PreviousPeriodDataEntity previousPeriodDataEntity;
+
+    @Mock
+    private Map<String, String> links;
+
     @InjectMocks
     private PreviousPeriodService previousPeriodService;
 
     private static final String SELF_LINK = "self_link";
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String RESOURCE_ID = "resourceId";
+    private static final String PREVIOUS_PERIOD_APPROVAL_LINK = "previousPeriodReportApprovalLink";
+
+
 
     @BeforeEach
     public void setUp() {
@@ -198,4 +213,48 @@ public class PreviousPeriodServiceTest {
 
         assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
+
+    @Test
+    @DisplayName("Add link to current period resource- success")
+    void addLinkSuccess() {
+
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(previousPeriodEntity));
+
+        when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
+        when(previousPeriodDataEntity.getLinks()).thenReturn(links);
+
+        PreviousPeriodLinkType previousPeriodLinkType = PreviousPeriodLinkType.APPROVAL;
+
+        assertAll(() ->
+                previousPeriodService.addLink(
+                        COMPANY_ACCOUNTS_ID, previousPeriodLinkType, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+
+        verify(links).put(previousPeriodLinkType.getLink(), PREVIOUS_PERIOD_APPROVAL_LINK);
+        verify(previousPeriodRepository).save(previousPeriodEntity);
+    }
+
+    @Test
+    @DisplayName("Add link - not found")
+    void addLinkNotFound() {
+
+        PreviousPeriodEntity previousPeriodEntity = null;
+
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(previousPeriodEntity));
+
+        assertThrows(DataException.class, () ->
+                previousPeriodService.addLink(
+                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.APPROVAL, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+    }
+
+    @Test
+    @DisplayName("Add link - Mongo exception")
+    void addLinkMongoException() {
+
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class, () ->
+                previousPeriodService.addLink(
+                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.APPROVAL, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+    }
+
 }
