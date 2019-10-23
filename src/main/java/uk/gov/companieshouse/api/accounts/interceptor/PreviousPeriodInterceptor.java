@@ -99,7 +99,7 @@ public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
             PreviousPeriod previousPeriod= responseObject.getData();
 
             String smallFullLink = smallFull.getLinks()
-                    .get(SmallFullLinkType.CURRENT_PERIOD.getLink());
+                    .get(SmallFullLinkType.PREVIOUS_PERIOD.getLink());
             String previousPeriodSelf = previousPeriod.getLinks().get(BasicLinkType.SELF.getLink());
             if (!smallFullLink.equals(previousPeriodSelf)) {
                 LOGGER.debugRequest(request,
