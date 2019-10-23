@@ -12,6 +12,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -92,8 +93,8 @@ public class CurrentPeriodInterceptorTest {
         when(responseObject.getData()).thenReturn(currentPeriod);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
         when(currentPeriod.getLinks()).thenReturn(currentPeriodLinks);
-        when(smallFullLinks.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink())).thenReturn("linkToProfitAndLoss");
-        when(currentPeriodLinks.get(CurrentPeriodLinkType.SELF.getLink())).thenReturn("linkToProfitAndLoss");
+        when(smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink())).thenReturn("linkToCurrentPeriod");
+        when(currentPeriodLinks.get(CurrentPeriodLinkType.SELF.getLink())).thenReturn("linkToCurrentPeriod");
 
         currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
