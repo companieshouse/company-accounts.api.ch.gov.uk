@@ -9,7 +9,8 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
@@ -35,7 +36,9 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
 
     private ProfitAndLossTransformer profitAndLossTransformer;
 
-    private SmallFullService smallFullService;
+    private CurrentPeriodService currentPeriodService;
+
+    private PreviousPeriodService previousPeriodService;
 
     private KeyIdGenerator keyIdGenerator;
 
@@ -43,11 +46,13 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
     public ProfitAndLossService(
             ProfitAndLossRepository profitAndLossRepository,
             ProfitAndLossTransformer profitAndLossTransformer,
-            SmallFullService smallFullService,
+            CurrentPeriodService currentPeriodService,
+            PreviousPeriodService previousPeriodService,
             KeyIdGenerator keyIdGenerator) {
         this.profitAndLossRepository = profitAndLossRepository;
         this.profitAndLossTransformer = profitAndLossTransformer;
-        this.smallFullService = smallFullService;
+        this.currentPeriodService = currentPeriodService;
+        this.previousPeriodService = previousPeriodService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
@@ -74,11 +79,11 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
         }
 
         if (isCurrentPeriod(request)) {
-            smallFullService
-                    .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS, selfLink, request);
+            currentPeriodService
+                    .addLink(companyAccountId, CurrentPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         } else {
-            smallFullService
-                    .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS, selfLink, request);
+            previousPeriodService
+                    .addLink(companyAccountId, PreviousPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         }
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -138,11 +143,11 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
             if (profitAndLossRepository.existsById(profitLossId)) {
                 profitAndLossRepository.deleteById(profitLossId);
                 if (isCurrentPeriod(request)) {
-                    smallFullService
-                            .removeLink(companyAccountsId, SmallFullLinkType.CURRENT_PERIOD_PROFIT_LOSS, request);
+                    currentPeriodService
+                            .removeLink(companyAccountsId, CurrentPeriodLinkType.PROFIT_AND_LOSS, request);
                 } else {
-                    smallFullService
-                            .removeLink(companyAccountsId, SmallFullLinkType.PREVIOUS_PERIOD_PROFIT_LOSS, request);
+                    previousPeriodService
+                            .removeLink(companyAccountsId, PreviousPeriodLinkType.PROFIT_AND_LOSS, request);
                 }
                 return new ResponseObject<>(ResponseStatus.UPDATED);
 

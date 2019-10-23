@@ -38,7 +38,7 @@ public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
                 , Object handler) throws NoSuchAlgorithmException {
 
             if(request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
-                    .endsWith("current-period")) {
+                    .endsWith("previous-period")) {
                 return true;
             }
 

@@ -7,7 +7,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -98,8 +99,8 @@ public class CurrentPeriodInterceptor extends HandlerInterceptorAdapter {
         CurrentPeriod currentPeriod= responseObject.getData();
 
         String smallFullLink = smallFull.getLinks()
-                .get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink());
-        String currentPeriodSelf = currentPeriod.getLinks().get(CurrentPeriodLinkType.SELF.getLink());
+                .get(SmallFullLinkType.CURRENT_PERIOD.getLink());
+        String currentPeriodSelf = currentPeriod.getLinks().get(BasicLinkType.SELF.getLink());
         if (!smallFullLink.equals(currentPeriodSelf)) {
             LOGGER.debugRequest(request,
                     "CurrentPeriodInterceptor error: The CurrentPeriod self link does not exist in the SmallFull links",
