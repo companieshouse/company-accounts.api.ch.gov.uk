@@ -949,8 +949,18 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
                                 String companyAccountsId,
                                 Errors errors) throws DataException {
 
-        crossValidateCurrentPeriod(errors, request, companyAccountsId, tangibleAssets);
-        crossValidatePreviousPeriod(errors, request, companyAccountsId, tangibleAssets);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if (currentPeriodBalanceSheet != null) {
+            crossValidateCurrentPeriod(errors, request, companyAccountsId, tangibleAssets);
+        }
+        
+        if (previousPeriodBalanceSheet != null) {
+            crossValidatePreviousPeriod(errors, request, companyAccountsId, tangibleAssets);
+        }
 
         return errors;
     }
@@ -1011,6 +1021,30 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
             addError(errors, previousBalanceSheetNotEqual,
                 getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
+    }
+
+    private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
+                                                      String companyAccountsId) throws DataException {
+
+        ResponseObject<CurrentPeriod> currentPeriodResponseObject;
+        currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
+
+        return Optional.of(currentPeriodResponseObject)
+                .map(ResponseObject::getData)
+                .map(CurrentPeriod::getBalanceSheet)
+                .orElse(null);
+    }
+
+    private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
+                                                       String companyAccountsId) throws DataException {
+
+        ResponseObject<PreviousPeriod> previousPeriodResponseObject;
+        previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
+
+        return Optional.of(previousPeriodResponseObject)
+                .map(ResponseObject::getData)
+                .map(PreviousPeriod::getBalanceSheet)
+                .orElse(null);
     }
 
     private enum TangibleSubResource {
