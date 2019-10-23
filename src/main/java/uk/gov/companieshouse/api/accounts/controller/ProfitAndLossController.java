@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitLoss;
+import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.ProfitLossService;
+import uk.gov.companieshouse.api.accounts.service.impl.ProfitAndLossService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -30,11 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ProfitLossController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{period}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ProfitAndLossController {
 
     @Autowired
-    private ProfitLossService profitLossService;
+    private ProfitAndLossService profitAndLossService;
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
@@ -42,8 +46,11 @@ public class ProfitLossController {
     @Autowired
     private ErrorMapper errorMapper;
 
+    @Autowired
+    private PeriodConverter periodConverter;
+
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody ProfitLoss profitLoss,
+    public ResponseEntity create(@Valid @RequestBody ProfitAndLoss profitAndLoss,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
@@ -57,7 +64,7 @@ public class ProfitLossController {
 
         try {
 
-            ResponseObject<ProfitLoss> response = profitLossService.create(profitLoss, transaction,
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.create(profitAndLoss, transaction,
                     companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
@@ -76,7 +83,7 @@ public class ProfitLossController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitLoss> response = profitLossService.find(companyAccountId, request);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.find(companyAccountId, request);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve profit and loss resource",
@@ -86,11 +93,21 @@ public class ProfitLossController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid ProfitLoss profitLoss, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
-        if(smallFull.getLinks().get(SmallFullLinkType.PROFIT_AND_LOSS.getLink()) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity update(@RequestBody @Valid ProfitAndLoss profitAndLoss, BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("period") Period period, HttpServletRequest request) {
+
+        if (period.equals(Period.CURRENT_PERIOD)) {
+            CurrentPeriod currentPeriod = (CurrentPeriod)
+                    request.getAttribute(AttributeName.CURRENT_PERIOD.getValue());
+            if(currentPeriod.getLinks().get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            PreviousPeriod previousPeriod = (PreviousPeriod)
+                    request.getAttribute(AttributeName.PREVIOUS_PERIOD.getValue());
+            if(previousPeriod.getLinks().get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }
 
         if(bindingResult.hasErrors()) {
@@ -101,8 +118,8 @@ public class ProfitLossController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitLoss> response =
-                    profitLossService.update(profitLoss, transaction, companyAccountId, request);
+            ResponseObject<ProfitAndLoss> response =
+                    profitAndLossService.update(profitAndLoss, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -119,7 +136,7 @@ public class ProfitLossController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitLoss> response = profitLossService.delete(companyAccountId, request);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -128,4 +145,11 @@ public class ProfitLossController {
             return apiResponseMapper.getErrorResponse();
         }
     }
+
+    @InitBinder
+    protected void initBinder(final WebDataBinder webdataBinder) {
+
+        webdataBinder.registerCustomEditor(Period.class, periodConverter);
+    }
+
 }

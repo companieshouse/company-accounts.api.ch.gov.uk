@@ -4,84 +4,84 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.GrossProfitOrLossEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.OperatingProfitOrLossEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitOrLossBeforeTaxEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitOrLossForFinancialYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 
 @Component
-public class ProfitLossTransformer implements GenericTransformer<ProfitLoss, ProfitLossEntity> {
+public class ProfitAndLossTransformer implements GenericTransformer<ProfitAndLoss, ProfitAndLossEntity> {
 
     @Override
-    public ProfitLossEntity transform(ProfitLoss rest) {
+    public ProfitAndLossEntity transform(ProfitAndLoss rest) {
 
-        ProfitLossDataEntity profitLossDataEntity = new ProfitLossDataEntity();
+        ProfitAndLossDataEntity profitAndLossDataEntity = new ProfitAndLossDataEntity();
 
         if (rest.getGrossProfitOrLoss() != null) {
             GrossProfitOrLossEntity grossProfitOrLoss = new GrossProfitOrLossEntity();
             BeanUtils.copyProperties(rest.getGrossProfitOrLoss(), grossProfitOrLoss);
-            profitLossDataEntity.setGrossProfitOrLoss(grossProfitOrLoss);
+            profitAndLossDataEntity.setGrossProfitOrLoss(grossProfitOrLoss);
         }
 
         if (rest.getOperatingProfitOrLoss() != null) {
             OperatingProfitOrLossEntity operatingProfitOrLoss = new OperatingProfitOrLossEntity();
             BeanUtils.copyProperties(rest.getOperatingProfitOrLoss(), operatingProfitOrLoss);
-            profitLossDataEntity.setOperatingProfitOrLoss(operatingProfitOrLoss);
+            profitAndLossDataEntity.setOperatingProfitOrLoss(operatingProfitOrLoss);
         }
 
         if (rest.getProfitOrLossBeforeTax() != null) {
             ProfitOrLossBeforeTaxEntity profitOrLossBeforeTax = new ProfitOrLossBeforeTaxEntity();
             BeanUtils.copyProperties(rest.getProfitOrLossBeforeTax(), profitOrLossBeforeTax);
-            profitLossDataEntity.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
+            profitAndLossDataEntity.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
         }
 
         if (rest.getProfitOrLossForFinancialYear() != null) {
             ProfitOrLossForFinancialYearEntity profitOrLossForFinancialYear = new ProfitOrLossForFinancialYearEntity();
             BeanUtils.copyProperties(rest.getProfitOrLossForFinancialYear(), profitOrLossForFinancialYear);
-            profitLossDataEntity.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
+            profitAndLossDataEntity.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
         }
 
-        ProfitLossEntity profitLossEntity = new ProfitLossEntity();
-        profitLossEntity.setData(profitLossDataEntity);
-        return profitLossEntity;
+        ProfitAndLossEntity profitAndLossEntity = new ProfitAndLossEntity();
+        profitAndLossEntity.setData(profitAndLossDataEntity);
+        return profitAndLossEntity;
     }
 
     @Override
-    public ProfitLoss transform(ProfitLossEntity entity) {
+    public ProfitAndLoss transform(ProfitAndLossEntity entity) {
 
-        ProfitLoss profitLoss = new ProfitLoss();
+        ProfitAndLoss profitAndLoss = new ProfitAndLoss();
 
-        ProfitLossDataEntity profitLossDataEntity = entity.getData();
+        ProfitAndLossDataEntity profitAndLossDataEntity = entity.getData();
 
-        if (profitLossDataEntity.getGrossProfitOrLoss() != null) {
+        if (profitAndLossDataEntity.getGrossProfitOrLoss() != null) {
             GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
-            BeanUtils.copyProperties(profitLossDataEntity.getGrossProfitOrLoss(), grossProfitOrLoss);
-            profitLoss.setGrossProfitOrLoss(grossProfitOrLoss);
+            BeanUtils.copyProperties(profitAndLossDataEntity.getGrossProfitOrLoss(), grossProfitOrLoss);
+            profitAndLoss.setGrossProfitOrLoss(grossProfitOrLoss);
         }
 
-        if (profitLossDataEntity.getOperatingProfitOrLoss() != null) {
+        if (profitAndLossDataEntity.getOperatingProfitOrLoss() != null) {
             OperatingProfitOrLoss operatingProfitOrLoss = new OperatingProfitOrLoss();
-            BeanUtils.copyProperties(profitLossDataEntity.getOperatingProfitOrLoss(), operatingProfitOrLoss);
-            profitLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
+            BeanUtils.copyProperties(profitAndLossDataEntity.getOperatingProfitOrLoss(), operatingProfitOrLoss);
+            profitAndLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
         }
 
-        if (profitLossDataEntity.getProfitOrLossBeforeTax() != null) {
+        if (profitAndLossDataEntity.getProfitOrLossBeforeTax() != null) {
             ProfitOrLossBeforeTax profitOrLossBeforeTax = new ProfitOrLossBeforeTax();
-            BeanUtils.copyProperties(profitLossDataEntity.getProfitOrLossBeforeTax(), profitOrLossBeforeTax);
-            profitLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
+            BeanUtils.copyProperties(profitAndLossDataEntity.getProfitOrLossBeforeTax(), profitOrLossBeforeTax);
+            profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
         }
 
-        if (profitLossDataEntity.getProfitOrLossForFinancialYear() != null) {
+        if (profitAndLossDataEntity.getProfitOrLossForFinancialYear() != null) {
             ProfitOrLossForFinancialYear profitOrLossForFinancialYear = new ProfitOrLossForFinancialYear();
-            BeanUtils.copyProperties(profitLossDataEntity.getProfitOrLossForFinancialYear(), profitOrLossForFinancialYear);
-            profitLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
+            BeanUtils.copyProperties(profitAndLossDataEntity.getProfitOrLossForFinancialYear(), profitOrLossForFinancialYear);
+            profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
         }
 
-        return profitLoss;
+        return profitAndLoss;
     }
 }

@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -12,21 +9,28 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.PreviousPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.PreviousPeriodRepository;
+import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.PreviousPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
-public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
+public class PreviousPeriodService implements ResourceService<PreviousPeriod>
+, ParentService<PreviousPeriod, PreviousPeriodLinkType> {
 
     private PreviousPeriodRepository previousPeriodRepository;
 
@@ -109,6 +113,39 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod> {
     @Override
     public ResponseObject<PreviousPeriod> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
+    }
+
+    @Override
+    public void addLink(String id, PreviousPeriodLinkType linkType, String link, HttpServletRequest request)
+            throws DataException {
+        String smallFullId = generateID(id);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(smallFullId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get profit and loss entity to add link"));
+        previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
+
+        try {
+            previousPeriodRepository.save(previousPeriodEntity);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+    }
+
+    @Override
+    public void removeLink(String id, PreviousPeriodLinkType linkType, HttpServletRequest request)
+            throws DataException {
+
+        String smallFullId = generateID(id);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(smallFullId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get profit and loss entity from which to remove link"));
+        previousPeriodEntity.getData().getLinks().remove(linkType.getLink());
+
+        try {
+            previousPeriodRepository.save(previousPeriodEntity);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
     }
 
     public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,

@@ -8,17 +8,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.GrossProfitOrLossEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.OperatingProfitOrLossEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitLossEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitOrLossBeforeTaxEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitOrLossForFinancialYearEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 
-public class ProfitLossTransformerTest {
+public class ProfitAndLossTransformerTest {
 
     private static final Long TURNOVER = 1L;
     private static final Long COST_OF_SALES = 2L;
@@ -36,13 +36,13 @@ public class ProfitLossTransformerTest {
     private static final Long TAX_ON_PROFIT = 11L;
     private static final Long TOTAL_FOR_YEAR = 12L;
 
-    private ProfitLossTransformer transformer = new ProfitLossTransformer();
+    private ProfitAndLossTransformer transformer = new ProfitAndLossTransformer();
 
     @Test
     @DisplayName("Tests rest to entity transform for empty rest object")
     void testRestToEntityTransformWithEmptyObject() {
 
-        ProfitLossEntity entity = transformer.transform(new ProfitLoss());
+        ProfitAndLossEntity entity = transformer.transform(new ProfitAndLoss());
 
         assertNotNull(entity);
         assertNotNull(entity.getData());
@@ -56,33 +56,33 @@ public class ProfitLossTransformerTest {
     @DisplayName("Tests rest to entity transform for full rest object")
     void testRestToEntityTransformWithFullyPopulatedObject() {
 
-        ProfitLoss profitLoss = new ProfitLoss();
+        ProfitAndLoss profitAndLoss = new ProfitAndLoss();
 
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
         grossProfitOrLoss.setTurnover(TURNOVER);
         grossProfitOrLoss.setCostOfSales(COST_OF_SALES);
         grossProfitOrLoss.setGrossTotal(GROSS_TOTAL);
-        profitLoss.setGrossProfitOrLoss(grossProfitOrLoss);
+        profitAndLoss.setGrossProfitOrLoss(grossProfitOrLoss);
 
         OperatingProfitOrLoss operatingProfitOrLoss = new OperatingProfitOrLoss();
         operatingProfitOrLoss.setDistributionCosts(DISTRIBUTION_COSTS);
         operatingProfitOrLoss.setAdministrativeExpenses(ADMIN_EXPENSES);
         operatingProfitOrLoss.setOtherOperatingIncome(OTHER_OPERATING_INCOME);
         operatingProfitOrLoss.setOperatingTotal(OPERATING_TOTAL);
-        profitLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
+        profitAndLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
 
         ProfitOrLossBeforeTax profitOrLossBeforeTax = new ProfitOrLossBeforeTax();
         profitOrLossBeforeTax.setInterestReceivableAndSimilarIncome(INTEREST_RECEIVABLE);
         profitOrLossBeforeTax.setInterestPayableAndSimilarCharges(INTEREST_PAYABLE);
         profitOrLossBeforeTax.setTotalProfitOrLossBeforeTax(TOTAL_BEFORE_TAX);
-        profitLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
+        profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
 
         ProfitOrLossForFinancialYear profitOrLossForFinancialYear = new ProfitOrLossForFinancialYear();
         profitOrLossForFinancialYear.setTaxOnProfit(TAX_ON_PROFIT);
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(TOTAL_FOR_YEAR);
-        profitLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
+        profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
 
-        ProfitLossEntity entity = transformer.transform(profitLoss);
+        ProfitAndLossEntity entity = transformer.transform(profitAndLoss);
 
         assertNotNull(entity);
         assertNotNull(entity.getData());
@@ -112,10 +112,10 @@ public class ProfitLossTransformerTest {
     @DisplayName("Tests entity to rest transform for empty entity")
     void testEntityToRestTransformWithEmptyObject() {
 
-        ProfitLossEntity entity = new ProfitLossEntity();
-        entity.setData(new ProfitLossDataEntity());
+        ProfitAndLossEntity entity = new ProfitAndLossEntity();
+        entity.setData(new ProfitAndLossDataEntity());
 
-        ProfitLoss rest = transformer.transform(entity);
+        ProfitAndLoss rest = transformer.transform(entity);
 
         assertNotNull(rest);
         assertNull(rest.getGrossProfitOrLoss());
@@ -128,7 +128,7 @@ public class ProfitLossTransformerTest {
     @DisplayName("Tests entity to rest transform for full entity")
     void testEntityToRestTransformWithFullyPopulatedObject() {
 
-        ProfitLossDataEntity dataEntity = new ProfitLossDataEntity();
+        ProfitAndLossDataEntity dataEntity = new ProfitAndLossDataEntity();
 
         GrossProfitOrLossEntity grossProfitOrLoss = new GrossProfitOrLossEntity();
         grossProfitOrLoss.setTurnover(TURNOVER);
@@ -154,10 +154,10 @@ public class ProfitLossTransformerTest {
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(TOTAL_FOR_YEAR);
         dataEntity.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
 
-        ProfitLossEntity entity = new ProfitLossEntity();
+        ProfitAndLossEntity entity = new ProfitAndLossEntity();
         entity.setData(dataEntity);
 
-        ProfitLoss rest = transformer.transform(entity);
+        ProfitAndLoss rest = transformer.transform(entity);
 
         assertNotNull(rest);
 
