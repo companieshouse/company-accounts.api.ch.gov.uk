@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 
-@Document(collection = "profitLoss")
+@Document(collection = "profit_and_loss")
 public class ProfitAndLossEntity extends BaseEntity {
 
     @Field("data")
