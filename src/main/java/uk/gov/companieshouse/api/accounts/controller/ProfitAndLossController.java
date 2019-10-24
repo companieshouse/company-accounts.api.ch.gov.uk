@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{period}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{period: (current-period|previous-period)}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfitAndLossController {
 
     @Autowired

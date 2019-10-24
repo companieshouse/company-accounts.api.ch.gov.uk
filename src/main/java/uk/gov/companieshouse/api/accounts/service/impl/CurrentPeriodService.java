@@ -141,7 +141,7 @@ public class CurrentPeriodService implements
         try {
         CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get profit and loss entity to add link"));
+                        "Failed to get current period entity to add link"));
         currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
 
 
@@ -158,7 +158,7 @@ public class CurrentPeriodService implements
         String currentPeriodId = generateID(id);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get profit and loss entity from which to remove link"));
+                        "Failed to get current period entity from which to remove link"));
         currentPeriodEntity.getData().getLinks().remove(linkType.getLink());
 
         try {

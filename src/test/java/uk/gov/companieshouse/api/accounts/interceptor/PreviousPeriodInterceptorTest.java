@@ -69,14 +69,19 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
     @InjectMocks
     private PreviousPeriodInterceptor previousPeriodInterceptor;
 
+    private static final String TRANSACTION_ID = "transactionId";
+    private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
+    private  static final String X_REQUEST_ID = "X-Request-Id";
+    private static final String LINK_PREVIOUS_PERIOD = "linkToPreviousPeriod";
+
     @BeforeEach
     void setUp() throws NoSuchAlgorithmException {
 
         Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("transactionId", "5555");
-        pathVariables.put("companyAccountId", "test");
+        pathVariables.put(TRANSACTION_ID, "5555");
+        pathVariables.put(COMPANY_ACCOUNT_ID, "test");
 
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
+        when(httpServletRequest.getHeader(X_REQUEST_ID)).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(httpServletRequest).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -92,8 +97,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         when(responseObject.getData()).thenReturn(previousPeriod);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
         when(previousPeriod.getLinks()).thenReturn(previousPeriodLinks);
-        when(smallFullLinks.get(SmallFullLinkType.PREVIOUS_PERIOD.getLink())).thenReturn("linkToPreviousPeriod");
-        when(previousPeriodLinks.get("self")).thenReturn("linkToPreviousPeriod");
+        when(smallFullLinks.get(SmallFullLinkType.PREVIOUS_PERIOD.getLink())).thenReturn(LINK_PREVIOUS_PERIOD);
+        when(previousPeriodLinks.get("self")).thenReturn(LINK_PREVIOUS_PERIOD);
 
         previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());

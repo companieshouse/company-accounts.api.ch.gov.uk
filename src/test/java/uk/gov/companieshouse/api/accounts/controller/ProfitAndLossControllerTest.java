@@ -15,7 +15,6 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
@@ -340,7 +339,7 @@ public class ProfitAndLossControllerTest {
         Period period = Period.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
-        when(links.get(SmallFullLinkType.PROFIT_AND_LOSS.getLink()))
+        when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
                 .thenReturn(PROFIT_AND_LOSS_LINK);
 
         when(bindingResult.hasErrors()).thenReturn(false);

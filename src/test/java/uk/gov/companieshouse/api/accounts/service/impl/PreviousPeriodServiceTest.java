@@ -62,9 +62,6 @@ public class PreviousPeriodServiceTest {
     private PreviousPeriodRepository previousPeriodRepository;
 
     @Mock
-    private SmallFullService smallFullService;
-
-    @Mock
     private PreviousPeriodValidator previousPeriodValidator;
 
     @Mock
@@ -97,12 +94,10 @@ public class PreviousPeriodServiceTest {
     private static final String SELF_LINK = "self_link";
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String RESOURCE_ID = "resourceId";
-    private static final String PREVIOUS_PERIOD_APPROVAL_LINK = "previousPeriodReportApprovalLink";
-
-
+    private static final String PREVIOUS_PERIOD_PROFIT_AND_LOSS = "previousPeriodReportProfitAndLossLink";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(keyIdGenerator
                 .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.PREVIOUS_PERIOD.getName()))
                         .thenReturn(RESOURCE_ID);
@@ -110,7 +105,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the successful creation of a previousPeriod resource")
-    public void canCreatePreviousPeriod() throws DataException {
+    void canCreatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
@@ -125,7 +120,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating a previous period resource")
-    public void createSmallfullDuplicateKey() throws DataException {
+    void createSmallfullDuplicateKey() throws DataException {
         doReturn(previousPeriodEntity).when(previousPeriodTransformer).transform(ArgumentMatchers
             .any(PreviousPeriod.class));
         when(previousPeriodRepository.insert(previousPeriodEntity))
@@ -157,7 +152,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the successful find of a previous period resource")
-    public void findPreviousPeriod() throws DataException {
+    void findPreviousPeriod() throws DataException {
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
         when(previousPeriodTransformer.transform(previousPeriodEntity)).thenReturn(previousPeriod);
 
@@ -169,7 +164,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the unsuccessful find of a previous period resource")
-    public void findPreviousPeriodNotFound() throws DataException {
+    void findPreviousPeriodNotFound() throws DataException {
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
         ResponseObject<PreviousPeriod> result = previousPeriodService.find(COMPANY_ACCOUNTS_ID, request);
 
@@ -180,7 +175,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a previous period resource")
-    public void findPreviousPeriodMongoException() {
+    void findPreviousPeriodMongoException() {
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
         Executable executable = () -> previousPeriodService.find(COMPANY_ACCOUNTS_ID, request);
 
@@ -189,7 +184,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("PUT - Success - Previous Period")
-    public void canUpdatePreviousPeriod() throws DataException {
+    void canUpdatePreviousPeriod() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
@@ -203,7 +198,7 @@ public class PreviousPeriodServiceTest {
 
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
-    public void canUpdatePreviousPeriodFailureMongoException() throws DataException {
+    void canUpdatePreviousPeriodFailureMongoException() throws DataException {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
@@ -223,13 +218,13 @@ public class PreviousPeriodServiceTest {
         when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
         when(previousPeriodDataEntity.getLinks()).thenReturn(links);
 
-        PreviousPeriodLinkType previousPeriodLinkType = PreviousPeriodLinkType.APPROVAL;
+        PreviousPeriodLinkType previousPeriodLinkType = PreviousPeriodLinkType.PROFIT_AND_LOSS;
 
         assertAll(() ->
                 previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, previousPeriodLinkType, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, previousPeriodLinkType, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
 
-        verify(links).put(previousPeriodLinkType.getLink(), PREVIOUS_PERIOD_APPROVAL_LINK);
+        verify(links).put(previousPeriodLinkType.getLink(), PREVIOUS_PERIOD_PROFIT_AND_LOSS);
         verify(previousPeriodRepository).save(previousPeriodEntity);
     }
 
@@ -243,7 +238,7 @@ public class PreviousPeriodServiceTest {
 
         assertThrows(DataException.class, () ->
                 previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.APPROVAL, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
     }
 
     @Test
@@ -254,7 +249,7 @@ public class PreviousPeriodServiceTest {
 
         assertThrows(DataException.class, () ->
                 previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.APPROVAL, PREVIOUS_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
     }
 
 }
