@@ -41,7 +41,7 @@ public class ProfitOrLossBeforeTaxEntity {
         return "ProfitOrLossBeforeTax{" +
                 "interestReceivableAndSimilarIncome=" + interestReceivableAndSimilarIncome +
                 ", interestPayableAndSimilarChanges=" + interestPayableAndSimilarCharges +
-                ", totalProfitOrLossBeforeTax" +
-                '}';
+                ", totalProfitOrLossBeforeTax=" + totalProfitOrLossBeforeTax +
+                "}";
     }
 }

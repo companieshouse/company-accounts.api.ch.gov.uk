@@ -38,6 +38,4 @@ public class GrossProfitOrLoss {
     public void setTurnover(Long turnover) {
         this.turnover = turnover;
     }
-
-
 }

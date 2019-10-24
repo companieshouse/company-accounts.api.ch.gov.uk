@@ -22,6 +22,6 @@ public class ProfitAndLossEntity extends BaseEntity {
     public String toString() {
         return "ProfitLossEntity{" +
                 "data=" + data +
-                '}';
+                "}";
     }
 }
