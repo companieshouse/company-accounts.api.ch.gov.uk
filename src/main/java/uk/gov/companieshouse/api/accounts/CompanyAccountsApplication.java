@@ -8,8 +8,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.CurrentPeriodInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 
@@ -32,6 +34,12 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private CurrentPeriodInterceptor currentPeriodInterceptor;
+
+    @Autowired
+    private PreviousPeriodInterceptor previousPeriodInterceptor;
 
     @Autowired
     private CicReportInterceptor cicReportInterceptor;
@@ -79,6 +87,14 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
             .addPathPatterns(
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+
+        registry.addInterceptor(currentPeriodInterceptor)
+                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period",
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/current-period/**");
+
+        registry.addInterceptor(previousPeriodInterceptor)
+                .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period",
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period/**");
 
         registry.addInterceptor(cicReportInterceptor)
             .addPathPatterns(
