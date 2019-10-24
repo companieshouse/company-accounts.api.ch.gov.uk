@@ -56,6 +56,9 @@ public class PreviousPeriodServiceTest {
     private Transaction transaction;
 
     @Mock
+    private SmallFullService smallFullService;
+
+    @Mock
     private TransactionLinks transactionLinks;
 
     @Mock
