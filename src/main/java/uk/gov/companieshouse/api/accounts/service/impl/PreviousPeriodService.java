@@ -185,7 +185,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
         String companyAccountId) {
 
-        if (previousPeriod.getLinks() != null) {
+        if (previousPeriod.getLinks() == null) {
             Map<String, String> map = new HashMap<>();
             map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
 

@@ -175,7 +175,7 @@ public class CurrentPeriodService implements
     private void populateMetadata(CurrentPeriod currentPeriod, Transaction transaction,
         String companyAccountId) {
 
-        if (currentPeriod.getLinks() != null) {
+        if (currentPeriod.getLinks() == null) {
             Map<String, String> map = new HashMap<>();
             map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
 
