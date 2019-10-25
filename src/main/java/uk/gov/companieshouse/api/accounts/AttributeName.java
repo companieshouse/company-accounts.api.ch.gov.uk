@@ -5,6 +5,8 @@ public enum AttributeName {
     TRANSACTION("transaction"),
     COMPANY_ACCOUNT("accounts"),
     SMALLFULL("small-full"),
+    CURRENT_PERIOD("current-period"),
+    PREVIOUS_PERIOD("previous-period"),
     CIC_REPORT("cic-report");
 
     private String value;

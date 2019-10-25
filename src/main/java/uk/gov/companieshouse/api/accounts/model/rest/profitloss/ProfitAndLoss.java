@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProfitLoss extends RestObject {
+public class ProfitAndLoss extends RestObject {
 
     @JsonProperty("gross_profit_or_loss")
     private GrossProfitOrLoss grossProfitOrLoss;
