@@ -5,14 +5,14 @@ import java.util.Arrays;
 public enum AccountingPeriod {
     CURRENT_PERIOD("current-period"), PREVIOUS_PERIOD("previous-period");
 
-    private String accountingPeriod;
+    private String period;
 
     AccountingPeriod(String s) {
-        this.accountingPeriod = s;
+        this.period = s;
     }
 
     private String getPeriod() {
-        return accountingPeriod;
+        return period;
     }
 
     public static AccountingPeriod fromString(String period) {
