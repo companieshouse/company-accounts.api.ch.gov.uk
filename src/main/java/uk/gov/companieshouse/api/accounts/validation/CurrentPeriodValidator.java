@@ -21,8 +21,10 @@ public class CurrentPeriodValidator {
 
         Errors errors = new Errors();
 
-        balanceSheetValidator.validateBalanceSheet(
-                currentPeriod.getBalanceSheet(), transaction, CURRENT_PERIOD_PATH, errors);
+        if (currentPeriod.getBalanceSheet() != null) {
+            balanceSheetValidator.validateBalanceSheet(
+                    currentPeriod.getBalanceSheet(), transaction, CURRENT_PERIOD_PATH, errors);
+        }
 
         return errors;
     }
