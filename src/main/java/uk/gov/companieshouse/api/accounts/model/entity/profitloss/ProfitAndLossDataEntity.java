@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
 
-public class ProfitLossDataEntity extends BaseDataEntity {
+public class ProfitAndLossDataEntity extends BaseDataEntity {
 
     @Field("gross_profit_or_loss")
     private GrossProfitOrLossEntity grossProfitOrLoss;
