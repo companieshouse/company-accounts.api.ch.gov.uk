@@ -5,13 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.Valid;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import javax.validation.constraints.NotNull;
->>>>>>> develop
-=======
->>>>>>> 5c2af463576cc13ee5efb09d3db07c68922eaa35
 
 @JsonInclude(Include.NON_NULL)
 public class CurrentPeriod extends RestObject {
