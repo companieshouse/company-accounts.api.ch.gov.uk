@@ -184,10 +184,13 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
 
     private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
         String companyAccountId) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
 
-        previousPeriod.setLinks(map);
+        if (previousPeriod.getLinks() != null) {
+            Map<String, String> map = new HashMap<>();
+            map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
+
+            previousPeriod.setLinks(map);
+        }
         previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
     }
