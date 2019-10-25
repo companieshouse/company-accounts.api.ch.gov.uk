@@ -23,17 +23,19 @@ public class PreviousPeriodValidator extends BaseValidator {
     public Errors validatePreviousPeriod(PreviousPeriod previousPeriod, Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
-        if (previousPeriod.getBalanceSheet() != null) {
 
             boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
             if (isMultipleYearFiler) {
-                balanceSheetValidator.validateBalanceSheet(
-                        previousPeriod.getBalanceSheet(), transaction, PREVIOUS_PERIOD_PATH, errors);
+                if (previousPeriod.getBalanceSheet() != null) {
+
+                    balanceSheetValidator.validateBalanceSheet(
+                            previousPeriod.getBalanceSheet(), transaction, PREVIOUS_PERIOD_PATH, errors);
+                }
             } else {
+
                 addError(errors, unexpectedData, PREVIOUS_PERIOD_PATH);
             }
-        }
 
         return errors;
     }
