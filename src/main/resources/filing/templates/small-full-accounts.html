@@ -276,7 +276,6 @@
     <div style="display:none" id="accountsHeaderIxbrl">
 
       {{$balanceSheet := .small_full_accounts.balance_sheet}}
-      {{profitOrLoss := .small_full_accounts.profit_or_loss}}
 
       <ix:header>
         <ix:hidden>
@@ -1051,6 +1050,7 @@
     </div>
 
     <!-- PROFIT AND LOSS -->
+    {{if profitAndLoss := .small_full_accounts.profit_and_loss}}
     <div class="page">
       <div class="header">
         <h1 class="text--center">
@@ -1080,7 +1080,6 @@
         </tr>
 
         <tr>
-          <th class="table-heading"></th>
           <th class="table-heading">
             <br />
           </th>
@@ -1098,7 +1097,7 @@
         </thead>
         <tbody>
         <!-- PROFIT AND LOSS GROSS PROFIT OR LOSS -->
-        {{if $grossProfitOrLoss := $profitOrLoss.gross_profit_or_loss}}
+        {{if $grossProfitOrLoss := $profitAndLoss.gross_profit_or_loss}}
 
         {{if $grossProfitOrLoss.turnover}}
         <tr class = "figures">
@@ -1122,13 +1121,17 @@
           <td id = "cost-of-sales-label">Cost of sales:</td>
           <td id="cost-of-sales-curr" class="strong figure">
             {{if isNotEmpty $grossProfitOrLoss.cost_of_sales.current_amount}}
+            {{emitIfPositive $grossProfitOrLoss.cost_of_sales.current_amount "("}}
             <ix:nonFraction contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:CostSales" unitRef="monetaryAccounts">{{getMagnitudeFormatted $grossProfitOrLoss.cost_of_sales.current_amount}}</ix:nonFraction>
+            {{emitIfPositive $grossProfitOrLoss.cost_of_sales.current_amount ")"}}
             {{end}}
           </td>
 
           <td id="cost-of-sales-prev" class="text--right">
             {{if isNotEmpty $grossProfitOrLoss.cost_of_sales.previous_amount}}
+            {{emitIfPositive $grossProfitOrLoss.cost_of_sales.previous_amount "("}}
             <ix:nonFraction contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:CostSales" unitRef="monetaryAccounts">{{getMagnitudeFormatted $grossProfitOrLoss.cost_of_sales.previous_amount}}</ix:nonFraction>
+            {{emitIfPositive $grossProfitOrLoss.cost_of_sales.previous_amount ")"}}
             {{end}}
           </td>
         </tr>
@@ -1152,20 +1155,24 @@
         {{end}}
         {{end}}
         <!-- PROFIT AND LOSS OPERATING PROFIT OR LOSS -->
-        {{if $operatingProfitOrLoss := $profitOrLoss.operating_profit_or_loss}}
+        {{if $operatingProfitOrLoss := $profitAndLoss.operating_profit_or_loss}}
 
         {{if $operatingProfitOrLoss.distribution_costs}}
         <tr class = "figures">
           <td id = "distribution-costs-label">Distribution costs:</td>
           <td id="distribution-costs-curr" class="strong figure">
             {{if isNotEmpty $operatingProfitOrLoss.distribution_costs.current_amount}}
-            {{emitIfNegative $operatingProfitOrLoss.distribution_costs.current_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.distribution_costs.current_amount 0.0)}} sign="-"{{end}}  contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:DistributionCosts" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.distribution_costs.current_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.distribution_costs.current_amount ")"}}
+            {{emitIfPositive $operatingProfitOrLoss.distribution_costs.current_amount "("}}
+            <ix:nonFraction contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:DistributionCosts" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.distribution_costs.current_amount}}</ix:nonFraction>
+            {{emitIfPositive $operatingProfitOrLoss.distribution_costs.current_amount ")"}}
             {{end}}
           </td>
 
           <td id="distribution-costs-prev" class="text--right">
             {{if isNotEmpty $operatingProfitOrLoss.distribution_costs.previous_amount}}
-            {{emitIfNegative $operatingProfitOrLoss.distribution_costs.previous_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.distribution_costs.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:DistributionCosts" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.distribution_costs.previous_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.distribution_costs.previous_amount ")"}}
+            {{emitIfPositive $operatingProfitOrLoss.distribution_costs.previous_amount "("}}
+            <ix:nonFraction contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:DistributionCosts" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.distribution_costs.previous_amount}}</ix:nonFraction>
+            {{emitIfPositive $operatingProfitOrLoss.distribution_costs.previous_amount ")"}}
             {{end}}
           </td>
         </tr>
@@ -1176,13 +1183,17 @@
           <td id = "administrative-expenses-label">Administrative expenses:</td>
           <td id="administrative-expenses-curr" class="strong figure">
             {{if isNotEmpty $operatingProfitOrLoss.administrative_expenses.current_amount}}
-            {{emitIfNegative $operatingProfitOrLoss.administrative_expenses.current_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.administrative_expenses.current_amount 0.0)}} sign="-"{{end}}  contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:AdministrativeExpenses" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.administrative_expenses.current_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.administrative_expenses.current_amount ")"}}
+            {{emitIfPositive $operatingProfitOrLoss.administrative_expenses.current_amount "("}}
+            <ix:nonFraction contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:AdministrativeExpenses" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.administrative_expenses.current_amount}}</ix:nonFraction>
+            {{emitIfPositive $operatingProfitOrLoss.administrative_expenses.current_amount ")"}}
             {{end}}
           </td>
 
           <td id="administrative-expenses-prev" class="text--right">
             {{if isNotEmpty $operatingProfitOrLoss.administrative_expenses.previous_amount}}
-            {{emitIfNegative $operatingProfitOrLoss.administrative_expenses.previous_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.administrative_expenses.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:AdministrativeExpenses" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.administrative_expenses.previous_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.administrative_expenses.previous_amount ")"}}
+            {{emitIfPositive $operatingProfitOrLoss.administrative_expenses.previous_amount "("}}
+            <ix:nonFraction contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:AdministrativeExpenses" unitRef="monetaryAccounts">{{getMagnitudeFormatted $operatingProfitOrLoss.administrative_expenses.previous_amount}}</ix:nonFraction>
+            {{emitIfPositive $operatingProfitOrLoss.administrative_expenses.previous_amount ")"}}
             {{end}}
           </td>
         </tr>
@@ -1224,7 +1235,7 @@
         {{end}}
 
         <!-- PROFIT AND LOSS PROFIT OR LOSS BEFORE TAX -->
-        {{if $profitOrLossBeforeTax := $profitOrLoss.profit_or_loss_before_tax}}
+        {{if $profitOrLossBeforeTax := $profitAndLoss.profit_or_loss_before_tax}}
 
         {{if $profitOrLossBeforeTax.interest_receivable_and_similar_income}}
         <tr class = "figures">
@@ -1248,13 +1259,17 @@
           <td id = "interest-payable-and-similar-charges-label">Interest payable and similar charges:</td>
           <td id="interest-payable-and-similar-charges-curr" class="strong figure">
             {{if isNotEmpty $profitOrLossBeforeTax.interest_payable_and_similar_charges.current_amount}}
+            {{emitIfPositive $profitOrLossBeforeTax.interest_payable_and_similar_charges.current_amount "("}}
             <ix:nonFraction contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:InterestPayableSimilarCharges" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossBeforeTax.interest_payable_and_similar_charges.current_amount}}</ix:nonFraction>
+            {{emitIfPositive $profitOrLossBeforeTax.interest_payable_and_similar_charges.current_amount ")"}}
             {{end}}
           </td>
 
           <td id="interest-payable-and-similar-charges-prev" class="text--right">
             {{if isNotEmpty $profitOrLossBeforeTax.interest_payable_and_similar_charges.previous_amount}}
+            {{emitIfPositive $profitOrLossBeforeTax.interest_payable_and_similar_charges.previous_amount "("}}
             <ix:nonFraction contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:InterestPayableSimilarCharges" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossBeforeTax.interest_payable_and_similar_charges.previous_amount}}</ix:nonFraction>
+            {{emitIfPositive $profitOrLossBeforeTax.interest_payable_and_similar_charges.previous_amount ")"}}
             {{end}}
           </td>
         </tr>
@@ -1279,20 +1294,24 @@
         {{end}}
 
         <!-- PROFIT AND LOSS PROFIT OR LOSS FOR THE FINANCIAL YEAR -->
-        {{if $profitOrLossForFinancialYear := $profitOrLoss.profit_or_loss_for_financial_year}}
+        {{if $profitOrLossForFinancialYear := $profitAndLoss.profit_or_loss_for_financial_year}}
 
         {{if $profitOrLossForFinancialYear.tax}}
         <tr class = "figures">
           <td id = "tax-label">Tax:</td>
           <td id="tax-curr" class="strong figure">
             {{if isNotEmpty $profitOrLossForFinancialYear.tax.current_amount}}
-            {{emitIfNegative $profitOrLossForFinancialYear.tax.current_amount "("}}<ix:nonFraction {{if (lt $profitOrLossForFinancialYear.tax.current_amount 0.0)}} sign="-"{{end}}  contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:TaxOnProfitOrLossOnOrdinaryActivities" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossForFinancialYear.tax.current_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossForFinancialYear.tax.current_amount ")"}}
+            {{emitIfPositive $profitOrLossForFinancialYear.tax.current_amount "("}}
+            <ix:nonFraction contextRef="CY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:TaxOnProfitOrLossOnOrdinaryActivities" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossForFinancialYear.tax.current_amount}}</ix:nonFraction>
+            {{emitIfPositive $profitOrLossForFinancialYear.tax.current_amount ")"}}
             {{end}}
           </td>
 
           <td id="tax-prev" class="text--right">
             {{if isNotEmpty $profitOrLossForFinancialYear.tax.previous_amount}}
-            {{emitIfNegative $profitOrLossForFinancialYear.tax.previous_amount "("}}<ix:nonFraction {{if (lt $profitOrLossForFinancialYear.tax.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:TaxOnProfitOrLossOnOrdinaryActivities" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossForFinancialYear.tax.previous_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossForFinancialYear.tax.previous_amount ")"}}
+            {{emitIfPositive $profitOrLossForFinancialYear.tax.previous_amount "("}}
+            <ix:nonFraction contextRef="PY_PERIOD" decimals="0" format="ixt:numcommadot" name="uk-gaap:TaxOnProfitOrLossOnOrdinaryActivities" unitRef="monetaryAccounts">{{getMagnitudeFormatted $profitOrLossForFinancialYear.tax.previous_amount}}</ix:nonFraction>
+            {{emitIfPositive $profitOrLossForFinancialYear.tax.previous_amount ")"}}
             {{end}}
           </td>
         </tr>
@@ -1318,6 +1337,7 @@
         </tbody>
       </table>
     </div>
+    {{end}}
 
     <!-- BALANCE SHEET -->
 
