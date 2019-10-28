@@ -29,11 +29,6 @@ public class ProfitAndLossValidator extends BaseValidator {
     @Value("${incorrect.total}")
     private String incorrectTotal;
 
-    @Autowired
-    public ProfitAndLossValidator(CompanyService companyService) {
-        this.companyService = companyService;
-    }
-
 
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss, String companyAccountsId,
                                      HttpServletRequest request, Transaction transaction) throws DataException {

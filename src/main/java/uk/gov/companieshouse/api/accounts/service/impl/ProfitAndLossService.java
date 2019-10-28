@@ -40,7 +40,6 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
     private PreviousPeriodService previousPeriodService;
     private KeyIdGenerator keyIdGenerator;
     private ProfitAndLossValidator profitLossValidator;
-    private ProfitAndLoss profitAndLoss;
 
     @Autowired
     public ProfitAndLossService(
@@ -53,7 +52,6 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
         this.previousPeriodService = previousPeriodService;
         this.keyIdGenerator = keyIdGenerator;
         this.profitLossValidator = validator;
-        this.profitAndLoss = profitAndLoss;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
                                                 String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        Errors errors = profitLossValidator.validateProfitLoss(profitAndLoss, companyAccountId, request, transaction);
+        Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -98,7 +96,7 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
                                                 String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        Errors errors = profitLossValidator.validateProfitLoss(profitAndLoss, companyAccountId, request, transaction);
+        Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
