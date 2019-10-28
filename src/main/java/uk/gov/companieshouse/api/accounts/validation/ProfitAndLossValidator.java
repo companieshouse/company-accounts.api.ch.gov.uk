@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
+@Component
 public class ProfitAndLossValidator extends BaseValidator {
 
     private static final String GROSS_PROFIT_OR_LOSS = "$.gross_profit_or_loss";
@@ -25,6 +28,12 @@ public class ProfitAndLossValidator extends BaseValidator {
 
     @Value("${incorrect.total}")
     private String incorrectTotal;
+
+    @Autowired
+    public ProfitAndLossValidator(CompanyService companyService) {
+        this.companyService = companyService;
+    }
+
 
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss, String companyAccountsId,
                                      HttpServletRequest request, Transaction transaction) throws DataException {

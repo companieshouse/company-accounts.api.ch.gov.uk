@@ -295,7 +295,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful retrieval of a profit and loss resource")
     void getProfitAndLossSuccess() throws DataException {
 
-        
+
 
         when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
