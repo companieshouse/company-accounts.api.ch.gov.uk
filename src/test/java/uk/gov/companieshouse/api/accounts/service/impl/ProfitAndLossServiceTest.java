@@ -17,11 +17,13 @@ import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.ProfitAndLossTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.ProfitAndLossValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -71,7 +73,13 @@ public class ProfitAndLossServiceTest {
     private HttpServletRequest request;
 
     @Mock
+    private ProfitAndLossValidator validator;
+
+    @Mock
     private ProfitAndLossEntity profitAndLossEntity;
+
+    @Mock
+    private Errors errors;
 
     @InjectMocks
     private ProfitAndLossService profitAndLossService;
@@ -87,6 +95,10 @@ public class ProfitAndLossServiceTest {
     @Test
     @DisplayName("Tests the successful creation of a current period profit and loss resource")
     void createCurrentPeriodProfitAndLossSuccess() throws DataException {
+
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -114,6 +126,10 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful creation of a previous period profit and loss resource")
     void createPreviousPeriodProfitAndLossSuccess() throws DataException {
 
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -140,6 +156,10 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the creation of a profit and loss resource where the repository throws a duplicate key exception")
     void createProfitAndLossDuplicateKeyException() throws DataException {
 
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -165,6 +185,10 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the creation of a profit and loss resource where the repository throws a Mongo exception")
     void createProfitAndLossMongoException() throws DataException {
 
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -187,6 +211,10 @@ public class ProfitAndLossServiceTest {
     @Test
     @DisplayName("Tests the successful update of a current period profit and loss resource")
     void updateCurrentPeriodProfitAndLossSuccess() throws DataException {
+
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -213,6 +241,10 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful update of a previous period profit and loss resource")
     void updatePreviousPeriodProfitAndLossSuccess() throws DataException {
 
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -236,7 +268,11 @@ public class ProfitAndLossServiceTest {
 
     @Test
     @DisplayName("Tests the update of a profit and loss resource where the repository throws a Mongo exception")
-    void updateProfitAndLossMongoException() {
+    void updateProfitAndLossMongoException() throws DataException {
+
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -258,6 +294,8 @@ public class ProfitAndLossServiceTest {
     @Test
     @DisplayName("Tests the successful retrieval of a profit and loss resource")
     void getProfitAndLossSuccess() throws DataException {
+
+        
 
         when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
