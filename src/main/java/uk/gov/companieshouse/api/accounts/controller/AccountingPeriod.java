@@ -2,12 +2,12 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import java.util.Arrays;
 
-public enum Period {
+public enum AccountingPeriod {
     CURRENT_PERIOD("current-period"), PREVIOUS_PERIOD("previous-period");
 
     private String period;
 
-    Period(String s) {
+    AccountingPeriod(String s) {
         this.period = s;
     }
 
@@ -15,7 +15,7 @@ public enum Period {
         return period;
     }
 
-    public static Period fromString(String period) {
+    public static AccountingPeriod fromString(String period) {
         return Arrays.stream(values())
                 .filter(periodEnum -> periodEnum.getPeriod().equals(period))
                 .findFirst()

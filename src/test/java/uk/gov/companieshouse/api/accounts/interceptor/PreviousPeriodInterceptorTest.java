@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
@@ -36,7 +37,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PreviousPeriodInterceptorTest {
+  class PreviousPeriodInterceptorTest {
 
     @Mock
     private PreviousPeriod previousPeriod;
@@ -68,14 +69,19 @@ public class PreviousPeriodInterceptorTest {
     @InjectMocks
     private PreviousPeriodInterceptor previousPeriodInterceptor;
 
+    private static final String TRANSACTION_ID = "transactionId";
+    private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
+    private  static final String X_REQUEST_ID = "X-Request-Id";
+    private static final String LINK_PREVIOUS_PERIOD = "linkToPreviousPeriod";
+
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException {
+    void setUp() throws NoSuchAlgorithmException {
 
         Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("transactionId", "5555");
-        pathVariables.put("companyAccountId", "test");
+        pathVariables.put(TRANSACTION_ID, "5555");
+        pathVariables.put(COMPANY_ACCOUNT_ID, "test");
 
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
+        when(httpServletRequest.getHeader(X_REQUEST_ID)).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(httpServletRequest).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -85,14 +91,14 @@ public class PreviousPeriodInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
+    void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(previousPeriod);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
         when(previousPeriod.getLinks()).thenReturn(previousPeriodLinks);
-        when(smallFullLinks.get("profit_and_loss")).thenReturn("linkToProfitAndLoss");
-        when(previousPeriodLinks.get("self")).thenReturn("linkToProfitAndLoss");
+        when(smallFullLinks.get(SmallFullLinkType.PREVIOUS_PERIOD.getLink())).thenReturn(LINK_PREVIOUS_PERIOD);
+        when(previousPeriodLinks.get("self")).thenReturn(LINK_PREVIOUS_PERIOD);
 
         previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
@@ -102,7 +108,7 @@ public class PreviousPeriodInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed PreviousPeriodEntity lookup")
-    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
+    void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
         doThrow(mock(DataException.class)).when(previousPeriodService).find(anyString(), any(HttpServletRequest.class));
         assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));

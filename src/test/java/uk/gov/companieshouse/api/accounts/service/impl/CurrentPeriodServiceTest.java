@@ -12,16 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.ResourceName;
-import uk.gov.companieshouse.api.accounts.controller.CurrentPeriodController;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -84,13 +80,7 @@ public class CurrentPeriodServiceTest {
     private Errors errors;
 
     @Mock
-    private SmallFull smallFull;
-
-    @Mock
     private Map<String, String> links;
-
-    @Mock
-    CurrentPeriodController currentPeriodController;
 
     @Mock
     private CurrentPeriodTransformer currentPeriodTransformer;
@@ -102,12 +92,6 @@ public class CurrentPeriodServiceTest {
     private MongoException mongoException;
 
     @Mock
-    private ProfitAndLoss profitAndLoss;
-
-    @Mock
-    private BindingResult bindingResult;
-
-    @Mock
     private KeyIdGenerator keyIdGenerator;
 
     @InjectMocks
@@ -116,10 +100,10 @@ public class CurrentPeriodServiceTest {
     private static final String SELF_LINK = "self_link";
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String RESOURCE_ID = "resourceId";
-    private static final String CURRENT_PERIOD_APPROVAL_LINK = "currentPeriodReportApprovalLink";
+    private static final String CURRENT_PERIOD_PROFIT_AND_LOSS = "currentPeriodReportApprovalLink";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(keyIdGenerator
                 .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CURRENT_PERIOD.getName()))
                         .thenReturn(RESOURCE_ID);
@@ -127,7 +111,7 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCreateCurrentPeriod() throws DataException {
+    void canCreateCurrentPeriod() throws DataException {
 
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
@@ -143,7 +127,7 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating a current period resource")
-    public void createSmallfullDuplicateKey() throws DataException {
+    void createSmallfullDuplicateKey() throws DataException {
 
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
@@ -177,7 +161,7 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests the successful find of a currentPeriod resource")
-    public void findCurrentPeriod() throws DataException {
+    void findCurrentPeriod() throws DataException {
         when(currentPeriodRepository.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(currentPeriodEntity));
         when(currentPeriodTransformer.transform(currentPeriodEntity)).thenReturn(currentPeriod);
@@ -189,7 +173,7 @@ public class CurrentPeriodServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of a currentPeriod resource")
-    public void findCurrentPeriodMongoException()  {
+    void findCurrentPeriodMongoException()  {
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
         Executable executable = () -> {
             currentPeriodService.find(COMPANY_ACCOUNTS_ID, request);
@@ -256,13 +240,13 @@ public class CurrentPeriodServiceTest {
         when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
         when(currentPeriodDataEntity.getLinks()).thenReturn(links);
 
-        CurrentPeriodLinkType currentPeriodLinkType = CurrentPeriodLinkType.APPROVAL;
+        CurrentPeriodLinkType currentPeriodLinkType = CurrentPeriodLinkType.SELF;
 
         assertAll(() ->
                 currentPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, currentPeriodLinkType, CURRENT_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, currentPeriodLinkType, CURRENT_PERIOD_PROFIT_AND_LOSS, request));
 
-        verify(links).put(currentPeriodLinkType.getLink(), CURRENT_PERIOD_APPROVAL_LINK);
+        verify(links).put(currentPeriodLinkType.getLink(), CURRENT_PERIOD_PROFIT_AND_LOSS);
         verify(currentPeriodRepository).save(currentPeriodEntity);
     }
 
@@ -276,7 +260,7 @@ public class CurrentPeriodServiceTest {
 
         assertThrows(DataException.class, () ->
                 currentPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, CurrentPeriodLinkType.APPROVAL, CURRENT_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, CurrentPeriodLinkType.PROFIT_AND_LOSS, CURRENT_PERIOD_PROFIT_AND_LOSS, request));
     }
 
     @Test
@@ -287,12 +271,12 @@ public class CurrentPeriodServiceTest {
 
         assertThrows(DataException.class, () ->
                 currentPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, CurrentPeriodLinkType.APPROVAL, CURRENT_PERIOD_APPROVAL_LINK, request));
+                        COMPANY_ACCOUNTS_ID, CurrentPeriodLinkType.PROFIT_AND_LOSS, CURRENT_PERIOD_PROFIT_AND_LOSS, request));
     }
 
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
-    public void canUpdatePreviousPeriodFailureMongoException() throws DataException {
+    void canUpdatePreviousPeriodFailureMongoException() throws DataException {
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));

@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{period}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{accountingPeriod:current-period|previous-period}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfitAndLossController {
 
     @Autowired
@@ -94,9 +94,9 @@ public class ProfitAndLossController {
 
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid ProfitAndLoss profitAndLoss, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("period") Period period, HttpServletRequest request) {
+                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod, HttpServletRequest request) {
 
-        if (period.equals(Period.CURRENT_PERIOD)) {
+        if (accountingPeriod.equals(AccountingPeriod.CURRENT_PERIOD)) {
             CurrentPeriod currentPeriod = (CurrentPeriod)
                     request.getAttribute(AttributeName.CURRENT_PERIOD.getValue());
             if(currentPeriod.getLinks().get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
@@ -149,7 +149,7 @@ public class ProfitAndLossController {
     @InitBinder
     protected void initBinder(final WebDataBinder webdataBinder) {
 
-        webdataBinder.registerCustomEditor(Period.class, periodConverter);
+        webdataBinder.registerCustomEditor(AccountingPeriod.class, periodConverter);
     }
 
 }

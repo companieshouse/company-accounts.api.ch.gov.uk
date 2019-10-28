@@ -122,7 +122,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         try {
         PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(previousPeriodId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get profit and loss entity to add link"));
+                        "Failed to get previous period entity to add link"));
         previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
 
 
@@ -139,7 +139,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         String smallFullId = generateID(id);
         PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get profit and loss entity from which to remove link"));
+                        "Failed to get previous period entity from which to remove link"));
         previousPeriodEntity.getData().getLinks().remove(linkType.getLink());
 
         try {

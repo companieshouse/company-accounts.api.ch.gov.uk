@@ -15,7 +15,6 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
@@ -192,7 +191,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful update of a profit and loss resource for current period")
     void updateProfitAndLossCurrentPeriodSuccess() throws DataException {
 
-        Period period = Period.CURRENT_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
 
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
@@ -210,7 +209,7 @@ public class ProfitAndLossControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -224,7 +223,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful update of a profit and loss resource for previous period")
     void updateProfitAndLossPreviousPeriodSuccess() throws DataException {
 
-        Period period = Period.PREVIOUS_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
 
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
@@ -242,7 +241,7 @@ public class ProfitAndLossControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -255,14 +254,14 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for current period when the small full link doesn't exist")
     void updateProfitLossNoCurrentPeriodLink() throws DataException {
 
-        Period period = Period.CURRENT_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
         when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
                 .thenReturn(null);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -275,14 +274,14 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for previous period when the small full link doesn't exist")
     void updateProfitLossNoPreviousPeriodLink() throws DataException {
 
-        Period period = Period.PREVIOUS_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
         when(links.get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()))
                 .thenReturn(null);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -295,7 +294,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for current period when binding result errors are present")
     void updateProfitAndLossCurrentPeriodBindingResultErrors() throws DataException {
 
-        Period period = Period.CURRENT_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
         when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -305,7 +304,7 @@ public class ProfitAndLossControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -316,7 +315,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for previoud period when binding result errors are present")
     void updateProfitAndLossPreviousPeriodBindingResultErrors() throws DataException {
 
-        Period period = Period.PREVIOUS_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
         when(links.get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -326,7 +325,7 @@ public class ProfitAndLossControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -337,10 +336,10 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of an profit and loss resource where the service throws a data exception")
     void updateProfitLossServiceThrowsDataException() throws DataException {
 
-        Period period = Period.CURRENT_PERIOD;
+        AccountingPeriod accountingPeriod  = AccountingPeriod.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
-        when(links.get(SmallFullLinkType.PROFIT_AND_LOSS.getLink()))
+        when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
                 .thenReturn(PROFIT_AND_LOSS_LINK);
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -352,7 +351,7 @@ public class ProfitAndLossControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
-                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, period, request);
+                profitAndLossController.update(profitAndLoss, bindingResult, COMPANY_ACCOUNTS_ID, accountingPeriod, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -405,12 +404,12 @@ public class ProfitAndLossControllerTest {
     void testInitDataBinderSuccess() {
 
         PeriodConverter converter = new PeriodConverter();
-        Period period = Period.CURRENT_PERIOD;
+        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
         converter.setAsText("current-period");
-        WebDataBinder binder = new WebDataBinder(period, converter.getAsText());
+        WebDataBinder binder = new WebDataBinder(accountingPeriod, converter.getAsText());
         profitAndLossController.initBinder(binder);
         assertNotNull(binder);
-        assertEquals(period.toString(), converter.getAsText());
+        assertEquals(accountingPeriod.toString(), converter.getAsText());
     }
 
 

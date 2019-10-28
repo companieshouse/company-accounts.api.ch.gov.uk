@@ -9,6 +9,6 @@ public class PeriodConverter extends PropertyEditorSupport {
 
     @Override
     public void setAsText(final String type) {
-        setValue(Period.fromString(type));
+        setValue(AccountingPeriod.fromString(type));
     }
 }

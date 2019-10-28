@@ -70,14 +70,19 @@ public class CurrentPeriodInterceptorTest {
     @InjectMocks
     private CurrentPeriodInterceptor currentPeriodInterceptor;
 
+    private static final String TRANSACTION_ID = "transactionId";
+    private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
+    private  static final String X_REQUEST_ID = "X-Request-Id";
+    private static final String LINK_CURRENT_PERIOD = "linkToCurrentPeriod";
+
     @BeforeEach
     public void setUp() throws NoSuchAlgorithmException {
 
         Map<String, String> pathVariables = new HashMap<>();
-        pathVariables.put("transactionId", "5555");
-        pathVariables.put("companyAccountId", "test");
+        pathVariables.put(TRANSACTION_ID, "5555");
+        pathVariables.put(COMPANY_ACCOUNT_ID, "test");
 
-        when(httpServletRequest.getHeader("X-Request-Id")).thenReturn("test");
+        when(httpServletRequest.getHeader(X_REQUEST_ID)).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
         doReturn(smallFull).when(httpServletRequest).getAttribute(AttributeName.SMALLFULL.getValue());
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -93,8 +98,8 @@ public class CurrentPeriodInterceptorTest {
         when(responseObject.getData()).thenReturn(currentPeriod);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
         when(currentPeriod.getLinks()).thenReturn(currentPeriodLinks);
-        when(smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink())).thenReturn("linkToCurrentPeriod");
-        when(currentPeriodLinks.get(CurrentPeriodLinkType.SELF.getLink())).thenReturn("linkToCurrentPeriod");
+        when(smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink())).thenReturn(LINK_CURRENT_PERIOD);
+        when(currentPeriodLinks.get(CurrentPeriodLinkType.SELF.getLink())).thenReturn(LINK_CURRENT_PERIOD);
 
         currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
