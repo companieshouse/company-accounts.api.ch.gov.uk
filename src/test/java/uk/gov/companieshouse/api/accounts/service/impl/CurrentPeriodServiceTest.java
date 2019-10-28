@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
+import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodServiceTest {
-/*
+
     @Mock
     private HttpServletRequest request;
 
@@ -112,10 +113,11 @@ public class CurrentPeriodServiceTest {
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     void canCreateCurrentPeriod() throws DataException {
 
-        when(currentPeriod.getLinks()).thenReturn(links);
-
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CurrentPeriod> result = currentPeriodService
             .create(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -126,8 +128,6 @@ public class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a current period resource")
     void createSmallfullDuplicateKey() throws DataException {
-
-        when(currentPeriod.getLinks()).thenReturn(null);
 
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
@@ -145,8 +145,6 @@ public class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating a current period")
     void createSmallfullMongoExceptionFailure() throws DataException {
-
-        when(currentPeriod.getLinks()).thenReturn(null);
 
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
@@ -280,15 +278,15 @@ public class CurrentPeriodServiceTest {
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
 
-        when(currentPeriod.getLinks()).thenReturn(null);
+        when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(currentPeriodEntity));
+        when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
+        when(currentPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
+
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
 
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-
         assertThrows(DataException.class, () -> currentPeriodService.update(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
-    */
+
 }
