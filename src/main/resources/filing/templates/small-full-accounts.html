@@ -277,6 +277,9 @@
 
       {{$balanceSheet := .small_full_accounts.balance_sheet}}
 
+      {{$currentPeriod := .small_full_accounts.period.current_period_start_on}}
+      {{$previousPeriod := .small_full_accounts.period.previous_period_start_on}}
+
       <ix:header>
         <ix:hidden>
 
@@ -1050,7 +1053,7 @@
     </div>
 
     <!-- PROFIT AND LOSS -->
-    {{if profitAndLoss := .small_full_accounts.profit_and_loss}}
+    {{if $profitAndLoss := .small_full_accounts.profit_and_loss}}
     <div class="page">
       <div class="header">
         <h1 class="text--center">
@@ -1340,9 +1343,6 @@
     {{end}}
 
     <!-- BALANCE SHEET -->
-
-    {{$currentPeriod := .small_full_accounts.period.current_period_start_on}}
-    {{$previousPeriod := .small_full_accounts.period.previous_period_start_on}}
 
     <div class="page">
       <div class="header">
