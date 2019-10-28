@@ -6,18 +6,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfitOrLossForFinancialYear {
 
-    @JsonProperty("tax_on_profit")
-    private Long taxOnProfit;
+    @JsonProperty("tax")
+    private Long tax;
 
     @JsonProperty("total_profit_or_loss_for_financial_year")
     private Long totalProfitOrLossForFinancialYear;
 
-    public Long getTaxOnProfit() {
-        return taxOnProfit;
+    public Long getTax() {
+        return tax;
     }
 
-    public void setTaxOnProfit(Long taxOnProfit) {
-        this.taxOnProfit = taxOnProfit;
+    public void setTax(Long tax) {
+        this.tax = tax;
     }
 
     public Long getTotalProfitOrLossForFinancialYear() {

@@ -4,18 +4,18 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 public class ProfitOrLossForFinancialYearEntity {
 
-    @Field("tax_on_profit")
-    private Long taxOnProfit;
+    @Field("tax")
+    private Long tax;
 
     @Field("total_profit_or_loss_for_financial_year")
     private Long totalProfitOrLossForFinancialYear;
 
-    public Long getTaxOnProfit() {
-        return taxOnProfit;
+    public Long getTax() {
+        return tax;
     }
 
-    public void setTaxOnProfit(Long taxOnProfit) {
-        this.taxOnProfit = taxOnProfit;
+    public void setTax(Long tax) {
+        this.tax = tax;
     }
 
     public Long getTotalProfitOrLossForFinancialYear() {
@@ -28,7 +28,7 @@ public class ProfitOrLossForFinancialYearEntity {
 
     public String toString() {
         return "ProfitOrLossForFinancialYear{" +
-                "taxOnProfit=" + taxOnProfit +
+                "tax=" + tax +
                 ", totalProfitOrLossForFinancialYear=" + totalProfitOrLossForFinancialYear +
                 "}";
     }

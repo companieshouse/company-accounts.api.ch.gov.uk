@@ -188,11 +188,11 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Success - Previous Period")
     void canUpdatePreviousPeriod() throws DataException {
+
+        when(previousPeriod.getLinks()).thenReturn(links);
+
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
@@ -202,12 +202,12 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
+
+        when(previousPeriod.getLinks()).thenReturn(links);
+
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
