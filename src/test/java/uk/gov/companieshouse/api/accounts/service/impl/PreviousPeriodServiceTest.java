@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
+import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -189,7 +190,9 @@ public class PreviousPeriodServiceTest {
     @DisplayName("PUT - Success - Previous Period")
     void canUpdatePreviousPeriod() throws DataException {
 
-        when(previousPeriod.getLinks()).thenReturn(links);
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
+        when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
+        when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
 
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
@@ -203,7 +206,9 @@ public class PreviousPeriodServiceTest {
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
 
-        when(previousPeriod.getLinks()).thenReturn(links);
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
+        when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
+        when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
 
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);

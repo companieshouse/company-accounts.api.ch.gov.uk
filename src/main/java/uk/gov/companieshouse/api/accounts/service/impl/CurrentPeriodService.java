@@ -68,7 +68,9 @@ public class CurrentPeriodService implements
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        populateMetadata(currentPeriod, transaction, companyAccountId);
+        Map<String, String> links = createLinks(transaction, companyAccountId);
+
+        populateMetadata(currentPeriod, links);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         currentPeriodEntity.setId(generateID(companyAccountId));
@@ -98,11 +100,18 @@ public class CurrentPeriodService implements
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        populateMetadata(rest, transaction, companyAccountId);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
-        currentPeriodEntity.setId(generateID(companyAccountId));
 
         try {
+            CurrentPeriodEntity originalEntity =
+                    currentPeriodRepository.findById(generateID(companyAccountId))
+                            .orElseThrow(() -> new DataException("No current period found to update")); // We should never get here
+
+            Map<String, String> links = originalEntity.getData().getLinks();
+            populateMetadata(rest, links);
+
+            CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
+            currentPeriodEntity.setId(generateID(companyAccountId));
+
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);
@@ -172,17 +181,18 @@ public class CurrentPeriodService implements
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
-    private void populateMetadata(CurrentPeriod currentPeriod, Transaction transaction,
-        String companyAccountId) {
+    private void populateMetadata(CurrentPeriod currentPeriod, Map<String, String> links) {
 
-        if (currentPeriod.getLinks() == null) {
-            Map<String, String> map = new HashMap<>();
-            map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
-
-            currentPeriod.setLinks(map);
-        }
+        currentPeriod.setLinks(links);
         currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
         currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+    }
+
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
+
+        Map<String, String> links = new HashMap<>();
+        links.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
+        return links;
     }
 
     private String createSelfLink(Transaction transaction, String companyAccountId) {
