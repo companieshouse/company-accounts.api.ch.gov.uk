@@ -51,7 +51,7 @@ public class ProfitAndLossValidatorTest {
     @BeforeEach
     void setup() {
         profitAndLoss = new ProfitAndLoss();
-        validator = new ProfitAndLossValidator();
+        validator = new ProfitAndLossValidator(companyService);
         errors = new Errors();
     }
 
