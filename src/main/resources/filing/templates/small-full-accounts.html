@@ -1026,6 +1026,14 @@
         </tr>
         </thead>
         <tbody>
+        {{if .small_full_accounts.profit_and_loss}}
+        <tr>
+          <td class="strong">
+            <a href="#ProfitAndLossSection">Profit and loss</a>
+          </td>
+          <td></td>
+        </tr>
+        {{end}}
         <tr>
           <td class="strong">
             <a href="#BalanceSheetSection">Balance sheet</a>
@@ -1339,6 +1347,7 @@
         {{end}}
         </tbody>
       </table>
+      <div id="ProfitAndLossSection" class="section-marker"></div>
     </div>
     {{end}}
 
