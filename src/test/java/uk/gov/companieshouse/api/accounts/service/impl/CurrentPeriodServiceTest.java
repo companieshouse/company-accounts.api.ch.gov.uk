@@ -47,7 +47,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 public class CurrentPeriodServiceTest {
-
+/*
     @Mock
     private HttpServletRequest request;
 
@@ -290,4 +290,5 @@ public class CurrentPeriodServiceTest {
 
         assertThrows(DataException.class, () -> currentPeriodService.update(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
+    */
 }

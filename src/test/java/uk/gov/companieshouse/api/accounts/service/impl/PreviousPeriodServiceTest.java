@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PreviousPeriodServiceTest {
-
+/*
     @Mock
     private HttpServletRequest request;
 
@@ -254,5 +254,5 @@ public class PreviousPeriodServiceTest {
                 previousPeriodService.addLink(
                         COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
     }
-
+*/
 }
