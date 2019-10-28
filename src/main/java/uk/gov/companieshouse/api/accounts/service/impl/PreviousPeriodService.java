@@ -67,12 +67,10 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        String selfLink = createSelfLink(transaction, companyAccountId);
-        initLinks(previousPeriod, selfLink);
-        previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
-        previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer
-            .transform(previousPeriod);
+        Map<String, String> links = createLinks(transaction, companyAccountId);
+
+        populateMetadata(previousPeriod, links);
+        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(previousPeriod);
 
         previousPeriodEntity.setId(generateID(companyAccountId));
 
@@ -85,7 +83,8 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         }
 
         smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD, selfLink, request);
+            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD,
+                    previousPeriod.getLinks().get(BasicLinkType.SELF.getLink()), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
     }
@@ -158,11 +157,17 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        populateMetadata(rest, transaction, companyAccountId);
-        PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(rest);
-        previousPeriodEntity.setId(generateID(companyAccountId));
-
         try {
+            PreviousPeriodEntity originalEntity =
+                    previousPeriodRepository.findById(generateID(companyAccountId))
+                            .orElseThrow(() -> new DataException("No previous period found to update")); // We should never get here
+
+            Map<String, String> links = originalEntity.getData().getLinks();
+            populateMetadata(rest, links);
+
+            PreviousPeriodEntity previousPeriodEntity = previousPeriodTransformer.transform(rest);
+            previousPeriodEntity.setId(generateID(companyAccountId));
+
             previousPeriodRepository.save(previousPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);
@@ -175,26 +180,24 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         return keyIdGenerator.generate(value + "-" + ResourceName.PREVIOUS_PERIOD.getName());
     }
 
-    public String createSelfLink(Transaction transaction, String companyAccountId) {
-        return transaction.getLinks().getSelf() + "/"
-            + ResourceName.COMPANY_ACCOUNT.getName() + "/"
-            + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
-            + ResourceName.PREVIOUS_PERIOD.getName();
-    }
+    private void populateMetadata(PreviousPeriod previousPeriod, Map<String, String> links) {
 
-    private void populateMetadata(PreviousPeriod previousPeriod, Transaction transaction,
-        String companyAccountId) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
-
-        previousPeriod.setLinks(map);
+        previousPeriod.setLinks(links);
         previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
     }
 
-    private void initLinks(PreviousPeriod previousPeriod, String link) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), link);
-        previousPeriod.setLinks(map);
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
+
+        Map<String, String> links = new HashMap<>();
+        links.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
+        return links;
+    }
+
+    public String createSelfLink(Transaction transaction, String companyAccountId) {
+        return transaction.getLinks().getSelf() + "/"
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/"
+                + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/"
+                + ResourceName.PREVIOUS_PERIOD.getName();
     }
 }

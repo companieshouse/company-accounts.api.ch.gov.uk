@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
+import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -188,11 +189,13 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Success - Previous Period")
     void canUpdatePreviousPeriod() throws DataException {
+
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
+        when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
+        when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
+
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
@@ -202,12 +205,14 @@ public class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
+
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
+        when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
+        when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
+
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }

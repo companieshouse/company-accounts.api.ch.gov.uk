@@ -33,7 +33,7 @@ public class ProfitAndLossTransformerTest {
     private static final Long INTEREST_PAYABLE = 9L;
     private static final Long TOTAL_BEFORE_TAX = 10L;
 
-    private static final Long TAX_ON_PROFIT = 11L;
+    private static final Long TAX = 11L;
     private static final Long TOTAL_FOR_YEAR = 12L;
 
     private ProfitAndLossTransformer transformer = new ProfitAndLossTransformer();
@@ -78,7 +78,7 @@ public class ProfitAndLossTransformerTest {
         profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
 
         ProfitOrLossForFinancialYear profitOrLossForFinancialYear = new ProfitOrLossForFinancialYear();
-        profitOrLossForFinancialYear.setTaxOnProfit(TAX_ON_PROFIT);
+        profitOrLossForFinancialYear.setTax(TAX);
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(TOTAL_FOR_YEAR);
         profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
 
@@ -104,7 +104,7 @@ public class ProfitAndLossTransformerTest {
         assertEquals(TOTAL_BEFORE_TAX, entity.getData().getProfitOrLossBeforeTax().getTotalProfitOrLossBeforeTax());
 
         assertNotNull(entity.getData().getProfitOrLossForFinancialYear());
-        assertEquals(TAX_ON_PROFIT, entity.getData().getProfitOrLossForFinancialYear().getTaxOnProfit());
+        assertEquals(TAX, entity.getData().getProfitOrLossForFinancialYear().getTax());
         assertEquals(TOTAL_FOR_YEAR, entity.getData().getProfitOrLossForFinancialYear().getTotalProfitOrLossForFinancialYear());
     }
 
@@ -150,7 +150,7 @@ public class ProfitAndLossTransformerTest {
         dataEntity.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
 
         ProfitOrLossForFinancialYearEntity profitOrLossForFinancialYear = new ProfitOrLossForFinancialYearEntity();
-        profitOrLossForFinancialYear.setTaxOnProfit(TAX_ON_PROFIT);
+        profitOrLossForFinancialYear.setTax(TAX);
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(TOTAL_FOR_YEAR);
         dataEntity.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
 
@@ -178,7 +178,7 @@ public class ProfitAndLossTransformerTest {
         assertEquals(TOTAL_BEFORE_TAX, rest.getProfitOrLossBeforeTax().getTotalProfitOrLossBeforeTax());
 
         assertNotNull(rest.getProfitOrLossForFinancialYear());
-        assertEquals(TAX_ON_PROFIT, rest.getProfitOrLossForFinancialYear().getTaxOnProfit());
+        assertEquals(TAX, rest.getProfitOrLossForFinancialYear().getTax());
         assertEquals(TOTAL_FOR_YEAR, rest.getProfitOrLossForFinancialYear().getTotalProfitOrLossForFinancialYear());
     }
 }

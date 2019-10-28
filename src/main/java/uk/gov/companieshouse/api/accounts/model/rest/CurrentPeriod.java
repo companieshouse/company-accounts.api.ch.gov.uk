@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @JsonInclude(Include.NON_NULL)
 public class CurrentPeriod extends RestObject {
 
-    @NotNull
     @JsonProperty("balance_sheet")
     @Valid
     private BalanceSheet balanceSheet;
