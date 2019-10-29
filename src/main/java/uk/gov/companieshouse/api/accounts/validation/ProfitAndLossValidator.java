@@ -21,9 +21,9 @@ public class ProfitAndLossValidator extends BaseValidator {
 
     private static final String PROFIT_AND_LOSS = "$.profit_and_loss";
     private static final String GROSS_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".gross_profit_or_loss";
-    private static final String COST_OF_SALES = PROFIT_AND_LOSS + GROSS_PROFIT_OR_LOSS + ".cost_of_sales";
-    private static final String GROSS_TOTAL = PROFIT_AND_LOSS + GROSS_PROFIT_OR_LOSS + ".gross_total";
-    private static final String TURNOVER = PROFIT_AND_LOSS + GROSS_PROFIT_OR_LOSS + ".turnover";
+    private static final String COST_OF_SALES = GROSS_PROFIT_OR_LOSS + ".cost_of_sales";
+    private static final String GROSS_TOTAL = GROSS_PROFIT_OR_LOSS + ".gross_total";
+    private static final String TURNOVER = GROSS_PROFIT_OR_LOSS + ".turnover";
 
     private CompanyService companyService;
 
