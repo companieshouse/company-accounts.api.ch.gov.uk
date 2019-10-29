@@ -45,7 +45,7 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
     public ProfitAndLossService(
             ProfitAndLossRepository profitAndLossRepository, ProfitAndLossTransformer profitAndLossTransformer,
             CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService,
-            KeyIdGenerator keyIdGenerator, ProfitAndLossValidator validator, ProfitAndLoss profitAndLoss) {
+            KeyIdGenerator keyIdGenerator, ProfitAndLossValidator validator) {
         this.profitAndLossRepository = profitAndLossRepository;
         this.profitAndLossTransformer = profitAndLossTransformer;
         this.currentPeriodService = currentPeriodService;
