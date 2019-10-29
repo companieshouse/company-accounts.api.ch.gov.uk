@@ -81,7 +81,7 @@ public class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, ".gross_total")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.gross_profit_or_loss.gross_total")));
     }
 
     private void createValidGrossProfitOrLoss() {
