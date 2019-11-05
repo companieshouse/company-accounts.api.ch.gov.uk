@@ -91,10 +91,9 @@ public class ProfitAndLossValidatorTest {
 
 
     @Test
-    @DisplayName("Test successful input of Gross Profit or Loss fields")
+    @DisplayName("Test successful input of operating Profit or Loss fields")
     void testOperatingTotalEntry() throws DataException {
 
-        // grossProfitOrLoss.setGrossTotal(10L);
         createValidOperatingTotal();
 
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
@@ -103,7 +102,7 @@ public class ProfitAndLossValidatorTest {
     }
 
     @Test
-    @DisplayName("Test Gross profit or loss fields do no match with total")
+    @DisplayName("Test operating profit or loss fields do no match with total")
     void operatingProfitOfLossFieldsDoNotMatchTotal() throws DataException {
 
         createValidOperatingTotal();
