@@ -1,13 +1,12 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -24,6 +23,7 @@ public class ProfitAndLossValidator extends BaseValidator {
     private static final String COST_OF_SALES = GROSS_PROFIT_OR_LOSS + ".cost_of_sales";
     private static final String GROSS_TOTAL = GROSS_PROFIT_OR_LOSS + ".gross_total";
     private static final String TURNOVER = GROSS_PROFIT_OR_LOSS + ".turnover";
+    private static final String OPERATING_TOTAL = PROFIT_AND_LOSS + ".operating_total";
 
     private CompanyService companyService;
 
@@ -41,20 +41,12 @@ public class ProfitAndLossValidator extends BaseValidator {
             if (errors.hasErrors()) {
                 return errors;
             }
+
+            validateOperatingTotal(profitAndLoss, errors);
+            if(errors.hasErrors()) {
+                return errors;
+            }
             return errors;
-    }
-
-    private void validateGrossProfitTotal(GrossProfitOrLoss grossProfitOrLoss, Errors errors) {
-
-        Long turnover = getTurnover(grossProfitOrLoss);
-        Long costOfSales = getCostOfSales(grossProfitOrLoss);
-        Long GrossProfitOrLossTotal = getGrossTotal(grossProfitOrLoss);
-
-        Long Total = turnover - costOfSales;
-
-        if (!Total.equals(GrossProfitOrLossTotal)) {
-            addError(errors, incorrectTotal, GROSS_TOTAL);
-        }
     }
 
     private Long getTurnover(GrossProfitOrLoss grossProfitOrLoss) {
@@ -76,6 +68,67 @@ public class ProfitAndLossValidator extends BaseValidator {
         return Optional.ofNullable(grossProfitOrLoss)
                 .map(GrossProfitOrLoss::getGrossTotal)
                 .orElse(0L);
+    }
+
+    private void validateGrossProfitTotal(GrossProfitOrLoss grossProfitOrLoss, Errors errors) {
+
+        Long turnover = getTurnover(grossProfitOrLoss);
+        Long costOfSales = getCostOfSales(grossProfitOrLoss);
+        Long GrossProfitOrLossTotal = getGrossTotal(grossProfitOrLoss);
+
+        Long total = turnover - costOfSales;
+
+        if (!total.equals(GrossProfitOrLossTotal)) {
+            addError(errors, incorrectTotal, GROSS_TOTAL);
+        }
+    }
+
+    private Long getOtherOperatingIncome(OperatingProfitOrLoss operatingProfitOrLoss) {
+
+        return Optional.ofNullable(operatingProfitOrLoss)
+                .map(OperatingProfitOrLoss::getOtherOperatingIncome)
+                .orElse(0L);
+    }
+
+    private Long getOperatingTotal(OperatingProfitOrLoss operatingProfitOrLoss) {
+
+        return Optional.ofNullable(operatingProfitOrLoss)
+                .map(OperatingProfitOrLoss::getOperatingTotal)
+                .orElse(0L);
+    }
+
+    private Long getDistributionCosts(OperatingProfitOrLoss operatingProfitOrLoss) {
+
+        return Optional.ofNullable(operatingProfitOrLoss)
+                .map(OperatingProfitOrLoss::getDistributionCosts)
+                .orElse(0L);
+    }
+
+    private Long getAdministrativeExpenses(OperatingProfitOrLoss operatingProfitOrLoss) {
+
+        return Optional.ofNullable(operatingProfitOrLoss)
+                .map(OperatingProfitOrLoss::getAdministrativeExpenses)
+                .orElse(0L);
+    }
+
+    private void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
+
+
+        Long administrativeExpenses = getAdministrativeExpenses(profitAndLoss.getOperatingProfitOrLoss());
+
+        Long distributionCosts = getDistributionCosts(profitAndLoss.getOperatingProfitOrLoss());
+
+        Long total = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
+
+        Long otherOperatingIncome = getOtherOperatingIncome(profitAndLoss.getOperatingProfitOrLoss());
+
+        Long grossProfitOrLoss = profitAndLoss.getGrossProfitOrLoss().getGrossTotal();
+
+        Long operatingTotal =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
+
+        if(!total.equals(operatingTotal)) {
+            addError(errors, incorrectTotal, OPERATING_TOTAL);
+        }
     }
 
     private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
