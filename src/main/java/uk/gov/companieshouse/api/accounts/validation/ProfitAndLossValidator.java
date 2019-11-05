@@ -23,7 +23,8 @@ public class ProfitAndLossValidator extends BaseValidator {
     private static final String COST_OF_SALES = GROSS_PROFIT_OR_LOSS + ".cost_of_sales";
     private static final String GROSS_TOTAL = GROSS_PROFIT_OR_LOSS + ".gross_total";
     private static final String TURNOVER = GROSS_PROFIT_OR_LOSS + ".turnover";
-    private static final String OPERATING_TOTAL = PROFIT_AND_LOSS + ".operating_total";
+    private static final String OPERATING_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".operating_profit_or_loss";
+    private static final String OPERATING_TOTAL = OPERATING_PROFIT_OR_LOSS + ".operating_total";
 
     private CompanyService companyService;
 
@@ -111,7 +112,7 @@ public class ProfitAndLossValidator extends BaseValidator {
                 .orElse(0L);
     }
 
-    private void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
+    public void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
 
 
         Long administrativeExpenses = getAdministrativeExpenses(profitAndLoss.getOperatingProfitOrLoss());
@@ -126,7 +127,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long operatingTotal =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
 
-        if(!total.equals(operatingTotal)) {
+        if(!operatingTotal.equals(total)) {
             addError(errors, incorrectTotal, OPERATING_TOTAL);
         }
     }
