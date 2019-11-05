@@ -120,7 +120,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long total =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
 
-        if(!operatingProfitAndLossTotal.equals(total)) {
+        if(!total.equals(operatingProfitAndLossTotal)) {
             addError(errors, incorrectTotal, OPERATING_TOTAL);
         }
     }
