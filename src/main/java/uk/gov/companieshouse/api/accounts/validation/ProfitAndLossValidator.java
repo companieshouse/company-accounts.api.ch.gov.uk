@@ -31,12 +31,10 @@ public class ProfitAndLossValidator extends BaseValidator {
     @Value("${incorrect.total}")
     private String incorrectTotal;
 
-
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss, String companyAccountsId,
                                      HttpServletRequest request, Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
-
 
             validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
             if (errors.hasErrors()) {
@@ -113,7 +111,6 @@ public class ProfitAndLossValidator extends BaseValidator {
     }
 
     public void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
-
 
         Long administrativeExpenses = getAdministrativeExpenses(profitAndLoss.getOperatingProfitOrLoss());
 
