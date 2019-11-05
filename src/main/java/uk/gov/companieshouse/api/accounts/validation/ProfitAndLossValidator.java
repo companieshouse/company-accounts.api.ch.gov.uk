@@ -69,11 +69,11 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long turnover = getTurnover(grossProfitOrLoss);
         Long costOfSales = getCostOfSales(grossProfitOrLoss);
-        Long GrossProfitOrLossTotal = getGrossTotal(grossProfitOrLoss);
+        Long grossProfitOrLossTotal = getGrossTotal(grossProfitOrLoss);
 
         Long total = turnover - costOfSales;
 
-        if (!total.equals(GrossProfitOrLossTotal)) {
+        if (!total.equals(grossProfitOrLossTotal)) {
             addError(errors, incorrectTotal, GROSS_TOTAL);
         }
     }
@@ -112,15 +112,15 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long distributionCosts = getDistributionCosts(profitAndLoss.getOperatingProfitOrLoss());
 
-        Long total = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
+        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
 
         Long otherOperatingIncome = getOtherOperatingIncome(profitAndLoss.getOperatingProfitOrLoss());
 
-        Long grossProfitOrLoss = profitAndLoss.getGrossProfitOrLoss().getGrossTotal();
+        Long grossProfitOrLoss = getGrossTotal(profitAndLoss.getGrossProfitOrLoss());
 
-        Long operatingTotal =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
+        Long total =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
 
-        if(!operatingTotal.equals(total)) {
+        if(!operatingProfitAndLossTotal.equals(total)) {
             addError(errors, incorrectTotal, OPERATING_TOTAL);
         }
     }

@@ -119,7 +119,6 @@ public class ProfitAndLossValidatorTest {
 
     private void createValidOperatingTotal() {
 
-
         createValidGrossProfitOrLoss();
         operatingProfitOrLoss = new OperatingProfitOrLoss();
         operatingProfitOrLoss.setAdministrativeExpenses(2L);
@@ -128,7 +127,6 @@ public class ProfitAndLossValidatorTest {
         operatingProfitOrLoss.setOperatingTotal(3L);
 
         profitAndLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
-
     }
 
     private void createValidGrossProfitOrLoss() {
