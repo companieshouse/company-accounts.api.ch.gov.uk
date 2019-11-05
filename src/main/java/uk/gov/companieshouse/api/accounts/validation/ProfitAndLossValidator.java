@@ -37,10 +37,6 @@ public class ProfitAndLossValidator extends BaseValidator {
         Errors errors = new Errors();
 
             validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
-            if (errors.hasErrors()) {
-                return errors;
-            }
-
             validateOperatingTotal(profitAndLoss, errors);
             if(errors.hasErrors()) {
                 return errors;
