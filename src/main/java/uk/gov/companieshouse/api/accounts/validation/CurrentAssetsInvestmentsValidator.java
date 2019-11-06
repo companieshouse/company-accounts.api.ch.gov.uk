@@ -45,11 +45,12 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator {
             currentAssetsInvestments.getDetails() == null) {
             addEmptyResourceError(errors, CURRENT_ASSETS_DETAILS_PATH);
         }
-
-        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
-            !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-            currentAssetsInvestments.getDetails() != null) {
-            addError(errors, unexpectedData, CURRENT_ASSETS_DETAILS_PATH);
+        if(currentPeriodBalanceSheet!=null || previousPeriodBalanceSheet!=null) {
+            if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
+                    !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
+                    currentAssetsInvestments.getDetails() != null) {
+                addError(errors, unexpectedData, CURRENT_ASSETS_DETAILS_PATH);
+            }
         }
 
         if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) ||

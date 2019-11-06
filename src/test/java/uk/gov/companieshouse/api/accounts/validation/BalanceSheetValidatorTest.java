@@ -77,8 +77,9 @@ public class BalanceSheetValidatorTest {
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(1L);
+        fixedAssets.setIntangible(1L);
         fixedAssets.setInvestments(1L);
-        fixedAssets.setTotal(2L);
+        fixedAssets.setTotal(3L);
         balanceSheet.setFixedAssets(fixedAssets);
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -93,19 +94,19 @@ public class BalanceSheetValidatorTest {
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
         otherLiabilitiesOrAssets.setNetCurrentAssets(4L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(9L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(10L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(6L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(7L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
         capitalAndReserves.setCalledUpShareCapital(3L);
         capitalAndReserves.setSharePremiumAccount(1L);
         capitalAndReserves.setOtherReserves(1L);
-        capitalAndReserves.setProfitAndLoss(1L);
-        capitalAndReserves.setTotalShareholdersFunds(6L);
+        capitalAndReserves.setProfitAndLoss(2L);
+        capitalAndReserves.setTotalShareholdersFunds(7L);
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
 
         when(companyService.isLBG(transaction)).thenReturn(false);
@@ -124,8 +125,9 @@ public class BalanceSheetValidatorTest {
 
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(1L);
+        fixedAssets.setIntangible(1L);
         fixedAssets.setInvestments(1L);
-        fixedAssets.setTotal(2L);
+        fixedAssets.setTotal(3L);
         balanceSheet.setFixedAssets(fixedAssets);
 
         CurrentAssets currentAssets = new CurrentAssets();
@@ -140,16 +142,16 @@ public class BalanceSheetValidatorTest {
         otherLiabilitiesOrAssets.setPrepaymentsAndAccruedIncome(1L);
         otherLiabilitiesOrAssets.setCreditorsDueWithinOneYear(1L);
         otherLiabilitiesOrAssets.setNetCurrentAssets(4L);
-        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(6L);
+        otherLiabilitiesOrAssets.setTotalAssetsLessCurrentLiabilities(7L);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(1L);
         otherLiabilitiesOrAssets.setProvisionForLiabilities(1L);
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(1L);
-        otherLiabilitiesOrAssets.setTotalNetAssets(3L);
+        otherLiabilitiesOrAssets.setTotalNetAssets(4L);
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
 
         MembersFunds membersFunds = new MembersFunds();
-        membersFunds.setProfitAndLossAccount(3L);
-        membersFunds.setTotalMembersFunds(3L);
+        membersFunds.setProfitAndLossAccount(4L);
+        membersFunds.setTotalMembersFunds(4L);
         balanceSheet.setMembersFunds(membersFunds);
 
         when(companyService.isLBG(transaction)).thenReturn(true);
