@@ -7,6 +7,7 @@ import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -20,11 +21,11 @@ public class ProfitAndLossValidator extends BaseValidator {
 
     private static final String PROFIT_AND_LOSS = "$.profit_and_loss";
     private static final String GROSS_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".gross_profit_or_loss";
-    private static final String COST_OF_SALES = GROSS_PROFIT_OR_LOSS + ".cost_of_sales";
     private static final String GROSS_TOTAL = GROSS_PROFIT_OR_LOSS + ".gross_total";
-    private static final String TURNOVER = GROSS_PROFIT_OR_LOSS + ".turnover";
     private static final String OPERATING_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".operating_profit_or_loss";
     private static final String OPERATING_TOTAL = OPERATING_PROFIT_OR_LOSS + ".operating_total";
+    private static final String PROFIT_OR_LOSS_BEFORE_TAX = PROFIT_AND_LOSS + ".profit_or_loss_before_tax";
+    private static final String TOTAL_PROFIT_OR_LOSS_BEFORE_TAX = PROFIT_OR_LOSS_BEFORE_TAX + ".total_profit_or_loss_before_tax";
 
     private CompanyService companyService;
 
@@ -38,6 +39,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
             validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
             validateOperatingTotal(profitAndLoss, errors);
+            validateProfitOrLossBeforeTax(profitAndLoss,errors);
             if(errors.hasErrors()) {
                 return errors;
             }
@@ -124,6 +126,42 @@ public class ProfitAndLossValidator extends BaseValidator {
             addError(errors, incorrectTotal, OPERATING_TOTAL);
         }
     }
+
+    private long getInterestReceivableAndSimilarIncome(ProfitOrLossBeforeTax profitOrLossBeforeTax) {
+        return Optional.ofNullable(profitOrLossBeforeTax)
+                .map(ProfitOrLossBeforeTax::getInterestReceivableAndSimilarIncome)
+                .orElse(0L);
+    }
+
+    private long getInterestPayableAndSimilarCharges(ProfitOrLossBeforeTax profitOrLossBeforeTax) {
+        return Optional.ofNullable(profitOrLossBeforeTax)
+                .map(ProfitOrLossBeforeTax::getInterestPayableAndSimilarCharges)
+                .orElse(0L);
+    }
+
+    private long getTotalProfitOrLossBeforeTax(ProfitOrLossBeforeTax profitOrLossBeforeTax) {
+        return Optional.ofNullable(profitOrLossBeforeTax)
+                .map(ProfitOrLossBeforeTax::getTotalProfitOrLossBeforeTax)
+                .orElse(0L);
+    }
+
+    public void validateProfitOrLossBeforeTax(ProfitAndLoss profitAndLoss,  Errors errors) {
+
+        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
+
+        Long interestPayableAndSimilarCharges = getInterestPayableAndSimilarCharges(profitAndLoss.getProfitOrLossBeforeTax());
+
+        Long interestReceivableAndSimilarIncome = getInterestReceivableAndSimilarIncome(profitAndLoss.getProfitOrLossBeforeTax());
+
+        Long totalProfitOrLossBeforeTax = getTotalProfitOrLossBeforeTax(profitAndLoss.getProfitOrLossBeforeTax());
+
+        Long total = operatingProfitAndLossTotal + interestReceivableAndSimilarIncome - interestPayableAndSimilarCharges;
+
+        if(!total.equals(totalProfitOrLossBeforeTax)) {
+            addError(errors, incorrectTotal, TOTAL_PROFIT_OR_LOSS_BEFORE_TAX);
+        }
+
+     }
 
     private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
         try {

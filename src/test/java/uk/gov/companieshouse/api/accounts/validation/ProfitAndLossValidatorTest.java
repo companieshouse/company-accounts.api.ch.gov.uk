@@ -12,6 +12,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -28,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ProfitAndLossValidatorTest {
 
     private ProfitAndLoss profitAndLoss;
-    private Errors errors;
 
+    private Errors errors;
 
     @Mock
     private Transaction transaction;
@@ -44,7 +45,7 @@ public class ProfitAndLossValidatorTest {
     private OperatingProfitOrLoss operatingProfitOrLoss;
 
     @Mock
-    private CompanyService companyService;
+    private ProfitOrLossBeforeTax profitOrLossBeforeTax;
 
     private ProfitAndLossValidator validator;
 
@@ -64,6 +65,7 @@ public class ProfitAndLossValidatorTest {
     void testCorrectGrossProfitOrLossEntry() throws DataException {
         createValidGrossProfitOrLoss();
         createValidOperatingTotal();
+        createValidTotalProfitOrLossBeforeTax();
 
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
@@ -95,7 +97,7 @@ public class ProfitAndLossValidatorTest {
     void testOperatingTotalEntry() throws DataException {
 
         createValidOperatingTotal();
-
+        createValidTotalProfitOrLossBeforeTax();
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
         assertFalse(errors.hasErrors());
@@ -115,6 +117,33 @@ public class ProfitAndLossValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.operating_profit_or_loss.operating_total")));
+    }
+
+    @Test
+    @DisplayName("Test successful input of profit or loss before tax fields")
+    void testTotalProfitOrLossBeforeTaxEntry() throws DataException {
+
+        createValidTotalProfitOrLossBeforeTax();
+
+        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Test profit or loss before tax fields do no match with total")
+    void profitOrLossBeforeTaxFieldsDoNotMatchTotal() throws DataException {
+
+        createValidTotalProfitOrLossBeforeTax();
+        profitOrLossBeforeTax.setTotalProfitOrLossBeforeTax(0L);
+        profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_before_tax.total_profit_or_loss_before_tax")));
     }
 
     private void createValidOperatingTotal() {
@@ -138,11 +167,20 @@ public class ProfitAndLossValidatorTest {
         profitAndLoss.setGrossProfitOrLoss(grossProfitOrLoss);
     }
 
+    private void createValidTotalProfitOrLossBeforeTax() {
+
+        createValidOperatingTotal();
+        profitOrLossBeforeTax = new ProfitOrLossBeforeTax();
+        profitOrLossBeforeTax.setInterestPayableAndSimilarCharges(2L);
+        profitOrLossBeforeTax.setInterestReceivableAndSimilarIncome(2L);
+        profitOrLossBeforeTax.setTotalProfitOrLossBeforeTax(3L);
+
+        profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
+    }
+
     private Error createError(String error, String path) {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
-
-
 }
