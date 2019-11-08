@@ -1,19 +1,22 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.validation.AccountsResourceValidator;
+import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +24,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class StocksValidator extends BaseValidator implements CrossValidator<Stocks> {
+public class StocksValidator extends BaseValidator implements AccountsResourceValidator<Stocks> {
 
     private static final String STOCKS_PATH = "$.stocks";
     private static final String STOCKS_CURRENT_PERIOD_PATH =
@@ -45,9 +48,10 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateStocks(@Valid Stocks stocks, Transaction transaction,
-                                 String companyAccountsId,
-                                 HttpServletRequest request) throws DataException {
+    @Override
+    public Errors validateSubmission(@Valid Stocks stocks, Transaction transaction,
+                                     String companyAccountsId,
+                                     HttpServletRequest request) throws DataException {
 
 
         Errors errors = validateIfEmptyResource(stocks, request, companyAccountsId);
@@ -229,7 +233,6 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         validateAggregateTotal(total, sum, STOCKS_CURRENT_PERIOD_TOTAL_PATH, errors);
     }
 
-    @Override
     public Errors crossValidate(Stocks stocks,
                                 HttpServletRequest request,
                                 String companyAccountsId,
@@ -392,4 +395,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
             .map(PreviousPeriod::getTotal)
             .isPresent();
     }
+
+    @Override
+    public AccountsResource getAccountsResource() { return AccountsResource.SMALL_FULL_STOCKS; }
 }

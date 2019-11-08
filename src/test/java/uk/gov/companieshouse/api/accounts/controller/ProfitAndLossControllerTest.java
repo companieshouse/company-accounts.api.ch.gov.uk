@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.enumeration.Period;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
@@ -19,6 +20,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.request.PeriodConverter;
 import uk.gov.companieshouse.api.accounts.service.impl.ProfitAndLossService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -191,7 +193,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful update of a profit and loss resource for current period")
     void updateProfitAndLossCurrentPeriodSuccess() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
+        Period accountingPeriod = Period.CURRENT_PERIOD;
 
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
@@ -223,7 +225,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful update of a profit and loss resource for previous period")
     void updateProfitAndLossPreviousPeriodSuccess() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
+        Period accountingPeriod = Period.PREVIOUS_PERIOD;
 
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
@@ -254,7 +256,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for current period when the small full link doesn't exist")
     void updateProfitLossNoCurrentPeriodLink() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
+        Period accountingPeriod = Period.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
         when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -274,7 +276,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for previous period when the small full link doesn't exist")
     void updateProfitLossNoPreviousPeriodLink() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
+        Period accountingPeriod = Period.PREVIOUS_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
         when(links.get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -294,7 +296,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for current period when binding result errors are present")
     void updateProfitAndLossCurrentPeriodBindingResultErrors() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
+        Period accountingPeriod = Period.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
         when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -315,7 +317,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of a profit and loss resource for previoud period when binding result errors are present")
     void updateProfitAndLossPreviousPeriodBindingResultErrors() throws DataException {
 
-        AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
+        Period accountingPeriod = Period.PREVIOUS_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(previousPeriod).thenReturn(transaction);
         when(previousPeriod.getLinks()).thenReturn(links);
         when(links.get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -336,7 +338,7 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of an profit and loss resource where the service throws a data exception")
     void updateProfitLossServiceThrowsDataException() throws DataException {
 
-        AccountingPeriod accountingPeriod  = AccountingPeriod.CURRENT_PERIOD;
+        Period accountingPeriod  = Period.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
         when(links.get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()))
@@ -404,7 +406,7 @@ public class ProfitAndLossControllerTest {
     void testInitDataBinderSuccess() {
 
         PeriodConverter converter = new PeriodConverter();
-        AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
+        Period accountingPeriod = Period.CURRENT_PERIOD;
         converter.setAsText("current-period");
         WebDataBinder binder = new WebDataBinder(accountingPeriod, converter.getAsText());
         profitAndLossController.initBinder(binder);

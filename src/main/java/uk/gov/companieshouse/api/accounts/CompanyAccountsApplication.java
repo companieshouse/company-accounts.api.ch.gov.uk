@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts;
 
+import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.utility.AccountResourcePathsYamlReader;
 
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
@@ -48,7 +50,16 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private LoggingInterceptor loggingInterceptor;
 
     public static void main(String[] args) {
-        SpringApplication.run(CompanyAccountsApplication.class, args);
+        SpringApplication application = new SpringApplication(CompanyAccountsApplication.class);
+
+        Properties properties = new Properties();
+
+        AccountResourcePathsYamlReader reader = new AccountResourcePathsYamlReader(properties);
+        reader.populatePropertiesFromYamlFile();
+
+        application.setDefaultProperties(properties);
+
+        application.run(args);
     }
 
     @Override

@@ -1,13 +1,13 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.stocks;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.rest.Rest;
 
 import javax.validation.Valid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Stocks extends RestObject {
+public class Stocks extends Rest {
 
     @Valid
     @JsonProperty("current_period")

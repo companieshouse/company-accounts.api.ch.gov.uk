@@ -1,17 +1,19 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.stocks.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.stocks.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.stocks.StocksDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.stocks.StocksEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.transformer.AccountsResourceTransformer;
 
 @Component
-public class StocksTransformer implements GenericTransformer<Stocks, StocksEntity> {
+public class StocksTransformer implements AccountsResourceTransformer<Stocks, StocksEntity> {
 
     @Override
     public StocksEntity transform(Stocks rest) {
@@ -65,5 +67,11 @@ public class StocksTransformer implements GenericTransformer<Stocks, StocksEntit
         }
 
         return stocks;
+    }
+
+    @Override
+    public AccountsResource getAccountsResource() {
+
+        return AccountsResource.SMALL_FULL_STOCKS;
     }
 }
