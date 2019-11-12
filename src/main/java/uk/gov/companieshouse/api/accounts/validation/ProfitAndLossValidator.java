@@ -1,16 +1,15 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.util.Objects;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,24 +29,33 @@ public class ProfitAndLossValidator extends BaseValidator {
     private static final String PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR = PROFIT_AND_LOSS + ".profit_or_loss_for_financial_year";
     private static final String TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR = PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR + ".total_profit_or_loss_for_financial_year";
 
-    private CompanyService companyService;
-
-    @Value("${incorrect.total}")
-    private String incorrectTotal;
-
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss, String companyAccountsId,
                                      HttpServletRequest request, Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
-            validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
-            validateOperatingTotal(profitAndLoss, errors);
-            validateProfitOrLossBeforeTax(profitAndLoss,errors);
-            validateProfitOrLossForFinancialYear(profitAndLoss, errors);
-            if(errors.hasErrors()) {
-                return errors;
-            }
+        verifyProfitAndLossNotEmpty(profitAndLoss, errors);
+        if (errors.hasErrors()) {
             return errors;
+        }
+
+        validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
+        validateOperatingTotal(profitAndLoss, errors);
+        validateProfitOrLossBeforeTax(profitAndLoss,errors);
+        validateProfitOrLossForFinancialYear(profitAndLoss, errors);
+
+        return errors;
+    }
+
+    private void verifyProfitAndLossNotEmpty(ProfitAndLoss profitAndLoss, Errors errors) {
+
+        if (Stream.of(profitAndLoss.getGrossProfitOrLoss(),
+                      profitAndLoss.getOperatingProfitOrLoss(),
+                      profitAndLoss.getProfitOrLossBeforeTax(),
+                      profitAndLoss.getProfitOrLossForFinancialYear()).allMatch(Objects::isNull)) {
+
+            addError(errors, valueRequired, PROFIT_AND_LOSS);
+        }
     }
 
     private Long getTurnover(GrossProfitOrLoss grossProfitOrLoss) {
@@ -112,7 +120,7 @@ public class ProfitAndLossValidator extends BaseValidator {
                 .orElse(0L);
     }
 
-    public void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
+    private void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
 
         Long administrativeExpenses = getAdministrativeExpenses(profitAndLoss.getOperatingProfitOrLoss());
 
@@ -126,7 +134,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long total =  grossProfitOrLoss - distributionCosts - administrativeExpenses + otherOperatingIncome;
 
-        if(!total.equals(operatingProfitAndLossTotal)) {
+        if (!total.equals(operatingProfitAndLossTotal)) {
             addError(errors, incorrectTotal, OPERATING_TOTAL);
         }
     }
@@ -161,7 +169,7 @@ public class ProfitAndLossValidator extends BaseValidator {
                 .orElse(0L);
     }
 
-    public void validateProfitOrLossBeforeTax(ProfitAndLoss profitAndLoss,  Errors errors) {
+    private void validateProfitOrLossBeforeTax(ProfitAndLoss profitAndLoss,  Errors errors) {
 
         Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
 
@@ -173,34 +181,27 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long total = operatingProfitAndLossTotal + interestReceivableAndSimilarIncome - interestPayableAndSimilarCharges;
 
-        if(!total.equals(totalProfitOrLossBeforeTax)) {
+        if (!total.equals(totalProfitOrLossBeforeTax)) {
             addError(errors, incorrectTotal, TOTAL_PROFIT_OR_LOSS_BEFORE_TAX);
         }
 
-     }
-
-     public void validateProfitOrLossForFinancialYear(ProfitAndLoss profitAndLoss, Errors errors) {
-
-         Long totalProfitOrLossBeforeTax = getTotalProfitOrLossBeforeTax(profitAndLoss.getProfitOrLossBeforeTax());
-
-         Long tax = getTax(profitAndLoss.getProfitOrLossForFinancialYear());
-
-         Long totalProfitOrLossForFinancialYear = getTotalProfitOrLossForFinancialYear(profitAndLoss.getProfitOrLossForFinancialYear());
-
-         Long total =   totalProfitOrLossBeforeTax - tax;
-
-         if(!total.equals(totalProfitOrLossForFinancialYear)) {
-             addError(errors, incorrectTotal, TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR);
-         }
-
-     }
-    private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
-        try {
-            return companyService.isMultipleYearFiler(transaction);
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
-        }
     }
 
+    private void validateProfitOrLossForFinancialYear(ProfitAndLoss profitAndLoss, Errors errors) {
 
+        Long totalProfitOrLossBeforeTax = getTotalProfitOrLossBeforeTax(
+                profitAndLoss.getProfitOrLossBeforeTax());
+
+        Long tax = getTax(profitAndLoss.getProfitOrLossForFinancialYear());
+
+        Long totalProfitOrLossForFinancialYear = getTotalProfitOrLossForFinancialYear(
+                profitAndLoss.getProfitOrLossForFinancialYear());
+
+        Long total = totalProfitOrLossBeforeTax - tax;
+
+        if (!total.equals(totalProfitOrLossForFinancialYear)) {
+            addError(errors, incorrectTotal, TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR);
+        }
+
+    }
 }
