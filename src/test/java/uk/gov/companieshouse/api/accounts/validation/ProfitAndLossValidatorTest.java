@@ -11,6 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -47,6 +48,9 @@ public class ProfitAndLossValidatorTest {
     @Mock
     private ProfitOrLossBeforeTax profitOrLossBeforeTax;
 
+    @Mock
+    private ProfitOrLossForFinancialYear profitOrLossForFinancialYear;
+
     private ProfitAndLossValidator validator;
 
     private static final String COMPANY_ACCOUNTS_ID = "123abcefg";
@@ -66,6 +70,7 @@ public class ProfitAndLossValidatorTest {
         createValidGrossProfitOrLoss();
         createValidOperatingTotal();
         createValidTotalProfitOrLossBeforeTax();
+        createValidTotalProfitOrLossForFinancialYear();
 
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
@@ -98,6 +103,7 @@ public class ProfitAndLossValidatorTest {
 
         createValidOperatingTotal();
         createValidTotalProfitOrLossBeforeTax();
+        createValidTotalProfitOrLossForFinancialYear();
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
         assertFalse(errors.hasErrors());
@@ -124,6 +130,7 @@ public class ProfitAndLossValidatorTest {
     void testTotalProfitOrLossBeforeTaxEntry() throws DataException {
 
         createValidTotalProfitOrLossBeforeTax();
+        createValidTotalProfitOrLossForFinancialYear();
 
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
@@ -144,6 +151,33 @@ public class ProfitAndLossValidatorTest {
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_before_tax.total_profit_or_loss_before_tax")));
+    }
+
+    @Test
+    @DisplayName("Test successful input of profit or loss for financial year fields")
+    void testTotalProfitOrLossForFinancialYearEntry() throws DataException {
+
+        createValidTotalProfitOrLossForFinancialYear();
+
+        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Test profit or loss for financial year fields do no match with total")
+    void profitOrLossForFinancialYearDoNotMatchTotal() throws DataException {
+
+        createValidTotalProfitOrLossForFinancialYear();
+        profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(0L);
+        profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
+
+        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
+
+        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
     }
 
     private void createValidOperatingTotal() {
@@ -178,6 +212,14 @@ public class ProfitAndLossValidatorTest {
         profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
     }
 
+    private void  createValidTotalProfitOrLossForFinancialYear() {
+        createValidTotalProfitOrLossBeforeTax();
+        profitOrLossForFinancialYear = new ProfitOrLossForFinancialYear();
+        profitOrLossForFinancialYear.setTax(1L);
+        profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(2L);
+
+        profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
+    }
     private Error createError(String error, String path) {
 
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
