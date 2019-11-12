@@ -94,7 +94,7 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test Gross profit or loss fields do no match with total")
-    void grossProfitOfLossFieldsDoNotMatchTotal() throws DataException {
+    void grossProfitOrLossFieldsDoNotMatchTotal() throws DataException {
 
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
         grossProfitOrLoss.setCostOfSales(3L);
