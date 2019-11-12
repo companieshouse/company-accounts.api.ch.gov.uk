@@ -54,7 +54,7 @@ public class ProfitAndLossValidator extends BaseValidator {
                       profitAndLoss.getProfitOrLossBeforeTax(),
                       profitAndLoss.getProfitOrLossForFinancialYear()).allMatch(Objects::isNull)) {
 
-            addError(errors, valueRequired, PROFIT_AND_LOSS);
+            addError(errors, valueRequired, TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR);
         }
     }
 

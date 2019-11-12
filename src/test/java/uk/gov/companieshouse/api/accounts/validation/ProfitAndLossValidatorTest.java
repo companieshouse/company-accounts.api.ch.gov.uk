@@ -76,7 +76,7 @@ public class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.profit_and_loss")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
     }
 
     @Test
