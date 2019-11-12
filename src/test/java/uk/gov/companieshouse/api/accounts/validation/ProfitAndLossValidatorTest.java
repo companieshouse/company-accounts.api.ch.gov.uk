@@ -9,7 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.*;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -213,7 +217,7 @@ public class ProfitAndLossValidatorTest {
         profitOrLossForFinancialYear = new ProfitOrLossForFinancialYear();
         profitOrLossForFinancialYear.setTax(1L);
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(2L);
-        
+
         profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
     }
     private Error createError(String error, String path) {
