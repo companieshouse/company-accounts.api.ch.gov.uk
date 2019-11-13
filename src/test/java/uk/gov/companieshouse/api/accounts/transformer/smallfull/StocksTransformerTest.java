@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Prev
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 
 import java.util.HashMap;
-import uk.gov.companieshouse.api.accounts.transformer.smallfull.StocksTransformer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

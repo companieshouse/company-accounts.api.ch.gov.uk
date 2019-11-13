@@ -2,3 +2,4 @@ accountTypeConfig:
   small-full:
     notes:
       - stocks
+      - tangible-assets

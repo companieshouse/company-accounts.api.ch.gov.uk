@@ -1,19 +1,21 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.CostEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.DepreciationEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsResourceEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.Depreciation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.transformer.AccountsResourceTransformer;
 
 @Component
-public class TangibleAssetsTransformer implements GenericTransformer<TangibleAssets, TangibleAssetsEntity> {
+public class TangibleAssetsTransformer implements AccountsResourceTransformer<TangibleAssets, TangibleAssetsEntity> {
 
     @Override
     public TangibleAssetsEntity transform(TangibleAssets entity) {
@@ -153,4 +155,7 @@ public class TangibleAssetsTransformer implements GenericTransformer<TangibleAss
 
         return restResource;
     }
+
+    @Override
+    public AccountsResource getAccountsResource() { return AccountsResource.SMALL_FULL_TANGIBLE_ASSETS; }
 }
