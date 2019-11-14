@@ -28,6 +28,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.Rest;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
 import uk.gov.companieshouse.api.accounts.request.AccountTypeConverter;
+import uk.gov.companieshouse.api.accounts.request.AccountsResourceConverter;
 import uk.gov.companieshouse.api.accounts.request.PeriodConverter;
 import uk.gov.companieshouse.api.accounts.request.ResourceConverter;
 import uk.gov.companieshouse.api.accounts.service.AccountsResourceService;
@@ -49,6 +50,9 @@ public class AccountsResourceController {
 
     @Autowired
     private PeriodConverter periodConverter;
+
+    @Autowired
+    private AccountsResourceConverter accountsResourceConverter;
 
     @Autowired
     private ParentResourceFactory<LinkType> parentResourceFactory;
@@ -78,7 +82,7 @@ public class AccountsResourceController {
                                  BindingResult bindingResult,
                                  HttpServletRequest request) {
 
-        AccountsResource accountsResource = getAccountsResource(accountType, resource, period);
+        AccountsResource accountsResource = accountsResourceConverter.getAccountsResource(accountType, resource, period);
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
@@ -109,7 +113,7 @@ public class AccountsResourceController {
                               @PathVariable(value = "period", required = false) Period period,
                               HttpServletRequest request) {
 
-        AccountsResource accountsResource = getAccountsResource(accountType, resource, period);
+        AccountsResource accountsResource = accountsResourceConverter.getAccountsResource(accountType, resource, period);
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
@@ -136,7 +140,7 @@ public class AccountsResourceController {
                                  BindingResult bindingResult,
                                  HttpServletRequest request) {
 
-        AccountsResource accountsResource = getAccountsResource(accountType, resource, period);
+        AccountsResource accountsResource = accountsResourceConverter.getAccountsResource(accountType, resource, period);
 
         if (!parentResourceFactory.getParentResource(accountsResource.getParent())
                 .childExists(request, accountsResource.getLinkType())) {
@@ -173,7 +177,7 @@ public class AccountsResourceController {
                                  @PathVariable(value = "period", required = false) Period period,
                                  HttpServletRequest request) {
 
-        AccountsResource accountsResource = getAccountsResource(accountType, resource, period);
+        AccountsResource accountsResource = accountsResourceConverter.getAccountsResource(accountType, resource, period);
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
@@ -189,10 +193,5 @@ public class AccountsResourceController {
                     "Failed to delete resource: " + accountsResource.getLinkType().getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
         }
-    }
-
-    private AccountsResource getAccountsResource(AccountType accountType, Resource resource, Period period) {
-
-        return AccountsResource.getAccountsResource(accountType, resource, period);
     }
 }

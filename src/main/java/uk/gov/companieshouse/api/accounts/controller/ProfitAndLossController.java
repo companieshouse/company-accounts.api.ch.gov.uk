@@ -96,7 +96,7 @@ public class ProfitAndLossController {
 
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid ProfitAndLoss profitAndLoss, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("accountingPeriod") Period accountingPeriod, HttpServletRequest request) {
+                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("period") Period accountingPeriod, HttpServletRequest request) {
 
         if (accountingPeriod.equals(Period.CURRENT_PERIOD)) {
             CurrentPeriod currentPeriod = (CurrentPeriod)

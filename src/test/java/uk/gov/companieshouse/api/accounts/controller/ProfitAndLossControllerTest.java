@@ -400,19 +400,4 @@ public class ProfitAndLossControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
-
-    @Test
-    @DisplayName("Tests the deletion of an profit and loss resource where the service throws a data exception")
-    void testInitDataBinderSuccess() {
-
-        PeriodConverter converter = new PeriodConverter();
-        Period accountingPeriod = Period.CURRENT_PERIOD;
-        converter.setAsText("current-period");
-        WebDataBinder binder = new WebDataBinder(accountingPeriod, converter.getAsText());
-        profitAndLossController.initBinder(binder);
-        assertNotNull(binder);
-        assertEquals(accountingPeriod.toString(), converter.getAsText());
-    }
-
-
 }

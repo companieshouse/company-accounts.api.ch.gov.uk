@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.enumeration;
 
-import java.util.Arrays;
 import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 
@@ -52,16 +51,5 @@ public enum AccountsResource {
 
     public String getKind() {
         return kind;
-    }
-
-    public static AccountsResource getAccountsResource(AccountType accountType, Resource resourceName, Period period) {
-
-        return Arrays.stream(values())
-                .filter(resource ->
-                        resource.getAccountType().equals(accountType) &&
-                                resource.getResource().equals(resourceName) &&
-                                        ((period != null) ? resource.getPeriod().equals(period) : resource.getPeriod() == null))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
     }
 }
