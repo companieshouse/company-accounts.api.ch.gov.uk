@@ -5,7 +5,8 @@ import java.util.Arrays;
 public enum Resource {
 
     STOCKS("stocks"),
-    TANGIBLE_ASSETS("tangible-assets");
+    TANGIBLE_ASSETS("tangible-assets"),
+    DEBTORS("debtors");
 
     private String name;
 

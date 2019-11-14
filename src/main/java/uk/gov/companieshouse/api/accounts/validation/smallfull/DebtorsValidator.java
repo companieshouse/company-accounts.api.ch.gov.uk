@@ -1,19 +1,22 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.validation.AccountsResourceValidator;
+import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +24,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
+public class DebtorsValidator extends BaseValidator implements AccountsResourceValidator<Debtors> {
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
@@ -73,9 +76,9 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return errors;
     }
 
-    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
-            String companyAccountsId,
-            HttpServletRequest request) throws DataException {
+    @Override
+    public Errors validateSubmission(@Valid Debtors debtors, Transaction transaction,
+            String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = validateIfEmptyResource(debtors, request, companyAccountsId);
 
@@ -103,7 +106,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
 
         return errors;
     }
-
 
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
@@ -284,8 +286,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    @Override
-    public Errors crossValidate(Debtors debtors, HttpServletRequest request,
+    private Errors crossValidate(Debtors debtors, HttpServletRequest request,
             String companyAccountsId,
             Errors errors) throws DataException {
 
@@ -420,4 +421,7 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                 .map(CurrentAssets :: getDebtors)
                 .isPresent();
     }
+
+    @Override
+    public AccountsResource getAccountsResource() { return AccountsResource.SMALL_FULL_DEBTORS; }
 }

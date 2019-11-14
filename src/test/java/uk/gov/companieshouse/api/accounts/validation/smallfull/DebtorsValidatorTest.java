@@ -1,5 +1,4 @@
-
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,9 +20,9 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -31,6 +30,8 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,7 +102,7 @@ public class DebtorsValidatorTest {
 
         mockValidBalanceSheetCurrentPeriod();
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -118,7 +119,7 @@ public class DebtorsValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -129,7 +130,7 @@ public class DebtorsValidatorTest {
 
         createValidNoteCurrentPeriod();
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -143,35 +144,7 @@ public class DebtorsValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Cross validation passes with valid note for first year filer")
-    void testSuccessfulCrossValidationForFirstYearFiler() throws DataException {
-
-        createValidNoteCurrentPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-
-        errors = validator.crossValidate(debtors, mockRequest, COMPANY_ACCOUNTS_ID, errors);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Cross validation passes with valid note for multiple year filer")
-    void testSuccessfulCrossValidationForMultipleYearFiler() throws DataException {
-
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-        mockValidBalanceSheetPreviousPeriod();
-
-        errors = validator.crossValidate(debtors, mockRequest, COMPANY_ACCOUNTS_ID, errors);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -188,7 +161,7 @@ public class DebtorsValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -211,7 +184,7 @@ public class DebtorsValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -227,7 +200,7 @@ public class DebtorsValidatorTest {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
                 DEBTORS_PATH)));
@@ -258,7 +231,7 @@ public class DebtorsValidatorTest {
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
             MANDATORY_ELEMENT_MISSING_VALUE);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -298,7 +271,7 @@ public class DebtorsValidatorTest {
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -333,7 +306,7 @@ public class DebtorsValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
             UNEXPECTED_DATA_VALUE);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(2, errors.getErrorCount());
@@ -362,7 +335,7 @@ public class DebtorsValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateDebtors(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(debtors, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -388,7 +361,7 @@ public class DebtorsValidatorTest {
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
-            () -> validator.validateDebtors(debtors,
+            () -> validator.validateSubmission(debtors,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
@@ -403,7 +376,7 @@ public class DebtorsValidatorTest {
         when(mockCurrentPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
-            () -> validator.validateDebtors(debtors,
+            () -> validator.validateSubmission(debtors,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
@@ -420,7 +393,7 @@ public class DebtorsValidatorTest {
         when(mockPreviousPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
-            () -> validator.validateDebtors(debtors,
+            () -> validator.validateSubmission(debtors,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 

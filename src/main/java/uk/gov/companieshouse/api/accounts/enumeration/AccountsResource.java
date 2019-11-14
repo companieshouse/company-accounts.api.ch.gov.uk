@@ -7,7 +7,8 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 public enum AccountsResource {
 
     SMALL_FULL_STOCKS(AccountType.SMALL_FULL, Resource.STOCKS, Parent.SMALL_FULL, SmallFullLinkType.STOCKS_NOTE, "small-full-accounts#stocks-note"),
-    SMALL_FULL_TANGIBLE_ASSETS(AccountType.SMALL_FULL, Resource.TANGIBLE_ASSETS, Parent.SMALL_FULL, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, "small-full-accounts-note#tangible-assets");
+    SMALL_FULL_TANGIBLE_ASSETS(AccountType.SMALL_FULL, Resource.TANGIBLE_ASSETS, Parent.SMALL_FULL, SmallFullLinkType.TANGIBLE_ASSETS_NOTE, "small-full-accounts-note#tangible-assets"),
+    SMALL_FULL_DEBTORS(AccountType.SMALL_FULL, Resource.DEBTORS, Parent.SMALL_FULL, SmallFullLinkType.DEBTORS_NOTE, "small-full-accounts-note#debtors");
 
     private AccountType accountType;
     private Resource resource;

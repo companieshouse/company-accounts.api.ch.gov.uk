@@ -1,17 +1,19 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.transformer.AccountsResourceTransformer;
 
 @Component
-public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEntity> {
+public class DebtorsTransformer implements AccountsResourceTransformer<Debtors, DebtorsEntity> {
 
     @Override
     public DebtorsEntity transform(Debtors rest) {
@@ -59,4 +61,7 @@ public class DebtorsTransformer implements GenericTransformer<Debtors, DebtorsEn
         }
         return debtors;
     }
+
+    @Override
+    public AccountsResource getAccountsResource() { return AccountsResource.SMALL_FULL_DEBTORS; }
 }

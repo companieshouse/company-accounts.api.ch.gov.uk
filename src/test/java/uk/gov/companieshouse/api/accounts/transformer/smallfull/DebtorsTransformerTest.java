@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,9 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeri
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
 
 import java.util.HashMap;
 
