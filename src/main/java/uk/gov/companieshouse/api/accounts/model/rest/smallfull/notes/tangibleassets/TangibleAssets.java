@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

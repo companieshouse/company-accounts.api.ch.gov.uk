@@ -17,10 +17,10 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.Depreciati
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsResourceEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.Depreciation;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.TangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Depreciation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssetsResource;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)

@@ -1,15 +1,19 @@
-package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangible;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Depreciation {
+public class Cost {
 
     private static final int MAX_RANGE = 99999999;
     private static final int ZERO = 0;
     private static final int MIN_RANGE = -99999999;
+
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("additions")
+    private Long additions;
 
     @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
     @JsonProperty("at_period_end")
@@ -20,16 +24,24 @@ public class Depreciation {
     private Long atPeriodStart;
 
     @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("charge_for_year")
-    private Long chargeForYear;
-
-    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("on_disposals")
-    private Long onDisposals;
+    @JsonProperty("disposals")
+    private Long disposals;
 
     @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("other_adjustments")
-    private Long otherAdjustments;
+    @JsonProperty("revaluations")
+    private Long revaluations;
+
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("transfers")
+    private Long transfers;
+
+    public Long getAdditions() {
+        return additions;
+    }
+
+    public void setAdditions(Long additions) {
+        this.additions = additions;
+    }
 
     public Long getAtPeriodEnd() {
         return atPeriodEnd;
@@ -47,27 +59,27 @@ public class Depreciation {
         this.atPeriodStart = atPeriodStart;
     }
 
-    public Long getChargeForYear() {
-        return chargeForYear;
+    public Long getDisposals() {
+        return disposals;
     }
 
-    public void setChargeForYear(Long chargeForYear) {
-        this.chargeForYear = chargeForYear;
+    public void setDisposals(Long disposals) {
+        this.disposals = disposals;
     }
 
-    public Long getOnDisposals() {
-        return onDisposals;
+    public Long getRevaluations() {
+        return revaluations;
     }
 
-    public void setOnDisposals(Long onDisposals) {
-        this.onDisposals = onDisposals;
+    public void setRevaluations(Long revaluations) {
+        this.revaluations = revaluations;
     }
 
-    public Long getOtherAdjustments() {
-        return otherAdjustments;
+    public Long getTransfers() {
+        return transfers;
     }
 
-    public void setOtherAdjustments(Long otherAdjustments) {
-        this.otherAdjustments = otherAdjustments;
+    public void setTransfers(Long transfers) {
+        this.transfers = transfers;
     }
 }

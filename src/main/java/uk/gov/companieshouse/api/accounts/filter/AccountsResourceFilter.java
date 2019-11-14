@@ -69,15 +69,29 @@ public class AccountsResourceFilter implements Filter {
                 Matcher matcher = ACCOUNTS_RESOURCE_REGEX.matcher(request.getRequestURI());
                 if (matcher.find()) {
                     j.put(ACCOUNTS_RESOURCE_PACKAGE,
-                            "." + getPackage(matcher.group(1)) +
-                                    "." + getPackage(matcher.group(2)) +
-                                            "." + getPackage(matcher.group(3).replace("/", "")) +
-                                                    "." + getClassName(matcher.group(3).replace("/", "")));
+                            (matcher.group(3) != null ?
+                                    getPackageNameIncludingGroupThree(matcher) :
+                                    getPackageNameExcludingGroupThree(matcher)));
                 }
 
                 // Cache the body for later reading
                 body = j.toString();
             }
+        }
+
+        private String getPackageNameExcludingGroupThree(Matcher matcher) {
+
+            return "." + getPackage(matcher.group(1)) +
+                    "." + getPackage(matcher.group(2)) +
+                    "." + getClassName(matcher.group(2));
+        }
+
+        private String getPackageNameIncludingGroupThree(Matcher matcher) {
+
+            return "." + getPackage(matcher.group(1)) +
+                    "." + getPackage(matcher.group(2)) +
+                    "." + getPackage(matcher.group(3).replace("/", "")) +
+                    "." + getClassName(matcher.group(3).replace("/", ""));
         }
 
         private String getPackage(String input) {
