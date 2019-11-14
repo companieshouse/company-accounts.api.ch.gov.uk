@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
+import uk.gov.companieshouse.api.accounts.exception.InvalidPathParameterException;
 
 @Component
 public class AccountTypeConverter extends PropertyEditorSupport {
@@ -24,7 +25,7 @@ public class AccountTypeConverter extends PropertyEditorSupport {
 
         AccountType accountType = ACCOUNT_TYPE_MAP.get(type);
         if (accountType == null) {
-            throw new RuntimeException();
+            throw new InvalidPathParameterException("No AccountType found for: " + type);
         }
         setValue(accountType);
     }

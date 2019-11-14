@@ -34,7 +34,7 @@ public class AccountsResourceFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        // Default impl
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AccountsResourceFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        // Default impl
     }
 
     private class AccountsResourceRequestWrapper extends HttpServletRequestWrapper {

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.Period;
+import uk.gov.companieshouse.api.accounts.exception.InvalidPathParameterException;
 
 @Component
 public class PeriodConverter extends PropertyEditorSupport {
@@ -24,7 +25,7 @@ public class PeriodConverter extends PropertyEditorSupport {
 
         Period period = PERIOD_MAP.get(type);
         if (period == null) {
-            throw new RuntimeException();
+            throw new InvalidPathParameterException("No Period found for: " + type);
         }
         setValue(period);
     }

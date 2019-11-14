@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.Resource;
+import uk.gov.companieshouse.api.accounts.exception.InvalidPathParameterException;
 
 @Component
 public class ResourceConverter extends PropertyEditorSupport {
@@ -24,7 +25,7 @@ public class ResourceConverter extends PropertyEditorSupport {
 
         Resource resource = RESOURCE_MAP.get(type);
         if (resource == null) {
-            throw new RuntimeException();
+            throw new InvalidPathParameterException("No Resource found for: " + type);
         }
         setValue(resource);
     }
