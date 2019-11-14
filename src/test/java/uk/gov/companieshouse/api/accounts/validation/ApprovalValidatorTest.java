@@ -32,6 +32,8 @@ public class ApprovalValidatorTest {
 
     private ApprovalValidator validator;
 
+    private Approval approval ;
+
     @Mock
     private HttpServletRequest httpServletRequestMock;
 
@@ -40,13 +42,13 @@ public class ApprovalValidatorTest {
 
         validator = new ApprovalValidator();
         validator.dateInvalid = "date.invalid";
+        approval = new Approval();
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
     }
 
     @Test
     @DisplayName("Validate with a valid approval date ")
     void validateApprovalWithValidDate(){
-        Approval approval = new Approval();
-        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateApproval(approval,httpServletRequestMock);
         assertFalse(errors.hasErrors());
@@ -55,8 +57,6 @@ public class ApprovalValidatorTest {
     @Test
     @DisplayName("Validate with approval date before period end on date")
     void validateApprovalDateBeforePeriodEnd(){
-        Approval approval = new Approval();
-        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
         approval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
         errors = validator.validateApproval(approval,httpServletRequestMock);
         assertTrue(errors.hasErrors());
@@ -67,8 +67,6 @@ public class ApprovalValidatorTest {
     @Test
     @DisplayName("Validate with approval date equal to period end on date")
     void validateApprovalDateSameAsPeriodEnd(){
-        Approval approval = new Approval();
-        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
         errors = validator.validateApproval(approval,httpServletRequestMock);
         assertTrue(errors.hasErrors());
