@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.Parent;
+import uk.gov.companieshouse.api.accounts.exception.MissingInfrastructureException;
 import uk.gov.companieshouse.api.accounts.links.LinkType;
 
 @Component
@@ -26,7 +27,7 @@ public class ParentResourceFactory<L extends LinkType> {
         ParentResource<L> parentResource = parentResourceMap.get(parent);
 
         if (parentResource == null) {
-            throw new RuntimeException("No parent resource for parent type: " + parent.toString());
+            throw new MissingInfrastructureException("No parent resource for parent type: " + parent.toString());
         }
         return parentResource;
     }

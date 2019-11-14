@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
+import uk.gov.companieshouse.api.accounts.exception.MissingInfrastructureException;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 
 @Component
@@ -29,7 +30,7 @@ public class AccountsResourceRepositoryFactory<E extends BaseEntity> {
         AccountsResourceRepository<E> repository = repositoryMap.get(accountsResource);
 
         if (repository == null) {
-            throw new RuntimeException("No repository type for accounts resource: " + accountsResource.toString());
+            throw new MissingInfrastructureException("No repository type for accounts resource: " + accountsResource.toString());
         }
         return repository;
     }

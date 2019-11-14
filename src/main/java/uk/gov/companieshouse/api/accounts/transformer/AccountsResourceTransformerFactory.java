@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
+import uk.gov.companieshouse.api.accounts.exception.MissingInfrastructureException;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Rest;
 
@@ -27,7 +28,7 @@ public class AccountsResourceTransformerFactory<R extends Rest, E extends BaseEn
         AccountsResourceTransformer<R, E> transformer = transformerMap.get(accountsResource);
 
         if (transformer == null) {
-            throw new RuntimeException("No transformer type for accounts resource: " + accountsResource.toString());
+            throw new MissingInfrastructureException("No transformer type for accounts resource: " + accountsResource.toString());
         }
         return transformer;
     }

@@ -286,23 +286,6 @@ public class DebtorsValidator extends BaseValidator implements AccountsResourceV
         }
     }
 
-    private Errors crossValidate(Debtors debtors, HttpServletRequest request,
-            String companyAccountsId,
-            Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
-
-        crossValidateCurrentPeriodFields(debtors.getCurrentPeriod(), currentPeriodBalanceSheet,
-                errors);
-        crossValidatePreviousPeriodFields(debtors.getPreviousPeriod(), previousPeriodBalanceSheet
-                , errors);
-
-        return errors;
-    }
-
     private void crossValidateCurrentPeriodFields(CurrentPeriod currentPeriodDebtors,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
