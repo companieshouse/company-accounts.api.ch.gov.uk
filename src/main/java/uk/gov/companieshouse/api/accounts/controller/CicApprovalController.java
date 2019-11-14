@@ -1,7 +1,5 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
