@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.Approval;
+import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -26,53 +26,52 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ApprovalValidatorTest {
+public class CicApprovalValidatorTest {
 
     private Errors errors;
 
-    private ApprovalValidator validator;
+    private CicApprovalValidator validator;
 
-    private Approval approval ;
+    private CicApproval cicApproval;
 
     @Mock
     private HttpServletRequest httpServletRequestMock;
 
     @BeforeEach
     void setup() {
-        validator = new ApprovalValidator();
+        validator = new CicApprovalValidator();
         validator.dateInvalid = "date.invalid";
-        approval = new Approval();
+        cicApproval = new CicApproval();
         when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
     }
 
     @Test
     @DisplayName("Validate with a valid approval date ")
     void validateApprovalWithValidDate(){
-        approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
-        errors = validator.validateApproval(approval,httpServletRequestMock);
+        cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
+        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Validate with approval date before period end on date")
     void validateApprovalDateBeforePeriodEnd(){
-        approval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
-        errors = validator.validateApproval(approval,httpServletRequestMock);
+        cicApproval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
+        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.approval.date")));
+        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
     }
 
     @Test
     @DisplayName("Validate with approval date equal to period end on date")
     void validateApprovalDateSameAsPeriodEnd(){
-        approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
-        errors = validator.validateApproval(approval,httpServletRequestMock);
+        cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
+        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.approval.date")));
+        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
     }
-
     private CompanyAccount createCompanyAccount(){
         CompanyAccount companyAccount = new CompanyAccount();
         AccountingPeriod accountingPeriod = new AccountingPeriod();
@@ -86,3 +85,4 @@ public class ApprovalValidatorTest {
                 ErrorType.VALIDATION.getType());
     }
 }
+
