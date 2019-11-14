@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,14 +12,13 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import uk.gov.companieshouse.api.accounts.transformer.EmployeesTransformer;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.PreviousPeriod;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)

@@ -3,3 +3,5 @@ accountTypeConfig:
     notes:
       - stocks
       - tangible-assets
+      - debtors
+      - employees

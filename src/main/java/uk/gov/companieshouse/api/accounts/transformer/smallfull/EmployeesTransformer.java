@@ -1,18 +1,19 @@
-package uk.gov.companieshouse.api.accounts.transformer;
+package uk.gov.companieshouse.api.accounts.transformer.smallfull;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPeriod;
-
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.transformer.AccountsResourceTransformer;
 
 @Component
-public class EmployeesTransformer implements GenericTransformer<Employees, EmployeesEntity> {
+public class EmployeesTransformer implements AccountsResourceTransformer<Employees, EmployeesEntity> {
 
     @Override
     public EmployeesEntity transform(Employees rest) {
@@ -65,4 +66,7 @@ public class EmployeesTransformer implements GenericTransformer<Employees, Emplo
         }
         return employees;
     }
+
+    @Override
+    public AccountsResource getAccountsResource() { return AccountsResource.SMALL_FULL_EMPLOYEES; }
 }

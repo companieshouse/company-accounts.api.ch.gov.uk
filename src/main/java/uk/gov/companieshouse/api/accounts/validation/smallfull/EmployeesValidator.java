@@ -1,17 +1,21 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountsResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.Employees;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.validation.AccountsResourceValidator;
+import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class EmployeesValidator extends BaseValidator {
+public class EmployeesValidator extends BaseValidator implements AccountsResourceValidator<Employees> {
 
     private static final String EMPLOYEES_PATH = "$.employees";
     private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH = EMPLOYEES_PATH +
@@ -24,7 +28,8 @@ public class EmployeesValidator extends BaseValidator {
         this.companyService = companyService;
     }
 
-    public Errors validateEmployees(@Valid Employees employees, Transaction transaction) throws DataException {
+    @Override
+    public Errors validateSubmission(@Valid Employees employees, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
@@ -47,5 +52,10 @@ public class EmployeesValidator extends BaseValidator {
         } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public AccountsResource getAccountsResource() {
+        return AccountsResource.SMALL_FULL_EMPLOYEES;
     }
 }

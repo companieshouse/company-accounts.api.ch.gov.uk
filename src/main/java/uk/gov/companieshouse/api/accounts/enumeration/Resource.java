@@ -4,7 +4,8 @@ public enum Resource {
 
     STOCKS("stocks"),
     TANGIBLE_ASSETS("tangible-assets"),
-    DEBTORS("debtors");
+    DEBTORS("debtors"),
+    EMPLOYEES("employees");
 
     Resource(String name) { this.name = name; }
 

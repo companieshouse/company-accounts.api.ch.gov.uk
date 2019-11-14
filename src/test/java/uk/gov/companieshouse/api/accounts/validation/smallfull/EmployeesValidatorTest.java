@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.validation;
+package uk.gov.companieshouse.api.accounts.validation.smallfull;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,12 +17,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.validation.ErrorType;
+import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,12 +40,17 @@ public class EmployeesValidatorTest {
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE =
             "empty_resource";
+    
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Mock
-    CompanyService mockCompanyService;
+    private CompanyService mockCompanyService;
 
     @Mock
-    Transaction mockTransaction;
+    private Transaction mockTransaction;
+    
+    @Mock
+    private HttpServletRequest request;
 
     @Mock
     private ServiceException mockServiceException;
@@ -66,7 +74,7 @@ public class EmployeesValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        errors = validator.validateSubmission(employees, mockTransaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -81,7 +89,7 @@ public class EmployeesValidatorTest {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        errors = validator.validateSubmission(employees, mockTransaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
                 EMPLOYEES_PATH)));
@@ -96,7 +104,7 @@ public class EmployeesValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        errors = validator.validateSubmission(employees, mockTransaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -113,7 +121,7 @@ public class EmployeesValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
-        errors = validator.validateEmployees(employees, mockTransaction);
+        errors = validator.validateSubmission(employees, mockTransaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -127,7 +135,7 @@ public class EmployeesValidatorTest {
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
-                () -> validator.validateEmployees(employees, mockTransaction));
+                () -> validator.validateSubmission(employees, mockTransaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     private Employees createValidNoteCurrentPeriod() {
