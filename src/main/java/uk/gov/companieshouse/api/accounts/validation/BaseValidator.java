@@ -8,7 +8,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 public class BaseValidator {
 
     @Value("${incorrect.total}")
-    private String incorrectTotal;
+    protected String incorrectTotal;
 
     @Value("${date.invalid}")
     protected String dateInvalid;
@@ -27,6 +27,9 @@ public class BaseValidator {
 
     @Value("${empty.resource}")
     private String emptyResource;
+
+    @Value("${value.required}")
+    protected String valueRequired;
 
     /**
      * Validate the given total is correctly aggregated

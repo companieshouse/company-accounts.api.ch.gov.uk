@@ -57,11 +57,26 @@ public class ProfitAndLossValidatorTest {
     private static final String INCORRECT_TOTAL = "incorrect_total";
     private static final String INCORRECT_TOTAL_KEY = "incorrectTotal";
 
+    private static final String VALUE_REQUIRED = "value_required";
+    private static final String VALUE_REQUIRED_KEY = "valueRequired";
+
     @BeforeEach
     void setup() {
         profitAndLoss = new ProfitAndLoss();
         validator = new ProfitAndLossValidator();
         errors = new Errors();
+    }
+
+    @Test
+    @DisplayName("Test submission of empty Profit and Loss")
+    void testSubmissionOfEmptyProfitAndLoss() throws DataException {
+
+        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+
+        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
     }
 
     @Test
@@ -79,7 +94,7 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test Gross profit or loss fields do no match with total")
-    void GrossProfitOfLossFieldsDoNotMatchTotal() throws DataException {
+    void grossProfitOrLossFieldsDoNotMatchTotal() throws DataException {
 
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
         grossProfitOrLoss.setCostOfSales(3L);
