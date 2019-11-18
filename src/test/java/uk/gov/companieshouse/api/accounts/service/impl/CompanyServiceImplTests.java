@@ -117,6 +117,19 @@ public class CompanyServiceImplTests {
     }
 
     @Test
+    @DisplayName("Multiple year filer returns false")
+    void multipleYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
+            URIValidationException {
+
+        when(mockCompanyGet.execute()).thenReturn(apiResponse);
+        when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
+        when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+
+        assertFalse(companyService.isMultipleYearFiler(mockTransaction));
+
+    }
+
+    @Test
     @DisplayName("First year filer returns true")
     void firstYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
             URIValidationException {
