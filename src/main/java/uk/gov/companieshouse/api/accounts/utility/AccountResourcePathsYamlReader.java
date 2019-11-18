@@ -1,8 +1,6 @@
 package uk.gov.companieshouse.api.accounts.utility;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import org.yaml.snakeyaml.Yaml;
 import uk.gov.companieshouse.api.accounts.model.AccountTypeConfig;
@@ -14,6 +12,8 @@ public class AccountResourcePathsYamlReader {
 
     private static final String PATH_PREFIX = "/transactions/{transactionId}/company-accounts/{companyAccountId}/{accountType:";
 
+    private static final String PROPERTY_PREFIX = "controller.paths.";
+
     private Properties properties;
 
     public AccountResourcePathsYamlReader(Properties properties) {
@@ -21,8 +21,6 @@ public class AccountResourcePathsYamlReader {
     }
 
     public void populatePropertiesFromYamlFile() {
-
-        List<String> controllerPaths = new ArrayList<>();
 
         Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass()
@@ -36,22 +34,24 @@ public class AccountResourcePathsYamlReader {
             AccountTypeConfig accountTypeConfig = yamlConfig.getAccountTypeConfig().get(accountType);
 
             if (accountTypeConfig.getSoloResources() != null) {
-                addSoloResourcePaths(accountType, accountTypeConfig, controllerPaths);
+                addSoloResourcePaths(accountType, accountTypeConfig, properties);
             }
 
             if (accountTypeConfig.getNotes() != null) {
-                addNotesPaths(accountType, accountTypeConfig, controllerPaths);
+                addNotesPaths(accountType, accountTypeConfig, properties);
             }
 
             if (accountTypeConfig.getCurrentPeriod() != null) {
-                addCurrentPeriodPaths(accountType, accountTypeConfig, controllerPaths);
+                addCurrentPeriodPaths(accountType, accountTypeConfig, properties);
+            }
+
+            if (accountTypeConfig.getPreviousPeriod() != null) {
+                addPreviousPeriodPaths(accountType, accountTypeConfig, properties);
             }
         });
-
-        properties.put("controller.paths", getFormattedControllerPaths(controllerPaths));
     }
 
-    private void addSoloResourcePaths(String accountType, AccountTypeConfig accountTypeConfig, List<String> controllerPaths) {
+    private void addSoloResourcePaths(String accountType, AccountTypeConfig accountTypeConfig, Properties properties) {
 
         StringBuilder accountSoloResources = new StringBuilder(
                 PATH_PREFIX + accountType + "}/{resource:");
@@ -64,10 +64,10 @@ public class AccountResourcePathsYamlReader {
         }
         accountSoloResources.append("}");
 
-        controllerPaths.add(accountSoloResources.toString());
+        properties.put(PROPERTY_PREFIX + normalizeAccountType(accountType) + ".solo", accountSoloResources.toString());
     }
 
-    private void addNotesPaths(String accountType, AccountTypeConfig accountTypeConfig, List<String> controllerPaths) {
+    private void addNotesPaths(String accountType, AccountTypeConfig accountTypeConfig, Properties properties) {
 
         StringBuilder accountNotes = new StringBuilder(
                 PATH_PREFIX + accountType + "}/notes/{resource:");
@@ -80,10 +80,10 @@ public class AccountResourcePathsYamlReader {
         }
         accountNotes.append("}");
 
-        controllerPaths.add(accountNotes.toString());
+        properties.put(PROPERTY_PREFIX + normalizeAccountType(accountType) + ".notes", accountNotes.toString());
     }
 
-    private void addCurrentPeriodPaths(String accountType, AccountTypeConfig accountTypeConfig, List<String> controllerPaths) {
+    private void addCurrentPeriodPaths(String accountType, AccountTypeConfig accountTypeConfig, Properties properties) {
 
         StringBuilder currentPeriod = new StringBuilder(
                 PATH_PREFIX + accountType + "}/{period:current-period}/{resource:");
@@ -96,18 +96,27 @@ public class AccountResourcePathsYamlReader {
         }
         currentPeriod.append("}");
 
-        controllerPaths.add(currentPeriod.toString());
+        properties.put(PROPERTY_PREFIX + normalizeAccountType(accountType) + ".current", currentPeriod.toString());
     }
 
-    private String getFormattedControllerPaths(List<String> controllerPaths) {
+    private void addPreviousPeriodPaths(String accountType, AccountTypeConfig accountTypeConfig, Properties properties) {
 
-        StringBuilder formattedControllerPaths = new StringBuilder();
-        for (int i = 0; i < controllerPaths.size(); i++) {
-            formattedControllerPaths.append(controllerPaths.get(i));
-            if (i < controllerPaths.size() - 1) {
-                formattedControllerPaths.append(", ");
+        StringBuilder previousPeriod = new StringBuilder(
+                PATH_PREFIX + accountType + "}/{period:previous-period}/{resource:");
+
+        for (int i = 0; i < accountTypeConfig.getPreviousPeriod().size(); i++) {
+            previousPeriod.append(accountTypeConfig.getPreviousPeriod().get(i));
+            if (i < accountTypeConfig.getPreviousPeriod().size() - 1) {
+                previousPeriod.append("|");
             }
         }
-        return formattedControllerPaths.toString();
+        previousPeriod.append("}");
+
+        properties.put(PROPERTY_PREFIX + normalizeAccountType(accountType) + ".previous", previousPeriod.toString());
+    }
+
+    private String normalizeAccountType(String accountType) {
+
+        return accountType.replace("-", "");
     }
 }

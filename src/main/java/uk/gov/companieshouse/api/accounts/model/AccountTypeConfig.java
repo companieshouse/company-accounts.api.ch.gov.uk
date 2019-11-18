@@ -10,6 +10,8 @@ public class AccountTypeConfig {
 
     private List<String> currentPeriod;
 
+    private List<String> previousPeriod;
+
     public List<String> getSoloResources() {
         return soloResources;
     }
@@ -33,4 +35,8 @@ public class AccountTypeConfig {
     public void setCurrentPeriod(List<String> currentPeriod) {
         this.currentPeriod = currentPeriod;
     }
+
+    public List<String> getPreviousPeriod() { return previousPeriod; }
+
+    public void setPreviousPeriod(List<String> previousPeriod) { this.previousPeriod = previousPeriod; }
 }

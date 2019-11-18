@@ -4,6 +4,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
@@ -15,8 +16,10 @@ import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.model.ControllerPathProperties;
 import uk.gov.companieshouse.api.accounts.utility.AccountResourcePathsYamlReader;
 
+@EnableConfigurationProperties(ControllerPathProperties.class)
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
 

@@ -1,8 +1,13 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
+
+import java.util.Map.Entry;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +29,7 @@ import uk.gov.companieshouse.api.accounts.enumeration.Period;
 import uk.gov.companieshouse.api.accounts.enumeration.Resource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.LinkType;
+import uk.gov.companieshouse.api.accounts.model.ControllerPathProperties;
 import uk.gov.companieshouse.api.accounts.model.rest.Rest;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
@@ -37,9 +43,11 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 @RestController
-@RequestMapping(value = {"${controller.paths}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = {"${controller.paths.smallfull.notes}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountsResourceController {
 
     @Autowired
@@ -65,6 +73,11 @@ public class AccountsResourceController {
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
+
+    @Autowired
+    private ControllerPathProperties controllerPathProperties;
+
+    private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @InitBinder
     protected void initBinder(final WebDataBinder webdataBinder) {
@@ -192,6 +205,34 @@ public class AccountsResourceController {
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete resource: " + accountsResource.getLinkType().getLink(), ex, request);
             return apiResponseMapper.getErrorResponse();
+        }
+    }
+
+    @PostConstruct
+    void init () {
+
+        String[] requestMappings = AnnotationUtils
+                .findAnnotation(this.getClass(), RequestMapping.class).value();
+
+        for (Entry<String, String> entry : controllerPathProperties.getPaths().entrySet()) {
+
+            boolean matched = false;
+
+            for (String requestMapping : requestMappings) {
+
+                if (requestMapping.equals("${controller.paths." + entry.getKey() + "}")) {
+
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+
+                STRUCTURED_LOGGER.error(
+                        "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in AccountsResourceController; "
+                        + "This must be added for requests of this type to route to this controller");
+            }
         }
     }
 }

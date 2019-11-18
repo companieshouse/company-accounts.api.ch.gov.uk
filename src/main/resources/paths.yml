@@ -5,3 +5,7 @@ accountTypeConfig:
       - tangible-assets
       - debtors
       - employees
+    currentPeriod:
+      - profit-and-loss
+    previousPeriod:
+      - profit-and-loss
