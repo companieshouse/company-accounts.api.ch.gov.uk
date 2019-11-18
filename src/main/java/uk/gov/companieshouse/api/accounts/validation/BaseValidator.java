@@ -28,6 +28,9 @@ public class BaseValidator {
     @Value("${empty.resource}")
     protected String emptyResource;
 
+    @Value("${value.required}")
+    protected String valueRequired;
+
     /**
      * Validate the given total is correctly aggregated
      *
