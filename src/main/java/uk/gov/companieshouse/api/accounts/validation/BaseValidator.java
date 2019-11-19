@@ -26,7 +26,7 @@ public class BaseValidator {
     protected String mandatoryElementMissing;
 
     @Value("${empty.resource}")
-    private String emptyResource;
+    protected String emptyResource;
 
     @Value("${value.required}")
     protected String valueRequired;
