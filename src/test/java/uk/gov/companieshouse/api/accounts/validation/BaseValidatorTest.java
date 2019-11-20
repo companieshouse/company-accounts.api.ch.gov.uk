@@ -43,7 +43,6 @@ public class BaseValidatorTest {
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError( validator.incorrectTotal, "location")));
-
     }
 
     @Test
