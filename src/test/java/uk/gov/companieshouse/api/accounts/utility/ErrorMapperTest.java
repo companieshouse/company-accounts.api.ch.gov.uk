@@ -46,9 +46,10 @@ public class ErrorMapperTest {
         errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult);
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
-        //assertTrue(errors.containsError(createError("error_string", "$.object1.field1")));
-        //assertTrue(errors.containsError(createError("error_string", "$.object2.field2")));
-        //assertTrue(errors.containsError(createError("error_string", "$.object3.field3")));
+        assertTrue(errors.containsError(createRangeError("error_string", "$.object1.field1","0","9999")));
+        assertTrue(errors.containsError(createRangeError("error_string", "$.object2.field2","0","9999")));
+        assertTrue(errors.containsError(createMaxError("error_string", "$.object3.field3","0")));
+        assertTrue(errors.containsError(createError("incorrect.total", "$.object4.field4")));
     }
     private List<ObjectError> getAllErrors(){
         Object[] argument = {0,0,9999};
@@ -64,8 +65,23 @@ public class ErrorMapperTest {
         return errorList;
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createRangeError(String error, String path,String upper, String lower) {
+        Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
+        returnError.addErrorValue("upper",upper);
+        returnError.addErrorValue("lower",lower);
+        return returnError;
+    }
+    private Error createMaxError(String error, String path,String maxLength) {
+        Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType());
+        returnError.addErrorValue("max_length",maxLength);
+        return returnError;
+    }
+
+    private Error createError(String error, String path) {
+        return new  Error(error, path, LocationType.JSON_PATH.getValue(),
+                ErrorType.VALIDATION.getType());
+
     }
 }
