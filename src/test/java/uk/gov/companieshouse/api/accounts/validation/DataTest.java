@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.lang.reflect.Method;
@@ -16,11 +17,11 @@ import javax.xml.bind.annotation.XmlElement;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DataTest {
 
+    @InjectMocks
     private Data data;
 
     @BeforeEach
     void setup () {
-        data = new Data();
         data.setBalanceSheetDate("BalanceSheetData");
         data.setAccountsType("CompanyAccounts");
         data.setCompaniesHouseRegisteredNumber("CompaniesHouseRegisteredNumber");

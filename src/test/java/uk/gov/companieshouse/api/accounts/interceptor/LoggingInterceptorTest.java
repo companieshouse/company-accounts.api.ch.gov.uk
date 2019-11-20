@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -26,6 +27,7 @@ import static junit.framework.TestCase.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoggingInterceptorTest {
 
+    @InjectMocks
     private LoggingInterceptor loggingInterceptor;
 
     @Mock
@@ -36,11 +38,6 @@ public class LoggingInterceptorTest {
 
     @Mock
     private HttpSession httpSession;
-
-    @BeforeEach
-    void setup() {
-        loggingInterceptor = new LoggingInterceptor();
-    }
 
     @Test
     @DisplayName("Test the pre-handle")

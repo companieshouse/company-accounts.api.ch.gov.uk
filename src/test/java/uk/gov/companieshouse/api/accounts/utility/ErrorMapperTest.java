@@ -36,14 +36,12 @@ public class ErrorMapperTest {
     @Mock
     private BindingResult mockBindingResult;
 
-    private Errors errors;
-
     @Test
     @DisplayName("Test Mapping Error to Error Model correctly ")
     void testMapErrorToErrorModel() {
         when(mockBindingResult.getAllErrors()).thenReturn(getAllErrors());
         when(environment.resolvePlaceholders(any())).thenReturn("error_string");
-        errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult);
+        Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult);
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
         assertTrue(errors.containsError(createRangeError("error_string", "$.object1.field1","0","9999")));

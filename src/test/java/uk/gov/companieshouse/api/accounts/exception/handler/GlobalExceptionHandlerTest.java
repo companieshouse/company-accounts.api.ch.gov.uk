@@ -9,12 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GlobalExceptionHandlerTest {
 
+    @InjectMocks
     private GlobalExceptionHandler globalExceptionHandler;
 
     private NoHandlerFoundException noHandlerFoundException;
@@ -52,8 +55,7 @@ public class GlobalExceptionHandlerTest {
 
     @BeforeEach
     void setup() {
-        globalExceptionHandler = new GlobalExceptionHandler();
-        globalExceptionHandler.invalidValue = "InvalidValue";
+        ReflectionTestUtils.setField(globalExceptionHandler, "invalidValue", "InvalidValue");
         noHandlerFoundException = new NoHandlerFoundException("","", new HttpHeaders());
 
         httpHeaders = new HttpHeaders();

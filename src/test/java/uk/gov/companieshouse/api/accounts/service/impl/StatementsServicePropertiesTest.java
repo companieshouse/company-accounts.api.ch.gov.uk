@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -19,12 +20,8 @@ import static org.junit.Assert.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StatementsServicePropertiesTest {
 
+    @InjectMocks
     private StatementsServiceProperties statementsServiceProperties;
-
-    @BeforeEach
-    void setup() {
-        statementsServiceProperties = new StatementsServiceProperties();
-    }
 
     @Test
     @DisplayName("Test Clone of Statements ")
