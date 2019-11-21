@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.SpringApplication;
+
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
