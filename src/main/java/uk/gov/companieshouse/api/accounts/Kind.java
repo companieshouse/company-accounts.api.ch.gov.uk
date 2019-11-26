@@ -22,7 +22,8 @@ public enum Kind {
     CIC_APPROVAL("cic-report#approval"),
     CIC_STATEMENTS("cic-report#cic-statements"),
     PROFIT_LOSS_CURRENT("small-full-accounts-profit-and-loss#current"),
-    PROFIT_LOSS_PREVIOUS("small-full-accounts-profit-and-loss#previous");
+    PROFIT_LOSS_PREVIOUS("small-full-accounts-profit-and-loss#previous"),
+    DIRECTORS_REPORT_DIRECTOR("small-full-accounts-directors-report#directors");
 
     private String value;
 
