@@ -47,7 +47,7 @@ public class DirectorService implements ResourceService<Director> {
     }
 
     private static final Pattern DIRECTOR_ID_REGEX =
-            Pattern.compile("^/transactions/[^/]company-accounts/[^/]small-full/directors-report/directors/(.*)$");
+            Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
 
     @Override
     public ResponseObject<Director> create(Director rest, Transaction transaction,
