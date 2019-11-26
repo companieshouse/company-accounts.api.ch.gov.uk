@@ -23,7 +23,7 @@ public enum Kind {
     CIC_STATEMENTS("cic-report#cic-statements"),
     PROFIT_LOSS_CURRENT("small-full-accounts-profit-and-loss#current"),
     PROFIT_LOSS_PREVIOUS("small-full-accounts-profit-and-loss#previous"),
-    DIRECTORS_REPORT_SECRETARY("small-full-accounts-directors-report#secretaries");
+    DIRECTORS_REPORT_SECRETARY("small-full-accounts-directors-report#secretary");
 
     private String value;
 
