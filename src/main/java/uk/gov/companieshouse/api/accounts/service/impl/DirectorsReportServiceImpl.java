@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
+import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -9,6 +10,7 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsReportRepository;
@@ -33,13 +35,15 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     private DirectorsReportRepository directorsReportRepository;
     private DirectorsReportTransformer directorsReportTransformer;
     private KeyIdGenerator keyIdGenerator;
+    private SmallFullService smallFullService;
 
     @Autowired
     public DirectorsReportServiceImpl(
-            DirectorsReportRepository directorsReportRepository, DirectorsReportTransformer directorsReportTransformer, KeyIdGenerator keyIdGenerator) {
+            DirectorsReportRepository directorsReportRepository, DirectorsReportTransformer directorsReportTransformer, KeyIdGenerator keyIdGenerator, SmallFullService smallFullService) {
         this.directorsReportRepository = directorsReportRepository;
         this.directorsReportTransformer = directorsReportTransformer;
         this.keyIdGenerator = keyIdGenerator;
+        this.smallFullService = smallFullService;
     }
 
     @Override
@@ -61,43 +65,154 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
             throw new DataException(e);
         }
 
+        smallFullService.addLink(companyAccountsId, SmallFullLinkType.DIRECTORS_REPORT,
+                getSelfLinkFromRestEntity(rest), request);
+
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
 
     }
 
     @Override
-    public ResponseObject<DirectorsReport> update(DirectorsReport rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-        return null;
+    public ResponseObject<DirectorsReport> update(DirectorsReport rest, Transaction transaction, String companyAccountsId, HttpServletRequest request)
+            throws DataException {
+
+        setMetadataOnRestObject(rest, transaction, companyAccountsId);
+
+        DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
+        entity.setId(generateID(companyAccountsId));
+
+        try {
+            directorsReportRepository.save(entity);
+
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
-    public ResponseObject<DirectorsReport> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-        return null;
+    public ResponseObject<DirectorsReport> find(String companyAccountsId, HttpServletRequest request)
+            throws DataException {
+
+        DirectorsReportEntity entity;
+
+        try {
+            entity = directorsReportRepository.findById(generateID(companyAccountsId)).orElse(null);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+
+        if (entity == null) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+        return new ResponseObject<>(ResponseStatus.FOUND, directorsReportTransformer.transform(entity));
     }
 
     @Override
-    public ResponseObject<DirectorsReport> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
-        return null;
+    public ResponseObject<DirectorsReport> delete(String companyAccountsId, HttpServletRequest request)
+            throws DataException {
+        String reportId = generateID(companyAccountsId);
+
+        try {
+            if (directorsReportRepository.existsById(reportId)) {
+
+                directorsReportRepository.deleteById(reportId);
+
+                smallFullService.removeLink(companyAccountsId, SmallFullLinkType.DIRECTORS_REPORT, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     @Override
-    public void addDirector(String companyAccountsID, String directorID, String link, HttpServletRequest request) throws DataException {
+    public void addDirector(String companyAccountsID, String directorID, String link, HttpServletRequest request)
+            throws DataException {
 
+        String reportId = generateID(companyAccountsID);
+        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get Directors report entity from which to add director"));
+        if (entity.getData().getDirectorsEntity() == null) {
+
+            entity.getData().setDirectorsEntity(new HashMap<>());
+        }
+        entity.getData().getDirectorsEntity().put(directorID, link);
+
+        try {
+
+            directorsReportRepository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     @Override
-    public void removeDirector(String companyAccountsID, String directorID, HttpServletRequest request) throws DataException {
+    public void removeDirector(String companyAccountsID, String directorID, HttpServletRequest request)
+            throws DataException {
+        String reportId = generateID(companyAccountsID);
+
+        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get directors report entity from which to remove link"));
+
+        entity.getData().getDirectorsEntity().remove(directorID);
+
+        try {
+
+            directorsReportRepository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
 
     }
 
     @Override
     public void addSecretary(String companyAccountsID, String directorID, String link, HttpServletRequest request) throws DataException {
+        String reportId = generateID(companyAccountsID);
+        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get Directors report entity from which to add director"));
+        if (entity.getData().getSecretariesEntity() == null) {
 
+            entity.getData().setSecretariesEntity(new HashMap<>());
+        }
+        entity.getData().getSecretariesEntity().put(directorID, link);
+
+        try {
+
+            directorsReportRepository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     @Override
     public void removeSecretary(String companyAccountsID, String directorID, HttpServletRequest request) throws DataException {
+        String reportId = generateID(companyAccountsID);
 
+        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get directors report entity from which to remove link"));
+
+        entity.getData().getSecretariesEntity().remove(directorID);
+
+        try {
+
+            directorsReportRepository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
@@ -125,5 +240,10 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     private String generateID(String companyAccountId) {
 
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.DIRECTORS_REPORT.getName());
+    }
+
+    public String getSelfLinkFromRestEntity(DirectorsReport rest) {
+
+        return rest.getLinks().get(BasicLinkType.SELF.getLink());
     }
 }
