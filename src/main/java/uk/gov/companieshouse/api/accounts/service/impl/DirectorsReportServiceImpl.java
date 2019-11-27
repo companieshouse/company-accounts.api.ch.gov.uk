@@ -29,9 +29,6 @@ import java.util.regex.Pattern;
 @Service
 public class DirectorsReportServiceImpl implements DirectorsReportService {
 
-    private static final Pattern DIRECTORS_REPORT_PATTERN =
-            Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report");
-
     private DirectorsReportRepository directorsReportRepository;
     private DirectorsReportTransformer directorsReportTransformer;
     private KeyIdGenerator keyIdGenerator;
@@ -138,7 +135,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
         String reportId = generateID(companyAccountsID);
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get Directors report entity from which to add director"));
+                        "Failed to get Directors report entity to which to add director"));
         if (entity.getData().getDirectorsEntity() == null) {
 
             entity.getData().setDirectorsEntity(new HashMap<>());
@@ -161,7 +158,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get directors report entity from which to remove link"));
+                        "Failed to get directors report entity to which to remove director"));
 
         entity.getData().getDirectorsEntity().remove(directorID);
 
@@ -180,7 +177,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
         String reportId = generateID(companyAccountsID);
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get Directors report entity from which to add director"));
+                        "Failed to get Directors report entity to which to add secretary"));
         if (entity.getData().getSecretariesEntity() == null) {
 
             entity.getData().setSecretariesEntity(new HashMap<>());
@@ -202,7 +199,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get directors report entity from which to remove link"));
+                        "Failed to get directors report entity to which to remove secretary"));
 
         entity.getData().getSecretariesEntity().remove(directorID);
 
