@@ -324,14 +324,14 @@ public class SecretaryServiceImplTest {
 
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(directorsReportService, timesExpected)
-                .addDirector(COMPANY_ACCOUNTS_ID, SECRETARY_ID, SECRETARY_SELF_LINK, request);
+                .addSecretary(COMPANY_ACCOUNTS_ID, SECRETARY_ID, SECRETARY_SELF_LINK, request);
     }
 
     private void assertWhetherDirectorsReportServiceCalledToRemoveSecretary(boolean isServiceExpected) throws DataException {
 
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(directorsReportService, timesExpected)
-                .removeDirector(COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
+                .removeSecretary(COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
     }
 
 }

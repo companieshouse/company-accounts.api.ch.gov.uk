@@ -43,7 +43,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
         this.keyIdGenerator = keyIdGenerator;
     }
 
-    private static final Pattern SECRETARY_ID_REGEX = Pattern.compile("^/transactions/[^/]company-accounts/[^/]small-full/directors-report/secretaries/(.*)$");
+    private static final Pattern SECRETARY_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/secretaries/(.*)$");
 
 
     @Override
