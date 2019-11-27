@@ -12,7 +12,7 @@ public class DirectorsReport extends RestObject {
     private String companyPolicyOnDisabledEmployees;
 
     @JsonProperty("directors")
-    private Map<String, String> directorsEntity;
+    private Map<String, String> directors;
 
     @JsonProperty("political_and_charitable_donations")
     private String politicalAndCharitableDonations;
@@ -21,7 +21,7 @@ public class DirectorsReport extends RestObject {
     private String principalActivities;
 
     @JsonProperty("secretaries")
-    private Map<String, String> secretariesEntity;
+    private Map<String, String> secretaries;
 
     @JsonProperty("additional_information")
     private String additionalInformation;
@@ -34,12 +34,12 @@ public class DirectorsReport extends RestObject {
         this.companyPolicyOnDisabledEmployees = companyPolicyOnDisabledEmployees;
     }
 
-    public Map<String, String> getDirectorsEntity() {
-        return directorsEntity;
+    public Map<String, String> getDirectors() {
+        return directors;
     }
 
-    public void setDirectorsEntity(Map<String, String> directorsEntity) {
-        this.directorsEntity = directorsEntity;
+    public void setDirectors(Map<String, String> directors) {
+        this.directors = directors;
     }
 
     public String getPoliticalAndCharitableDonations() {
@@ -58,12 +58,12 @@ public class DirectorsReport extends RestObject {
         this.principalActivities = principalActivities;
     }
 
-    public Map<String, String> getSecretariesEntity() {
-        return secretariesEntity;
+    public Map<String, String> getSecretaries() {
+        return secretaries;
     }
 
-    public void setSecretariesEntity(Map<String, String> secretariesEntity) {
-        this.secretariesEntity = secretariesEntity;
+    public void setSecretaries(Map<String, String> secretaries) {
+        this.secretaries = secretaries;
     }
 
     public String getAdditionalInformation() {

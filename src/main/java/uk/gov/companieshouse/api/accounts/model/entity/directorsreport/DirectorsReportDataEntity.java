@@ -76,11 +76,11 @@ public class DirectorsReportDataEntity extends BaseDataEntity {
     @Override public String toString() {
         return "DirectorsReportDataEntity{" +
                 "companyPolicyOnDisabledEmployers=" + companyPolicyOnDisabledEmployees +
-                "directors=" + directorsEntity +
-                "politicalAndCharitableDonations=" + politicalAndCharitableDonations +
-                "principalActivities=" + principalActivities +
-                "secretaries=" + secretariesEntity +
-                "additionalInformation" + additionalInformation +
+                ", directors=" + directorsEntity +
+                ", politicalAndCharitableDonations=" + politicalAndCharitableDonations +
+                ", principalActivities=" + principalActivities +
+                ", secretaries=" + secretariesEntity +
+                ", additionalInformation" + additionalInformation +
                 "}";
     }
 
