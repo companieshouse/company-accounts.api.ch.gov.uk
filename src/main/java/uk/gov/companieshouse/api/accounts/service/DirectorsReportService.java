@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface DirectorsReportService {
 
-    ResponseObject<DirectorsReport> create(DirectorsReport rest, Transaction transaction, String companyAccountId,
+    ResponseObject<DirectorsReport> create(DirectorsReport rest, Transaction transaction, String companyAccountsId,
                              HttpServletRequest request)
             throws DataException;
 
-    ResponseObject<DirectorsReport> update(DirectorsReport rest, Transaction transaction, String companyAccountId,
+    ResponseObject<DirectorsReport> update(DirectorsReport rest, Transaction transaction, String companyAccountsId,
                              HttpServletRequest request)
             throws DataException;
 
