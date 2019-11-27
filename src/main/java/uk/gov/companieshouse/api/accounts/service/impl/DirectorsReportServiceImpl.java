@@ -171,7 +171,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     }
 
     @Override
-    public void addSecretary(String companyAccountsID, String directorID, String link, HttpServletRequest request) throws DataException {
+    public void addSecretary(String companyAccountsID, String secretaryID, String link, HttpServletRequest request) throws DataException {
         String reportId = generateID(companyAccountsID);
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
@@ -180,7 +180,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
             entity.getData().setSecretariesEntity(new HashMap<>());
         }
-        entity.getData().getSecretariesEntity().put(directorID, link);
+        entity.getData().getSecretariesEntity().put(secretaryID, link);
 
         try {
 
@@ -192,14 +192,14 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     }
 
     @Override
-    public void removeSecretary(String companyAccountsID, String directorID, HttpServletRequest request) throws DataException {
+    public void removeSecretary(String companyAccountsID, String secretaryID, HttpServletRequest request) throws DataException {
         String reportId = generateID(companyAccountsID);
 
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get directors report entity to which to remove secretary"));
 
-        entity.getData().getSecretariesEntity().remove(directorID);
+        entity.getData().getSecretariesEntity().remove(secretaryID);
 
         try {
 
