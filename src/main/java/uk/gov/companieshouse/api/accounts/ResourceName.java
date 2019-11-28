@@ -23,7 +23,8 @@ public enum ResourceName {
     CIC_STATEMENTS("cic-statements"),
     PROFIT_LOSS("profit-and-loss"),
     DIRECTORS_REPORT("directors-report"),
-    DIRECTORS("directors");
+    DIRECTORS("directors"),
+    SECRETARIES("secretaries");
 
     private String name;
 
