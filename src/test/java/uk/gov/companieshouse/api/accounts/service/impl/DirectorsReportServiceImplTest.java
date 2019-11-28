@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsReportRepository;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,7 +66,16 @@ public class DirectorsReportServiceImplTest {
     private DirectorsReportEntity directorsReportEntity;
 
     @Mock
+    private DirectorsReportDataEntity directorsDataEntity;
+
+    @Mock
     private Map<String, String> links;
+
+    @Mock
+    private Map<String, String> director;
+
+    @Mock
+    private Map<String, String> secretary;
 
     @Mock
     private HttpServletRequest request;
@@ -78,6 +89,7 @@ public class DirectorsReportServiceImplTest {
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
     private static final String SELF_LINK = "selfLink";
+    private static final String DIRECTORS_ID = "directorsId";
 
     @Test
     @DisplayName("Tests successful creation of a directors report")
@@ -252,6 +264,120 @@ public class DirectorsReportServiceImplTest {
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
     }
+
+    @Test
+    @DisplayName("Tests successful removal of a Director")
+    void removeDirectorSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+
+        assertAll(() -> service.removeDirector(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
+
+        verify(director, times(1)).remove(DIRECTORS_ID);
+        verify(repository, times(1)).save(directorsReportEntity);
+    }
+
+    @Test
+    @DisplayName("Tests removal of a director and the repository throws a Mongo exception")
+    void removeDirectorDataException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+
+        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class,
+                () -> service.removeDirector(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
+
+        verify(director, times(1)).remove(DIRECTORS_ID);
+    }
+
+    @Test
+    @DisplayName("Tests successful creation of a Director")
+    void addDirectorSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+
+        assertAll(() -> service.addDirector(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, SELF_LINK, request));
+
+        verify(repository, times(1)).save(directorsReportEntity);
+
+    }
+
+    @Test
+    @DisplayName("Tests successful removal of a secretary")
+    void removeSecretarySuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
+
+        assertAll(() -> service.removeSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
+
+        verify(secretary, times(1)).remove(DIRECTORS_ID);
+        verify(repository, times(1)).save(directorsReportEntity);
+
+    }
+
+    @Test
+    @DisplayName("Tests removal of a secretary and the repository throws a Mongo exception")
+    void removeSecretaryDataException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
+
+        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class,
+                () -> service.removeSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
+
+        verify(secretary, times(1)).remove(DIRECTORS_ID);
+    }
+
+    @Test
+    @DisplayName("Tests successful creation of a secretary")
+    void addSecretarySuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
+
+        assertAll(() -> service.addSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, SELF_LINK, request));
+
+        verify(repository, times(1)).save(directorsReportEntity);
+
+    }
+
 
     private void assertIdGeneratedForDatabaseEntity() {
         verify(directorsReportEntity, times(1)).setId(GENERATED_ID);
