@@ -21,7 +21,9 @@ public enum ResourceName {
     CIC_REPORT("cic-report"),
     CIC_APPROVAL("cic-approval"),
     CIC_STATEMENTS("cic-statements"),
-    PROFIT_LOSS("profit-and-loss");
+    PROFIT_LOSS("profit-and-loss"),
+    DIRECTORS_REPORT("directors-report");
+
 
     private String name;
 
