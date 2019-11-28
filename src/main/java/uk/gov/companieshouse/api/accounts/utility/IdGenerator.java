@@ -13,5 +13,10 @@ public interface IdGenerator {
      */
     String generate(String key);
 
+    /**
+     * Generate a random id
+     * @return A {@link String}
+     */
+    String generateRandom();
 }
 
