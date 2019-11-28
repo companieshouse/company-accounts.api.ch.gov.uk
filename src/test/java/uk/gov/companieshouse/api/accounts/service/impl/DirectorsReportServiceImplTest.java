@@ -111,6 +111,8 @@ public class DirectorsReportServiceImplTest {
         assertEquals(ResponseStatus.CREATED, response.getStatus());
         assertEquals(directorsReport, response.getData());
 
+        verify(directorsReport).setDirectors(null);
+        verify(directorsReport).setSecretaries(null);
     }
 
     @Test
@@ -130,6 +132,9 @@ public class DirectorsReportServiceImplTest {
 
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
+
+        verify(directorsReport).setDirectors(null);
+        verify(directorsReport).setSecretaries(null);
     }
 
     @Test
@@ -151,15 +156,22 @@ public class DirectorsReportServiceImplTest {
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryInsertCalled();
         assertWhetherSmallFullServiceCalledToAddLink(false);
+
+        verify(directorsReport).setDirectors(null);
+        verify(directorsReport).setSecretaries(null);
     }
 
     @Test
     @DisplayName("Tests the successful update of a Directors Report")
     void updateDirectorsReportSuccess() throws DataException {
 
-        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
                 .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+
+        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -168,6 +180,10 @@ public class DirectorsReportServiceImplTest {
                 service.update(directorsReport, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertMetaDataSetOnRestObject();
+
+        verify(directorsReport).setDirectors(directorsDataEntity.getDirectorsEntity());
+        verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
+
         assertIdGeneratedForDatabaseEntity();
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertEquals(directorsReport, response.getData());
@@ -175,11 +191,15 @@ public class DirectorsReportServiceImplTest {
 
     @Test
     @DisplayName("Tests the update of a Directors Report where the repository throws a Mongo Exception")
-    void updateDirectorsReportMongoException() throws DataException {
+    void updateDirectorsReportMongoException() {
 
-        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
                 .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+
+        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
         when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -187,6 +207,9 @@ public class DirectorsReportServiceImplTest {
 
         assertThrows(DataException.class, () ->
                 service.update(directorsReport, transaction, COMPANY_ACCOUNTS_ID, request));
+
+        verify(directorsReport).setDirectors(directorsDataEntity.getDirectorsEntity());
+        verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
 
         assertMetaDataSetOnRestObject();
         assertIdGeneratedForDatabaseEntity();
