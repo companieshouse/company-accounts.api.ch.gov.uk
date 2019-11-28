@@ -7,7 +7,8 @@ public enum AttributeName {
     SMALLFULL("small-full"),
     CURRENT_PERIOD("current-period"),
     PREVIOUS_PERIOD("previous-period"),
-    CIC_REPORT("cic-report");
+    CIC_REPORT("cic-report"),
+    DIRECTORS_REPORT("directors-report");
 
     private String value;
 

@@ -45,12 +45,6 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
 
     }
 
-    @Value("${incorrect.total}")
-    private String incorrectTotal;
-
-    @Value("${value.required}")
-    private String valueRequired;
-
     private static final String INTANGIBLE_NOTE = "$.intangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
     private static final String ADDITIONS = ".cost.additions";

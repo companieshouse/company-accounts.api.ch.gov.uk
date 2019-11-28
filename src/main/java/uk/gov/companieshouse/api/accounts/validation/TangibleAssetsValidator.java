@@ -42,12 +42,6 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         this.previousPeriodService = previousPeriodService;
     }
 
-    @Value("${incorrect.total}")
-    private String incorrectTotal;
-
-    @Value("${value.required}")
-    private String valueRequired;
-
     private static final String TANGIBLE_NOTE = "$.tangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
     private static final String ADDITIONS = ".cost.additions";
