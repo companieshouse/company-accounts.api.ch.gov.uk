@@ -10,6 +10,7 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsReportRepository;
@@ -47,6 +48,9 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
+        rest.setDirectors(null);
+        rest.setSecretaries(null);
+
         DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
         entity.setId(generateID(companyAccountsId));
 
@@ -73,10 +77,17 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
-        DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
-        entity.setId(generateID(companyAccountsId));
-
         try {
+            DirectorsReportEntity original =
+                    directorsReportRepository.findById(generateID(companyAccountsId))
+                            .orElseThrow(() -> new DataException(""));
+
+            rest.setDirectors(original.getData().getDirectorsEntity());
+            rest.setSecretaries(original.getData().getSecretariesEntity());
+
+            DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
+            entity.setId(generateID(companyAccountsId));
+
             directorsReportRepository.save(entity);
 
         } catch (MongoException e) {
