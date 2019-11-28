@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.SecretaryDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.SecretaryEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 
+@Component
 public class SecretaryTransformer implements GenericTransformer<Secretary, SecretaryEntity> {
 
     @Override
