@@ -6,8 +6,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.Directors
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 
-import java.util.Map;
-
 @Component
 public class DirectorsReportTransformer implements GenericTransformer<DirectorsReport, DirectorsReportEntity> {
 

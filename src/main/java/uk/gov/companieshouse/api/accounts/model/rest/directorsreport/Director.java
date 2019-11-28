@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.api.accounts.model.rest.directorsreport;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Director extends RestObject {
 
     @JsonProperty("name")

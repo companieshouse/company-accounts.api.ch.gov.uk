@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.security.MessageDigest;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,5 +34,13 @@ public class KeyIdGeneratorTest {
        String value = keyIdGenerator.generate("string");
        assertNotNull(value);
        assertTrue(Base64.isBase64(value));
+    }
+
+    @Test
+    @DisplayName("Test generate a random String")
+    void testGenerateRandom() {
+
+        String value = keyIdGenerator.generateRandom();
+        assertNotNull(value);
     }
 }
