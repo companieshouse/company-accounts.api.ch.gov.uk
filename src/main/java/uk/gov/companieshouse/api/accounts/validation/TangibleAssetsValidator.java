@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -41,12 +40,6 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
-
-    @Value("${incorrect.total}")
-    private String incorrectTotal;
-
-    @Value("${value.required}")
-    private String valueRequired;
 
     private static final String TANGIBLE_NOTE = "$.tangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
