@@ -138,9 +138,9 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
         }
     }
 
-    private void setMetadataOnRestObject(Secretary rest, Transaction transaction, String companyAccountsId, String directorId) {
+    private void setMetadataOnRestObject(Secretary rest, Transaction transaction, String companyAccountsId, String secretaryId) {
 
-        rest.setLinks(createLinks(transaction, companyAccountsId, directorId));
+        rest.setLinks(createLinks(transaction, companyAccountsId, secretaryId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT_SECRETARY.getValue());
     }
@@ -162,20 +162,20 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
         return secretaryId;
 
 }
-    private String generateSelfLink(Transaction transaction, String companyAccountId, String directorId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId, String secretaryId) {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/"
                 + ResourceName.DIRECTORS_REPORT.getName() + "/"
                 + ResourceName.SECRETARIES.getName() + "/"
-                + directorId;
+                + secretaryId;
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String directorId) {
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String secretaryId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, directorId));
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, secretaryId));
         return map;
     }
 }
