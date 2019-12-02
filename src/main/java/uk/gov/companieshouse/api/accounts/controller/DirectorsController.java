@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -28,7 +27,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/transactions/{transaction_id}/company-accounts/{company_accounts_id}/small-full/directors-report/directors")
+@RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/directors")
 public class DirectorsController {
 
     @Autowired
@@ -67,7 +66,7 @@ public class DirectorsController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/{directorId}")
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
 
@@ -88,13 +87,13 @@ public class DirectorsController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/{directorId}")
     public ResponseEntity update(@RequestBody Director director, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("directorId") String directorId,
                                  HttpServletRequest request) {
 
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
-        if (directorsReport.getLinks().get(SmallFullLinkType.DIRECTOR.getLink()) == null) {
+        if (directorsReport.getDirectors().get(directorId) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -121,7 +120,7 @@ public class DirectorsController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{directorId}")
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
