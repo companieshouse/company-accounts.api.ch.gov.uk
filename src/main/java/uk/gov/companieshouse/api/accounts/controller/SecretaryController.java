@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -71,8 +70,7 @@ public class SecretaryController {
                                  HttpServletRequest request) {
 
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
-        if(directorsReport.getLinks().get(SmallFullLinkType.DIRECTORS_REPORT.getLink()) == null &&
-                directorsReport.getSecretaries().get(secretaryId) == null) {
+        if(directorsReport.getSecretaries().get(secretaryId) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -109,7 +107,7 @@ public class SecretaryController {
         }
     }
 
-    @DeleteMapping("/{secretaryId")
+    @DeleteMapping("/{secretaryId}")
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
