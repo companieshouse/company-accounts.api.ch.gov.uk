@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -38,6 +37,7 @@ class SecretaryControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String SECRETARY_ID = "secretaryId";
+    private static final String SECRETARY_LINK = "secretaryLink";
 
     @Mock
     private BindingResult bindingResult;
@@ -62,6 +62,9 @@ class SecretaryControllerTest {
 
     @Mock
     private DirectorsReport directorsReport;
+
+    @Mock
+    private Map<String, String> secretaryLink;
 
     @Mock
     private Map<String, String> directorsReportLink;
@@ -141,9 +144,9 @@ class SecretaryControllerTest {
     @DisplayName("Update secretary resource - no directors report link")
     void updateSecretaryResourceNoDirectorsReportLink() {
 
-        when(request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue())).thenReturn(directorsReport);
-        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
-        when(directorsReportLink.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn(null);
+        when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
+        when(directorsReport.getSecretaries()).thenReturn(secretaryLink);
+        when(secretaryLink.get(SECRETARY_ID)).thenReturn(null);
 
         ResponseEntity responseEntity =
                 secretaryController.update(secretary, bindingResult,
@@ -159,6 +162,7 @@ class SecretaryControllerTest {
     void updateSecretaryResourceBindingErrors() {
 
         mockTransactionAndLinks();
+
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
@@ -176,6 +180,7 @@ class SecretaryControllerTest {
     void updateSecretaryResourceSuccess() throws DataException {
 
         mockTransactionAndLinks();
+
         when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
@@ -202,6 +207,7 @@ class SecretaryControllerTest {
     void updateSecretaryResourceDataException() throws DataException {
 
         mockTransactionAndLinks();
+
         when(bindingResult.hasErrors()).thenReturn(false);
 
         when(secretaryService.update(secretary, transaction,
@@ -313,7 +319,7 @@ class SecretaryControllerTest {
 
     private void mockTransactionAndLinks() {
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
-        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
-        when(directorsReportLink.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn("");
+        when(directorsReport.getSecretaries()).thenReturn(secretaryLink);
+        when(secretaryLink.get(SECRETARY_ID)).thenReturn(SECRETARY_LINK);
     }
 }
