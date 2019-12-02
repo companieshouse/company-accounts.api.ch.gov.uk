@@ -100,7 +100,7 @@ public class WithinCurrentPeriodImplTest {
     }
 
     @Test
-    @DisplayName("WithinCurrentPeriod - date equals period start")
+    @DisplayName("WithinCurrentPeriod - date equals period end")
     void withCurrentPeriodDateEqualsPeriodEnd() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
