@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.validation.WithinCurrentPeriod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Director extends RestObject {
@@ -11,9 +12,11 @@ public class Director extends RestObject {
     @JsonProperty("name")
     private String name;
 
+    @WithinCurrentPeriod
     @JsonProperty("appointment_date")
     private LocalDate appointmentDate;
 
+    @WithinCurrentPeriod
     @JsonProperty("resignation_date")
     private LocalDate resignationDate;
 
