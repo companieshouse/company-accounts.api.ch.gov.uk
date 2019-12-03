@@ -15,7 +15,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.SecretaryServiceImpl;
+import uk.gov.companieshouse.api.accounts.service.impl.SecretaryService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -52,7 +52,7 @@ class SecretaryControllerTest {
     private Secretary secretary;
 
     @Mock
-    private SecretaryServiceImpl secretaryService;
+    private SecretaryService secretaryService;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;

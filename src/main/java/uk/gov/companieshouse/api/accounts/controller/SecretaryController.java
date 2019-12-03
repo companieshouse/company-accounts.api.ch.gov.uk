@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.SecretaryServiceImpl;
+import uk.gov.companieshouse.api.accounts.service.impl.SecretaryService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -34,7 +34,7 @@ import javax.validation.Valid;
 public class SecretaryController {
 
     @Autowired
-    private SecretaryServiceImpl secretaryService;
+    private SecretaryService secretaryService;
 
     @Autowired
     private ErrorMapper errorMapper;
@@ -108,7 +108,7 @@ public class SecretaryController {
         }
     }
 
-    @DeleteMapping("/{secretaryId}")
+    @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());

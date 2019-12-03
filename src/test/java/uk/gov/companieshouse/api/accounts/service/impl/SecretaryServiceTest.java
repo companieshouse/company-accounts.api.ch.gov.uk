@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class )
-public class SecretaryServiceImplTest {
+public class SecretaryServiceTest {
 
     @Mock
     private SecretaryTransformer transformer;
@@ -72,7 +72,7 @@ public class SecretaryServiceImplTest {
     private Map<String, String> links;
 
     @InjectMocks
-    private SecretaryServiceImpl secretaryService;
+    private SecretaryService secretaryService;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String SECRETARY_ID = "secretaryId";
