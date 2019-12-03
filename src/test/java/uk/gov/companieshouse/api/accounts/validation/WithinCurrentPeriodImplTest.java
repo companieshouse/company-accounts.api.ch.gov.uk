@@ -2,6 +2,8 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -42,7 +44,7 @@ public class WithinCurrentPeriodImplTest {
 
     @Test
     @DisplayName("WithinCurrentPeriod - date after period")
-    void withCurrentPeriodDateAfterPeriod() {
+    void withinCurrentPeriodDateAfterPeriod() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
         when(companyAccount.getNextAccounts()).thenReturn(accountingPeriod);
@@ -57,7 +59,7 @@ public class WithinCurrentPeriodImplTest {
 
     @Test
     @DisplayName("WithinCurrentPeriod - date before period")
-    void withCurrentPeriodDateBeforePeriod() {
+    void withinCurrentPeriodDateBeforePeriod() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
         when(companyAccount.getNextAccounts()).thenReturn(accountingPeriod);
@@ -72,7 +74,7 @@ public class WithinCurrentPeriodImplTest {
 
     @Test
     @DisplayName("WithinCurrentPeriod - date during period")
-    void withCurrentPeriodDateDuringPeriod() {
+    void withinCurrentPeriodDateDuringPeriod() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
         when(companyAccount.getNextAccounts()).thenReturn(accountingPeriod);
@@ -87,7 +89,7 @@ public class WithinCurrentPeriodImplTest {
 
     @Test
     @DisplayName("WithinCurrentPeriod - date equals period start")
-    void withCurrentPeriodDateEqualsPeriodStart() {
+    void withinCurrentPeriodDateEqualsPeriodStart() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
         when(companyAccount.getNextAccounts()).thenReturn(accountingPeriod);
@@ -101,7 +103,7 @@ public class WithinCurrentPeriodImplTest {
 
     @Test
     @DisplayName("WithinCurrentPeriod - date equals period end")
-    void withCurrentPeriodDateEqualsPeriodEnd() {
+    void withinCurrentPeriodDateEqualsPeriodEnd() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);
         when(companyAccount.getNextAccounts()).thenReturn(accountingPeriod);
@@ -111,5 +113,14 @@ public class WithinCurrentPeriodImplTest {
         assertTrue(
                 withinCurrentPeriodImpl
                         .isValid(PERIOD_END_ON, context));
+    }
+    
+    @Test
+    @DisplayName("WithinCurrentPeriod - null date")
+    void withinCurrentPeriodNullDate() {
+        
+        assertTrue(withinCurrentPeriodImpl.isValid(null, context));
+        
+        verify(request, never()).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
     }
 }

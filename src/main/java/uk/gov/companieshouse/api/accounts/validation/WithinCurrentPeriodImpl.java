@@ -18,6 +18,10 @@ public class WithinCurrentPeriodImpl implements ConstraintValidator<WithinCurren
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext constraintValidatorContext) {
 
+        if (date == null) {
+            return true;
+        }
+
         CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         LocalDate periodStart = companyAccount.getNextAccounts().getPeriodStartOn();
