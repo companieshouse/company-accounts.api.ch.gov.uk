@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -64,13 +65,13 @@ public class SecretaryController {
         }
     }
 
-    @PutMapping("/{secretaryId}")
+    @PutMapping
     public ResponseEntity update(@Valid @RequestBody Secretary secretary, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("secretaryId") String secretaryId,
+                                 @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
-        if(directorsReport.getSecretaries().get(secretaryId) == null) {
+        if(directorsReport.getLinks().get(DirectorsReportLinkType.SECRETARY.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -91,7 +92,7 @@ public class SecretaryController {
         }
     }
 
-    @GetMapping("/{secretaryId}")
+    @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
