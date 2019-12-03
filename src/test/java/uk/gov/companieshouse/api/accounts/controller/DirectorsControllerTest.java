@@ -248,6 +248,25 @@ public class DirectorsControllerTest {
     }
 
     @Test
+    @DisplayName("Tests the update of a director when the Director ID doesnt exist")
+    void UpdateDirectorResourceWhenIdIsNull() throws DataException {
+
+        when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
+
+        when(directorsReport.getDirectors()).thenReturn(directors);
+        when(directors.get(DIRECTORS_ID)).thenReturn(null);
+
+        ResponseEntity response =
+                controller.update(directorRest, bindingResult, COMPANY_ACCOUNT_ID, DIRECTORS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(bindingResult, never()).hasErrors();
+    }
+
+    @Test
     @DisplayName("Tests the update of a director resource when binding result errors are present")
     void updateDirectorBindingResultErrors() throws DataException {
 
