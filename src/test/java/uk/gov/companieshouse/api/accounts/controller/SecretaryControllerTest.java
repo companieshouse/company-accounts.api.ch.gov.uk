@@ -12,7 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.SecretaryService;
@@ -141,16 +142,16 @@ class SecretaryControllerTest {
     }
 
     @Test
-    @DisplayName("Update secretary resource - no directors report link")
-    void updateSecretaryResourceNoDirectorsReportLink() {
+    @DisplayName("Update secretary resource - no secretary link")
+    void updateSecretaryResourceNoSecretaryLink() {
 
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
-        when(directorsReport.getSecretaries()).thenReturn(secretaryLink);
-        when(secretaryLink.get(SECRETARY_ID)).thenReturn(null);
+        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
+        when(directorsReportLink.get(DirectorsReportLinkType.SECRETARY.getLink())).thenReturn(null);
 
         ResponseEntity responseEntity =
                 secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
+                        COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -168,7 +169,7 @@ class SecretaryControllerTest {
 
         ResponseEntity responseEntity =
                 secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
+                        COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -180,6 +181,7 @@ class SecretaryControllerTest {
     void updateSecretaryResourceSuccess() throws DataException {
 
         mockTransactionAndLinks();
+
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
@@ -195,7 +197,7 @@ class SecretaryControllerTest {
 
         ResponseEntity returnedResponse =
                 secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
+                        COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -219,7 +221,7 @@ class SecretaryControllerTest {
 
         ResponseEntity returnedResponse =
                 secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, SECRETARY_ID, request);
+                        COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -319,7 +321,7 @@ class SecretaryControllerTest {
 
     private void mockTransactionAndLinks() {
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
-        when(directorsReport.getSecretaries()).thenReturn(secretaryLink);
-        when(secretaryLink.get(SECRETARY_ID)).thenReturn(SECRETARY_LINK);
+        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
+        when(directorsReportLink.get(DirectorsReportLinkType.SECRETARY.getLink())).thenReturn(SECRETARY_LINK);
     }
 }
