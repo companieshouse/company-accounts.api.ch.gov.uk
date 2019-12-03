@@ -14,7 +14,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
@@ -24,7 +24,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public class DirectorsReportInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    private DirectorsReportService directorsReportService;
+    private DirectorsReportServiceImpl directorsReportService;
 
     private static final String COMPANY_ACCOUNTS_ID_PATH_VARIABLE = "companyAccountId";
 
