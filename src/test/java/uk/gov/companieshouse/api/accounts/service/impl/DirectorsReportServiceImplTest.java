@@ -75,9 +75,6 @@ public class DirectorsReportServiceImplTest {
     private Map<String, String> director;
 
     @Mock
-    private Map<String, String> secretary;
-
-    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -112,7 +109,6 @@ public class DirectorsReportServiceImplTest {
         assertEquals(directorsReport, response.getData());
 
         verify(directorsReport).setDirectors(null);
-        verify(directorsReport).setSecretaries(null);
     }
 
     @Test
@@ -134,7 +130,6 @@ public class DirectorsReportServiceImplTest {
         assertNull(response.getData());
 
         verify(directorsReport).setDirectors(null);
-        verify(directorsReport).setSecretaries(null);
     }
 
     @Test
@@ -158,62 +153,6 @@ public class DirectorsReportServiceImplTest {
         assertWhetherSmallFullServiceCalledToAddLink(false);
 
         verify(directorsReport).setDirectors(null);
-        verify(directorsReport).setSecretaries(null);
-    }
-
-    @Test
-    @DisplayName("Tests the successful update of a Directors Report")
-    void updateDirectorsReportSuccess() throws DataException {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
-                .thenReturn(GENERATED_ID);
-
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
-        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-
-        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject<DirectorsReport> response =
-                service.update(directorsReport, transaction, COMPANY_ACCOUNTS_ID, request);
-
-        assertMetaDataSetOnRestObject();
-
-        verify(directorsReport).setDirectors(directorsDataEntity.getDirectors());
-        verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
-
-        assertIdGeneratedForDatabaseEntity();
-        assertEquals(ResponseStatus.UPDATED, response.getStatus());
-        assertEquals(directorsReport, response.getData());
-    }
-
-    @Test
-    @DisplayName("Tests the update of a Directors Report where the repository throws a Mongo Exception")
-    void updateDirectorsReportMongoException() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
-                .thenReturn(GENERATED_ID);
-
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
-        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-
-        when(transformer.transform(directorsReport)).thenReturn(directorsReportEntity);
-        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
-
-        assertThrows(DataException.class, () ->
-                service.update(directorsReport, transaction, COMPANY_ACCOUNTS_ID, request));
-
-        verify(directorsReport).setDirectors(directorsDataEntity.getDirectors());
-        verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
-
-        assertMetaDataSetOnRestObject();
-        assertIdGeneratedForDatabaseEntity();
-        assertRepositoryUpdateCalled();
     }
 
     @Test
@@ -344,64 +283,6 @@ public class DirectorsReportServiceImplTest {
 
     }
 
-    @Test
-    @DisplayName("Tests successful removal of a secretary")
-    void removeSecretarySuccess() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
-                .thenReturn(GENERATED_ID);
-
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
-
-        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
-
-        assertAll(() -> service.removeSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
-
-        verify(secretary, times(1)).remove(DIRECTORS_ID);
-        verify(repository, times(1)).save(directorsReportEntity);
-
-    }
-
-    @Test
-    @DisplayName("Tests removal of a secretary and the repository throws a Mongo exception")
-    void removeSecretaryDataException() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
-                .thenReturn(GENERATED_ID);
-
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
-
-        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
-
-        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
-
-        assertThrows(DataException.class,
-                () -> service.removeSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
-
-        verify(secretary, times(1)).remove(DIRECTORS_ID);
-    }
-
-    @Test
-    @DisplayName("Tests successful creation of a secretary")
-    void addSecretarySuccess() {
-
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
-                .thenReturn(GENERATED_ID);
-
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
-
-        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getSecretariesEntity()).thenReturn(secretary);
-
-        assertAll(() -> service.addSecretary(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, SELF_LINK, request));
-
-        verify(repository, times(1)).save(directorsReportEntity);
-
-    }
-
-
     private void assertIdGeneratedForDatabaseEntity() {
         verify(directorsReportEntity, times(1)).setId(GENERATED_ID);
     }
@@ -415,12 +296,11 @@ public class DirectorsReportServiceImplTest {
     private void assertRepositoryInsertCalled() {
         verify(repository, times(1)).insert(directorsReportEntity);
     }
-    private void assertRepositoryUpdateCalled() {
-        verify(repository, times(1)).save(directorsReportEntity);
-    }
+
     private void assertRepositoryDeleteByIdCalled() {
         verify(repository, times(1)).deleteById(GENERATED_ID);
     }
+
     private void assertRepositoryFindByIdCalled() {
         verify(repository, times(1)).findById(GENERATED_ID);
     }

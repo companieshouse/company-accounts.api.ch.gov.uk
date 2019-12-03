@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -31,7 +31,7 @@ import javax.validation.Valid;
 public class DirectorsReportController {
 
     @Autowired
-    private DirectorsReportService directorsReportService;
+    private DirectorsReportServiceImpl directorsReportService;
 
     @Autowired
     private ErrorMapper errorMapper;
