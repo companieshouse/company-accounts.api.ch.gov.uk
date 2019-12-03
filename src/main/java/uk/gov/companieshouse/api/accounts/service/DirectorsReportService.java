@@ -28,8 +28,8 @@ public interface DirectorsReportService {
 
     void removeDirector(String companyAccountsID, String directorID, HttpServletRequest request) throws DataException;
 
-    void addSecretary(String companyAccountsID, String directorID, String link, HttpServletRequest request)
+    void addSecretary(String companyAccountsID, String secretaryId, String link, HttpServletRequest request)
             throws DataException;
 
-    void removeSecretary(String companyAccountsID, String directorID, HttpServletRequest request) throws DataException;
+    void removeSecretary(String companyAccountsID, String secretaryId, HttpServletRequest request) throws DataException;
 }
