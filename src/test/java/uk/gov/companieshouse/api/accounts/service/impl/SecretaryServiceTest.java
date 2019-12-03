@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.Kind;
+import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
@@ -76,6 +77,7 @@ public class SecretaryServiceTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String SECRETARY_ID = "secretaryId";
+    private static final String GENERATED_ID = "generatedId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String SECRETARY_SELF_LINK = "secretarySelfLink";
 
@@ -87,7 +89,8 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the successful creation of a secretary resource")
     void createSecretarySuccess() throws DataException {
 
-        when(keyIdGenerator.generateRandom()).thenReturn(SECRETARY_ID);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(transformer.transform(secretary)).thenReturn(secretaryEntity);
 
@@ -112,7 +115,8 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the creation of a secretary resource where the repository throws a duplicate key exception")
     void createSecretaryDuplicateKeyException() throws DataException {
 
-        when(keyIdGenerator.generateRandom()).thenReturn(SECRETARY_ID);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(transformer.transform(secretary)).thenReturn(secretaryEntity);
 
@@ -136,7 +140,8 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the creation of a secretary resource where the repository throws a Mongo exception")
     void createSecretaryMongoException() throws DataException {
 
-        when(keyIdGenerator.generateRandom()).thenReturn(SECRETARY_ID);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(transformer.transform(secretary)).thenReturn(secretaryEntity);
 
@@ -158,7 +163,8 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the successful update of a secretary resource")
     void updateSecretarySuccess() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(transformer.transform(secretary)).thenReturn(secretaryEntity);
 
@@ -179,7 +185,8 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the update of a secretary resource where the repository throws a Mongo exception")
     void updateSecretaryMongoException() {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         when(transformer.transform(secretary)).thenReturn(secretaryEntity);
 
@@ -200,9 +207,10 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the successful retrieval of a secretary resource")
     void getSecretarySuccess() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
-        when(repository.findById(SECRETARY_ID)).thenReturn(Optional.of(secretaryEntity));
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(secretaryEntity));
         when(transformer.transform(secretaryEntity)).thenReturn(secretary);
 
         ResponseObject<Secretary> response =
@@ -217,10 +225,11 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the retrieval of a non-existent secretary resource")
     void getSecretaryNotFound() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
         SecretaryEntity secretaryEntity = null;
-        when(repository.findById(SECRETARY_ID)).thenReturn(Optional.ofNullable(secretaryEntity));
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(secretaryEntity));
 
         ResponseObject<Secretary> response =
                 secretaryService.find(COMPANY_ACCOUNTS_ID, request);
@@ -234,9 +243,10 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the retrieval of a secretary resource where the repository throws a Mongo exception")
     void getSecretaryMongoException() {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
-        when(repository.findById(SECRETARY_ID)).thenThrow(MongoException.class);
+        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
                 secretaryService.find(COMPANY_ACCOUNTS_ID, request));
@@ -248,9 +258,10 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the successful deletion of a secretary resource")
     void deleteSecretarySuccess() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(SECRETARY_ID)).thenReturn(true);
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<Secretary> response =
                 secretaryService.delete(COMPANY_ACCOUNTS_ID, request);
@@ -265,10 +276,11 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the deletion of a secretary resource where the repository throws a Mongo exception")
     void deleteSecretaryMongoException() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(SECRETARY_ID)).thenReturn(true);
-        doThrow(MongoException.class).when(repository).deleteById(SECRETARY_ID);
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+        doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
         assertThrows(DataException.class, () ->
                 secretaryService.delete(COMPANY_ACCOUNTS_ID, request));
@@ -281,14 +293,15 @@ public class SecretaryServiceTest {
     @DisplayName("Tests the deletion of a non-existent secretary resource")
     void deleteSecretaryNotFound() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(URI);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SECRETARY.getName()))
+                .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(SECRETARY_ID)).thenReturn(false);
+        when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject<Secretary> response =
                 secretaryService.delete(COMPANY_ACCOUNTS_ID, request);
 
-        verify(repository, never()).deleteById(SECRETARY_ID);
+        verify(repository, never()).deleteById(GENERATED_ID);
         assertWhetherDirectorsReportServiceCalledToRemoveLink(false);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
@@ -301,7 +314,7 @@ public class SecretaryServiceTest {
     }
 
     private void assertIdGeneratedForDatabaseEntity() {
-        verify(secretaryEntity, times(1)).setId(SECRETARY_ID);
+        verify(secretaryEntity, times(1)).setId(GENERATED_ID);
     }
 
     private void assertRepositoryInsertCalled() {
@@ -313,11 +326,11 @@ public class SecretaryServiceTest {
     }
 
     private void assertRepositoryFindByIdCalled() {
-        verify(repository, times(1)).findById(SECRETARY_ID);
+        verify(repository, times(1)).findById(GENERATED_ID);
     }
 
     private void assertRepositoryDeleteByIdCalled() {
-        verify(repository, times(1)).deleteById(SECRETARY_ID);
+        verify(repository, times(1)).deleteById(GENERATED_ID);
     }
 
     private void assertWhetherDirectorsReportServiceCalledToAddLink(boolean isServiceExpected) throws DataException {
