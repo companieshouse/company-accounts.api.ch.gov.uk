@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
+import javax.validation.constraints.NotNull;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Director extends RestObject {
 
+    @NotNull
     @JsonProperty("name")
     private String name;
 
