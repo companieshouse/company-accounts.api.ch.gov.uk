@@ -8,13 +8,13 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsReportRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
+import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorsReportTransformer;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class DirectorsReportServiceImpl implements DirectorsReportService {
+public class DirectorsReportServiceImpl implements ParentService<DirectorsReport, DirectorsReportLinkType>, DirectorsReportService {
 
     private DirectorsReportRepository directorsReportRepository;
     private DirectorsReportTransformer directorsReportTransformer;
@@ -48,9 +48,6 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
-        rest.setDirectors(null);
-        rest.setSecretaries(null);
-
         DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
         entity.setId(generateID(companyAccountsId));
 
@@ -69,32 +66,6 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
 
-    }
-
-    @Override
-    public ResponseObject<DirectorsReport> update(DirectorsReport rest, Transaction transaction, String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-
-        setMetadataOnRestObject(rest, transaction, companyAccountsId);
-
-        try {
-            DirectorsReportEntity original =
-                    directorsReportRepository.findById(generateID(companyAccountsId))
-                            .orElseThrow(() -> new DataException(""));
-
-            rest.setDirectors(original.getData().getDirectorsEntity());
-            rest.setSecretaries(original.getData().getSecretariesEntity());
-
-            DirectorsReportEntity entity = directorsReportTransformer.transform(rest);
-            entity.setId(generateID(companyAccountsId));
-
-            directorsReportRepository.save(entity);
-
-        } catch (MongoException e) {
-            throw new DataException(e);
-        }
-
-        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
@@ -138,6 +109,44 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     }
 
     @Override
+    public void addLink(String id, DirectorsReportLinkType linkType, String link,
+            HttpServletRequest request) throws DataException {
+
+        String directorsReportId = generateID(id);
+        DirectorsReportEntity directorsReportEntity = directorsReportRepository.findById(directorsReportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get Directors report entity to which to add link"));
+        directorsReportEntity.getData().getLinks().put(linkType.getLink(), link);
+
+        try {
+            directorsReportRepository.save(directorsReportEntity);
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+    }
+
+    @Override
+    public void removeLink(String id, DirectorsReportLinkType linkType, HttpServletRequest request)
+            throws DataException {
+
+        String directorsReportId = generateID(id);
+        DirectorsReportEntity directorsReportEntity = directorsReportRepository.findById(directorsReportId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get Directors report entity from which to remove link"));
+        directorsReportEntity.getData().getLinks().remove(linkType.getLink());
+
+        try {
+            directorsReportRepository.save(directorsReportEntity);
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+    }
+
+    @Override
     public void addDirector(String companyAccountsID, String directorID, String link, HttpServletRequest request)
             throws DataException {
 
@@ -145,11 +154,11 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get Directors report entity to which to add director"));
-        if (entity.getData().getDirectorsEntity() == null) {
+        if (entity.getData().getDirectors() == null) {
 
-            entity.getData().setDirectorsEntity(new HashMap<>());
+            entity.getData().setDirectors(new HashMap<>());
         }
-        entity.getData().getDirectorsEntity().put(directorID, link);
+        entity.getData().getDirectors().put(directorID, link);
 
         try {
 
@@ -167,31 +176,9 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
         DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to get directors report entity to which to remove director"));
+                        "Failed to get directors report entity from which to remove director"));
 
-        entity.getData().getDirectorsEntity().remove(directorID);
-
-        try {
-
-            directorsReportRepository.save(entity);
-        } catch (MongoException e) {
-
-            throw new DataException(e);
-        }
-
-    }
-
-    @Override
-    public void addSecretary(String companyAccountsID, String secretaryID, String link, HttpServletRequest request) throws DataException {
-        String reportId = generateID(companyAccountsID);
-        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to get Directors report entity to which to add secretary"));
-        if (entity.getData().getSecretariesEntity() == null) {
-
-            entity.getData().setSecretariesEntity(new HashMap<>());
-        }
-        entity.getData().getSecretariesEntity().put(secretaryID, link);
+        entity.getData().getDirectors().remove(directorID);
 
         try {
 
@@ -200,25 +187,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
             throw new DataException(e);
         }
-    }
 
-    @Override
-    public void removeSecretary(String companyAccountsID, String secretaryID, HttpServletRequest request) throws DataException {
-        String reportId = generateID(companyAccountsID);
-
-        DirectorsReportEntity entity = directorsReportRepository.findById(reportId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to get directors report entity to which to remove secretary"));
-
-        entity.getData().getSecretariesEntity().remove(secretaryID);
-
-        try {
-
-            directorsReportRepository.save(entity);
-        } catch (MongoException e) {
-
-            throw new DataException(e);
-        }
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
@@ -232,7 +201,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
+        map.put(DirectorsReportLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
@@ -241,6 +210,7 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT.getValue());
+        rest.setDirectors(null);
     }
 
     private String generateID(String companyAccountId) {
@@ -250,6 +220,6 @@ public class DirectorsReportServiceImpl implements DirectorsReportService {
 
     public String getSelfLinkFromRestEntity(DirectorsReport rest) {
 
-        return rest.getLinks().get(BasicLinkType.SELF.getLink());
+        return rest.getLinks().get(DirectorsReportLinkType.SELF.getLink());
     }
 }

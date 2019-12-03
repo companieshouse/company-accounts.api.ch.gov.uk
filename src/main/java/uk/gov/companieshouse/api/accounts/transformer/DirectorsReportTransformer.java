@@ -4,7 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 
 @Component
 public class DirectorsReportTransformer implements GenericTransformer<DirectorsReport, DirectorsReportEntity> {

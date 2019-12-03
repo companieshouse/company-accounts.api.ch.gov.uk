@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
