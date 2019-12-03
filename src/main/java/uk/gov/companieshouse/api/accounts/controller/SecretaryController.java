@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.SecretaryServiceImpl;
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/secretaries", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/secretary", produces = MediaType.APPLICATION_JSON_VALUE)
 public class SecretaryController {
 
     @Autowired
