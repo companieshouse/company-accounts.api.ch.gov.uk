@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsReportRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -181,7 +181,7 @@ public class DirectorsReportServiceImplTest {
 
         assertMetaDataSetOnRestObject();
 
-        verify(directorsReport).setDirectors(directorsDataEntity.getDirectorsEntity());
+        verify(directorsReport).setDirectors(directorsDataEntity.getDirectors());
         verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
 
         assertIdGeneratedForDatabaseEntity();
@@ -208,7 +208,7 @@ public class DirectorsReportServiceImplTest {
         assertThrows(DataException.class, () ->
                 service.update(directorsReport, transaction, COMPANY_ACCOUNTS_ID, request));
 
-        verify(directorsReport).setDirectors(directorsDataEntity.getDirectorsEntity());
+        verify(directorsReport).setDirectors(directorsDataEntity.getDirectors());
         verify(directorsReport).setSecretaries(directorsDataEntity.getSecretariesEntity());
 
         assertMetaDataSetOnRestObject();
@@ -298,7 +298,7 @@ public class DirectorsReportServiceImplTest {
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
 
         when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+        when(directorsDataEntity.getDirectors()).thenReturn(director);
 
         assertAll(() -> service.removeDirector(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, request));
 
@@ -316,7 +316,7 @@ public class DirectorsReportServiceImplTest {
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
 
         when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+        when(directorsDataEntity.getDirectors()).thenReturn(director);
 
         when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
 
@@ -336,7 +336,7 @@ public class DirectorsReportServiceImplTest {
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
 
         when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
-        when(directorsDataEntity.getDirectorsEntity()).thenReturn(director);
+        when(directorsDataEntity.getDirectors()).thenReturn(director);
 
         assertAll(() -> service.addDirector(COMPANY_ACCOUNTS_ID, DIRECTORS_ID, SELF_LINK, request));
 
