@@ -864,9 +864,7 @@ public class TangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
-
-        assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertFalse(errors.hasErrors());
     }
 
     @Test
@@ -964,10 +962,8 @@ public class TangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
         Errors errors = validator.validateTangibleAssets(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        assertFalse(errors.hasErrors());
 
-        assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test

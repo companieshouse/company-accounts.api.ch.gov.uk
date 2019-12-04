@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -12,22 +9,29 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CurrentPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.CurrentPeriodRepository;
+import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CurrentPeriodTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CurrentPeriodService implements
-    ResourceService<CurrentPeriod> {
+    ResourceService<CurrentPeriod>, ParentService<CurrentPeriod,
+        CurrentPeriodLinkType> {
 
     private CurrentPeriodRepository currentPeriodRepository;
 
@@ -64,7 +68,9 @@ public class CurrentPeriodService implements
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        populateMetadata(currentPeriod, transaction, companyAccountId);
+        Map<String, String> links = createLinks(transaction, companyAccountId);
+
+        populateMetadata(currentPeriod, links);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         currentPeriodEntity.setId(generateID(companyAccountId));
@@ -94,11 +100,18 @@ public class CurrentPeriodService implements
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        populateMetadata(rest, transaction, companyAccountId);
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
-        currentPeriodEntity.setId(generateID(companyAccountId));
 
         try {
+            CurrentPeriodEntity originalEntity =
+                    currentPeriodRepository.findById(generateID(companyAccountId))
+                            .orElseThrow(() -> new DataException("No current period found to update")); // We should never get here
+
+            Map<String, String> links = originalEntity.getData().getLinks();
+            populateMetadata(rest, links);
+
+            CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(rest);
+            currentPeriodEntity.setId(generateID(companyAccountId));
+
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);
@@ -130,18 +143,56 @@ public class CurrentPeriodService implements
         return null;
     }
 
+    @Override
+    public void addLink(String id, CurrentPeriodLinkType linkType, String link, HttpServletRequest request) throws DataException {
+
+        String smallFullId = generateID(id);
+        try {
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get current period entity to add link"));
+        currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
+
+
+            currentPeriodRepository.save(currentPeriodEntity);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+
+    }
+
+    @Override
+    public void removeLink(String id, CurrentPeriodLinkType linkType, HttpServletRequest request) throws DataException {
+
+        String currentPeriodId = generateID(id);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to get current period entity from which to remove link"));
+        currentPeriodEntity.getData().getLinks().remove(linkType.getLink());
+
+        try {
+            currentPeriodRepository.save(currentPeriodEntity);
+        } catch (MongoException e) {
+            throw new DataException(e);
+        }
+    }
+
     private String generateID(String value) {
         return keyIdGenerator.generate(value + "-" + ResourceName.CURRENT_PERIOD.getName());
     }
 
-    private void populateMetadata(CurrentPeriod currentPeriod, Transaction transaction,
-        String companyAccountId) {
-        Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountId));
+    private void populateMetadata(CurrentPeriod currentPeriod, Map<String, String> links) {
 
-        currentPeriod.setLinks(map);
+        currentPeriod.setLinks(links);
         currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
         currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
+    }
+
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
+
+        Map<String, String> links = new HashMap<>();
+        links.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
+        return links;
     }
 
     private String createSelfLink(Transaction transaction, String companyAccountId) {
