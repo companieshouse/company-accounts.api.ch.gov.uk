@@ -13,6 +13,7 @@ import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.StatementsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Statements;
 import uk.gov.companieshouse.api.accounts.repository.StatementsRepository;
+import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.StatementsTransformer;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class StatementsService {
+public class StatementsService implements ResourceService<Statements> {
 
     private StatementsTransformer transformer;
     private StatementsRepository statementsRepository;
