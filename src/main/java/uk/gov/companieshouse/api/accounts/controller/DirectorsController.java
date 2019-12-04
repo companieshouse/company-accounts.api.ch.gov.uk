@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class DirectorsController {
 
 
     @PostMapping
-    public ResponseEntity create(@RequestBody Director director, BindingResult bindingResult,
+    public ResponseEntity create(@Valid @RequestBody Director director, BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
@@ -88,7 +89,7 @@ public class DirectorsController {
     }
 
     @PutMapping("/{directorId}")
-    public ResponseEntity update(@RequestBody Director director, BindingResult bindingResult,
+    public ResponseEntity update(@Valid @RequestBody Director director, BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId, @PathVariable("directorId") String directorId,
                                  HttpServletRequest request) {
 
