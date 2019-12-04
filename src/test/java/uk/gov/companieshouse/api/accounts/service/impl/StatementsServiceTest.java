@@ -81,9 +81,6 @@ public class StatementsServiceTest {
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String STATEMENTS_SELF_LINK = "statementsSelfLink";
 
-    private static final String URI = "/transactions/transactionId/company-accounts/" +
-            COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
-            "/secretaries/" + STATEMENTS_ID;
 
     @Test
     @DisplayName("Tests the successful creation of a statements resource")
