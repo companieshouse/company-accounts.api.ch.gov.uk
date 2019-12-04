@@ -12,11 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.DirectorsReport;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
+import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -24,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,19 +48,13 @@ public class DirectorsReportControllerTest {
     private DirectorsReport directorsReport;
 
     @Mock
-    private DirectorsReportService directorsReportService;
+    private DirectorsReportServiceImpl directorsReportService;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
 
     @Mock
     private ErrorMapper errorMapper;
-
-    @Mock
-    private SmallFull smallFull;
-
-    @Mock
-    private Map<String, String> smallFullLinks;
 
     @InjectMocks
     private DirectorsReportController directorsReportController;
@@ -133,90 +124,6 @@ public class DirectorsReportControllerTest {
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("Update directors report - no small full link")
-    void updateDirectorsReportNoSmallFullLink() {
-
-        when(request.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn(null);
-
-        ResponseEntity responseEntity =
-                directorsReportController.update(directorsReport, bindingResult,
-                        COMPANY_ACCOUNT_ID, request);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update directors report - has binding errors")
-    void updateDirectorReportBindingErrors() {
-
-        mockTransactionAndLinks();
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
-
-        ResponseEntity responseEntity =
-                directorsReportController.update(directorsReport, bindingResult,
-                        COMPANY_ACCOUNT_ID, request);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update directors report - success")
-    void updateDirectorsReportSuccess() throws DataException {
-
-        mockTransactionAndLinks();
-        when(bindingResult.hasErrors()).thenReturn(false);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
-                directorsReport);
-        when(directorsReportService.update(directorsReport, transaction,
-                COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
-
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getErrors()))
-                .thenReturn(responseEntity);
-
-        ResponseEntity returnedResponse =
-                directorsReportController.update(directorsReport, bindingResult,
-                        COMPANY_ACCOUNT_ID, request);
-
-        assertNotNull(returnedResponse);
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
-    }
-
-    @Test
-    @DisplayName("Update directors report resource - data exception thrown")
-    void updateDirectorsReportDataException() throws DataException {
-
-        mockTransactionAndLinks();
-        when(bindingResult.hasErrors()).thenReturn(false);
-
-        DataException dataException = new DataException("");
-        when(directorsReportService.update(directorsReport, transaction,
-                COMPANY_ACCOUNT_ID, request)).thenThrow(dataException);
-
-        ResponseEntity responseEntity =
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
-
-        ResponseEntity returnedResponse =
-                directorsReportController.update(directorsReport, bindingResult,
-                        COMPANY_ACCOUNT_ID, request);
-
-        assertNotNull(returnedResponse);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertNull(responseEntity.getBody());
     }
 
     @Test
@@ -308,11 +215,5 @@ public class DirectorsReportControllerTest {
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-    }
-
-    private void mockTransactionAndLinks() {
-        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
-        when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn("");
     }
 }
