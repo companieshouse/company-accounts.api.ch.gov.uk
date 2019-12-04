@@ -17,7 +17,7 @@ public class Director extends RestObject {
     private static final int MIN_FIELD_LENGTH = 1;
 
     @NotNull
-    @CharSetValid(CharSet.CHARACTER_SET_1)
+    @CharSetValid(CharSet.CHARACTER_SET_2)
     @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
     @JsonProperty("name")
     private String name;
