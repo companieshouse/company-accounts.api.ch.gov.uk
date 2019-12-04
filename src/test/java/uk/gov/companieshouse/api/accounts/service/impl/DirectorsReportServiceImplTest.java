@@ -13,6 +13,7 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsReportEntity;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -192,6 +194,19 @@ public class DirectorsReportServiceImplTest {
     }
 
     @Test
+    @DisplayName("Tests the retrieval of a Directors Report where the repository throws a MongoException")
+    void getDirectorsReportThrowsMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class, () ->
+                service.find(COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
     @DisplayName("Tests the successful deletion of a Directors Report")
     void deleteDirectorsReportSuccess() throws DataException {
 
@@ -225,6 +240,21 @@ public class DirectorsReportServiceImplTest {
         assertWhetherSmallFullServiceCalledToRemoveLink(false);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of a Directors Report where the repository throws a MongoException")
+    void deleteDirectorsReportThrowsMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+
+        doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
+
+        assertThrows(DataException.class, () ->
+                service.delete(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -281,6 +311,124 @@ public class DirectorsReportServiceImplTest {
 
         verify(repository, times(1)).save(directorsReportEntity);
 
+    }
+
+    @Test
+    @DisplayName("Tests the successful addition of a directors report link")
+    void addLinkSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getLinks()).thenReturn(links);
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertAll(() -> service.addLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, SELF_LINK, request));
+
+        verify(links, times(1)).put(directorsReportLinkType.getLink(), SELF_LINK);
+    }
+
+    @Test
+    @DisplayName("Tests the  addition of a directors report link where the repository throws a Mongo exception")
+    void addLinkMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getLinks()).thenReturn(links);
+
+        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertThrows(DataException.class,
+                () -> service.addLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, SELF_LINK, request));
+
+        verify(links, times(1)).put(directorsReportLinkType.getLink(), SELF_LINK);
+    }
+
+    @Test
+    @DisplayName("Tests the  addition of a directors report link where the entity is not found")
+    void addLinkDirectorsReportEntityNotFound() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        DirectorsReportEntity directorsReportEntity = null;
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertThrows(DataException.class,
+                () -> service.addLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, SELF_LINK, request));
+
+        verify(repository, never()).save(directorsReportEntity);
+    }
+
+    @Test
+    @DisplayName("Tests the successful removal of a directors report link")
+    void removeLinkSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getLinks()).thenReturn(links);
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertAll(() -> service.removeLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, request));
+
+        verify(links, times(1)).remove(directorsReportLinkType.getLink());
+    }
+
+    @Test
+    @DisplayName("Tests the  removal of a directors report link where the repository throws a Mongo exception")
+    void removeLinkMongoException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        when(directorsReportEntity.getData()).thenReturn(directorsDataEntity);
+        when(directorsDataEntity.getLinks()).thenReturn(links);
+
+        when(repository.save(directorsReportEntity)).thenThrow(MongoException.class);
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertThrows(DataException.class,
+                () -> service.removeLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, request));
+
+        verify(links, times(1)).remove(directorsReportLinkType.getLink());
+    }
+
+    @Test
+    @DisplayName("Tests the  removal of a directors report link where the entity is not found")
+    void removeLinkDirectorsReportEntityNotFound() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
+                .thenReturn(GENERATED_ID);
+
+        DirectorsReportEntity directorsReportEntity = null;
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(directorsReportEntity));
+
+        DirectorsReportLinkType directorsReportLinkType = DirectorsReportLinkType.SELF;
+
+        assertThrows(DataException.class,
+                () -> service.removeLink(COMPANY_ACCOUNTS_ID, directorsReportLinkType, request));
+
+        verify(repository, never()).save(directorsReportEntity);
     }
 
     private void assertIdGeneratedForDatabaseEntity() {
