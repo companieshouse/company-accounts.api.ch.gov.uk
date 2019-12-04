@@ -9,10 +9,10 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.SecretaryEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.repository.SecretaryRepository;
-import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -23,19 +23,17 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
-public class SecretaryServiceImpl implements ResourceService<Secretary> {
+public class SecretaryService implements ResourceService<Secretary> {
 
     private SecretaryTransformer transformer;
     private SecretaryRepository secretaryRepository;
-    private DirectorsReportService directorsReportService;
+    private DirectorsReportServiceImpl directorsReportService;
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public SecretaryServiceImpl(SecretaryTransformer transformer, SecretaryRepository secretaryRepository, DirectorsReportService directorsReportService, KeyIdGenerator keyIdGenerator) {
+    public SecretaryService(SecretaryTransformer transformer, SecretaryRepository secretaryRepository, DirectorsReportServiceImpl directorsReportService, KeyIdGenerator keyIdGenerator) {
 
         this.transformer = transformer;
         this.secretaryRepository = secretaryRepository;
@@ -43,13 +41,10 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
         this.keyIdGenerator = keyIdGenerator;
     }
 
-    private static final Pattern SECRETARY_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/secretaries/(.*)$");
-
-
     @Override
     public ResponseObject<Secretary> create(Secretary rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        String secretaryId = keyIdGenerator.generateRandom();
+        String secretaryId = generateID(companyAccountId);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, secretaryId);
 
@@ -69,7 +64,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
             throw new DataException(e);
         }
 
-        directorsReportService.addSecretary(companyAccountId, secretaryId, getSelfLink(rest), request);
+        directorsReportService.addLink(companyAccountId, DirectorsReportLinkType.SECRETARY, getSelfLink(rest), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -77,7 +72,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
     @Override
     public ResponseObject<Secretary> update(Secretary rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        String secretaryId = getSecretaryId(request);
+        String secretaryId = generateID(companyAccountId);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, secretaryId);
 
@@ -101,7 +96,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
 
         try {
 
-            entity = secretaryRepository.findById(getSecretaryId(request)).orElse(null);
+            entity = secretaryRepository.findById(generateID(companyAccountsId)).orElse(null);
 
         } catch (MongoException e) {
 
@@ -118,7 +113,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
     @Override
     public ResponseObject<Secretary> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
 
-        String secretaryId = getSecretaryId(request);
+        String secretaryId = generateID(companyAccountsId);
 
         try {
             if (secretaryRepository.existsById(secretaryId)) {
@@ -126,7 +121,7 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
                 secretaryRepository.deleteById(secretaryId);
 
                 directorsReportService
-                        .removeSecretary(companyAccountsId, secretaryId, request);
+                        .removeLink(companyAccountsId, DirectorsReportLinkType.SECRETARY, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -150,32 +145,24 @@ public class SecretaryServiceImpl implements ResourceService<Secretary> {
         return secretary.getLinks().get(BasicLinkType.SELF.getLink());
     }
 
-    private String getSecretaryId(HttpServletRequest request) {
-
-        String secretaryId = null;
-
-        Matcher matcher = SECRETARY_ID_REGEX.matcher(request.getRequestURI());
-        if (matcher.find()) {
-            secretaryId = matcher.group(1);
-        }
-
-        return secretaryId;
-
-}
-    private String generateSelfLink(Transaction transaction, String companyAccountId, String secretaryId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/"
                 + ResourceName.DIRECTORS_REPORT.getName() + "/"
-                + ResourceName.SECRETARIES.getName() + "/"
-                + secretaryId;
+                + ResourceName.SECRETARY.getName();
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String secretaryId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, secretaryId));
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
+    }
+
+    private String generateID(String companyAccountId) {
+
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.SECRETARY.getName());
     }
 }
