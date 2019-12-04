@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
+import uk.gov.companieshouse.api.accounts.service.impl.SecretaryService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
@@ -27,11 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report", produces = MediaType.APPLICATION_JSON_VALUE)
-public class DirectorsReportController {
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/secretary", produces = MediaType.APPLICATION_JSON_VALUE)
+public class SecretaryController {
 
     @Autowired
-    private DirectorsReportServiceImpl directorsReportService;
+    private SecretaryService secretaryService;
 
     @Autowired
     private ErrorMapper errorMapper;
@@ -40,11 +43,10 @@ public class DirectorsReportController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody DirectorsReport directorsReport, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request) {
+    public ResponseEntity create(@Valid @RequestBody Secretary secretary, BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
-        if (bindingResult.hasErrors()) {
+        if(bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -52,13 +54,40 @@ public class DirectorsReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<DirectorsReport> response = directorsReportService.create(directorsReport, transaction, companyAccountId, request);
+
+            ResponseObject<Secretary> response = secretaryService.create(secretary, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch(DataException ex) {
 
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to create directorsReport resource",
-                    ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to create secretary resource", ex, request);
+            return apiResponseMapper.getErrorResponse();
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity update(@Valid @RequestBody Secretary secretary, BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+
+        DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
+        if(directorsReport.getLinks().get(DirectorsReportLinkType.SECRETARY.getLink()) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if(bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+
+            ResponseObject<Secretary> response = secretaryService.update(secretary, transaction, companyAccountId, request);
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+        } catch(DataException ex) {
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to update secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -69,12 +98,12 @@ public class DirectorsReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<DirectorsReport> response = directorsReportService.find(companyAccountId, request);
-            return apiResponseMapper.mapGetResponse(response.getData(), request);
 
+            ResponseObject<Secretary> response = secretaryService.find(companyAccountId, request);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
 
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a directorsReport resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -85,12 +114,10 @@ public class DirectorsReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<DirectorsReport> response = directorsReportService.delete(companyAccountId, request);
+            ResponseObject<Secretary> response = secretaryService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete directorsReport resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
