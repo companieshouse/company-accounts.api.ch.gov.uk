@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -20,15 +17,19 @@ import uk.gov.companieshouse.api.accounts.repository.ApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ApprovalService implements ResourceService<Approval> {
 
-    private ApprovalRepository approvalRepository;
+    private ApprovalRepository<ApprovalEntity> approvalRepository;
 
     private ApprovalTransformer approvalTransformer;
 
@@ -40,7 +41,7 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Autowired
     public ApprovalService(
-        ApprovalRepository approvalRepository,
+        ApprovalRepository<ApprovalEntity> approvalRepository,
         ApprovalTransformer approvalTransformer,
         ApprovalValidator approvalValidator,
         SmallFullService smallFullService,
@@ -102,7 +103,7 @@ public class ApprovalService implements ResourceService<Approval> {
 
         try {
 
-            approvalEntity = approvalRepository.findById(generateID(companyAccountsId)).orElse(null);
+            approvalEntity =  approvalRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
 
             throw new DataException(e);
