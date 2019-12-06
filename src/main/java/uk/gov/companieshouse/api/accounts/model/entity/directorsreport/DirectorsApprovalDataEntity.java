@@ -5,7 +5,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
 import java.time.LocalDate;
 
-public class ApprovalDataEntity extends BaseDataEntity {
+public class DirectorsApprovalDataEntity extends BaseDataEntity {
 
     @Field("name")
     private String name;

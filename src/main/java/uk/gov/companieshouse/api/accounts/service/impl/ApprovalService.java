@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 public class ApprovalService implements ResourceService<Approval> {
 
-    private ApprovalRepository<ApprovalEntity> approvalRepository;
+    private ApprovalRepository approvalRepository;
 
     private ApprovalTransformer approvalTransformer;
 
@@ -41,7 +41,7 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Autowired
     public ApprovalService(
-        ApprovalRepository<ApprovalEntity> approvalRepository,
+        ApprovalRepository approvalRepository,
         ApprovalTransformer approvalTransformer,
         ApprovalValidator approvalValidator,
         SmallFullService smallFullService,

@@ -5,16 +5,16 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 
 @Document(collection = "directors_report")
-public class ApprovalEntity extends BaseEntity {
+public class DirectorsApprovalEntity extends BaseEntity {
 
     @Field("data")
-    private ApprovalDataEntity data;
+    private DirectorsApprovalDataEntity data;
 
-    public ApprovalDataEntity getData() {
+    public DirectorsApprovalDataEntity getData() {
         return data;
     }
 
-    public void setData(ApprovalDataEntity data) {
+    public void setData(DirectorsApprovalDataEntity data) {
         this.data = data;
     }
 
