@@ -9,6 +9,7 @@ import uk.gov.companieshouse.charset.CharSet;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import uk.gov.companieshouse.api.accounts.validation.WithinCurrentPeriod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Director extends RestObject {
@@ -22,9 +23,11 @@ public class Director extends RestObject {
     @JsonProperty("name")
     private String name;
 
+    @WithinCurrentPeriod
     @JsonProperty("appointment_date")
     private LocalDate appointmentDate;
 
+    @WithinCurrentPeriod
     @JsonProperty("resignation_date")
     private LocalDate resignationDate;
 
