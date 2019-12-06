@@ -8,11 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -21,7 +19,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorsApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.accounts.validation.DirectorApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -34,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,9 +56,6 @@ class DirectorsApprovalServiceTest {
 
     @Mock
     private DirectorsReportServiceImpl directorsReportService;
-
-    @Mock
-    private DirectorApprovalValidator directorApprovalValidator;
 
     @Mock
     private DirectorsApprovalEntity directorsApprovalEntity;
@@ -95,7 +88,6 @@ class DirectorsApprovalServiceTest {
     public void canCreateADirectorsApproval() throws DataException {
 
         when(directorsApprovalTransformer.transform(directorsApproval)).thenReturn(directorsApprovalEntity);
-        doReturn(new Errors()).when(directorApprovalValidator).validateApproval(directorsApproval, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -111,7 +103,6 @@ class DirectorsApprovalServiceTest {
     public void createDirectorsApprovalDuplicateKey() throws DataException {
         doReturn(directorsApprovalEntity).when(directorsApprovalTransformer).transform(any(DirectorsApproval.class));
         when(directorsApprovalRepository.insert(directorsApprovalEntity)).thenThrow(duplicateKeyException);
-        doReturn(new Errors()).when(directorApprovalValidator).validateApproval(directorsApproval, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -126,7 +117,6 @@ class DirectorsApprovalServiceTest {
     @DisplayName("Tests the mongo exception when creating an directors approval")
     void createDirectorsApprovalMongoExceptionFailure() throws DataException {
         doReturn(directorsApprovalEntity).when(directorsApprovalTransformer).transform(any(DirectorsApproval.class));
-        doReturn(new Errors()).when(directorApprovalValidator).validateApproval(directorsApproval, request);
         when(directorsApprovalRepository.insert(directorsApprovalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -183,23 +173,5 @@ class DirectorsApprovalServiceTest {
         verify(directorsApprovalRepository, times(1)).findById(RESOURCE_ID);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
-    }
-
-    @Test
-    @DisplayName("Test create of the directors report returns validation errors")
-    void directorsApprovalReturnErrors() throws DataException {
-
-        when(directorApprovalValidator.validateApproval(directorsApproval, request))
-                .thenReturn(errors);
-        when(errors.hasErrors()).thenReturn(true);
-
-        ResponseObject<DirectorsApproval> response =
-                directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
-
-        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
-        verify(directorsApprovalRepository, never()).insert(any(DirectorsApprovalEntity.class));
-        VerificationMode timesExpected = false ? times(1) : never();
-        verify(directorsReportService, timesExpected)
-                .addLink(APPROVAL, DirectorsReportLinkType.APPROVAL, SELF_LINK, request);
     }
 }
