@@ -71,7 +71,21 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
     @Override
     public ResponseObject<DirectorsApproval> update(DirectorsApproval rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        return null;
+        String directorApprovalID = generateID(companyAccountId);
+
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
+
+        DirectorsApprovalEntity entity = transformer.transform(rest);
+        entity.setId(directorApprovalID);
+
+        try {
+
+            directorsApprovalRepository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
@@ -97,7 +111,25 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
 
     @Override
     public ResponseObject<DirectorsApproval> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
-        return null;
+
+        String directorsApprovalID = generateID(companyAccountsId);
+
+        try {
+            if (directorsApprovalRepository.existsById(directorsApprovalID)) {
+
+                directorsApprovalRepository.deleteById(directorsApprovalID);
+
+                directorsReportService
+                        .removeLink(companyAccountsId, DirectorsReportLinkType.APPROVAL, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     private String getSelfLink(DirectorsApproval directorsApproval) {
