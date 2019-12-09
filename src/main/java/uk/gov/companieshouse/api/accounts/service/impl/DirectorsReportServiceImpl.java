@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -102,7 +103,10 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
 
         String reportId = generateID(companyAccountsId);
 
-        directorService.deleteAll(request.getRequestURI() + "/directors", request);
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        directorService.deleteAll(transaction, companyAccountsId, request);
         secretaryService.delete(companyAccountsId, request);
         statementsService.delete(companyAccountsId, request);
         directorsApprovalService.delete(companyAccountsId, request);

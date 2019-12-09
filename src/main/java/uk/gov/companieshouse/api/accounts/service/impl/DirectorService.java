@@ -49,6 +49,8 @@ public class DirectorService implements MultipleResourceService<Director> {
     private static final Pattern DIRECTOR_ID_REGEX =
             Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
 
+    private static final String DIRECTORS_LINK = "directors";
+
     @Override
     public ResponseObject<Director> create(Director rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
@@ -120,14 +122,15 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> findAll(String commonIdentifier,
+    public ResponseObject<Director> findAll(Transaction transaction,
+                                            String companyAccountId,
                                             HttpServletRequest request)
         throws DataException {
 
         DirectorEntity[] entity;
 
         try {
-            entity = repository.findAllDirectors(commonIdentifier);
+            entity = repository.findAllDirectors(generateDirectorsLink(transaction, companyAccountId));
 
         } catch (MongoException e) {
 
@@ -166,11 +169,11 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> deleteAll(String commonIdentifier, HttpServletRequest request)
+    public ResponseObject<Director> deleteAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
             throws DataException {
 
         try {
-            repository.deleteAllDirectors(commonIdentifier);
+            repository.deleteAllDirectors(generateDirectorsLink(transaction, companyAccountId));
 
         } catch (MongoException e) {
 
@@ -190,17 +193,20 @@ public class DirectorService implements MultipleResourceService<Director> {
                 + directorId;
     }
 
-    private String generateDirectorsLink(String selfLink, String directorId) {
+    private String generateDirectorsLink(Transaction transaction, String companyAccountId) {
 
-        return selfLink.replace("/" + directorId, "");
+        return transaction.getLinks().getSelf() + "/"
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
+                + ResourceName.SMALL_FULL.getName() + "/"
+                + ResourceName.DIRECTORS_REPORT.getName() + "/"
+                + ResourceName.DIRECTORS.getName();
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String directorId) {
 
         Map<String, String> map = new HashMap<>();
-        String selfLink = generateSelfLink(transaction, companyAccountsId, directorId);
-        map.put(BasicLinkType.SELF.getLink(), selfLink);
-        map.put("directors", generateDirectorsLink(selfLink, directorId));
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, directorId));
+        map.put(DIRECTORS_LINK, generateDirectorsLink(transaction, companyAccountsId));
         return map;
     }
 
