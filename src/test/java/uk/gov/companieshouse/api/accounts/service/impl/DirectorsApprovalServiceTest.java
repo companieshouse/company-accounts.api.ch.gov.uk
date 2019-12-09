@@ -117,7 +117,7 @@ class DirectorsApprovalServiceTest {
 
         ResponseObject response = directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
-        assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
     }
 
