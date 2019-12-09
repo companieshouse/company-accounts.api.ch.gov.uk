@@ -45,6 +45,28 @@ public class DirectorTransformerTest {
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
 
+        Director director = transformer.transform(getDirectorEntity());
+
+        assertNotNull(director);
+        assertRestFieldsSet(director);
+    }
+
+    @Test
+    @DisplayName("Transform entity array to rest object array")
+    void entityArrayToRestArray() {
+
+        DirectorEntity[] entities = new DirectorEntity[]{getDirectorEntity(), getDirectorEntity()};
+
+        Director[] directors = transformer.transform(entities);
+
+        assertNotNull(directors);
+        assertEquals(2, directors.length);
+        assertRestFieldsSet(directors[0]);
+        assertRestFieldsSet(directors[1]);
+    }
+
+    private DirectorEntity getDirectorEntity() {
+
         DirectorDataEntity directorDataEntity = new DirectorDataEntity();
         directorDataEntity.setName(NAME);
         directorDataEntity.setAppointmentDate(APPOINTMENT_DATE);
@@ -53,9 +75,10 @@ public class DirectorTransformerTest {
         DirectorEntity directorEntity = new DirectorEntity();
         directorEntity.setData(directorDataEntity);
 
-        Director director = transformer.transform(directorEntity);
+        return directorEntity;
+    }
 
-        assertNotNull(director);
+    private void assertRestFieldsSet(Director director) {
         assertEquals(NAME, director.getName());
         assertEquals(APPOINTMENT_DATE, director.getAppointmentDate());
         assertEquals(RESIGNATION_DATE, director.getResignationDate());
