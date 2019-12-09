@@ -53,7 +53,7 @@ public class ApiResponseMapper {
         return ResponseEntity.status(HttpStatus.OK).body(restObject);
     }
 
-    public ResponseEntity mapGetMultipleData(RestObject[] restObject, HttpServletRequest request) {
+    public ResponseEntity mapGetResponseForMultipleResources(RestObject[] restObject, HttpServletRequest request) {
         if (restObject == null) {
             LogContext logContext = LogHelper.createNewLogContext(request);
             LOGGER.debugLogContext("Resource not found", logContext);
