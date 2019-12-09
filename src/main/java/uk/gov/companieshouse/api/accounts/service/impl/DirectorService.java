@@ -120,14 +120,14 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> findAll(String companyAccountsId,
+    public ResponseObject<Director> findAll(String commonIdentifier,
                                             HttpServletRequest request)
         throws DataException {
 
         DirectorEntity[] entity;
 
         try {
-            entity = repository.findAllDirectors(request.getRequestURI());
+            entity = repository.findAllDirectors(commonIdentifier);
 
         } catch (MongoException e) {
 
@@ -163,6 +163,21 @@ public class DirectorService implements MultipleResourceService<Director> {
 
             throw new DataException(e);
         }
+    }
+
+    @Override
+    public ResponseObject<Director> deleteAll(String commonIdentifier, HttpServletRequest request)
+            throws DataException {
+
+        try {
+            repository.deleteAllDirectors(commonIdentifier);
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId, String directorId) {

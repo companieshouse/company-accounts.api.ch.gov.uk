@@ -8,5 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface MultipleResourceService<T extends RestObject> extends ResourceService<T> {
 
-    ResponseObject<T> findAll(String companyAccountId, HttpServletRequest request) throws DataException;
+    ResponseObject<T> findAll(String commonIdentifier, HttpServletRequest request) throws DataException;
+
+    ResponseObject<T> deleteAll(String commonIdentifier, HttpServletRequest request) throws DataException;
 }
