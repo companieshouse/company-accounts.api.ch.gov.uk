@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
-import uk.gov.companieshouse.api.accounts.service.ResourceService;
+import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorTransformer;
@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class DirectorService implements ResourceService<Director> {
+public class DirectorService implements MultipleResourceService<Director> {
 
     private DirectorTransformer transformer;
 
@@ -120,6 +120,28 @@ public class DirectorService implements ResourceService<Director> {
     }
 
     @Override
+    public ResponseObject<Director> findAll(String companyAccountsId,
+                                            HttpServletRequest request)
+        throws DataException {
+
+        DirectorEntity[] entity;
+
+        try {
+            entity = repository.findAllDirectors(request.getRequestURI());
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+        if (entity.length == 0) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(entity));
+    }
+
+    @Override
     public ResponseObject<Director> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
@@ -153,10 +175,17 @@ public class DirectorService implements ResourceService<Director> {
                 + directorId;
     }
 
+    private String generateDirectorsLink(String selfLink, String directorId) {
+
+        return selfLink.replace("/" + directorId, "");
+    }
+
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String directorId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, directorId));
+        String selfLink = generateSelfLink(transaction, companyAccountsId, directorId);
+        map.put(BasicLinkType.SELF.getLink(), selfLink);
+        map.put("directors", generateDirectorsLink(selfLink, directorId));
         return map;
     }
 

@@ -9,6 +9,8 @@ public class ResponseObject<T extends RestObject> {
 
     private T data;
 
+    private T[] multipleData;
+
     private Errors errors;
 
     public ResponseObject(ResponseStatus status) {
@@ -20,6 +22,11 @@ public class ResponseObject<T extends RestObject> {
         this.data = data;
     }
 
+    public ResponseObject(ResponseStatus status, T[] multipleData) {
+        this.status = status;
+        this.multipleData = multipleData;
+    }
+
     public ResponseObject(ResponseStatus status, Errors errors) {
         this.status = status;
         this.errors = errors;
@@ -29,6 +36,15 @@ public class ResponseObject<T extends RestObject> {
         this.status = status;
         this.data = data;
         this.errors = errors;
+    }
+
+
+    public T[] getMultipleData() {
+        return multipleData;
+    }
+
+    public void setMultipleData(T[] multipleData) {
+        this.multipleData = multipleData;
     }
 
     public ResponseStatus getStatus() {
