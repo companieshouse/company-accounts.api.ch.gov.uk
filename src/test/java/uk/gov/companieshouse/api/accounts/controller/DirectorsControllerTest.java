@@ -14,11 +14,9 @@ import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
-import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -55,12 +53,6 @@ public class DirectorsControllerTest {
 
     @Mock
     private DirectorsReport directorsReport;
-
-    @Mock
-    private DirectorsReportServiceImpl directorsReportService;
-
-    @Mock
-    private SmallFull smallFull;
 
     @Mock
     private HttpServletRequest request;
@@ -166,7 +158,7 @@ public class DirectorsControllerTest {
 
     @Test
     @DisplayName("Tests the successful retrieval of a Director")
-    void SuccessfulRetrievalOfDirector() throws DataException {
+    void getDirectorSuccess() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -192,7 +184,7 @@ public class DirectorsControllerTest {
 
     @Test
     @DisplayName("Tests the retrieval of a director when the service throws a DataException")
-    void getTangibleAssetsServiceThrowsDataException() throws DataException {
+    void getDirectorServiceThrowsDataException() throws DataException {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -211,6 +203,47 @@ public class DirectorsControllerTest {
                 .find(DIRECTORS_ID, request);
         verify(apiResponseMapper, never()).mapGetResponse(any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
+    }
+
+    @Test
+    @DisplayName("Tests the successful retrieval of all Directors")
+    void getAllDirectorsSuccess() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        Director[] directors = new Director[0];
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, directors);
+        when(directorService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getDataForMultipleResources());
+        when(apiResponseMapper.mapGetResponseForMultipleResources(responseObject.getDataForMultipleResources(), request))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertEquals(directors, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of all Directors when the service throws a DataException")
+    void getAllDirectorsServiceThrowsDataException() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        when(directorService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
+                .thenThrow(DataException.class);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
