@@ -28,34 +28,29 @@ import java.util.Map;
 @Service
 public class DirectorsReportServiceImpl implements ParentService<DirectorsReport, DirectorsReportLinkType>, DirectorsReportService {
 
+    @Autowired
     private DirectorsReportRepository directorsReportRepository;
-    private DirectorsReportTransformer directorsReportTransformer;
-    private KeyIdGenerator keyIdGenerator;
-    private SmallFullService smallFullService;
-    private DirectorService directorService;
-    private SecretaryService secretaryService;
-    private StatementsService statementsService;
-    private DirectorsApprovalService directorsApprovalService;
 
     @Autowired
-    public DirectorsReportServiceImpl(DirectorsReportRepository directorsReportRepository,
-                                      DirectorsReportTransformer directorsReportTransformer,
-                                      KeyIdGenerator keyIdGenerator,
-                                      SmallFullService smallFullService,
-                                      DirectorService directorService,
-                                      SecretaryService secretaryService,
-                                      StatementsService statementsService,
-                                      DirectorsApprovalService directorsApprovalService) {
+    private DirectorsReportTransformer directorsReportTransformer;
 
-        this.directorsReportRepository = directorsReportRepository;
-        this.directorsReportTransformer = directorsReportTransformer;
-        this.keyIdGenerator = keyIdGenerator;
-        this.smallFullService = smallFullService;
-        this.directorService = directorService;
-        this.secretaryService = secretaryService;
-        this.statementsService = statementsService;
-        this.directorsApprovalService = directorsApprovalService;
-    }
+    @Autowired
+    private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
+    private SmallFullService smallFullService;
+
+    @Autowired
+    private DirectorService directorService;
+
+    @Autowired
+    private SecretaryService secretaryService;
+
+    @Autowired
+    private StatementsService statementsService;
+
+    @Autowired
+    private DirectorsApprovalService directorsApprovalService;
 
     @Override
     public ResponseObject<DirectorsReport> create(DirectorsReport rest, Transaction transaction, String companyAccountsId, HttpServletRequest request)
