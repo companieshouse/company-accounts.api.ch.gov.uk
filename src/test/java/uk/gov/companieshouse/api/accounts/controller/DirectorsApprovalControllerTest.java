@@ -9,11 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -22,9 +22,11 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -46,9 +48,6 @@ class DirectorsApprovalControllerTest {
     private DirectorsApproval directorsApproval;
 
     @Mock
-    private BindingResult bindingResult;
-
-    @Mock
     private DirectorsApprovalService directorsApprovalService;
 
     @Mock
@@ -57,10 +56,18 @@ class DirectorsApprovalControllerTest {
     @Mock
     private ErrorMapper errorMapper;
 
+    @Mock
+    private DirectorsReport directorsReport;
+
+    @Mock
+    private Map<String, String> directorsReportLink;
+
     @InjectMocks
     private DirectorsApprovalController directorsApprovalController;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";
+
+    private static final String DIRECTORS_APPROVAL_LINK = "directorsApprovalLink";
 
     @Test
     @DisplayName("Tests the successful creation of a directors approval resource")
@@ -79,7 +86,7 @@ class DirectorsApprovalControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response = directorsApprovalController
-                .create(directorsApproval, bindingResult, "", request);
+                .create(directorsApproval, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -96,7 +103,7 @@ class DirectorsApprovalControllerTest {
                 .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
 
         ResponseEntity response = directorsApprovalController
-                .create(directorsApproval, bindingResult, "", request);
+                .create(directorsApproval, "", request);
 
         verify(directorsApprovalService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
@@ -143,7 +150,7 @@ class DirectorsApprovalControllerTest {
                 .find(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1)).getErrorResponse();
     }
-
+/*
     @Test
     @DisplayName("Create directors approval resource - has binding errors")
     void createDirectorsApprovalResourceBindingErrors() {
@@ -157,6 +164,137 @@ class DirectorsApprovalControllerTest {
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+*/
+    @Test
+    @DisplayName("Update directors approval resource - no directors approval link")
+    void updateDirectorsApprovalResourceNoDirectorsApprovalLink() {
+
+        when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
+        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
+        when(directorsReportLink.get(DirectorsReportLinkType.APPROVAL.getLink())).thenReturn(null);
+
+        ResponseEntity responseEntity =
+                directorsApprovalController.update(directorsApproval,
+                        COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+/*
+    @Test
+    @DisplayName("Update directors approval resource - has binding errors")
+    void updateDirectorsApprovalResourceBindingErrors() {
+
+        mockTransactionAndLinks();
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
+
+        ResponseEntity responseEntity =
+                directorsApprovalController.update(directorsApproval,
+                        COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+    }
+*/
+    @Test
+    @DisplayName("Update directors approval resource - success")
+    void updateDirectorsApprovalResourceSuccess() throws DataException {
+
+        mockTransactionAndLinks();
+
+
+       // when(bindingResult.hasErrors()).thenReturn(false);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+                directorsApproval);
+        when(directorsApprovalService.update(directorsApproval, transaction,
+                COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                directorsApprovalController.update(directorsApproval,
+                        COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Update directors approval resource - data exception thrown")
+    void updateDirectorsApprovalResourceDataException() throws DataException {
+
+       mockTransactionAndLinks();
+
+        when(directorsApprovalService.update(directorsApproval, transaction,
+                COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
+
+        ResponseEntity responseEntity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                directorsApprovalController.update(directorsApproval,
+                        COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Delete directors approval resource - success")
+    void deleteDirectorsApprovalResourceSuccess() throws DataException {
+
+        when(request.getAttribute(anyString())).thenReturn(transaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+                directorsApproval);
+
+        when(directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
+                responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse =
+                directorsApprovalController.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Delete directors approval resource - data exception thrown")
+    void deleteDirectorsApprovalResourceDataException() throws DataException {
+
+        when(request.getAttribute(anyString())).thenReturn(transaction);
+
+        DataException dataException = new DataException("");
+
+        when(directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request))
+                .thenThrow(dataException);
+
+        ResponseEntity responseEntity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity returnedResponse = directorsApprovalController.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(returnedResponse);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     private ResponseEntity createResponseEntity(HttpStatus httpStatus,
@@ -178,5 +316,11 @@ class DirectorsApprovalControllerTest {
         if (assertResponseBody) {
             assertEquals(directorsApproval, response.getBody());
         }
+    }
+
+    private void mockTransactionAndLinks() {
+        when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
+        when(directorsReport.getLinks()).thenReturn(directorsReportLink);
+        when(directorsReportLink.get(DirectorsReportLinkType.APPROVAL.getLink())).thenReturn(DIRECTORS_APPROVAL_LINK);
     }
 }
