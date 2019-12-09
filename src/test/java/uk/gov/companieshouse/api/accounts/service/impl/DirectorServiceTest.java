@@ -84,6 +84,10 @@ public class DirectorServiceTest {
                                         COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
                                         "/directors/" + DIRECTOR_ID;
 
+    private static final String DIRECTORS_LINK = TRANSACTION_SELF_LINK + "/company-accounts/" +
+                                                COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
+                                                "/directors";
+
     @Test
     @DisplayName("Tests the successful creation of a director resource")
     void createDirectorSuccess() throws DataException {
@@ -246,6 +250,54 @@ public class DirectorServiceTest {
     }
 
     @Test
+    @DisplayName("Tests the successful retrieval of all directors")
+    void getAllDirectorsSuccess() throws DataException {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        DirectorEntity[] entities = new DirectorEntity[]{directorEntity};
+        when(repository.findAllDirectors(DIRECTORS_LINK)).thenReturn(entities);
+
+        Director[] directors = new Director[]{director};
+        when(transformer.transform(entities)).thenReturn(directors);
+
+        ResponseObject<Director> response = directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.FOUND, response.getStatus());
+        assertEquals(directors, response.getDataForMultipleResources());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of all directors where none exist")
+    void getAllDirectorsNotFound() throws DataException {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        DirectorEntity[] entities = new DirectorEntity[0];
+        when(repository.findAllDirectors(DIRECTORS_LINK)).thenReturn(entities);
+
+        ResponseObject<Director> response = directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
+        assertNull(response.getDataForMultipleResources());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of all directors where the repository throws a MongoException")
+    void getAllDirectorsThrowsMongoException() {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(repository.findAllDirectors(DIRECTORS_LINK)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class,
+                () -> directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
     @DisplayName("Tests the successful deletion of a director resource")
     void deleteDirectorSuccess() throws DataException {
 
@@ -293,6 +345,34 @@ public class DirectorServiceTest {
         assertWhetherDirectorsReportServiceCalledToRemoveDirector(false);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
         assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the successful deletion of all directors")
+    void deleteAllDirectorsSuccess() throws DataException {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        ResponseObject<Director> response = directorService.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertNull(response.getDataForMultipleResources());
+
+        verify(repository, times(1)).deleteAllDirectors(DIRECTORS_LINK);
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of all directors where the repository throws a MongoException")
+    void deleteAllDirectorsThrowsMongoException() {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        doThrow(MongoException.class).when(repository).deleteAllDirectors(DIRECTORS_LINK);
+
+        assertThrows(DataException.class,
+                () -> directorService.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     private void assertMetaDataSetOnRestObject() {

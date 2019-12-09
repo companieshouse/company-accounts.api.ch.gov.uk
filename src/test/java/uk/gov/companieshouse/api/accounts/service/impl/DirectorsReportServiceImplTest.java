@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -57,6 +58,18 @@ public class DirectorsReportServiceImplTest {
 
     @Mock
     private KeyIdGenerator keyIdGenerator;
+
+    @Mock
+    private DirectorService directorService;
+
+    @Mock
+    private SecretaryService secretaryService;
+
+    @Mock
+    private StatementsService statementsService;
+
+    @Mock
+    private DirectorsApprovalService directorsApprovalService;
 
     @Mock
     private DirectorsReport directorsReport;
@@ -210,6 +223,8 @@ public class DirectorsReportServiceImplTest {
     @DisplayName("Tests the successful deletion of a Directors Report")
     void deleteDirectorsReportSuccess() throws DataException {
 
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -218,6 +233,7 @@ public class DirectorsReportServiceImplTest {
         ResponseObject<DirectorsReport> response =
                 service.delete(COMPANY_ACCOUNTS_ID, request);
 
+        assertChildResourcesDeleted();
         assertRepositoryDeleteByIdCalled();
         assertWhetherSmallFullServiceCalledToRemoveLink(true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
@@ -227,6 +243,8 @@ public class DirectorsReportServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a non existent Directors Report")
     void deleteDirectorsReportNotFound() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
                 .thenReturn(GENERATED_ID);
@@ -245,6 +263,8 @@ public class DirectorsReportServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a Directors Report where the repository throws a MongoException")
     void deleteDirectorsReportThrowsMongoException() {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.DIRECTORS_REPORT.getName()))
                 .thenReturn(GENERATED_ID);
@@ -451,6 +471,13 @@ public class DirectorsReportServiceImplTest {
 
     private void assertRepositoryFindByIdCalled() {
         verify(repository, times(1)).findById(GENERATED_ID);
+    }
+
+    private void assertChildResourcesDeleted() throws DataException {
+        verify(directorService, times(1)).deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+        verify(secretaryService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
+        verify(statementsService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
+        verify(directorsApprovalService, times(1)).delete(COMPANY_ACCOUNTS_ID, request);
     }
 
     private void assertWhetherSmallFullServiceCalledToAddLink(boolean isServiceExpected) throws DataException {

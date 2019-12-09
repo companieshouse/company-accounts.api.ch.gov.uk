@@ -7,7 +7,8 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 
 @Component
-public class DirectorTransformer implements MultipleGenericTransformer<Director, DirectorEntity> {
+public class DirectorTransformer implements
+        GenericTransformerForMultipleResources<Director, DirectorEntity> {
 
     @Override
     public DirectorEntity transform(Director entity) {
@@ -36,7 +37,6 @@ public class DirectorTransformer implements MultipleGenericTransformer<Director,
         Director[] directors = new Director[entity.length];
 
         for (int i = 0; i < entity.length; i++) {
-
             directors[i] = transform(entity[i]);
         }
 

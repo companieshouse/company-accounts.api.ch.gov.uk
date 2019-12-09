@@ -97,9 +97,9 @@ public class DirectorsController {
 
         try {
             ResponseObject<Director> response = directorService
-                    .findAll(companyAccountId, request);
+                    .findAll(transaction, companyAccountId, request);
 
-            return apiResponseMapper.mapGetMultipleData(response.getMultipleData(), request);
+            return apiResponseMapper.mapGetResponseForMultipleResources(response.getDataForMultipleResources(), request);
 
         } catch (DataException ex) {
 
