@@ -7,7 +7,8 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 
 @Component
-public class DirectorTransformer implements GenericTransformerWithMultipleResources<Director, DirectorEntity> {
+public class DirectorTransformer implements
+        GenericTransformerForMultipleResources<Director, DirectorEntity> {
 
     @Override
     public DirectorEntity transform(Director entity) {

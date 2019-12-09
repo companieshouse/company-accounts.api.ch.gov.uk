@@ -9,7 +9,7 @@ public class ResponseObject<T extends RestObject> {
 
     private T data;
 
-    private T[] dataWithMultipleResources;
+    private T[] dataForMultipleResources;
 
     private Errors errors;
 
@@ -22,9 +22,9 @@ public class ResponseObject<T extends RestObject> {
         this.data = data;
     }
 
-    public ResponseObject(ResponseStatus status, T[] dataWithMultipleResources) {
+    public ResponseObject(ResponseStatus status, T[] dataForMultipleResources) {
         this.status = status;
-        this.dataWithMultipleResources = dataWithMultipleResources;
+        this.dataForMultipleResources = dataForMultipleResources;
     }
 
     public ResponseObject(ResponseStatus status, Errors errors) {
@@ -39,12 +39,12 @@ public class ResponseObject<T extends RestObject> {
     }
 
 
-    public T[] getDataWithMultipleResources() {
-        return dataWithMultipleResources;
+    public T[] getDataForMultipleResources() {
+        return dataForMultipleResources;
     }
 
-    public void setDataWithMultipleResources(T[] dataWithMultipleResources) {
-        this.dataWithMultipleResources = dataWithMultipleResources;
+    public void setDataForMultipleResources(T[] dataForMultipleResources) {
+        this.dataForMultipleResources = dataForMultipleResources;
     }
 
     public ResponseStatus getStatus() {
