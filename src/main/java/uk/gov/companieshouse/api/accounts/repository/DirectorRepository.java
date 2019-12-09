@@ -9,8 +9,8 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 public interface DirectorRepository extends MongoRepository<DirectorEntity, String> {
 
     @Query(value = "{'data.links.directors' : ?0}")
-    DirectorEntity[] findAllDirectors(String directorReportLink);
+    DirectorEntity[] findAllDirectors(String directorsLink);
 
     @Query(value = "{'data.links.directors' : ?0}", delete = true)
-    void deleteAllDirectors(String directorReportLink);
+    void deleteAllDirectors(String directorsLink);
 }

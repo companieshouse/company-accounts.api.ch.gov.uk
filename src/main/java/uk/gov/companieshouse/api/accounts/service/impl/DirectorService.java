@@ -122,10 +122,8 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> findAll(Transaction transaction,
-                                            String companyAccountId,
-                                            HttpServletRequest request)
-        throws DataException {
+    public ResponseObject<Director> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
+            throws DataException {
 
         DirectorEntity[] entity;
 
