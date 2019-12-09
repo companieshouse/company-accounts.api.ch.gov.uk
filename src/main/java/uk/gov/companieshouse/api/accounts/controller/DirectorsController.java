@@ -97,7 +97,7 @@ public class DirectorsController {
 
         try {
             ResponseObject<Director> response = directorService
-                    .findAll(companyAccountId, request);
+                    .findAll(request.getRequestURI(), request);
 
             return apiResponseMapper.mapGetMultipleData(response.getMultipleData(), request);
 
