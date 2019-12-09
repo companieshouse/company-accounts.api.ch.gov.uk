@@ -10,6 +10,14 @@ public class DirectorsApprovalDataEntity extends BaseDataEntity {
     @Field("name")
     private String name;
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     @Field("date")
     private LocalDate date;
 

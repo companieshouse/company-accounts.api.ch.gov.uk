@@ -105,8 +105,7 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
 
-        DirectorsApproval directorsApproval = transformer.transform(directorsApprovalEntity);
-        return new ResponseObject<>(ResponseStatus.FOUND, directorsApproval);
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(directorsApprovalEntity));
     }
 
     @Override
@@ -146,7 +145,7 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
 
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.APPROVAL.getValue());
+        rest.setKind(Kind.DIRECTORS_REPORT_APPROVAL.getValue());
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {

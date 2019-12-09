@@ -150,22 +150,7 @@ class DirectorsApprovalControllerTest {
                 .find(COMPANY_ACCOUNTS_ID, request);
         verify(apiResponseMapper, times(1)).getErrorResponse();
     }
-/*
-    @Test
-    @DisplayName("Create directors approval resource - has binding errors")
-    void createDirectorsApprovalResourceBindingErrors() {
 
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
-
-        ResponseEntity responseEntity =
-                directorsApprovalController.create(directorsApproval, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-    }
-*/
     @Test
     @DisplayName("Update directors approval resource - no directors approval link")
     void updateDirectorsApprovalResourceNoDirectorsApprovalLink() {
@@ -182,33 +167,11 @@ class DirectorsApprovalControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
     }
-/*
-    @Test
-    @DisplayName("Update directors approval resource - has binding errors")
-    void updateDirectorsApprovalResourceBindingErrors() {
-
-        mockTransactionAndLinks();
-
-        when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
-
-        ResponseEntity responseEntity =
-                directorsApprovalController.update(directorsApproval,
-                        COMPANY_ACCOUNTS_ID, request);
-
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-    }
-*/
     @Test
     @DisplayName("Update directors approval resource - success")
     void updateDirectorsApprovalResourceSuccess() throws DataException {
 
         mockTransactionAndLinks();
-
-
-       // when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
                 directorsApproval);

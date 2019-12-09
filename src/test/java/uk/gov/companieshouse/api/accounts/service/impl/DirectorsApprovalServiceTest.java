@@ -281,7 +281,7 @@ class DirectorsApprovalServiceTest {
     }
 
     private void assertMetaDataSetOnRestObject() {
-        verify(directorsApproval, times(1)).setKind(Kind.APPROVAL.getValue());
+        verify(directorsApproval, times(1)).setKind(Kind.DIRECTORS_REPORT_APPROVAL.getValue());
         verify(directorsApproval, times(1)).setEtag(anyString());
         verify(directorsApproval, times(1)).setLinks(anyMap());
     }

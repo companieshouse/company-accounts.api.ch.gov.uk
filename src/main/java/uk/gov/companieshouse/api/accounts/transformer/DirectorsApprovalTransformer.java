@@ -12,11 +12,11 @@ public class DirectorsApprovalTransformer implements GenericTransformer<Director
     @Override
     public DirectorsApprovalEntity transform(DirectorsApproval entity) {
 
-        DirectorsApprovalDataEntity statementsDataEntity = new DirectorsApprovalDataEntity();
-        BeanUtils.copyProperties(entity, statementsDataEntity);
+        DirectorsApprovalDataEntity directorsApprovalDataEntity = new DirectorsApprovalDataEntity();
+        BeanUtils.copyProperties(entity, directorsApprovalDataEntity);
 
         DirectorsApprovalEntity directorsApprovalEntity = new DirectorsApprovalEntity();
-        directorsApprovalEntity.setData(statementsDataEntity);
+        directorsApprovalEntity.setData(directorsApprovalDataEntity);
 
         return directorsApprovalEntity;
     }

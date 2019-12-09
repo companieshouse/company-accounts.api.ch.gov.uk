@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.Directors
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,9 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorsApprovalTransformerTest {
 
-    public static final String ETAG = "etag";
-    public static final String KIND = "kind";
-    public static final String NAME = "name";
+    private static final String ETAG = "etag";
+    private static final String KIND = "kind";
+    private static final String NAME = "name";
+    private static final LocalDate DATE = LocalDate.of(2019, 10, 1);
+
 
     private DirectorsApprovalTransformer directorsApprovalTransformer = new DirectorsApprovalTransformer();
 
@@ -44,6 +47,7 @@ class DirectorsApprovalTransformerTest {
         directorsApproval.setEtag(ETAG);
         directorsApproval.setKind(KIND);
         directorsApproval.setName(NAME);
+        directorsApproval.setDate(DATE);
         directorsApproval.setLinks(new HashMap<>());
 
         DirectorsApprovalEntity directorsApprovalEntity = directorsApprovalTransformer
@@ -55,7 +59,9 @@ class DirectorsApprovalTransformerTest {
         assertEquals(ETAG, directorsApprovalDataEntity.getEtag());
         assertEquals(KIND, directorsApprovalDataEntity.getKind());
         assertEquals(NAME, directorsApprovalDataEntity.getName());
+        assertEquals(DATE, directorsApprovalEntity.getData().getDate());
         assertEquals(new HashMap<>(), directorsApprovalDataEntity.getLinks());
+        assertNotNull(directorsApprovalEntity.getData());
     }
 
     @Test
@@ -67,6 +73,7 @@ class DirectorsApprovalTransformerTest {
         directorsApprovalDataEntity.setEtag(ETAG);
         directorsApprovalDataEntity.setKind(KIND);
         directorsApprovalDataEntity.setName(NAME);
+        directorsApprovalDataEntity.setDate(DATE);
         directorsApprovalDataEntity.setLinks(new HashMap<>());
         directorsApprovalEntity.setData(directorsApprovalDataEntity);
 
@@ -76,6 +83,7 @@ class DirectorsApprovalTransformerTest {
         assertEquals(ETAG, directorsApproval.getEtag());
         assertEquals(KIND, directorsApproval.getKind());
         assertEquals(NAME, directorsApproval.getName());
+        assertEquals(DATE, directorsApproval.getDate());
         assertEquals(new HashMap<>(), directorsApproval.getLinks());
     }
 }

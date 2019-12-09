@@ -24,8 +24,7 @@ public enum ResourceName {
     PROFIT_LOSS("profit-and-loss"),
     DIRECTORS_REPORT("directors-report"),
     DIRECTORS("directors"),
-    SECRETARY("secretary"),
-    DIRECTORS_REPORT_APPROVAL("directors-report-approval");
+    SECRETARY("secretary");
 
     private String name;
 
