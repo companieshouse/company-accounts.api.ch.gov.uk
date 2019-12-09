@@ -32,14 +32,29 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
     private DirectorsReportTransformer directorsReportTransformer;
     private KeyIdGenerator keyIdGenerator;
     private SmallFullService smallFullService;
+    private DirectorService directorService;
+    private SecretaryService secretaryService;
+    private StatementsService statementsService;
+    private DirectorsApprovalService directorsApprovalService;
 
     @Autowired
-    public DirectorsReportServiceImpl(
-            DirectorsReportRepository directorsReportRepository, DirectorsReportTransformer directorsReportTransformer, KeyIdGenerator keyIdGenerator, SmallFullService smallFullService) {
+    public DirectorsReportServiceImpl(DirectorsReportRepository directorsReportRepository,
+                                      DirectorsReportTransformer directorsReportTransformer,
+                                      KeyIdGenerator keyIdGenerator,
+                                      SmallFullService smallFullService,
+                                      DirectorService directorService,
+                                      SecretaryService secretaryService,
+                                      StatementsService statementsService,
+                                      DirectorsApprovalService directorsApprovalService) {
+
         this.directorsReportRepository = directorsReportRepository;
         this.directorsReportTransformer = directorsReportTransformer;
         this.keyIdGenerator = keyIdGenerator;
         this.smallFullService = smallFullService;
+        this.directorService = directorService;
+        this.secretaryService = secretaryService;
+        this.statementsService = statementsService;
+        this.directorsApprovalService = directorsApprovalService;
     }
 
     @Override
@@ -89,7 +104,13 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
     @Override
     public ResponseObject<DirectorsReport> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
+
         String reportId = generateID(companyAccountsId);
+
+        directorService.deleteAll(request.getRequestURI() + "/directors", request);
+        secretaryService.delete(companyAccountsId, request);
+        statementsService.delete(companyAccountsId, request);
+        directorsApprovalService.delete(companyAccountsId, request);
 
         try {
             if (directorsReportRepository.existsById(reportId)) {
