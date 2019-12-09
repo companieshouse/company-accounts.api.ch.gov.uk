@@ -35,6 +35,7 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
     private DirectorService directorService;
     private SecretaryService secretaryService;
     private StatementsService statementsService;
+    private DirectorsApprovalService directorsApprovalService;
 
     @Autowired
     public DirectorsReportServiceImpl(DirectorsReportRepository directorsReportRepository,
@@ -43,7 +44,8 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
                                       SmallFullService smallFullService,
                                       DirectorService directorService,
                                       SecretaryService secretaryService,
-                                      StatementsService statementsService) {
+                                      StatementsService statementsService,
+                                      DirectorsApprovalService directorsApprovalService) {
 
         this.directorsReportRepository = directorsReportRepository;
         this.directorsReportTransformer = directorsReportTransformer;
@@ -52,6 +54,7 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
         this.directorService = directorService;
         this.secretaryService = secretaryService;
         this.statementsService = statementsService;
+        this.directorsApprovalService = directorsApprovalService;
     }
 
     @Override
@@ -107,6 +110,7 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
         directorService.deleteAll(request.getRequestURI() + "/directors", request);
         secretaryService.delete(companyAccountsId, request);
         statementsService.delete(companyAccountsId, request);
+        directorsApprovalService.delete(companyAccountsId, request);
 
         try {
             if (directorsReportRepository.existsById(reportId)) {
