@@ -79,6 +79,7 @@ public class DirectorServiceTest {
     private static final String DIRECTOR_ID = "directorId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String DIRECTOR_SELF_LINK = "directorSelfLink";
+    private static final String COMMON_IDENTIFIER = "commonIdentifier";
 
     private static final String URI = "/transactions/transactionId/company-accounts/" +
                                         COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
@@ -245,6 +246,25 @@ public class DirectorServiceTest {
         assertRepositoryFindByIdCalled();
     }
 
+//    @Test
+//    @DisplayName("Tests the successful retrieval of all directors")
+//    void getAllDirectors() throws DataException {
+//
+//        DirectorEntity[] entities = new DirectorEntity[0];
+//        Director[] directors = new Director[0];
+//
+//        when(repository.findAllDirectors(COMMON_IDENTIFIER)).thenReturn(entities);
+//
+//        when(transformer.transform(entities)).thenReturn(directors);
+//
+//        ResponseObject<Director> response = directorService.findAll(COMMON_IDENTIFIER, request);
+//
+//        assertRepositoryFindAllCalled();
+//        assertEquals(ResponseStatus.FOUND, response.getStatus());
+//        assertEquals(directors, response.getData());
+//
+//    }
+
     @Test
     @DisplayName("Tests the successful deletion of a director resource")
     void deleteDirectorSuccess() throws DataException {
@@ -316,6 +336,8 @@ public class DirectorServiceTest {
     private void assertRepositoryFindByIdCalled() {
         verify(repository, times(1)).findById(DIRECTOR_ID);
     }
+
+    private void assertRepositoryFindAllCalled() { verify(repository, times(1)).findAllDirectors(COMMON_IDENTIFIER); }
 
     private void assertRepositoryDeleteByIdCalled() {
         verify(repository, times(1)).deleteById(DIRECTOR_ID);
