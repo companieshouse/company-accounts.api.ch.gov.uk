@@ -46,7 +46,7 @@ public class SecretaryService implements ResourceService<Secretary> {
 
         String secretaryId = generateID(companyAccountId);
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, secretaryId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         SecretaryEntity entity = transformer.transform(rest);
 
@@ -74,7 +74,7 @@ public class SecretaryService implements ResourceService<Secretary> {
 
         String secretaryId = generateID(companyAccountId);
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, secretaryId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         SecretaryEntity entity = transformer.transform(rest);
         entity.setId(secretaryId);
@@ -133,9 +133,9 @@ public class SecretaryService implements ResourceService<Secretary> {
         }
     }
 
-    private void setMetadataOnRestObject(Secretary rest, Transaction transaction, String companyAccountsId, String secretaryId) {
+    private void setMetadataOnRestObject(Secretary rest, Transaction transaction, String companyAccountsId) {
 
-        rest.setLinks(createLinks(transaction, companyAccountsId, secretaryId));
+        rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT_SECRETARY.getValue());
     }
@@ -154,7 +154,7 @@ public class SecretaryService implements ResourceService<Secretary> {
                 + ResourceName.SECRETARY.getName();
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String secretaryId) {
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));

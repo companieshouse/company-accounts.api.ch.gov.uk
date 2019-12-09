@@ -47,7 +47,7 @@ public class StatementsService implements ResourceService<Statements> {
 
         String statementsId = generateID(companyAccountId);
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, statementsId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         StatementsEntity entity = transformer.transform(rest);
 
@@ -76,7 +76,7 @@ public class StatementsService implements ResourceService<Statements> {
 
         String statementsId = generateID(companyAccountId);
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, statementsId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId);
 
         StatementsEntity entity = transformer.transform(rest);
         entity.setId(statementsId);
@@ -137,9 +137,9 @@ public class StatementsService implements ResourceService<Statements> {
         }
     }
 
-    private void setMetadataOnRestObject(Statements rest, Transaction transaction, String companyAccountsId, String statementsId) {
+    private void setMetadataOnRestObject(Statements rest, Transaction transaction, String companyAccountsId) {
 
-        rest.setLinks(createLinks(transaction, companyAccountsId, statementsId));
+        rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT_STATEMENTS.getValue());
     }
@@ -158,7 +158,7 @@ public class StatementsService implements ResourceService<Statements> {
                 + ResourceName.STATEMENTS.getName();
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String statementsId) {
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
