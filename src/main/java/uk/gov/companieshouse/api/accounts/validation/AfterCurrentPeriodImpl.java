@@ -25,7 +25,7 @@ public class AfterCurrentPeriodImpl implements ConstraintValidator<AfterCurrentP
         CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         LocalDate periodEnd = companyAccount.getNextAccounts().getPeriodEndOn();
 
-        return date.isBefore(periodEnd) && date.isEqual(periodEnd);
+        return date.isAfter(periodEnd);
 
     }
 

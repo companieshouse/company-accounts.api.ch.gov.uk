@@ -1,9 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
@@ -14,14 +12,12 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
 public class DirectorsApprovalValidator extends BaseValidator{
 
     private static final String APPROVAL_PATH = "$.approval";
-    private static final String DATE_PATH = APPROVAL_PATH + ".date";
     private static final String APPROVAL_NAME = APPROVAL_PATH + ".name";
 
     @Autowired
@@ -34,12 +30,6 @@ public class DirectorsApprovalValidator extends BaseValidator{
                                    String companyAccountId, HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
-
-        CompanyAccount companyAccount = (CompanyAccount) request
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-
-        LocalDate periodEndDate = companyAccount.getNextAccounts().getPeriodEndOn();
-        LocalDate approvalDate = directorsApproval.getDate();
 
         ResponseObject<Secretary> secretaryResponseObject = secretaryService.find(companyAccountId, request);
 
@@ -55,12 +45,12 @@ public class DirectorsApprovalValidator extends BaseValidator{
                 .orElse(null);
 
         if(secretary != null || directors != null) {
-            if(!secretary.equals(directorsApproval.getName()) &&
+            if (!secretary.equals(directorsApproval.getName()) &&
                     !Arrays.stream(directors).anyMatch(directorsApproval.getName()::equals)) {
                 addError(errors, valueRequired, APPROVAL_NAME);
+
             }
         }
-
         return errors;
     }
 }

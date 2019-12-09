@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = AfterCurrentPeriodImpl.class)
 public @interface AfterCurrentPeriod {
 
-    String message() default "{date.before.currentPeriod}";
+    String message() default "{date.invalid}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
