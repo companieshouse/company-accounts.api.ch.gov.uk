@@ -71,7 +71,7 @@ class AfterCurrentPeriodImplTest {
     }
 
     @Test
-    @DisplayName("AfterCurrentPeriod - date equals period start")
+    @DisplayName("AfterCurrentPeriod - date equals period end")
     void afterCurrentPeriodDateEqualsPeriodStart() {
 
         when(request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue())).thenReturn(companyAccount);

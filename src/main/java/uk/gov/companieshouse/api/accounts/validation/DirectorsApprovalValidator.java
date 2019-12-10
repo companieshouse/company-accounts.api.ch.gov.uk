@@ -13,13 +13,15 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class DirectorsApprovalValidator extends BaseValidator{
 
-    private static final String APPROVAL_PATH = "$.directors_report.approval";
+    private static final String APPROVAL_PATH = "$.directors_approval";
     private static final String APPROVAL_NAME = APPROVAL_PATH + ".name";
 
     @Autowired
@@ -46,11 +48,20 @@ public class DirectorsApprovalValidator extends BaseValidator{
                 .map(ResponseObject::getDataForMultipleResources)
                 .orElse(null);
 
-        if(secretary != null || directors != null) {
-            if ((secretary != null && !secretary.equals(directorsApproval.getName())) &&
-                    (directors != null && !Arrays.stream(directors).anyMatch(directorsApproval.getName()::equals))) {
+        if (secretary != null || directors != null) {
 
-                addError(errors, valueRequired, APPROVAL_NAME);
+            List<String> allNames = new ArrayList<>();
+            if (directors != null) {
+                Arrays.stream(directors).forEach(director -> allNames.add(director.getName()));
+            }
+
+            if (secretary != null) {
+                allNames.add(secretary);
+            }
+
+            if (!allNames.contains(directorsApproval.getName())) {
+
+                addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
             }
         }
 

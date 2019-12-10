@@ -31,14 +31,6 @@ import static org.mockito.Mockito.when;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorsApprovalValidatorTest {
 
-    private DirectorsApproval directorsApproval;
-
-    private Errors errors;
-
-    private Secretary secretary;
-
-    private Director[] directors;
-
     @Mock
     private Transaction transaction;
 
@@ -55,22 +47,23 @@ class DirectorsApprovalValidatorTest {
     private DirectorsApprovalValidator validator;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";
-    private static final String VALUE_REQUIRED = "value_required";
-    private static final String VALUE_REQUIRED_KEY = "valueRequired";
-    private static final String NAME = "name";
-    private static final String INVALID_NAME = "invalidName";
+    private static final String MUST_MATCH_DIRECTOR_OR_SECRETARY = "must_match_director_or_secretary";
+    private static final String MUST_MATCH_DIRECTOR_OR_SECRETARY_KEY = "mustMatchDirectorOrSecretary";
+    private static final String SECRETARY_NAME = "secretaryName";
+    private static final String DIRECTOR_NAME = "directorName";
+    private static final String OTHER_NAME = "otherName";
+
 
     @Test
     @DisplayName("Validate with a valid approval name ")
     void validateApprovalWithValidName() throws DataException {
 
-        directorsApproval = new DirectorsApproval();
-        directorsApproval.setName(NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(OTHER_NAME);
 
         when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
         when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
     }
 
@@ -78,16 +71,12 @@ class DirectorsApprovalValidatorTest {
     @DisplayName("Validate with a valid secretary approval name ")
     void validateApprovalWhenSecretaryIsNotNullAndNameMatches() throws DataException {
 
-        directorsApproval = new DirectorsApproval();
-        directorsApproval.setName(NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(SECRETARY_NAME);
 
-        Secretary secretary = new Secretary();
-        secretary.setName(NAME);
-
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createSecretary()));
         when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
     }
 
@@ -95,28 +84,30 @@ class DirectorsApprovalValidatorTest {
     @DisplayName("Validate with a invalid secretary approval name ")
     void validateApprovalWhenSecretaryIsNotNullAndNameDoesNotMatch() throws DataException {
 
-        createDirectorsAndSecretary(INVALID_NAME);
+       DirectorsApproval directorsApproval = createDirectorsApproval(OTHER_NAME);
 
-        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+        ReflectionTestUtils.setField(validator, MUST_MATCH_DIRECTOR_OR_SECRETARY_KEY, MUST_MATCH_DIRECTOR_OR_SECRETARY);
 
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, directors));
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createSecretary()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.directors_report.approval.name")));
+        assertTrue(errors.containsError(createError(MUST_MATCH_DIRECTOR_OR_SECRETARY, "$.directors_approval.name")));
     }
 
     @Test
     @DisplayName("Validate with a valid directors approval name ")
     void validateApprovalWhenDirectorIsNotNullAndNameMatches() throws DataException {
 
-        createDirectorsAndSecretary(NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(DIRECTOR_NAME);
 
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        ReflectionTestUtils.setField(validator, MUST_MATCH_DIRECTOR_OR_SECRETARY_KEY, MUST_MATCH_DIRECTOR_OR_SECRETARY);
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
     }
 
@@ -124,28 +115,28 @@ class DirectorsApprovalValidatorTest {
     @DisplayName("Validate with a invalid directors approval name ")
     void validateApprovalWhenDirectorsIsNotNullAndNameDoesNotMatch() throws DataException {
 
-        createDirectorsAndSecretary(INVALID_NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(OTHER_NAME);
 
-        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+        ReflectionTestUtils.setField(validator, MUST_MATCH_DIRECTOR_OR_SECRETARY_KEY, MUST_MATCH_DIRECTOR_OR_SECRETARY);
 
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, directors));
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.directors_report.approval.name")));
+        assertTrue(errors.containsError(createError(MUST_MATCH_DIRECTOR_OR_SECRETARY, "$.directors_approval.name")));
     }
 
     @Test
     @DisplayName("Validate with a valid secretary or directors approval name ")
     void validateApprovalWhenSecretaryOrDirectorsIsNotNullAndNameMatches() throws DataException {
 
-        createDirectorsAndSecretary(NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(DIRECTOR_NAME);
 
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createSecretary()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
     }
 
@@ -153,28 +144,40 @@ class DirectorsApprovalValidatorTest {
     @DisplayName("Validate with a invalid directors or secretary approval name ")
     void validateApprovalWhenDirectorsOrSecretaryIsNotNullAndNameDoesNotMatch() throws DataException {
 
-        createDirectorsAndSecretary(INVALID_NAME);
+        DirectorsApproval directorsApproval = createDirectorsApproval(OTHER_NAME);
 
-        ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
+        ReflectionTestUtils.setField(validator, MUST_MATCH_DIRECTOR_OR_SECRETARY_KEY, MUST_MATCH_DIRECTOR_OR_SECRETARY);
 
-        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, secretary));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, directors));
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createSecretary()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
 
-        errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.directors_report.approval.name")));
+        assertTrue(errors.containsError(createError(MUST_MATCH_DIRECTOR_OR_SECRETARY, "$.directors_approval.name")));
     }
 
-    private void createDirectorsAndSecretary(String name) {
+    private Director[] createDirectors() {
 
-        directorsApproval = new DirectorsApproval();
-        directorsApproval.setName(NAME);
-        errors = new Errors();
-        directors = new Director[1];
+        Director[] directors = new Director[1];
         directors[0] = new Director();
-        directors[0].setName(name);
-        secretary = new Secretary();
-        secretary.setName(name);
+        directors[0].setName(DIRECTOR_NAME);
+
+        return directors;
+    }
+
+    private Secretary createSecretary() {
+
+        Secretary secretary = new Secretary();
+        secretary.setName(SECRETARY_NAME);
+
+        return secretary;
+    }
+
+    private DirectorsApproval createDirectorsApproval(String name) {
+
+        DirectorsApproval directorsApproval = new DirectorsApproval();
+        directorsApproval.setName(name);
+        return directorsApproval;
     }
 
     private Error createError(String error, String path) {
