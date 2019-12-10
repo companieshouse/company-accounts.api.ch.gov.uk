@@ -7,7 +7,8 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 
 @Component
-public class DirectorTransformer implements GenericTransformer<Director, DirectorEntity> {
+public class DirectorTransformer implements
+        GenericTransformerForMultipleResources<Director, DirectorEntity> {
 
     @Override
     public DirectorEntity transform(Director entity) {
@@ -28,5 +29,17 @@ public class DirectorTransformer implements GenericTransformer<Director, Directo
         BeanUtils.copyProperties(entity.getData(), director);
 
         return director;
+    }
+
+    @Override
+    public Director[] transform(DirectorEntity[] entity) {
+
+        Director[] directors = new Director[entity.length];
+
+        for (int i = 0; i < entity.length; i++) {
+            directors[i] = transform(entity[i]);
+        }
+
+        return directors;
     }
 }

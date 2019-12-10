@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
-import uk.gov.companieshouse.api.accounts.service.ResourceService;
+import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorTransformer;
@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class DirectorService implements ResourceService<Director> {
+public class DirectorService implements MultipleResourceService<Director> {
 
     private DirectorTransformer transformer;
 
@@ -48,6 +48,8 @@ public class DirectorService implements ResourceService<Director> {
 
     private static final Pattern DIRECTOR_ID_REGEX =
             Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
+
+    private static final String DIRECTORS_LINK = "directors";
 
     @Override
     public ResponseObject<Director> create(Director rest, Transaction transaction,
@@ -120,6 +122,27 @@ public class DirectorService implements ResourceService<Director> {
     }
 
     @Override
+    public ResponseObject<Director> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
+            throws DataException {
+
+        DirectorEntity[] entity;
+
+        try {
+            entity = repository.findAllDirectors(generateDirectorsLink(transaction, companyAccountId));
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+        if (entity.length == 0) {
+            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+        }
+
+        return new ResponseObject<>(ResponseStatus.FOUND, transformer.transform(entity));
+    }
+
+    @Override
     public ResponseObject<Director> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
@@ -143,6 +166,21 @@ public class DirectorService implements ResourceService<Director> {
         }
     }
 
+    @Override
+    public ResponseObject<Director> deleteAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
+            throws DataException {
+
+        try {
+            repository.deleteAllDirectors(generateDirectorsLink(transaction, companyAccountId));
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED);
+    }
+
     private String generateSelfLink(Transaction transaction, String companyAccountId, String directorId) {
 
         return transaction.getLinks().getSelf() + "/"
@@ -153,10 +191,20 @@ public class DirectorService implements ResourceService<Director> {
                 + directorId;
     }
 
+    private String generateDirectorsLink(Transaction transaction, String companyAccountId) {
+
+        return transaction.getLinks().getSelf() + "/"
+                + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
+                + ResourceName.SMALL_FULL.getName() + "/"
+                + ResourceName.DIRECTORS_REPORT.getName() + "/"
+                + ResourceName.DIRECTORS.getName();
+    }
+
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String directorId) {
 
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, directorId));
+        map.put(DIRECTORS_LINK, generateDirectorsLink(transaction, companyAccountsId));
         return map;
     }
 

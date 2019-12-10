@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -28,19 +29,29 @@ import java.util.Map;
 @Service
 public class DirectorsReportServiceImpl implements ParentService<DirectorsReport, DirectorsReportLinkType>, DirectorsReportService {
 
+    @Autowired
     private DirectorsReportRepository directorsReportRepository;
+
+    @Autowired
     private DirectorsReportTransformer directorsReportTransformer;
+
+    @Autowired
     private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
     private SmallFullService smallFullService;
 
     @Autowired
-    public DirectorsReportServiceImpl(
-            DirectorsReportRepository directorsReportRepository, DirectorsReportTransformer directorsReportTransformer, KeyIdGenerator keyIdGenerator, SmallFullService smallFullService) {
-        this.directorsReportRepository = directorsReportRepository;
-        this.directorsReportTransformer = directorsReportTransformer;
-        this.keyIdGenerator = keyIdGenerator;
-        this.smallFullService = smallFullService;
-    }
+    private DirectorService directorService;
+
+    @Autowired
+    private SecretaryService secretaryService;
+
+    @Autowired
+    private StatementsService statementsService;
+
+    @Autowired
+    private DirectorsApprovalService directorsApprovalService;
 
     @Override
     public ResponseObject<DirectorsReport> create(DirectorsReport rest, Transaction transaction, String companyAccountsId, HttpServletRequest request)
@@ -89,7 +100,16 @@ public class DirectorsReportServiceImpl implements ParentService<DirectorsReport
     @Override
     public ResponseObject<DirectorsReport> delete(String companyAccountsId, HttpServletRequest request)
             throws DataException {
+
         String reportId = generateID(companyAccountsId);
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        directorService.deleteAll(transaction, companyAccountsId, request);
+        secretaryService.delete(companyAccountsId, request);
+        statementsService.delete(companyAccountsId, request);
+        directorsApprovalService.delete(companyAccountsId, request);
 
         try {
             if (directorsReportRepository.existsById(reportId)) {

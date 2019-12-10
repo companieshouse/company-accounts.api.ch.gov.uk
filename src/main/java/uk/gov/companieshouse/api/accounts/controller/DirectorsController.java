@@ -88,6 +88,29 @@ public class DirectorsController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity getAll(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+            ResponseObject<Director> response = directorService
+                    .findAll(transaction, companyAccountId, request);
+
+            return apiResponseMapper.mapGetResponseForMultipleResources(response.getDataForMultipleResources(), request);
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve Directors", ex, request);
+            return apiResponseMapper.getErrorResponse();
+        }
+
+
+    }
+
     @PutMapping("/{directorId}")
     public ResponseEntity update(@Valid @RequestBody Director director, BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId, @PathVariable("directorId") String directorId,
