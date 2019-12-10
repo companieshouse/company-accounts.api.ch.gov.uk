@@ -45,8 +45,8 @@ public class DirectorsApprovalValidator extends BaseValidator{
                 .orElse(null);
 
         if(secretary != null || directors != null) {
-            if (!secretary.equals(directorsApproval.getName()) &&
-                    !Arrays.stream(directors).anyMatch(directorsApproval.getName()::equals)) {
+            if ((secretary != null && !secretary.equals(directorsApproval.getName())) &&
+                    (directors != null && !Arrays.stream(directors).anyMatch(directorsApproval.getName()::equals))) {
 
                 addError(errors, valueRequired, APPROVAL_NAME);
             }
