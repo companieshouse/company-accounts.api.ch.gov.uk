@@ -47,10 +47,11 @@ public class DirectorsApprovalValidator extends BaseValidator{
         if(secretary != null || directors != null) {
             if (!secretary.equals(directorsApproval.getName()) &&
                     !Arrays.stream(directors).anyMatch(directorsApproval.getName()::equals)) {
-                addError(errors, valueRequired, APPROVAL_NAME);
 
+                addError(errors, valueRequired, APPROVAL_NAME);
             }
         }
+
         return errors;
     }
 }
