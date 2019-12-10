@@ -22,6 +22,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorsApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.DirectorsApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -80,6 +81,9 @@ class DirectorsApprovalServiceTest {
     private KeyIdGenerator keyIdGenerator;
 
     @Mock
+    private DirectorsApprovalValidator validator;
+
+    @Mock
     private Errors errors;
 
     @InjectMocks
@@ -95,6 +99,9 @@ class DirectorsApprovalServiceTest {
     @DisplayName("Tests the successful creation of an directors approval resource")
     public void canCreateADirectorsApproval() throws DataException {
 
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
         when(directorsApprovalTransformer.transform(directorsApproval)).thenReturn(directorsApprovalEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -109,6 +116,10 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a directors approval resource")
     public void createDirectorsApprovalDuplicateKey() throws DataException {
+
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
         doReturn(directorsApprovalEntity).when(directorsApprovalTransformer).transform(any(DirectorsApproval.class));
         when(directorsApprovalRepository.insert(directorsApprovalEntity)).thenThrow(duplicateKeyException);
 
@@ -124,6 +135,10 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating an directors approval")
     void createDirectorsApprovalMongoExceptionFailure() throws DataException {
+
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
         doReturn(directorsApprovalEntity).when(directorsApprovalTransformer).transform(any(DirectorsApproval.class));
         when(directorsApprovalRepository.insert(directorsApprovalEntity)).thenThrow(mongoException);
 
@@ -132,6 +147,22 @@ class DirectorsApprovalServiceTest {
 
         assertThrows(DataException.class,
                 () -> directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Tests the creation of an directors approval resource where validation errors are present")
+    void createDirectorsApprovalWithValidationErrors() throws DataException {
+
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<DirectorsApproval> response =
+                directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(directorsApprovalRepository, never()).insert(any(DirectorsApprovalEntity.class));
+        assertWhetherDirectorsReportServiceCalledaddLink(false);
     }
 
     @Test
@@ -187,6 +218,9 @@ class DirectorsApprovalServiceTest {
     @DisplayName("Tests the successful update of a directors approval resource")
     void updateDirectorsApprovalSuccess() throws DataException {
 
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
@@ -207,8 +241,11 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the update of a directors approval resource where the repository throws a Mongo exception")
-    void updateDirectorsApprovalMongoException() {
+    void updateDirectorsApprovalMongoException() throws DataException {
 
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
@@ -225,6 +262,21 @@ class DirectorsApprovalServiceTest {
         assertMetaDataSetOnRestObject();
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the update of an directors approval resource where validation errors are present")
+    void updateDirectorsApprovalWithValidationErrors() throws DataException {
+
+        when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<DirectorsApproval> response =
+                directorsApprovalService.update(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        verify(directorsApprovalRepository, never()).save(any(DirectorsApprovalEntity.class));
     }
 
     @Test
@@ -305,5 +357,11 @@ class DirectorsApprovalServiceTest {
                 .removeLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.APPROVAL, request);
     }
 
+    private void assertWhetherDirectorsReportServiceCalledaddLink(boolean isServiceExpected) throws DataException {
+
+        VerificationMode timesExpected = isServiceExpected ? times(1) : never();
+        verify(directorsReportService, timesExpected)
+                .addLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.APPROVAL, SELF_LINK, request);
+    }
 
 }

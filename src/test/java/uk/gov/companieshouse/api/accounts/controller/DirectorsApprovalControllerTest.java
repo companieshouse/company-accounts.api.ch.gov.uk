@@ -9,11 +9,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -48,6 +50,9 @@ class DirectorsApprovalControllerTest {
     private DirectorsApproval directorsApproval;
 
     @Mock
+    private Errors errors;
+
+    @Mock
     private DirectorsApprovalService directorsApprovalService;
 
     @Mock
@@ -58,6 +63,9 @@ class DirectorsApprovalControllerTest {
 
     @Mock
     private DirectorsReport directorsReport;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @Mock
     private Map<String, String> directorsReportLink;
@@ -86,7 +94,7 @@ class DirectorsApprovalControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response = directorsApprovalController
-                .create(directorsApproval, COMPANY_ACCOUNTS_ID, request);
+                .create(directorsApproval, bindingResult,  COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -103,7 +111,7 @@ class DirectorsApprovalControllerTest {
                 .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
 
         ResponseEntity response = directorsApprovalController
-                .create(directorsApproval, "", request);
+                .create(directorsApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         verify(directorsApprovalService, times(1)).create(any(), any(), any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
@@ -128,6 +136,21 @@ class DirectorsApprovalControllerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(directorsApproval, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the creation of a directors approval resource when binding result errors are present")
+    void createDirectorsApprovalBindingResultErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                directorsApprovalController.create(directorsApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errors, response.getBody());
     }
 
     @Test
@@ -160,7 +183,7 @@ class DirectorsApprovalControllerTest {
         when(directorsReportLink.get(DirectorsReportLinkType.APPROVAL.getLink())).thenReturn(null);
 
         ResponseEntity responseEntity =
-                directorsApprovalController.update(directorsApproval,
+                directorsApprovalController.update(directorsApproval, bindingResult,
                         COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
@@ -184,7 +207,7 @@ class DirectorsApprovalControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                directorsApprovalController.update(directorsApproval,
+                directorsApprovalController.update(directorsApproval, bindingResult,
                         COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -206,12 +229,27 @@ class DirectorsApprovalControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity returnedResponse =
-                directorsApprovalController.update(directorsApproval,
+                directorsApprovalController.update(directorsApproval, bindingResult,
                         COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the update of an directors approval resource when binding result errors are present")
+    void updateDirectorsApprovalBindingResultErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                directorsApprovalController.update(directorsApproval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errors, response.getBody());
     }
 
     @Test

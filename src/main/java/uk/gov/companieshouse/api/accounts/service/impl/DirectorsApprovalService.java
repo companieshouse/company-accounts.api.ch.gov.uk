@@ -12,12 +12,14 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorsApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.DirectorsApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.DirectorsApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.DirectorsApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,18 +33,26 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
     private DirectorsApprovalRepository directorsApprovalRepository;
     private DirectorsReportServiceImpl directorsReportService;
     private KeyIdGenerator keyIdGenerator;
+    private DirectorsApprovalValidator directorsApprovalValidator;
 
 
     @Autowired
-    public DirectorsApprovalService(DirectorsApprovalTransformer transformer, DirectorsApprovalRepository directorsApprovalRepository, DirectorsReportServiceImpl directorsReportService, KeyIdGenerator keyIdGenerator) {
+    public DirectorsApprovalService(DirectorsApprovalTransformer transformer, DirectorsApprovalRepository directorsApprovalRepository, DirectorsReportServiceImpl directorsReportService, KeyIdGenerator keyIdGenerator, DirectorsApprovalValidator directorsApprovalValidator) {
         this.transformer = transformer;
         this.directorsApprovalRepository = directorsApprovalRepository;
         this.directorsReportService = directorsReportService;
         this.keyIdGenerator = keyIdGenerator;
+        this.directorsApprovalValidator = directorsApprovalValidator;
     }
 
     @Override
     public ResponseObject<DirectorsApproval> create(DirectorsApproval rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = directorsApprovalValidator.validateApproval(rest, transaction, companyAccountId, request);
+
+        if(errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         String directorApprovalID = generateID(companyAccountId);
 
@@ -71,6 +81,11 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
     @Override
     public ResponseObject<DirectorsApproval> update(DirectorsApproval rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
+        Errors errors = directorsApprovalValidator.validateApproval(rest, transaction, companyAccountId, request);
+
+        if(errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
         String directorApprovalID = generateID(companyAccountId);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);

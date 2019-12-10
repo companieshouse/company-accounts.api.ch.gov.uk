@@ -31,6 +31,9 @@ public class BaseValidator {
     @Value("${value.required}")
     protected String valueRequired;
 
+    @Value("${mustMatch.directorOrSecretary}")
+    protected String mustMatchDirectorOrSecretary;
+
     /**
      * Validate the given total is correctly aggregated
      *
