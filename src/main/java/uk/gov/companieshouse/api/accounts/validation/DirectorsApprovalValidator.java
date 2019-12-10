@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
@@ -15,9 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Optional;
 
+@Component
 public class DirectorsApprovalValidator extends BaseValidator{
 
-    private static final String APPROVAL_PATH = "$.approval";
+    private static final String APPROVAL_PATH = "$.directors_report.approval";
     private static final String APPROVAL_NAME = APPROVAL_PATH + ".name";
 
     @Autowired
