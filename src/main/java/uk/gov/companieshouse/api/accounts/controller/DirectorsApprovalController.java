@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.DirectorsReportLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -42,7 +44,14 @@ public class DirectorsApprovalController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid DirectorsApproval directorsApproval,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -59,8 +68,15 @@ public class DirectorsApprovalController {
 
     @PutMapping
     public ResponseEntity update(@Valid @RequestBody DirectorsApproval directorsApproval,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        }
 
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
         if(directorsReport.getLinks().get(DirectorsReportLinkType.APPROVAL.getLink()) == null) {
