@@ -2149,7 +2149,7 @@
 
           {{if isNotEmpty $current_total_members_funds}}
           <td id="total-members-funds-curr-val" class="strong total">
-            <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_members_funds}}</ix:nonFraction>
+            {{emitIfNegative $current_total_members_funds "("}} <ix:nonFraction contextRef="CY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $current_total_members_funds}}</ix:nonFraction>{{emitIfNegative $current_total_members_funds ")"}}
           </td>
           {{else}}
           <td  class="figures">&#160;</td>
@@ -2157,7 +2157,7 @@
 
           {{if isNotEmpty $previous_total_members_funds}}
           <td id="total-members-funds-prev-val" class="total">
-            <ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_total_members_funds}}</ix:nonFraction>
+            {{emitIfNegative $previous_total_members_funds "("}}<ix:nonFraction contextRef="PY_END" decimals="0" unitRef="GBP" name="core:Equity" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $previous_total_members_funds}}</ix:nonFraction>{{emitIfNegative $previous_total_members_funds ")"}}
           </td>
           {{end}}
         </tr>
