@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CurrentPeriodInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.DirectorsReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
@@ -36,7 +37,7 @@ public class CompanyAccountsApplicationTest {
     private CompanyAccountsApplication companyAccountsApplication;
 
     @Mock
-    TransactionInterceptor transactionInterceptor;
+    private TransactionInterceptor transactionInterceptor;
 
     @Mock
     private OpenTransactionInterceptor openTransactionInterceptor;
@@ -60,6 +61,9 @@ public class CompanyAccountsApplicationTest {
     private CicReportInterceptor cicReportInterceptor;
 
     @Mock
+    private DirectorsReportInterceptor directorsReportInterceptor;
+
+    @Mock
     private LoggingInterceptor loggingInterceptor;
 
     @Mock
@@ -67,8 +71,6 @@ public class CompanyAccountsApplicationTest {
 
     @Mock
     private InterceptorRegistration interceptorRegistration;
-
-
 
     @Test
     @DisplayName("Test if interceptors are added correctly")
@@ -87,9 +89,10 @@ public class CompanyAccountsApplicationTest {
         verify(interceptorRegistry, times(1)).addInterceptor(currentPeriodInterceptor);
         verify(interceptorRegistry, times(1)).addInterceptor(previousPeriodInterceptor);
         verify(interceptorRegistry, times(1)).addInterceptor(cicReportInterceptor);
-        verify(interceptorRegistration, times(3)).excludePathPatterns(anyString());
+        verify(interceptorRegistry, times(1)).addInterceptor(directorsReportInterceptor);
+        verify(interceptorRegistration, times(4)).excludePathPatterns(anyString());
         verify(interceptorRegistration, times(6)).addPathPatterns(anyString(),anyString());
-        verify(interceptorRegistration, times(2)).addPathPatterns(anyString());
+        verify(interceptorRegistration, times(3)).addPathPatterns(anyString());
     }
 
 }

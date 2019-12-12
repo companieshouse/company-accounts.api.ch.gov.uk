@@ -52,4 +52,13 @@ public class ApiResponseMapper {
         }
         return ResponseEntity.status(HttpStatus.OK).body(restObject);
     }
+
+    public ResponseEntity mapGetResponseForMultipleResources(RestObject[] restObjects, HttpServletRequest request) {
+        if (restObjects == null) {
+            LogContext logContext = LogHelper.createNewLogContext(request);
+            LOGGER.debugLogContext("Resource not found", logContext);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(restObjects);
+    }
 }

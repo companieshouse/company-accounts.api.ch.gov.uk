@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,11 +34,6 @@ public class ApiResponseMapperTest {
 
     @InjectMocks
     private ApiResponseMapper apiResponseMapper;
-
-    @BeforeEach
-    public void setUp() {
-
-    }
 
     @Test
     @DisplayName("Tests create response")
@@ -90,6 +84,25 @@ public class ApiResponseMapperTest {
     @DisplayName("Tests get mapping response")
     void canMapGetResponseFail() {
         ResponseEntity responseEntity = apiResponseMapper.mapGetResponse(null, request);
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests get mapping response for multiple resources")
+    void canMapGetResponseForMultipleResourcesSuccess() {
+        RestObject[] restObjects = new RestObject[0];
+        ResponseEntity responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(restObjects, request);
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests get mapping response for multiple resources")
+    void canMapGetResponseForMultipleResourcesFail() {
+        ResponseEntity responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(null, request);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());

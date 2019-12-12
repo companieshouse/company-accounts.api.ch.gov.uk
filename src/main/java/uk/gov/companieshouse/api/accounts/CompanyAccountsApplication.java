@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CurrentPeriodInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.DirectorsReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
@@ -43,6 +44,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private CicReportInterceptor cicReportInterceptor;
+
+    @Autowired
+    private DirectorsReportInterceptor directorsReportInterceptor;
 
     @Autowired
     private LoggingInterceptor loggingInterceptor;
@@ -101,5 +105,11 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                     "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**")
             .excludePathPatterns(
                     "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report");
+
+        registry.addInterceptor(directorsReportInterceptor)
+                .addPathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/**")
+                .excludePathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report");
     }
 }

@@ -18,8 +18,6 @@ public class CostServiceImpl implements CostService {
 
     private TransactionService transactionService;
 
-    private YamlResourceMapper yamlResourceMapper;
-
     private Costs costs;
 
     private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
@@ -28,7 +26,6 @@ public class CostServiceImpl implements CostService {
     public CostServiceImpl(TransactionService transactionService, YamlResourceMapper yamlResourceMapper) {
 
         this.transactionService = transactionService;
-        this.yamlResourceMapper = yamlResourceMapper;
         this.costs =
                 yamlResourceMapper
                         .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);

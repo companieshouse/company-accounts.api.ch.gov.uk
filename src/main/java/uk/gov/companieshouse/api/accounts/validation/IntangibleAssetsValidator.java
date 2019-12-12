@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -44,12 +43,6 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
         this.previousPeriodService = previousPeriodService;
 
     }
-
-    @Value("${incorrect.total}")
-    private String incorrectTotal;
-
-    @Value("${value.required}")
-    private String valueRequired;
 
     private static final String INTANGIBLE_NOTE = "$.intangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
