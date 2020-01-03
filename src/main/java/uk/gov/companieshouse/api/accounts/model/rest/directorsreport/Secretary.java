@@ -11,11 +11,10 @@ import javax.validation.constraints.Size;
 public class Secretary extends RestObject {
 
     private static final int MAX_FIELD_LENGTH = 120;
-    private static final int MIN_FIELD_LENGTH = 1;
 
     @NotNull
     @CharSetValid(CharSet.CHARACTER_SET_2)
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @JsonProperty("name")
     private String name;
 
