@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumerator.AccountingPeriod;
 
 import java.beans.PropertyEditorSupport;
 
