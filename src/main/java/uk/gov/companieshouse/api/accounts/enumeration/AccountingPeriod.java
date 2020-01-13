@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.enumerator;
+package uk.gov.companieshouse.api.accounts.enumeration;
 
 import java.util.Arrays;
 

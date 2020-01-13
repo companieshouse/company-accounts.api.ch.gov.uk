@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.enumerator.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
@@ -54,7 +54,7 @@ public class ProfitAndLossController {
     public ResponseEntity create(@Valid @RequestBody ProfitAndLoss profitAndLoss,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request) {
+                                 HttpServletRequest request, AccountingPeriod period) {
 
         if(bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
@@ -66,7 +66,7 @@ public class ProfitAndLossController {
         try {
 
             ResponseObject<ProfitAndLoss> response = profitAndLossService.create(profitAndLoss, transaction,
-                    companyAccountId, request);
+                    companyAccountId, request, period);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -79,12 +79,12 @@ public class ProfitAndLossController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-                              HttpServletRequest request) {
+                              HttpServletRequest request, AccountingPeriod period) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitAndLoss> response = profitAndLossService.find(companyAccountId, request);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.find(companyAccountId, period);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve profit and loss resource",
@@ -120,7 +120,7 @@ public class ProfitAndLossController {
 
         try {
             ResponseObject<ProfitAndLoss> response =
-                    profitAndLossService.update(profitAndLoss, transaction, companyAccountId, request);
+                    profitAndLossService.update(profitAndLoss, transaction, companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -132,12 +132,12 @@ public class ProfitAndLossController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request) {
+                                 HttpServletRequest request, AccountingPeriod period) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request, period);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {

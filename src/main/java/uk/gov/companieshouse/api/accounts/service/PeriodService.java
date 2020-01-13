@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service;
 
-import uk.gov.companieshouse.api.accounts.enumerator.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;

@@ -12,6 +12,7 @@ import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
@@ -64,6 +65,9 @@ public class ProfitAndLossServiceTest {
     private ProfitAndLoss profitAndLoss;
 
     @Mock
+    private AccountingPeriod period;
+
+    @Mock
     private Transaction transaction;
 
     @Mock
@@ -112,7 +116,7 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         assertMetaDataSetOnRestObject(true);
         assertIdGeneratedForDatabaseEntity();
@@ -142,7 +146,7 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         assertMetaDataSetOnRestObject(false);
         assertIdGeneratedForDatabaseEntity();
@@ -174,7 +178,7 @@ public class ProfitAndLossServiceTest {
         when(repository.insert(profitAndLossEntity)).thenThrow(DuplicateKeyException.class);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         assertWhetherSmallFullServiceCalledToAddLink(true,false);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
@@ -203,7 +207,7 @@ public class ProfitAndLossServiceTest {
         when(repository.insert(profitAndLossEntity)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
-                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request));
+                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period));
 
         assertWhetherSmallFullServiceCalledToAddLink(true,false);
     }
@@ -228,7 +232,7 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         assertMetaDataSetOnRestObject(true);
         assertIdGeneratedForDatabaseEntity();
@@ -257,7 +261,7 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         assertMetaDataSetOnRestObject(false);
         assertIdGeneratedForDatabaseEntity();
@@ -288,7 +292,7 @@ public class ProfitAndLossServiceTest {
         when(repository.save(profitAndLossEntity)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
-                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request));
+                profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period));
     }
 
     @Test
@@ -308,7 +312,7 @@ public class ProfitAndLossServiceTest {
         when(transformer.transform(profitAndLossEntity)).thenReturn(profitAndLoss);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.find(COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.find(COMPANY_ACCOUNTS_ID, period);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.FOUND, response.getStatus());
@@ -329,7 +333,7 @@ public class ProfitAndLossServiceTest {
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(null));
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.find(COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.find(COMPANY_ACCOUNTS_ID, period);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -350,7 +354,7 @@ public class ProfitAndLossServiceTest {
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherSmallFullServiceCalledToRemoveLink(true,true);
@@ -372,7 +376,7 @@ public class ProfitAndLossServiceTest {
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherSmallFullServiceCalledToRemoveLink(false,true);
@@ -395,7 +399,7 @@ public class ProfitAndLossServiceTest {
         doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
         assertThrows(DataException.class, () ->
-                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request));
+                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period));
 
         assertWhetherSmallFullServiceCalledToRemoveLink(true,false);
     }
@@ -414,7 +418,7 @@ public class ProfitAndLossServiceTest {
         when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject<ProfitAndLoss> response =
-                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request);
+                profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
 
         verify(repository, never()).deleteById(GENERATED_ID);
         assertWhetherSmallFullServiceCalledToRemoveLink(true, false);
