@@ -211,15 +211,10 @@ public class StatementService implements ResourceService<Statement> {
                 convertDateToString(periodEndOn));
         }
 
-        try {
 
             if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
                 legalStatements.remove(NO_PROFIT_AND_LOSS);
             }
-        } catch (MongoException ex) {
-
-            throw new DataException(ex);
-        }
 
         return legalStatements;
     }
