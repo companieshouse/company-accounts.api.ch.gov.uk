@@ -62,9 +62,6 @@ public class ProfitAndLossControllerTest {
     private HttpServletRequest request;
 
     @Mock
-    private AccountingPeriod period;
-
-    @Mock
     private Transaction transaction;
 
     @Mock
@@ -76,8 +73,8 @@ public class ProfitAndLossControllerTest {
     @Mock
     private PreviousPeriod previousPeriod;
 
-    @Mock
-    private WebDataBinder webDataBinder;
+    //@Mock
+    //private WebDataBinder webDataBinder;
 
     @Mock
     private Map<String, String> links;
@@ -91,6 +88,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Test the successful creation of profit and loss resource")
     void createProfitAndLossSuccess() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -117,6 +116,8 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Test the creation of a profit and loss resource when binding result errors are present")
     void createProfitAndLossBindingResultErrors() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
@@ -131,6 +132,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Tests the creation of a profit and loss reource where the service throws a data exception")
     void createProfitAndLossServiceThrowsDataException() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -156,6 +159,8 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful retrieval of a profit and loss resource")
     void getProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, profitAndLoss);
@@ -177,6 +182,8 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the retrieval of a profit and loss resource where the service throws a data exception")
     void getProfitAndLossServiceThrowsDataException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(profitAndLossService).find(COMPANY_ACCOUNTS_ID, period);
@@ -194,6 +201,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Tests the successful update of a profit and loss resource for current period")
     void updateProfitAndLossCurrentPeriodSuccess() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
 
@@ -226,6 +235,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Tests the successful update of a profit and loss resource for previous period")
     void updateProfitAndLossPreviousPeriodSuccess() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
 
         AccountingPeriod accountingPeriod = AccountingPeriod.PREVIOUS_PERIOD;
 
@@ -340,6 +351,8 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the update of an profit and loss resource where the service throws a data exception")
     void updateProfitLossServiceThrowsDataException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         AccountingPeriod accountingPeriod  = AccountingPeriod.CURRENT_PERIOD;
         when(request.getAttribute(anyString())).thenReturn(currentPeriod).thenReturn(transaction);
         when(currentPeriod.getLinks()).thenReturn(links);
@@ -368,6 +381,8 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful deletion of a profit and loss resource")
     void deleteProfitLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
@@ -388,6 +403,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Tests the deletion of an profit and loss resource where the service throws a data exception")
     void deleteProfitLossServiceThrowsDataException() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 

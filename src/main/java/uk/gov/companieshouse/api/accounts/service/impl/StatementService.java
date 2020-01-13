@@ -169,7 +169,7 @@ public class StatementService implements ResourceService<Statement> {
     private void setMetadataOnRestObject(Statement rest,
         Transaction transaction,
         String companyAccountId,
-        LocalDate periodEndOn) {
+        LocalDate periodEndOn) throws DataException {
 
         rest.setLinks(createSelfLink(transaction, companyAccountId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
@@ -199,7 +199,8 @@ public class StatementService implements ResourceService<Statement> {
      *
      * @return
      */
-    private Map<String, String> getLegalStatements(LocalDate periodEndOn, String companyAccountsId) {
+    private Map<String, String> getLegalStatements(LocalDate periodEndOn, String companyAccountsId)
+            throws DataException {
         Map<String, String> legalStatements = getLegalStatementsFromProperties();
 
         if (legalStatements.containsKey(LEGAL_STATEMENT_SECTION_477_KEY)) {
@@ -211,14 +212,14 @@ public class StatementService implements ResourceService<Statement> {
         }
 
         try {
-                if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
-                    legalStatements.remove(NO_PROFIT_AND_LOSS);
-                }
 
-            } catch (DataException e) {
-
-
+            if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
+                legalStatements.remove(NO_PROFIT_AND_LOSS);
             }
+        } catch (MongoException ex) {
+
+            throw new DataException(ex);
+        }
 
         return legalStatements;
     }

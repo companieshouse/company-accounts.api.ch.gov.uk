@@ -65,9 +65,6 @@ public class ProfitAndLossServiceTest {
     private ProfitAndLoss profitAndLoss;
 
     @Mock
-    private AccountingPeriod period;
-
-    @Mock
     private Transaction transaction;
 
     @Mock
@@ -96,9 +93,12 @@ public class ProfitAndLossServiceTest {
     private static final String PREVIOUS_PERIOD_URI = TRANSACTION_SELF_LINK + "/company-accounts/" +
                                                         COMPANY_ACCOUNTS_ID + "/small-full/previous-period/profit-and-loss";
 
+
     @Test
     @DisplayName("Tests the successful creation of a current period profit and loss resource")
     void createCurrentPeriodProfitAndLossSuccess() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
@@ -106,8 +106,6 @@ public class ProfitAndLossServiceTest {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -130,14 +128,14 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful creation of a previous period profit and loss resource")
     void createPreviousPeriodProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(request.getRequestURI()).thenReturn(PREVIOUS_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -160,6 +158,8 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the creation of a profit and loss resource where the repository throws a duplicate key exception")
     void createProfitAndLossDuplicateKeyException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -167,7 +167,6 @@ public class ProfitAndLossServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -189,6 +188,8 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the creation of a profit and loss resource where the repository throws a Mongo exception")
     void createProfitAndLossMongoException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -196,7 +197,6 @@ public class ProfitAndLossServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -216,6 +216,8 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful update of a current period profit and loss resource")
     void updateCurrentPeriodProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -223,7 +225,6 @@ public class ProfitAndLossServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -245,6 +246,8 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful update of a previous period profit and loss resource")
     void updatePreviousPeriodProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -252,7 +255,6 @@ public class ProfitAndLossServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(request.getRequestURI()).thenReturn(PREVIOUS_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -274,14 +276,14 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the update of a profit and loss resource where the repository throws a Mongo exception")
     void updateProfitAndLossMongoException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
 
         when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
@@ -299,9 +301,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful retrieval of a profit and loss resource")
     void getProfitAndLossSuccess() throws DataException {
 
-
-
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
@@ -323,7 +323,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the retrieval of a non-existent profit and loss resource")
     void getProfitAndLossNotFound() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
@@ -344,7 +344,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful deletion of a current period profit and loss resource")
     void deleteCurrentPeriodProfitAndLossSuccess() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
@@ -366,7 +366,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the successful deletion of a previous period profit and loss resource")
     void deletePreviousPeriodProfitAndLossSuccess() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(PREVIOUS_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.PREVIOUS_PERIOD.getName() + "-" +
@@ -388,7 +388,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the deletion of a profit and loss resource where the repository throws a Mongo exception")
     void deleteProfitAndLossMongoException() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
@@ -408,7 +408,7 @@ public class ProfitAndLossServiceTest {
     @DisplayName("Tests the deletion of a non-existent profit and loss resource")
     void deleteProfitAndLossNotFound() throws DataException {
 
-        when(request.getRequestURI()).thenReturn(CURRENT_PERIOD_URI);
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
