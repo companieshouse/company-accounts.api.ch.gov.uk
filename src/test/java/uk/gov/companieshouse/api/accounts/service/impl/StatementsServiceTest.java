@@ -46,9 +46,6 @@ public class StatementsServiceTest {
     private StatementsTransformer transformer;
 
     @Mock
-    private ProfitAndLossService profitAndLossService;
-
-    @Mock
     private StatementsRepository repository;
 
     @Mock
