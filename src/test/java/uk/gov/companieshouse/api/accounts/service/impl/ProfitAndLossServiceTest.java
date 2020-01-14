@@ -159,6 +159,9 @@ public class ProfitAndLossServiceTest {
                 ResourceName.PROFIT_LOSS.getName()))
                     .thenReturn(GENERATED_ID);
 
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
+
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
@@ -369,9 +372,15 @@ public class ProfitAndLossServiceTest {
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
+
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
 
+        verify(statementService).update(any(Statement.class), eq(transaction), eq(COMPANY_ACCOUNTS_ID), eq(request));
         assertRepositoryDeleteByIdCalled();
         assertWhetherSmallFullServiceCalledToRemoveLink(true,true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
@@ -390,6 +399,9 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
