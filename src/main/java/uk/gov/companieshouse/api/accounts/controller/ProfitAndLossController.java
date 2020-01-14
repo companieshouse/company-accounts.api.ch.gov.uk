@@ -54,7 +54,7 @@ public class ProfitAndLossController {
     public ResponseEntity create(@Valid @RequestBody ProfitAndLoss profitAndLoss,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request, AccountingPeriod period) {
+                                 HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
         if(bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
@@ -66,7 +66,7 @@ public class ProfitAndLossController {
         try {
 
             ResponseObject<ProfitAndLoss> response = profitAndLossService.create(profitAndLoss, transaction,
-                    companyAccountId, request, period);
+                    companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {
@@ -132,12 +132,12 @@ public class ProfitAndLossController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request, AccountingPeriod period) {
+                                 HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request, period);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch (DataException ex) {

@@ -15,7 +15,7 @@ public enum AccountingPeriod {
         return period;
     }
 
-    public static AccountingPeriod  fromString(String period) {
+    public static AccountingPeriod fromString(String period) {
         return Arrays.stream(values())
                 .filter(periodEnum -> periodEnum.getPeriod().equals(period))
                 .findFirst()

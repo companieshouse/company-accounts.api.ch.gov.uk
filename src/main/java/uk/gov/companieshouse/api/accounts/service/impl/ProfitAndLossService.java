@@ -152,8 +152,6 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
 
         String profitLossId = generateID(companyAccountsId, period);
 
-        invalidateStatementsIfExisting(companyAccountsId, request);
-
         try {
             if (profitAndLossRepository.existsById(profitLossId)) {
                 profitAndLossRepository.deleteById(profitLossId);
@@ -164,6 +162,9 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
                     previousPeriodService
                             .removeLink(companyAccountsId, PreviousPeriodLinkType.PROFIT_AND_LOSS, request);
                 }
+
+                invalidateStatementsIfExisting(companyAccountsId, request);
+
                 return new ResponseObject<>(ResponseStatus.UPDATED);
 
             } else {
@@ -217,10 +218,12 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
     private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
         throws DataException {
 
-        Statement statement = new Statement();
-        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
         if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
+
+            Statement statement = new Statement();
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+            statement.setHasAgreedToLegalStatements(false);
 
             statementService.update(statement, transaction, companyAccountId, request);
         }

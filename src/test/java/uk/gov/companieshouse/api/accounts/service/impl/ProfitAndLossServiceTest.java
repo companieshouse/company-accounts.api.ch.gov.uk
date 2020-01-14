@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
@@ -17,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
@@ -34,8 +36,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -66,6 +70,9 @@ public class ProfitAndLossServiceTest {
 
     @Mock
     private ProfitAndLoss profitAndLoss;
+
+    @Mock
+    private Statement statement;
 
     @Mock
     private Transaction transaction;
@@ -116,11 +123,15 @@ public class ProfitAndLossServiceTest {
                 ResourceName.PROFIT_LOSS.getName()))
                     .thenReturn(GENERATED_ID);
 
-        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn()
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
+        verify(statementService).update(any(Statement.class), eq(transaction), eq(COMPANY_ACCOUNTS_ID), eq(request));
         assertMetaDataSetOnRestObject(true);
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryInsertCalled();
