@@ -135,6 +135,32 @@ public class StatementServiceTest {
     }
 
     @Test
+    @DisplayName("Tests the creation of a Statement Resource when profitAndLossService.find returns a NOT FOUND")
+    void creationWhenProfitAndLossNotFound() throws DataException {
+
+        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
+        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.NOT_FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
+
+        ResponseObject<Statement> result =
+                statementService.create(statementMock, transactionMock, "", requestMock);
+
+        assertNotNull(result);
+        assertEquals(responseObject, profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD));
+        assertEquals(statementMock, result.getData());
+        assertFalse(result.getData().getLegalStatements().containsKey("no_profit_and_loss"));
+    }
+
+    @Test
     @DisplayName("Tests the duplicate key when creating a Statement resource")
     void shouldNotCreateStatementHttpDuplicateKeyError() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
