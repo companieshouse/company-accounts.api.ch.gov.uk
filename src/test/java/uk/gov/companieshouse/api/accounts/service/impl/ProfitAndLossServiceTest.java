@@ -198,6 +198,7 @@ public class ProfitAndLossServiceTest {
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
+        verify(statementService, never()).find(COMPANY_ACCOUNTS_ID, request);
         assertWhetherSmallFullServiceCalledToAddLink(true,false);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
@@ -229,6 +230,7 @@ public class ProfitAndLossServiceTest {
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period));
 
         assertWhetherSmallFullServiceCalledToAddLink(true,false);
+        verify(statementService, never()).find(COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
@@ -430,6 +432,7 @@ public class ProfitAndLossServiceTest {
                 profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period));
 
         assertWhetherSmallFullServiceCalledToRemoveLink(true,false);
+        verify(statementService, never()).find(COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
