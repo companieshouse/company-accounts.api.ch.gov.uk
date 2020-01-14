@@ -37,27 +37,24 @@ public class StatementService implements ResourceService<Statement> {
         .ofPattern("d MMMM yyyy");
     private static final String NO_PROFIT_AND_LOSS = "no_profit_and_loss";
 
+    @Autowired
     private StatementTransformer transformer;
-    private StatementRepository statementRepository;
-    private KeyIdGenerator keyIdGenerator;
-    private SmallFullService smallFullService;
-    private StatementsServiceProperties statementsServiceProperties;
-    private ProfitAndLossService profitAndLossService;
 
     @Autowired
-    public StatementService(StatementTransformer transformer,
-        StatementRepository statementRepository,
-        KeyIdGenerator keyIdGenerator,
-        SmallFullService smallFullService,
-        StatementsServiceProperties statementsServiceProperties, ProfitAndLossService profitAndLossService) {
+    private StatementRepository statementRepository;
 
-        this.transformer = transformer;
-        this.statementRepository = statementRepository;
-        this.keyIdGenerator = keyIdGenerator;
-        this.smallFullService = smallFullService;
-        this.statementsServiceProperties = statementsServiceProperties;
-        this.profitAndLossService = profitAndLossService;
-    }
+    @Autowired
+    private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
+    private SmallFullService smallFullService;
+
+    @Autowired
+    private StatementsServiceProperties statementsServiceProperties;
+
+    @Autowired
+    private ProfitAndLossService profitAndLossService;
+
 
     @Override
     public ResponseObject<Statement> create(Statement rest, Transaction transaction,

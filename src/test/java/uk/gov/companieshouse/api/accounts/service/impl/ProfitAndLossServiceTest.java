@@ -53,6 +53,9 @@ public class ProfitAndLossServiceTest {
     private ProfitAndLossRepository repository;
 
     @Mock
+    private StatementService statementService;
+
+    @Mock
     private CurrentPeriodService currentPeriodService;
 
     @Mock
@@ -112,6 +115,8 @@ public class ProfitAndLossServiceTest {
                 ResourceName.CURRENT_PERIOD.getName() + "-" +
                 ResourceName.PROFIT_LOSS.getName()))
                     .thenReturn(GENERATED_ID);
+
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn()
 
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);

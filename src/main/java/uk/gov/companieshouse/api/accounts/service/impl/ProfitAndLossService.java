@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
@@ -13,6 +14,7 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
@@ -31,25 +33,27 @@ import java.util.Map;
 @Service
 public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
 
+    @Autowired
     private ProfitAndLossRepository profitAndLossRepository;
+
+    @Autowired
     private ProfitAndLossTransformer profitAndLossTransformer;
+
+    @Autowired
     private CurrentPeriodService currentPeriodService;
+
+    @Autowired
     private PreviousPeriodService previousPeriodService;
+
+    @Autowired
     private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
     private ProfitAndLossValidator profitLossValidator;
 
     @Autowired
-    public ProfitAndLossService(
-            ProfitAndLossRepository profitAndLossRepository, ProfitAndLossTransformer profitAndLossTransformer,
-            CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService,
-            KeyIdGenerator keyIdGenerator, ProfitAndLossValidator validator) {
-        this.profitAndLossRepository = profitAndLossRepository;
-        this.profitAndLossTransformer = profitAndLossTransformer;
-        this.currentPeriodService = currentPeriodService;
-        this.previousPeriodService = previousPeriodService;
-        this.keyIdGenerator = keyIdGenerator;
-        this.profitLossValidator = validator;
-    }
+    private StatementService statementService;
+
 
 
     @Override
@@ -86,6 +90,9 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
             previousPeriodService
                     .addLink(companyAccountId, PreviousPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         }
+
+        invalidateStatementsIfExisting(companyAccountId, request);
+
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -145,6 +152,8 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
 
         String profitLossId = generateID(companyAccountsId, period);
 
+        invalidateStatementsIfExisting(companyAccountsId, request);
+
         try {
             if (profitAndLossRepository.existsById(profitLossId)) {
                 profitAndLossRepository.deleteById(profitLossId);
@@ -203,5 +212,17 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
     private boolean isCurrentPeriod(AccountingPeriod period) {
 
         return period.equals(AccountingPeriod.CURRENT_PERIOD);
+    }
+
+    private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        Statement statement = new Statement();
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
+
+            statementService.update(statement, transaction, companyAccountId, request);
+        }
     }
 }

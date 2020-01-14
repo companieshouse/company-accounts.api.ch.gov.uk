@@ -79,12 +79,12 @@ public class ProfitAndLossController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-                              HttpServletRequest request, AccountingPeriod period) {
+                              HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<ProfitAndLoss> response = profitAndLossService.find(companyAccountId, period);
+            ResponseObject<ProfitAndLoss> response = profitAndLossService.find(companyAccountId, accountingPeriod);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve profit and loss resource",
