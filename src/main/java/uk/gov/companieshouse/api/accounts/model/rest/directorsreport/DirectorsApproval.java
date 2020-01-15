@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.rest.directorsreport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.PastOrPresent;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.validation.AfterCurrentPeriod;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
@@ -23,6 +24,7 @@ public class DirectorsApproval extends RestObject {
     private String name;
 
     @NotNull
+    @PastOrPresent
     @AfterCurrentPeriod
     @JsonProperty("date")
     private LocalDate date;
