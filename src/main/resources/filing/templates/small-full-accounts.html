@@ -2193,9 +2193,12 @@
       <p>
         <ix:nonNumeric contextRef="CY" name="direp:StatementThatAccountsHaveBeenPreparedInAccordanceWithProvisionsSmallCompaniesRegime">{{$statements.small_companies_regime}}</ix:nonNumeric>
       </p>
+
+      {{if $noProfitAndLoss := $statements.no_profit_and_loss}}
       <p>
-        {{$statements.no_profit_and_loss}}
+        {{$noProfitAndLoss}}
       </p>
+      {{end}}
 
       {{end}}
 
