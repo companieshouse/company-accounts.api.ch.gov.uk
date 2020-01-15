@@ -141,6 +141,41 @@ public class ProfitAndLossServiceTest {
     }
 
     @Test
+    @DisplayName("Tests creation of current period profit and loss when statementService is not found")
+    void createCurrentPeriodWhenStatementIsNotFound() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
+        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+                .thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(transformer.transform(profitAndLoss)).thenReturn(profitAndLossEntity);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" +
+                ResourceName.CURRENT_PERIOD.getName() + "-" +
+                ResourceName.PROFIT_LOSS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.NOT_FOUND);
+        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
+
+        ResponseObject<ProfitAndLoss> response =
+                profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
+
+        assertEquals(responseObject, statementService.find(COMPANY_ACCOUNTS_ID, request));
+        assertMetaDataSetOnRestObject(true);
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherSmallFullServiceCalledToAddLink(true, true);
+        assertEquals(ResponseStatus.CREATED, response.getStatus());
+        assertEquals(profitAndLoss, response.getData());
+
+    }
+
+    @Test
     @DisplayName("Tests the successful creation of a previous period profit and loss resource")
     void createPreviousPeriodProfitAndLossSuccess() throws DataException {
 
