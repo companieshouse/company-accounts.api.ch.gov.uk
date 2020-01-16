@@ -5,17 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
-import uk.gov.companieshouse.api.accounts.service.ResourceService;
+import uk.gov.companieshouse.api.accounts.service.PeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.ProfitAndLossTransformer;
@@ -26,37 +29,36 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @Service
-public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
+public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
 
-    private static final Pattern CURRENT_PERIOD_PATTERN =
-            Pattern.compile("/transactions/[^/].*/company-accounts/[^/].*/small-full/current-period/profit-and-loss");
-
+    @Autowired
     private ProfitAndLossRepository profitAndLossRepository;
+
+    @Autowired
     private ProfitAndLossTransformer profitAndLossTransformer;
+
+    @Autowired
     private CurrentPeriodService currentPeriodService;
+
+    @Autowired
     private PreviousPeriodService previousPeriodService;
+
+    @Autowired
     private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
     private ProfitAndLossValidator profitLossValidator;
 
     @Autowired
-    public ProfitAndLossService(
-            ProfitAndLossRepository profitAndLossRepository, ProfitAndLossTransformer profitAndLossTransformer,
-            CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService,
-            KeyIdGenerator keyIdGenerator, ProfitAndLossValidator validator) {
-        this.profitAndLossRepository = profitAndLossRepository;
-        this.profitAndLossTransformer = profitAndLossTransformer;
-        this.currentPeriodService = currentPeriodService;
-        this.previousPeriodService = previousPeriodService;
-        this.keyIdGenerator = keyIdGenerator;
-        this.profitLossValidator = validator;
-    }
+    private StatementService statementService;
+
+
 
     @Override
     public ResponseObject<ProfitAndLoss> create(ProfitAndLoss rest, Transaction transaction,
-                                                String companyAccountId, HttpServletRequest request)
+                                                String companyAccountId, HttpServletRequest request, AccountingPeriod period)
         throws DataException {
 
         Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
@@ -64,11 +66,11 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        String selfLink = createSelfLink(transaction, companyAccountId, request);
-        setMetaData(rest, selfLink, request);
+        String selfLink = createSelfLink(transaction, companyAccountId, period);
+        setMetaData(rest, selfLink, period);
 
         ProfitAndLossEntity profitAndLossEntity = profitAndLossTransformer.transform(rest);
-        profitAndLossEntity.setId(generateID(companyAccountId, request));
+        profitAndLossEntity.setId(generateID(companyAccountId, period));
 
         try {
             profitAndLossRepository.insert(profitAndLossEntity);
@@ -81,19 +83,22 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
             throw new DataException(e);
         }
 
-        if (isCurrentPeriod(request)) {
+        if (isCurrentPeriod(period)) {
             currentPeriodService
                     .addLink(companyAccountId, CurrentPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         } else {
             previousPeriodService
                     .addLink(companyAccountId, PreviousPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         }
+
+        invalidateStatementsIfExisting(companyAccountId, request);
+
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
     public ResponseObject<ProfitAndLoss> update(ProfitAndLoss rest, Transaction transaction,
-                                                String companyAccountId, HttpServletRequest request)
+                                                String companyAccountId, HttpServletRequest request, AccountingPeriod period)
         throws DataException {
 
         Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
@@ -101,11 +106,11 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-        String selfLink = createSelfLink(transaction, companyAccountId, request);
-        setMetaData(rest, selfLink, request);
+        String selfLink = createSelfLink(transaction, companyAccountId, period);
+        setMetaData(rest, selfLink, period);
 
         ProfitAndLossEntity profitAndLossEntity = profitAndLossTransformer.transform(rest);
-        profitAndLossEntity.setId(generateID(companyAccountId, request));
+        profitAndLossEntity.setId(generateID(companyAccountId, period));
 
         try {
             profitAndLossRepository.save(profitAndLossEntity);
@@ -120,14 +125,14 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
     }
 
     @Override
-    public ResponseObject<ProfitAndLoss> find(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<ProfitAndLoss> find(String companyAccountsId, AccountingPeriod period)
         throws DataException {
 
         ProfitAndLossEntity profitAndLossEntity;
 
         try {
             profitAndLossEntity =
-                    profitAndLossRepository.findById(generateID(companyAccountsId, request))
+                    profitAndLossRepository.findById(generateID(companyAccountsId, period))
                             .orElse(null);
         } catch (MongoException e) {
 
@@ -142,21 +147,24 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
     }
 
     @Override
-    public ResponseObject<ProfitAndLoss> delete(String companyAccountsId, HttpServletRequest request)
+    public ResponseObject<ProfitAndLoss> delete(String companyAccountsId, HttpServletRequest request, AccountingPeriod period )
         throws DataException {
 
-        String profitLossId = generateID(companyAccountsId, request);
+        String profitLossId = generateID(companyAccountsId, period);
 
         try {
             if (profitAndLossRepository.existsById(profitLossId)) {
                 profitAndLossRepository.deleteById(profitLossId);
-                if (isCurrentPeriod(request)) {
+                if (isCurrentPeriod(period)) {
                     currentPeriodService
                             .removeLink(companyAccountsId, CurrentPeriodLinkType.PROFIT_AND_LOSS, request);
                 } else {
                     previousPeriodService
                             .removeLink(companyAccountsId, PreviousPeriodLinkType.PROFIT_AND_LOSS, request);
                 }
+
+                invalidateStatementsIfExisting(companyAccountsId, request);
+
                 return new ResponseObject<>(ResponseStatus.UPDATED);
 
             } else {
@@ -169,23 +177,23 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
         }
     }
 
-    private void setMetaData(ProfitAndLoss rest, String selfLink, HttpServletRequest request) {
+    private void setMetaData(ProfitAndLoss rest, String selfLink, AccountingPeriod period) {
 
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
 
-        if (isCurrentPeriod(request)) {
+        if (isCurrentPeriod(period)) {
             rest.setKind(Kind.PROFIT_LOSS_CURRENT.getValue());
         } else {
             rest.setKind(Kind.PROFIT_LOSS_PREVIOUS.getValue());
         }
     }
 
-    private String createSelfLink(Transaction transaction, String companyAccountId, HttpServletRequest request) {
+    private String createSelfLink(Transaction transaction, String companyAccountId, AccountingPeriod period) {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/"
                 + companyAccountId + "/" + ResourceName.SMALL_FULL.getName() + "/" +
-                (isCurrentPeriod(request) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) + "/"
+                (isCurrentPeriod(period) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) + "/"
                 + ResourceName.PROFIT_LOSS.getName();
     }
 
@@ -195,15 +203,29 @@ public class ProfitAndLossService implements ResourceService<ProfitAndLoss> {
         profitAndLoss.setLinks(map);
     }
 
-    private String generateID(String companyAccountId, HttpServletRequest request) {
+    private String generateID(String companyAccountId, AccountingPeriod period) {
 
         return keyIdGenerator.generate(companyAccountId + "-" +
-                (isCurrentPeriod(request) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) +
+                (isCurrentPeriod(period) ? ResourceName.CURRENT_PERIOD.getName() : ResourceName.PREVIOUS_PERIOD.getName()) +
                 "-" + ResourceName.PROFIT_LOSS.getName());
     }
 
-    private boolean isCurrentPeriod(HttpServletRequest request) {
+    private boolean isCurrentPeriod(AccountingPeriod period) {
 
-        return CURRENT_PERIOD_PATTERN.matcher(request.getRequestURI()).matches();
+        return period.equals(AccountingPeriod.CURRENT_PERIOD);
+    }
+
+    private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
+
+            Statement statement = new Statement();
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+            statement.setHasAgreedToLegalStatements(false);
+
+            statementService.update(statement, transaction, companyAccountId, request);
+        }
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
@@ -73,9 +74,6 @@ public class ProfitAndLossControllerTest {
     private PreviousPeriod previousPeriod;
 
     @Mock
-    private WebDataBinder webDataBinder;
-
-    @Mock
     private Map<String, String> links;
 
     @InjectMocks
@@ -88,11 +86,13 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Test the successful creation of profit and loss resource")
     void createProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, profitAndLoss);
-        when(profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period))
         .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
@@ -100,7 +100,7 @@ public class ProfitAndLossControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response = profitAndLossController.create(profitAndLoss, bindingResult,
-                COMPANY_ACCOUNTS_ID, request);
+                COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -113,11 +113,13 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Test the creation of a profit and loss resource when binding result errors are present")
     void createProfitAndLossBindingResultErrors() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
         ResponseEntity response = profitAndLossController.create(profitAndLoss, bindingResult,
-                COMPANY_ACCOUNTS_ID, request);
+                COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -128,17 +130,19 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the creation of a profit and loss reource where the service throws a data exception")
     void createProfitAndLossServiceThrowsDataException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(profitAndLossService)
-                .create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                .create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response = profitAndLossController.create(profitAndLoss, bindingResult,
-                COMPANY_ACCOUNTS_ID, request);
+                COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -152,17 +156,19 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful retrieval of a profit and loss resource")
     void getProfitAndLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, profitAndLoss);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, request))
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, period))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = profitAndLossController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity response = profitAndLossController.get(COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -173,14 +179,16 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the retrieval of a profit and loss resource where the service throws a data exception")
     void getProfitAndLossServiceThrowsDataException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        doThrow(new DataException("")).when(profitAndLossService).find(COMPANY_ACCOUNTS_ID, request);
+        doThrow(new DataException("")).when(profitAndLossService).find(COMPANY_ACCOUNTS_ID, period);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = profitAndLossController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity response = profitAndLossController.get(COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -190,6 +198,8 @@ public class ProfitAndLossControllerTest {
     @Test
     @DisplayName("Tests the successful update of a profit and loss resource for current period")
     void updateProfitAndLossCurrentPeriodSuccess() throws DataException {
+
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
         AccountingPeriod accountingPeriod = AccountingPeriod.CURRENT_PERIOD;
 
@@ -201,7 +211,7 @@ public class ProfitAndLossControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, profitAndLoss);
-        when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -233,7 +243,7 @@ public class ProfitAndLossControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, profitAndLoss);
-        when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request))
+        when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, accountingPeriod))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -345,7 +355,7 @@ public class ProfitAndLossControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
 
         doThrow(new DataException("")).when(profitAndLossService)
-                .update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request);
+                .update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, accountingPeriod);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
@@ -364,17 +374,19 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the successful deletion of a profit and loss resource")
     void deleteProfitLossSuccess() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
-        when(profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request))
+        when(profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period))
                 .thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = profitAndLossController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity response = profitAndLossController.delete(COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -385,14 +397,16 @@ public class ProfitAndLossControllerTest {
     @DisplayName("Tests the deletion of an profit and loss resource where the service throws a data exception")
     void deleteProfitLossServiceThrowsDataException() throws DataException {
 
+        AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
+
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        doThrow(new DataException("")).when(profitAndLossService).delete(COMPANY_ACCOUNTS_ID, request);
+        doThrow(new DataException("")).when(profitAndLossService).delete(COMPANY_ACCOUNTS_ID, request, period);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = profitAndLossController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity response = profitAndLossController.delete(COMPANY_ACCOUNTS_ID, request, period);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

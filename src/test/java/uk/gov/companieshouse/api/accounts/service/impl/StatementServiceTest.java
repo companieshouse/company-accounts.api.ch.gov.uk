@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,13 +53,16 @@ public class StatementServiceTest {
 
     private static final String ETAG = "etag";
     private static final String LEGAL_STATEMENT_ID = "abcdef";
-    private static final String COMPANY_ACCOUNTS_ID = "123123";
+    private static final String COMPANY_ACCOUNTS_ID = "";
     private static final String TRANSACTION_SELF_LINK = "/transactions/123456-123456-123456";
     private static final String STATEMENT_SELF_LINK = TRANSACTION_SELF_LINK + "/"
             + ResourceName.COMPANY_ACCOUNT.getName() + "/"
             + COMPANY_ACCOUNTS_ID + "/"
             + ResourceName.SMALL_FULL.getName() + "/"
             + ResourceName.STATEMENTS.getName();
+
+    private static final String NO_PROFIT_LOSS_KEY = "no_profit_and_loss";
+    private static final String NO_PROFIT_LOSS = "no profit and loss";
 
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
     private static final String LEGAL_STATEMENT_SECTION_477 = "Testing place holder: {period_end_on}";
@@ -76,6 +80,8 @@ public class StatementServiceTest {
     private Transaction transactionMock;
     @Mock
     private TransactionLinks transactionLinksMock;
+    @Mock
+    private ProfitAndLossService profitAndLossService;
     @Mock
     private Statement statementMock;
     @Mock
@@ -115,12 +121,43 @@ public class StatementServiceTest {
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
+
         ResponseObject<Statement> result =
                 statementService.create(statementMock, transactionMock, "", requestMock);
 
         assertNotNull(result);
         assertEquals(ResponseStatus.CREATED, result.getStatus());
         assertEquals(statementMock, result.getData());
+        assertFalse(result.getData().getLegalStatements().containsKey("no_profit_and_loss"));
+    }
+
+    @Test
+    @DisplayName("Tests the creation of a Statement Resource when profitAndLossService.find returns a NOT FOUND")
+    void creationWhenProfitAndLossNotFound() throws DataException {
+
+        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
+        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
+        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.NOT_FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
+
+        ResponseObject<Statement> result =
+                statementService.create(statementMock, transactionMock, "", requestMock);
+
+        assertNotNull(result);
+        assertEquals(responseObject, profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD));
+        assertEquals(statementMock, result.getData());
+        assertFalse(result.getData().getLegalStatements().containsKey("no_profit_and_loss"));
     }
 
     @Test
@@ -135,6 +172,10 @@ public class StatementServiceTest {
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
 
         ResponseObject<Statement> result =
                 statementService.create(statementMock, transactionMock, "", requestMock);
@@ -154,6 +195,10 @@ public class StatementServiceTest {
         when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
                 .thenThrow(MongoException.class);
 
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
+
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
 
@@ -171,6 +216,10 @@ public class StatementServiceTest {
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
 
         ResponseObject<Statement> result =
                 statementService.update(statementMock, transactionMock, "", requestMock);
@@ -191,6 +240,10 @@ public class StatementServiceTest {
 
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
 
         assertThrows(DataException.class,
                 () -> statementService.update(statementMock, transactionMock, "", requestMock));
@@ -251,6 +304,7 @@ public class StatementServiceTest {
     private Map<String, String> createLegalStatements() {
         Map<String, String> statements = new HashMap<>();
         statements.put(LEGAL_STATEMENT_SECTION_477_KEY, LEGAL_STATEMENT_SECTION_477);
+        statements.put(NO_PROFIT_LOSS_KEY, NO_PROFIT_LOSS);
 
         return statements;
     }
