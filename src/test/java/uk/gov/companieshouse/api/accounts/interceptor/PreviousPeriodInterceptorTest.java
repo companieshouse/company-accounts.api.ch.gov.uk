@@ -46,8 +46,10 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
     @Mock
     private ResponseObject responseObject;
 
+    @Mock
     private Transaction transaction;
 
+    @Mock
     private SmallFull smallFull;
 
     @Mock
@@ -80,9 +82,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
         pathVariables.put(COMPANY_ACCOUNT_ID, "test");
-
-        smallFull = mock(SmallFull.class);
-        transaction = mock(Transaction.class);
 
         when(httpServletRequest.getHeader(X_REQUEST_ID)).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
@@ -128,11 +127,10 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
-        previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+       boolean preHandle =  previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
 
-         assertTrue(httpServletRequest.getMethod().equalsIgnoreCase("POST") && httpServletRequest.getRequestURI()
-                .endsWith("previous-period"));
+        assertTrue(preHandle);
     }
 
     @Test

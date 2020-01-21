@@ -46,8 +46,10 @@ public class CurrentPeriodInterceptorTest {
     @Mock
     private ResponseObject responseObject;
 
+    @Mock
     private Transaction transaction;
 
+    @Mock
     private SmallFull smallFull;
 
     @Mock
@@ -80,9 +82,6 @@ public class CurrentPeriodInterceptorTest {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
         pathVariables.put(COMPANY_ACCOUNT_ID, "test");
-
-        smallFull = mock(SmallFull.class);
-        transaction = mock(Transaction.class);
 
         when(httpServletRequest.getHeader(X_REQUEST_ID)).thenReturn("test");
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
@@ -127,11 +126,10 @@ public class CurrentPeriodInterceptorTest {
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
-        currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+      boolean preHandle =   currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object());
 
-        assertTrue(httpServletRequest.getMethod().equalsIgnoreCase("POST") && httpServletRequest.getRequestURI()
-                .endsWith("current-period"));
+        assertTrue(preHandle);
     }
 
     @Test
