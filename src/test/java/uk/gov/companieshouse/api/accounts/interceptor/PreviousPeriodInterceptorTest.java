@@ -77,7 +77,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
     private static final String NO_LINK_PREVIOUS_PERIOD = "noLinkToPreviousPeriod";
     private static final String URI = "../../../previous-period";
 
-    void setUp() throws NoSuchAlgorithmException {
+    private void setUp() throws NoSuchAlgorithmException {
 
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
@@ -127,10 +127,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
-       boolean preHandle =  previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
-
-        assertTrue(preHandle);
+        assertTrue(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
     }
 
     @Test
@@ -139,8 +137,9 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
         when(httpServletRequest.getMethod()).thenReturn("GET");
         doReturn(null).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
-        previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+
+        assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -158,8 +157,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -172,8 +171,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -191,8 +190,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
         when(previousPeriodLinks.get("self")).thenReturn(LINK_PREVIOUS_PERIOD);
         when(smallFullLinks.get(SmallFullLinkType.PREVIOUS_PERIOD.getLink())).thenReturn(NO_LINK_PREVIOUS_PERIOD);
 
-        previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }

@@ -77,7 +77,7 @@ public class CurrentPeriodInterceptorTest {
     private static final String NO_LINK_CURRENT_PERIOD = "noLinkToPreviousPeriod";
     private static final String URI = "../../../current-period";
 
-    void setUp() throws NoSuchAlgorithmException {
+    private void setUp() throws NoSuchAlgorithmException {
 
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
@@ -126,10 +126,8 @@ public class CurrentPeriodInterceptorTest {
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
-      boolean preHandle =   currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
-
-        assertTrue(preHandle);
+        assertTrue(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
     }
 
     @Test
@@ -138,8 +136,9 @@ public class CurrentPeriodInterceptorTest {
 
         when(httpServletRequest.getMethod()).thenReturn("GET");
         doReturn(null).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
-        currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -157,8 +156,8 @@ public class CurrentPeriodInterceptorTest {
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -171,8 +170,8 @@ public class CurrentPeriodInterceptorTest {
         when(currentPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -190,8 +189,8 @@ public class CurrentPeriodInterceptorTest {
         when(currentPeriodLinks.get("self")).thenReturn(LINK_CURRENT_PERIOD);
         when(smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink())).thenReturn(NO_LINK_CURRENT_PERIOD);
 
-        currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object());
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
+                new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
