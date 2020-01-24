@@ -277,6 +277,8 @@
 
       {{$balanceSheet := .small_full_accounts.balance_sheet}}
 
+      {{$directorsReport := .small_full_accounts.directors_report}}
+
       {{$currentPeriod := .small_full_accounts.period.current_period_start_on}}
       {{$previousPeriod := .small_full_accounts.period.previous_period_start_on}}
 
@@ -1134,6 +1136,14 @@
         </tr>
         </thead>
         <tbody>
+        {{if .small_full_accounts.directors_report}}
+        <tr>
+          <td class="strong">
+            <a href="#DirectorsReportSection">Directors report</a>
+          </td>
+          <td></td>
+        </tr>
+        {{end}}
         {{if .small_full_accounts.profit_and_loss}}
         <tr>
           <td class="strong">
@@ -1167,6 +1177,51 @@
         </tbody>
       </table>
     </div>
+
+    <!-- DIRECTORS REPORT -->
+
+    <div class="page">
+      <div class="header">
+        <h1 class="text--center">
+          <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+        </h1>
+      </div>
+
+      <p class="text--center">
+        <strong>Directors report' period ended
+          <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
+        </strong>
+      </p>
+      {{if $directorsStatements := $directorsReport.directors_report_statements}}
+      <p>
+        The directors present their report with the financial statements of the company for the period ended 30 April 2017
+      </p>
+
+      <div>
+        <p class="strong">Principal activities of the company</p>
+        <p>
+          <ix:nonnumeric contextref="CY" name="uk-bus:DescriptionPrincipalActivities">{{$directorsStatements.principal_activities}}</ix:nonnumeric>
+        </p>
+
+        <p class="strong">Political and charitable donations</p>
+        <p>
+          <ix:nonnumeric contextref="CY" name="direp:PoliticalDonationsFree-textComment">{{$directorsStatements.political_and_charitable_donations}}</ix:nonnumeric>
+        </p>
+
+        <p class="strong">Company policy on disabled employees</p>
+        <p>
+          <ix:nonnumeric contextref="CY" name="direp:EmploymentDisabledPersonsPolicy">{{$directorsStatements.company_policy_on_disabled_employees}}</ix:nonnumeric>
+        </p>
+
+        <p class="strong">Additional information</p>
+        <p>
+          {{$directorsStatements.additional_information}}
+        </p>
+      </div>
+      {{end}}
+    </div>
+
+    <!-- DIRECTORS REPORT END -->
 
     <!-- PROFIT AND LOSS -->
     {{if $profitAndLoss := .small_full_accounts.profit_and_loss}}
