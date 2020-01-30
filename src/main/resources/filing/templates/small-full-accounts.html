@@ -293,11 +293,13 @@
           <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsTypeFullOrAbbreviated" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
-          <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
+          <ix:nonNumeric name="core:DateAuthorisationFinancialStatementsForIssue" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
+            <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
 
-          <ix:nonNumeric contextRef="CY_END" name="uk-bus:StartDateForPeriodCoveredByReport">{{$current_period_start_on}}</ix:nonNumeric>
 
-          <ix:nonNumeric contextRef="CY" name="uk-bus:DescriptionPrincipalActivities">No description of principal activity</ix:nonNumeric>
+            <ix:nonNumeric contextRef="CY_END" name="uk-bus:StartDateForPeriodCoveredByReport">{{$current_period_start_on}}</ix:nonNumeric>
+
+        <!--  <ix:nonNumeric contextRef="CY" name="uk-bus:DescriptionPrincipalActivities">No description of principal activity</ix:nonNumeric> -->
           <ix:nonNumeric contextRef="CY" name="uk-bus:EntityDormantTruefalse" format="ixt2:booleanfalse">false</ix:nonNumeric>
           <ix:nonNumeric contextRef="CY" name="uk-bus:EntityTradingStatus" format="ixt2:nocontent"></ix:nonNumeric>
 
@@ -434,7 +436,227 @@
               <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
             </xbrli:period>
           </xbrli:context>
-          <xbrli:context id="CompanySecretary_CY">
+            <xbrli:context id="Director2_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director2</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director3_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director3</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director4_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director4</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director5_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director5</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director6_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director6</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director7_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director7</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director8_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director8</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director9_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director9</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director10_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director10</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director11_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director11</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context>
+            <xbrli:context id="Director12_CY">
+                <xbrli:entity>
+                    <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                    <xbrli:segment>
+                        <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director12</xbrldi:explicitMember>
+                    </xbrli:segment>
+                </xbrli:entity>
+                <xbrli:period>
+                    <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                    <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+                </xbrli:period>
+            </xbrli:context><xbrli:context id="Director13_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director13</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director14_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director14</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director15_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director15</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director16_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director16</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director17_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director17</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director18_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director18</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director19_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director19</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context><xbrli:context id="Director20_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director20</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context>
+          <xbrli:context id="CompanySecretary1_CY">
             <xbrli:entity>
               <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
               <xbrli:segment>
@@ -1192,32 +1414,133 @@
           <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
         </strong>
       </p>
-      {{if $directorsStatements := $directorsReport.directors_report_statements}}
-      <p>
-        The directors present their report with the financial statements of the company for the period ended 30 April 2017
-      </p>
 
-      <div>
-        <p class="strong">Principal activities of the company</p>
-        <p>
-          <ix:nonnumeric contextref="CY" name="uk-bus:DescriptionPrincipalActivities">{{$directorsStatements.principal_activities}}</ix:nonnumeric>
-        </p>
+        {{if $directorsReport}}
 
-        <p class="strong">Political and charitable donations</p>
-        <p>
-          <ix:nonnumeric contextref="CY" name="direp:PoliticalDonationsFree-textComment">{{$directorsStatements.political_and_charitable_donations}}</ix:nonnumeric>
-        </p>
+            {{if $directorsStatements := $directorsReport.directors_report_statements}}
+                  <p>
+                    The directors present their report with the financial statements of the company for the period ended 30 April 2017
+                  </p>
 
-        <p class="strong">Company policy on disabled employees</p>
-        <p>
-          <ix:nonnumeric contextref="CY" name="direp:EmploymentDisabledPersonsPolicy">{{$directorsStatements.company_policy_on_disabled_employees}}</ix:nonnumeric>
-        </p>
+                  <div>
+                      {{if $directorsStatements.principal_activities}}
+                    <p class="strong">Principal activities of the company</p>
+                    <p>
+                      <ix:nonNumeric contextRef="CY" name="uk-bus:DescriptionPrincipalActivities">{{$directorsStatements.principal_activities}}</ix:nonNumeric>
+                    </p>
+                      {{end}}
 
-        <p class="strong">Additional information</p>
-        <p>
-          {{$directorsStatements.additional_information}}
-        </p>
-      </div>
+                      {{if $directorsStatements.political_and_charitable_donations}}
+                    <p class="strong">Political and charitable donations</p>
+                    <p>
+                      <ix:nonNumeric contextRef="CY" name="direp:PoliticalDonationsFree-textComment">{{$directorsStatements.political_and_charitable_donations}}</ix:nonNumeric>
+                    </p>
+                      {{end}}
+
+                      {{if $directorsStatements.company_policy_on_disabled_employees}}
+                    <p class="strong">Company policy on disabled employees</p>
+                    <p>
+                      <ix:nonNumeric contextRef="CY" name="direp:EmploymentDisabledPersonsPolicy">{{$directorsStatements.company_policy_on_disabled_employees}}</ix:nonNumeric>
+                    </p>
+                      {{end}}
+
+                      {{if $directorsStatements.additional_information}}
+                    <p class="strong">Additional information</p>
+                    <p>
+                      {{$directorsStatements.additional_information}}
+                    </p>
+                      {{end}}
+
+                      {{end}}   <!-- End of directors report statements -->
+
+              <p>
+            <strong>Directors</strong>
+              </p>
+
+              {{$approvalContext := ""}}
+              {{$contextRef := ""}}
+              {{setValue "directorCounter" 0}}
+
+              {{  range $index, $directors := $directorsReport.sorted_directors}}
+
+                    {{ $appointmentDateFormatted := $directors.appointment_date_formatted}}
+                    {{ $resDate := $directors.resignation_date_formatted}}
+
+                  {{$directorsLength := len $directors.names}}
+
+                  <p>
+                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (not $appointmentDateFormatted) (not $resDate) }}the whole of the period from {{else}}the period of {{ end }}<br/>
+
+                      {{ if not $appointmentDateFormatted}}
+                          {{ $appointmentDateFormatted = $period.current_period_start_on_formatted }}
+                      {{end}}
+
+                      {{ if not $resDate}}
+                            {{ $resDate = $period.current_period_end_on_formatted }}
+                      {{end}}
+
+                      <strong>{{$appointmentDateFormatted}}
+                      to
+                      {{$resDate}}
+                      </strong>
+                  </p>
+
+                  {{range $k, $directorName:= $directors.names }}
+
+                      {{incValue "directorCounter" }}
+                      {{$contextRef = printf "%s%d%s" "Director" (getValue "directorCounter") "_CY"}}
+
+                      <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$directorName}}<br/></ix:nonNumeric>
+
+                      {{if eq $directorName $directorsReport.approval.approval_name}}
+                            {{$approvalContext = $contextRef}}
+                      {{end}}
+                  {{end}}
+              {{end}}
+
+              {{if $secretary := $directorsReport.secretary}}
+
+                      <div class="text-area-display">
+                    <p>
+                      <strong>Secretary</strong>
+
+                      <ix:nonNumeric contextRef="CompanySecretary1_CY" name="uk-bus:NameEntityOfficer">{{$secretary.secretary_name}}</ix:nonNumeric>
+                    </p>
+                  </div>
+              {{end}}
+
+              <p>
+                 The above report has been prepared in accordance with the special provisions in part 15 of the Companies Act 2006
+              </p>
+
+              <p>
+                  This report was approved by the board of directors on
+                  {{ $approval := $directorsReport.approval }}
+                  <br/>
+                  <strong>
+                    <ix:nonNumeric contextRef="CY_END" format="ixt2:datedaymonthyearen" name="direp:DateSigningDirectorsReport">{{$approval.date}}</ix:nonNumeric>
+                  </strong>
+                  <br/>
+              </p>
+
+            <p>
+              And signed on behalf of the board by:
+
+              {{ if $approval.is_secretary }}
+                  {{ $approvalContext = "CompanySecretary1_CY" }}
+              {{end}}
+
+              <br/>
+              <strong>
+                Name: <ix:nonNumeric contextRef="{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                <br/>
+                Status: {{if eq $approvalContext  "CompanySecretary1_CY"}} Secretary {{else}} Director {{end}}
+              </strong>
+            </p>
+
+              <div id="DirectorsReportSection" class="section-marker"></div>
+
+          </div>
       {{end}}
     </div>
 
