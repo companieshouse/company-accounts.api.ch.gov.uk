@@ -656,6 +656,18 @@
                 <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
             </xbrli:period>
         </xbrli:context>
+        <xbrli:context id="Director21_CY">
+            <xbrli:entity>
+                <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+                <xbrli:segment>
+                    <xbrldi:explicitMember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director21</xbrldi:explicitMember>
+                </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+                <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+                <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+        </xbrli:context>
           <xbrli:context id="CompanySecretary1_CY">
             <xbrli:entity>
               <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
@@ -2593,7 +2605,7 @@
         <p>
           Name:
 
-          <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{.small_full_accounts.approval_name}}</ix:nonNumeric>
+          <ix:nonNumeric contextRef="Director21_CY" name="uk-bus:NameEntityOfficer">{{.small_full_accounts.approval_name}}</ix:nonNumeric>
 
           <br />
           Status: Director
