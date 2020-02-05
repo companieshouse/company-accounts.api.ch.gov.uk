@@ -61,7 +61,6 @@ public class ApprovalValidatorTest {
 
         validator.dateInvalid = "date.invalid";
         approval = new Approval();
-       // when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transaction);
         when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
     }
 
