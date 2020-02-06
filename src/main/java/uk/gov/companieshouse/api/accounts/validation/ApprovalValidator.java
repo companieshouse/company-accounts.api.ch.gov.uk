@@ -64,14 +64,10 @@ public class ApprovalValidator extends BaseValidator {
                 Arrays.stream(directors).filter(d -> d.getResignationDate() == null).forEach(director -> servingDirectors.add(director.getName()));
             }
 
-            if (servingDirectors != null && !servingDirectors.isEmpty()) {
-
-                if (servingDirectors.stream().noneMatch(d -> d.equalsIgnoreCase(approval.getName()))) {
+            if ( !servingDirectors.isEmpty() && (servingDirectors.stream().noneMatch(d -> d.equalsIgnoreCase(approval.getName())))) {
                     errors.addError(new Error(invalidValue, NAME_PATH, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
                 }
-            }
         }
-
         return errors;
     }
 }
