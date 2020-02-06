@@ -66,7 +66,7 @@ public class ApprovalValidator extends BaseValidator {
 
             if (servingDirectors != null && !servingDirectors.isEmpty()) {
 
-                if (!(servingDirectors.stream().noneMatch(d -> !d.equalsIgnoreCase(approval.getName())))) {
+                if (servingDirectors.stream().noneMatch(d -> d.equalsIgnoreCase(approval.getName()))) {
                     errors.addError(new Error(invalidValue, NAME_PATH, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
                 }
             }
