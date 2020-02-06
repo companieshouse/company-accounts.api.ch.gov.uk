@@ -51,8 +51,6 @@ public class ApprovalValidator extends BaseValidator {
 
         ResponseObject<Director> directorsReportResponseObject = directorService.findAll(transaction, companyAccountId, request);
 
-        if(directorsReportResponseObject != null) {
-
             Director[] directors = Optional.of(directorsReportResponseObject)
                     .map(ResponseObject::getDataForMultipleResources)
                     .orElse(null);
@@ -67,7 +65,7 @@ public class ApprovalValidator extends BaseValidator {
             if ( !servingDirectors.isEmpty() && (servingDirectors.stream().noneMatch(d -> d.equalsIgnoreCase(approval.getName())))) {
                     errors.addError(new Error(invalidValue, NAME_PATH, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
                 }
-        }
+
         return errors;
     }
 }

@@ -68,6 +68,8 @@ public class ApprovalValidatorTest {
     @DisplayName("Validate with a valid approval date ")
     void validateApprovalWithValidDate() throws DataException {
 
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        approval.setName(NAME);
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertFalse(errors.hasErrors());
@@ -77,7 +79,9 @@ public class ApprovalValidatorTest {
     @DisplayName("Validate with approval date before period end on date")
     void validateApprovalDateBeforePeriodEnd() throws DataException {
 
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
         approval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
+        approval.setName(NAME);
         errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
@@ -88,7 +92,9 @@ public class ApprovalValidatorTest {
     @DisplayName("Validate with approval date equal to period end on date")
     void validateApprovalDateSameAsPeriodEnd() throws DataException {
 
+        approval.setName(NAME);
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
         errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
