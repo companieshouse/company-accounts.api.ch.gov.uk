@@ -45,20 +45,21 @@ public class NoteServiceImpl implements NoteService {
     private ParentResourceFactory<LinkType> parentResourceFactory;
 
     @Override
-    public ResponseObject<Note> create(Note note, AccountingNoteType type, Transaction transaction,
+    public ResponseObject<Note> create(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
         
-        if (type.isExplicitlyValidated()) {
-            Errors errors = validatorFactory.getValidator(type).validateSubmission(note, transaction, companyAccountId, request);
+        if (accountingNoteType.isExplicitlyValidated()) {
+            Errors errors = validatorFactory.getValidator(accountingNoteType).validateSubmission(note, transaction, companyAccountId, request);
             if (errors.hasErrors()) {
                 return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
             }
         }
 
-        setMetadataOnRest(note, request.getRequestURI(), type);
+        String selfLink = request.getRequestURI();
+        setMetadataOnRest(note, selfLink, accountingNoteType);
 
-        NoteEntity entity = transformerFactory.getTransformer(type).transform(note);
-        entity.setId(generateID(companyAccountId, type.getNoteType()));
+        NoteEntity entity = transformerFactory.getTransformer(accountingNoteType).transform(note);
+        entity.setId(generateID(companyAccountId, accountingNoteType.getNoteType()));
 
         try {
             repository.insert(entity);
@@ -68,27 +69,27 @@ public class NoteServiceImpl implements NoteService {
             throw new DataException(e);
         }
 
-        parentResourceFactory.getParentResource(type.getAccountType())
-                .addLink(companyAccountId, type.getLinkType(), getSelfLink(note), request);
+        parentResourceFactory.getParentResource(accountingNoteType.getAccountType())
+                .addLink(companyAccountId, accountingNoteType.getLinkType(), selfLink, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, note);
     }
 
     @Override
-    public ResponseObject<Note> update(Note note, AccountingNoteType type, Transaction transaction,
+    public ResponseObject<Note> update(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
-        if (type.isExplicitlyValidated()) {
-            Errors errors = validatorFactory.getValidator(type).validateSubmission(note, transaction, companyAccountId, request);
+        if (accountingNoteType.isExplicitlyValidated()) {
+            Errors errors = validatorFactory.getValidator(accountingNoteType).validateSubmission(note, transaction, companyAccountId, request);
             if (errors.hasErrors()) {
                 return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
             }
         }
 
-        setMetadataOnRest(note, request.getRequestURI(), type);
+        setMetadataOnRest(note, request.getRequestURI(), accountingNoteType);
 
-        NoteEntity entity = transformerFactory.getTransformer(type).transform(note);
-        entity.setId(generateID(companyAccountId, type.getNoteType()));
+        NoteEntity entity = transformerFactory.getTransformer(accountingNoteType).transform(note);
+        entity.setId(generateID(companyAccountId, accountingNoteType.getNoteType()));
 
         try {
             repository.save(entity);
@@ -100,14 +101,14 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public ResponseObject<Note> find(AccountingNoteType type, String companyAccountId)
+    public ResponseObject<Note> find(AccountingNoteType accountingNoteType, String companyAccountId)
             throws DataException {
 
         NoteEntity entity;
 
         try {
             entity = repository
-                    .findById(generateID(companyAccountId, type.getNoteType()))
+                    .findById(generateID(companyAccountId, accountingNoteType.getNoteType()))
                             .orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
@@ -118,20 +119,20 @@ public class NoteServiceImpl implements NoteService {
         }
 
         return new ResponseObject<>(ResponseStatus.FOUND,
-                transformerFactory.getTransformer(type).transform(entity));
+                transformerFactory.getTransformer(accountingNoteType).transform(entity));
     }
 
     @Override
-    public ResponseObject<Note> delete(AccountingNoteType type, String companyAccountId,
+    public ResponseObject<Note> delete(AccountingNoteType accountingNoteType, String companyAccountId,
             HttpServletRequest request) throws DataException {
 
-        String id = generateID(companyAccountId, type.getNoteType());
+        String id = generateID(companyAccountId, accountingNoteType.getNoteType());
 
         try {
             if (repository.existsById(id)) {
                 repository.deleteById(id);
-                parentResourceFactory.getParentResource(type.getAccountType())
-                        .removeLink(companyAccountId, type.getLinkType(), request);
+                parentResourceFactory.getParentResource(accountingNoteType.getAccountType())
+                        .removeLink(companyAccountId, accountingNoteType.getLinkType(), request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
@@ -146,11 +147,11 @@ public class NoteServiceImpl implements NoteService {
         return keyIdGenerator.generate(companyAccountId + "-" + noteType.getType());
     }
 
-    private void setMetadataOnRest(Note note, String selfLink, AccountingNoteType type) {
+    private void setMetadataOnRest(Note note, String selfLink, AccountingNoteType accountingNoteType) {
 
         note.setLinks(createLinks(selfLink));
         note.setEtag(GenerateEtagUtil.generateEtag());
-        note.setKind(type.getKind());
+        note.setKind(accountingNoteType.getKind());
     }
 
     private Map<String, String> createLinks(String selfLink) {
@@ -158,10 +159,5 @@ public class NoteServiceImpl implements NoteService {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), selfLink);
         return map;
-    }
-
-    private String getSelfLink(Note note) {
-        
-        return note.getLinks().get(BasicLinkType.SELF.getLink());
     }
 }

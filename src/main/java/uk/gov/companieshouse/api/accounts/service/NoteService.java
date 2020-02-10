@@ -9,15 +9,15 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 public interface NoteService {
 
-    ResponseObject<Note> create(Note note, AccountingNoteType type, Transaction transaction,
+    ResponseObject<Note> create(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException;
 
-    ResponseObject<Note> update(Note note, AccountingNoteType type, Transaction transaction,
+    ResponseObject<Note> update(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException;
 
-    ResponseObject<Note> find(AccountingNoteType type, String companyAccountsId)
+    ResponseObject<Note> find(AccountingNoteType accountingNoteType, String companyAccountsId)
             throws DataException;
 
-    ResponseObject<Note> delete(AccountingNoteType type, String companyAccountsId,
+    ResponseObject<Note> delete(AccountingNoteType accountingNoteType, String companyAccountsId,
             HttpServletRequest request) throws DataException;
 }
