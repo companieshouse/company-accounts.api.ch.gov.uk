@@ -1543,7 +1543,7 @@
               {{ if $approval.is_secretary }}
                   {{ $approvalContext = "CompanySecretary1_CY" }}
               {{ else }}
-                  {{ $approvalContext = printf "%s%d%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
+                  {{ $approvalContext = printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
               {{end}}
 
               <br/>
