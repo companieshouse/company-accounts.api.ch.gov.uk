@@ -1414,20 +1414,21 @@
 
     <!-- DIRECTORS REPORT -->
 
-    <div class="page">
-      <div class="header">
-        <h1 class="text--center">
-          <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-        </h1>
-      </div>
 
-      <p class="text--center">
-        <strong>Directors report' period ended
-          <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
-        </strong>
-      </p>
+      {{if $directorsReport}}
+            <div class="page">
+                <div class="header">
+                    <h1 class="text--center">
+                        <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                    </h1>
+            </div>
+                <p class="text--center">
+                    <strong>Directors report' period ended
+                        <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
+                    </strong>
+            </p>
 
-        {{if $directorsReport}}
+
 
             {{if $directorsStatements := $directorsReport.directors_report_statements}}
                   <p>
@@ -1501,7 +1502,8 @@
 
                   {{range $k, $director:= $directors.directors }}
 
-                      {{$contextRef = printf "%s%d%s" "Director" $director.index "_CY"}}
+
+                      {{$contextRef = printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
 
                       <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$director.name}}<br/></ix:nonNumeric>
 
@@ -1541,7 +1543,7 @@
               {{ if $approval.is_secretary }}
                   {{ $approvalContext = "CompanySecretary1_CY" }}
               {{ else }}
-                  {{ $approvalContext = printf "%s%d%s" "Director" $approval.director_index "_CY" }}
+                  {{ $approvalContext = printf "%s%d%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
               {{end}}
 
               <br/>
@@ -1555,8 +1557,9 @@
               <div id="DirectorsReportSection" class="section-marker"></div>
 
           </div>
+
+        </div>
       {{end}}
-    </div>
 
     <!-- DIRECTORS REPORT END -->
 
@@ -2604,7 +2607,7 @@
           <br />
           and signed on behalf of the board by:
         </p>
-          {{ $accApprovalContext = printf "%s%d%s" "Director" .small_full_accounts.approval_index "_CY" }}
+          {{ $accApprovalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted .small_full_accounts.approval_index) "_CY" }}
         <p>
           Name:
 
