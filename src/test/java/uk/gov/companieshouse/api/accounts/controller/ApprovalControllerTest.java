@@ -2,15 +2,15 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,11 +22,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.ApprovalService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
@@ -42,6 +47,9 @@ public class ApprovalControllerTest {
 
     @Mock
     private Approval approval;
+    
+    @Mock
+    private SmallFull smallFull;
 
     @Mock
     private BindingResult bindingResult;
@@ -52,68 +60,248 @@ public class ApprovalControllerTest {
     @Mock
     private ApiResponseMapper apiResponseMapper;
 
+    @Mock
+    private ErrorMapper errorMapper;
+    
+    @Mock
+    private Errors errors;
+
+    @Mock
+    private Map<String, String> links;
+
     @InjectMocks
     private ApprovalController approvalController;
 
-    @BeforeEach
-    public void setUp() {
-        when(request.getAttribute("transaction")).thenReturn(transaction);
-    }
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String APPROVAL_LINK = "approvalLink";
 
     @Test
     @DisplayName("Tests the successful creation of a approval resource")
-    public void canCreateApproval() throws DataException {
-        ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
-            approval);
-        doReturn(successCreateResponse).when(approvalService)
-            .create(any(Approval.class), any(Transaction.class), anyString(),
-                any(HttpServletRequest.class));
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
-            .body(successCreateResponse.getData());
-        when(apiResponseMapper.map(successCreateResponse.getStatus(),
-            successCreateResponse.getData(), successCreateResponse.getErrors()))
-            .thenReturn(responseEntity);
+    void createApprovalSuccess() throws DataException {
 
-        ResponseEntity response = approvalController
-            .create(approval, bindingResult, "", request);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, approval);
+        when(approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response =
+                approvalController.create(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(approval, response.getBody());
+
+        verify(errorMapper, never()).mapBindingResultErrorsToErrorModel(bindingResult);
     }
 
     @Test
-    @DisplayName("Tests the unsuccessful request to create Approval")
-    void createApprovalError() throws DataException {
+    @DisplayName("Tests the creation of a approval resource when binding result errors are present")
+    void createApprovalBindingResultErrors() {
 
-        when(approvalService.create(any(), any(), any(), any())).thenThrow(new DataException(""));
-        when(apiResponseMapper.getErrorResponse())
-            .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response = approvalController
-            .create(approval, bindingResult, "", request);
+        ResponseEntity response =
+                approvalController.create(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
-        verify(approvalService, times(1)).create(any(), any(), any(), any());
-        verify(apiResponseMapper, times(1)).getErrorResponse();
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errors, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the creation of a approval resource where the service throws a data exception")
+    void createApprovalServiceThrowsDataException() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        doThrow(new DataException("")).when(approvalService)
+                .create(approval, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity response =
+                approvalController.create(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
-    @DisplayName("Test the retreval of a approval resource")
-    public void canRetrieveApproval() throws DataException {
-        ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
-            approval);
-        doReturn(successFindResponse).when(approvalService).find("123456", request);
+    @DisplayName("Tests the successful retrieval of a approval resource")
+    void getApprovalSuccess() throws DataException {
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(approval);
-        when(apiResponseMapper.mapGetResponse(approval,
-            request)).thenReturn(responseEntity);
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseEntity response = approvalController.get("123456", request);
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, approval);
+        when(approvalService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
+        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response = approvalController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
         assertEquals(approval, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of a approval resource where the service throws a data exception")
+    void getApprovalServiceThrowsDataException() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        doThrow(new DataException("")).when(approvalService).find(COMPANY_ACCOUNTS_ID, request);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity response = approvalController.get(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the successful update of a approval resource")
+    void updateApprovalSuccess() throws DataException {
+
+        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
+        when(smallFull.getLinks()).thenReturn(links);
+        when(links.get(SmallFullLinkType.APPROVAL.getLink()))
+                .thenReturn(APPROVAL_LINK);
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, approval);
+        when(approvalService.update(approval, transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response =
+                approvalController.update(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the update of a approval resource when the small full link doesn't exist")
+    void updateApprovalNoSmallFullLink() {
+
+        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
+        when(smallFull.getLinks()).thenReturn(links);
+        when(links.get(SmallFullLinkType.APPROVAL.getLink()))
+                .thenReturn(null);
+
+        ResponseEntity response =
+                approvalController.update(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(bindingResult, never()).hasErrors();
+    }
+
+    @Test
+    @DisplayName("Tests the update of a approval resource when binding result errors are present")
+    void updateApprovalBindingResultErrors() {
+
+        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
+        when(smallFull.getLinks()).thenReturn(links);
+        when(links.get(SmallFullLinkType.APPROVAL.getLink()))
+                .thenReturn(APPROVAL_LINK);
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                approvalController.update(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errors, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the update of a approval resource where the service throws a data exception")
+    void updateApprovalServiceThrowsDataException() throws DataException {
+
+        when(request.getAttribute(anyString())).thenReturn(smallFull).thenReturn(transaction);
+        when(smallFull.getLinks()).thenReturn(links);
+        when(links.get(SmallFullLinkType.APPROVAL.getLink()))
+                .thenReturn(APPROVAL_LINK);
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        doThrow(new DataException("")).when(approvalService)
+                .update(approval, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity response =
+                approvalController.update(approval, bindingResult, COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the successful deletion of a approval resource")
+    void deleteApprovalSuccess() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
+        when(approvalService.delete(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(responseObject);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
+                .thenReturn(responseEntity);
+
+        ResponseEntity response = approvalController.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of a approval resource where the service throws a data exception")
+    void deleteApprovalServiceThrowsDataException() throws DataException {
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
+        doThrow(new DataException("")).when(approvalService).delete(COMPANY_ACCOUNTS_ID, request);
+
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
+
+        ResponseEntity response = approvalController.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }
