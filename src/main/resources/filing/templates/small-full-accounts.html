@@ -1477,25 +1477,15 @@
 
               {{  range $index, $directors := $directorsReport.sorted_directors}}
 
-                    {{ $appointmentDateFormatted := $directors.appointment_date_formatted}}
-                    {{ $resDate := $directors.resignation_date_formatted}}
-
                   {{$directorsLength := len $directors.directors}}
 
                   <p>
                       The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (not $appointmentDateFormatted) (not $resDate) }}the whole of the period from {{else}}the period of {{ end }}<br/>
 
-                      {{ if not $appointmentDateFormatted}}
-                          {{ $appointmentDateFormatted = $period.current_period_start_on_formatted }}
-                      {{end}}
-
-                      {{ if not $resDate}}
-                            {{ $resDate = $period.current_period_end_on_formatted }}
-                      {{end}}
-
-                      <strong>{{$appointmentDateFormatted}}
-                      to
-                      {{$resDate}}
+                      <strong>
+                        {{ $directors.appointment_date_formatted }}
+                        to
+                        {{ $directors.resignation_date_formatted }}
                       </strong>
                   </p>
 
