@@ -1480,7 +1480,7 @@
                   {{$directorsLength := len $directors.directors}}
 
                   <p>
-                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (not $appointmentDateFormatted) (not $resDate) }}the whole of the period from {{else}}the period of {{ end }}<br/>
+                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (eq $directors.appointment_date_formatted $period.current_period_start_on_formatted) (eq $directors.resignation_date_formatted $period.current_period_end_on_formatted) }}the whole of the period from {{else}}the period of {{ end }}<br/>
 
                       <strong>
                         {{ $directors.appointment_date_formatted }}
