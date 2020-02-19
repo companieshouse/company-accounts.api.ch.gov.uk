@@ -1526,19 +1526,23 @@
             <p>
               And signed on behalf of the board by:
 
+                <br/>
+
               {{ if $approval.is_secretary }}
                 <strong>
                     Name: <ix:nonNumeric contextRef="CompanySecretary1_CY" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+
                     <br/>
                     Status: Secretary
                 </strong>
               {{ else }}
 
+                <strong>
                 {{ $approvalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
-                Name: <ix:nonNumeric contextRef = "{{$approvalContext}}}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                Name: <ix:nonNumeric contextRef = "{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
                 <br/>
                 Status: Director
-
+                </strong>
               <br/>
                 {{end}}
             </p>
