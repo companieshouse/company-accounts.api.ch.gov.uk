@@ -1472,9 +1472,6 @@
             <strong>Directors</strong>
               </p>
 
-              {{$approvalContext := ""}}
-              {{$contextRef := ""}}
-
               {{  range $index, $directors := $directorsReport.sorted_directors}}
 
                   {{$directorsLength := len $directors.directors}}
@@ -1492,7 +1489,7 @@
                   {{range $k, $director:= $directors.directors }}
 
 
-                      {{$contextRef = printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
+                      {{$contextRef := printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
 
                       <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$director.name}}<br/></ix:nonNumeric>
 
@@ -1530,17 +1527,20 @@
               And signed on behalf of the board by:
 
               {{ if $approval.is_secretary }}
-                  {{ $approvalContext = "CompanySecretary1_CY" }}
+                <strong>
+                    Name: <ix:nonNumeric contextRef="CompanySecretary1_CY" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                    <br/>
+                    Status: Secretary
+                </strong>
               {{ else }}
-                  {{ $approvalContext = printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
-              {{end}}
+
+                {{ $approvalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
+                Name: <ix:nonNumeric contextRef = "{{$approvalContext}}}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                <br/>
+                Status: Director
 
               <br/>
-              <strong>
-                Name: <ix:nonNumeric contextRef="{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
-                <br/>
-                Status: {{if eq $approvalContext  "CompanySecretary1_CY"}} Secretary {{else}} Director {{end}}
-              </strong>
+                {{end}}
             </p>
 
               <div id="DirectorsReportSection" class="section-marker"></div>
