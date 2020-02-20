@@ -76,7 +76,6 @@ public class StatementsServiceTest {
     private StatementsService statementsService;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String STATEMENTS_ID = "statementsId";
     private static final String GENERATED_ID = "generatedId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String STATEMENTS_SELF_LINK = "statementsSelfLink";
@@ -96,7 +95,7 @@ public class StatementsServiceTest {
 
         when(statements.getLinks()).thenReturn(links);
         when(links.get(BasicLinkType.SELF.getLink())).thenReturn(STATEMENTS_SELF_LINK);
-
+        
         ResponseObject<Statements> response =
                 statementsService.create(statements, transaction, COMPANY_ACCOUNTS_ID, request);
 

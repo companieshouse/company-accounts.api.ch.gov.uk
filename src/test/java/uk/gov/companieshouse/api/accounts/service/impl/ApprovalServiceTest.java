@@ -1,16 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,11 +21,21 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ApprovalRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.ApprovalTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -96,7 +97,7 @@ public class ApprovalServiceTest {
     @DisplayName("Tests the successful creation of an Approval resource")
     public void canCreateAnApproval() throws DataException {
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
-        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -113,7 +114,7 @@ public class ApprovalServiceTest {
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
         when(approvalRepository.insert(approvalEntity)).thenThrow(duplicateKeyException);
-        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -129,7 +130,7 @@ public class ApprovalServiceTest {
     void createApprovalMongoExceptionFailure() throws DataException {
         doReturn(approvalEntity).when(approvalTransformer).transform(ArgumentMatchers
             .any(Approval.class));
-        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, request);
+        doReturn(new Errors()).when(approvalValidator).validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request);
         when(approvalRepository.insert(approvalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);

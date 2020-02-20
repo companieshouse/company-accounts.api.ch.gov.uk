@@ -57,7 +57,7 @@ public class ApprovalService implements ResourceService<Approval> {
     public ResponseObject<Approval> create(Approval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = approvalValidator.validateApproval(rest, request);
+        Errors errors = approvalValidator.validateApproval(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);

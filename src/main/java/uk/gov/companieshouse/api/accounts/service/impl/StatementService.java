@@ -13,6 +13,7 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
@@ -34,26 +35,26 @@ public class StatementService implements ResourceService<Statement> {
     private static final String LEGAL_STATEMENT_SECTION_477_KEY = "section_477";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
         .ofPattern("d MMMM yyyy");
+    private static final String NO_PROFIT_AND_LOSS = "no_profit_and_loss";
 
+    @Autowired
     private StatementTransformer transformer;
+
+    @Autowired
     private StatementRepository statementRepository;
+
+    @Autowired
     private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
     private StatementsServiceProperties statementsServiceProperties;
 
     @Autowired
-    public StatementService(StatementTransformer transformer,
-        StatementRepository statementRepository,
-        KeyIdGenerator keyIdGenerator,
-        SmallFullService smallFullService,
-        StatementsServiceProperties statementsServiceProperties) {
+    private ProfitAndLossService profitAndLossService;
 
-        this.transformer = transformer;
-        this.statementRepository = statementRepository;
-        this.keyIdGenerator = keyIdGenerator;
-        this.smallFullService = smallFullService;
-        this.statementsServiceProperties = statementsServiceProperties;
-    }
 
     @Override
     public ResponseObject<Statement> create(Statement rest, Transaction transaction,
@@ -165,12 +166,12 @@ public class StatementService implements ResourceService<Statement> {
     private void setMetadataOnRestObject(Statement rest,
         Transaction transaction,
         String companyAccountId,
-        LocalDate periodEndOn) {
+        LocalDate periodEndOn) throws DataException {
 
         rest.setLinks(createSelfLink(transaction, companyAccountId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.SMALL_FULL_STATEMENT.getValue());
-        rest.setLegalStatements(getLegalStatements(periodEndOn));
+        rest.setLegalStatements(getLegalStatements(periodEndOn, companyAccountId));
 
     }
 
@@ -195,7 +196,8 @@ public class StatementService implements ResourceService<Statement> {
      *
      * @return
      */
-    private Map<String, String> getLegalStatements(LocalDate periodEndOn) {
+    private Map<String, String> getLegalStatements(LocalDate periodEndOn, String companyAccountsId)
+            throws DataException {
         Map<String, String> legalStatements = getLegalStatementsFromProperties();
 
         if (legalStatements.containsKey(LEGAL_STATEMENT_SECTION_477_KEY)) {
@@ -205,6 +207,10 @@ public class StatementService implements ResourceService<Statement> {
                 PERIOD_END_ON_PLACE_HOLDER,
                 convertDateToString(periodEndOn));
         }
+
+            if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
+                legalStatements.remove(NO_PROFIT_AND_LOSS);
+            }
 
         return legalStatements;
     }
