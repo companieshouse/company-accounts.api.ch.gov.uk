@@ -293,7 +293,6 @@
           <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsTypeFullOrAbbreviated" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
-            <ix:nonNumeric name="core:DateAuthorisationFinancialStatementsForIssue" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
             <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
 
 
@@ -1473,37 +1472,24 @@
             <strong>Directors</strong>
               </p>
 
-              {{$approvalContext := ""}}
-              {{$contextRef := ""}}
-
               {{  range $index, $directors := $directorsReport.sorted_directors}}
-
-                    {{ $appointmentDateFormatted := $directors.appointment_date_formatted}}
-                    {{ $resDate := $directors.resignation_date_formatted}}
 
                   {{$directorsLength := len $directors.directors}}
 
                   <p>
-                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (not $appointmentDateFormatted) (not $resDate) }}the whole of the period from {{else}}the period of {{ end }}<br/>
+                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (eq $directors.appointment_date_formatted $period.current_period_start_on_formatted) (eq $directors.resignation_date_formatted $period.current_period_end_on_formatted) }}the whole of the period from {{else}}the period of {{ end }}<br/>
 
-                      {{ if not $appointmentDateFormatted}}
-                          {{ $appointmentDateFormatted = $period.current_period_start_on_formatted }}
-                      {{end}}
-
-                      {{ if not $resDate}}
-                            {{ $resDate = $period.current_period_end_on_formatted }}
-                      {{end}}
-
-                      <strong>{{$appointmentDateFormatted}}
-                      to
-                      {{$resDate}}
+                      <strong>
+                        {{ $directors.appointment_date_formatted }}
+                        to
+                        {{ $directors.resignation_date_formatted }}
                       </strong>
                   </p>
 
                   {{range $k, $director:= $directors.directors }}
 
 
-                      {{$contextRef = printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
+                      {{$contextRef := printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
 
                       <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$director.name}}<br/></ix:nonNumeric>
 
@@ -1540,18 +1526,25 @@
             <p>
               And signed on behalf of the board by:
 
-              {{ if $approval.is_secretary }}
-                  {{ $approvalContext = "CompanySecretary1_CY" }}
-              {{ else }}
-                  {{ $approvalContext = printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
-              {{end}}
-
-              <br/>
-              <strong>
-                Name: <ix:nonNumeric contextRef="{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
                 <br/>
-                Status: {{if eq $approvalContext  "CompanySecretary1_CY"}} Secretary {{else}} Director {{end}}
-              </strong>
+
+              {{ if $approval.is_secretary }}
+                <strong>
+                    Name: <ix:nonNumeric contextRef="CompanySecretary1_CY" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+
+                    <br/>
+                    Status: Secretary
+                </strong>
+              {{ else }}
+
+                <strong>
+                {{ $approvalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
+                Name: <ix:nonNumeric contextRef = "{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                <br/>
+                Status: Director
+                </strong>
+              <br/>
+                {{end}}
             </p>
 
               <div id="DirectorsReportSection" class="section-marker"></div>
