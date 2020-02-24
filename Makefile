@@ -1,8 +1,6 @@
 artifact_name       := company-accounts.api.ch.gov.uk
-commit              := $(shell git rev-parse --short HEAD)
-tag                 := $(shell git tag -l 'v*-rc*' --points-at HEAD)
-version             := $(shell if [[ -n "$(tag)" ]]; then echo $(tag) | sed 's/^v//'; else echo $(commit); fi)
-artifactory_publish := $(shell if [[ -n "$(tag)" ]]; then echo release; else echo dev; fi)
+version             := "unversioned"
+
 
 .PHONY: all
 all: build
@@ -13,6 +11,7 @@ clean:
 	rm -f ./$(artifact_name).jar
 	rm -f ./$(artifact_name)-*.zip
 	rm -rf ./build-*
+	rm -f ./build.log
 
 .PHONY: build
 build:
@@ -29,7 +28,10 @@ test-unit: clean
 
 .PHONY: package
 package:
-	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found: $(artifact_name)"; exit 1; }
+	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found"; exit 1; }
+	$(info Packaging version: $(version))
+	mvn version:set -DnewVersion=$(version) -DgenerateBackupPoms=false
+	mvn package -DskipTests=true
 	$(eval tmpdir:=$(shell mktemp -d build-XXXXXXXXXX))
 	cp ./routes.yaml $(tmpdir)
 	cp ./start.sh $(tmpdir)
@@ -43,3 +45,8 @@ dist: clean build package
 .PHONY: sonar
 sonar:
 	mvn sonar:sonar
+
+.PHONY: sonar-pr-analysis
+sonar-pr-analysis:
+	mvn sonar:sonar -P sonar-pr-analysis
+

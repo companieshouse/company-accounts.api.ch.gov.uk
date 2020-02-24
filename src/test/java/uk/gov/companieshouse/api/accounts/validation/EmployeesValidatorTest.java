@@ -1,11 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +18,12 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class EmployeesValidatorTest {
@@ -34,9 +34,11 @@ public class EmployeesValidatorTest {
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
-    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
-    private static final String EMPTY_RESOURCE_VALUE =
-            "empty_resource";
+    private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE = "mandatory.element.missing";
+
+    private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH_AVERAGE_EMPLOYEES = EMPLOYEES_PATH + ".previous_period.average_number_of_employees";
+    private static final String EMPLOYEES_CURRENT_PERIOD_PATH_AVERAGE_EMPLOYEES = EMPLOYEES_PATH +  ".current_period.average_number_of_employees";
 
     @Mock
     CompanyService mockCompanyService;
@@ -63,6 +65,7 @@ public class EmployeesValidatorTest {
     void testSuccessfulFirstYearNoteValidation() throws DataException, ServiceException {
 
         createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
@@ -72,19 +75,44 @@ public class EmployeesValidatorTest {
     }
 
     @Test
-    @DisplayName("Note validation when empty note submitted")
-    void testEmptyResourceValidation() throws DataException, ServiceException {
+    @DisplayName("Note validation multi year filer when no current and previous periods or average employees provided")
+    void testEmptyResourceValidationMultiYearFiler() throws DataException, ServiceException {
         Employees employees = new Employees();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
-                EMPTY_RESOURCE_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
+                MANDATORY_ELEMENT_MISSING_VALUE);
 
         errors = validator.validateEmployees(employees, mockTransaction);
 
-        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
-                EMPLOYEES_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                EMPLOYEES_PREVIOUS_PERIOD_PATH_AVERAGE_EMPLOYEES)));
+
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
+                EMPLOYEES_CURRENT_PERIOD_PATH_AVERAGE_EMPLOYEES)));
+
+        assertEquals(2, errors.getErrorCount());
+    }
+
+    @Test
+    @DisplayName("Note validation single year filer when previous period provided")
+    void testEmptyResourceValidationSingleYearFiler() throws DataException, ServiceException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
+
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
+                UNEXPECTED_DATA_VALUE);
+
+        errors = validator.validateEmployees(employees, mockTransaction);
+
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
+                EMPLOYEES_PREVIOUS_PERIOD_PATH)));
+
+        assertEquals(1, errors.getErrorCount());
     }
 
     @Test
