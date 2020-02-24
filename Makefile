@@ -30,7 +30,7 @@ test-unit: clean
 package:
 	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found"; exit 1; }
 	$(info Packaging version: $(version))
-	mvn version:set -DnewVersion=$(version) -DgenerateBackupPoms=false
+	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
 	mvn package -DskipTests=true
 	$(eval tmpdir:=$(shell mktemp -d build-XXXXXXXXXX))
 	cp ./routes.yaml $(tmpdir)
