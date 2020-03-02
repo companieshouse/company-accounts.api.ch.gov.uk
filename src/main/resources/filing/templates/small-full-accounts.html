@@ -1401,10 +1401,19 @@
         {{end}}
         {{if .small_full_accounts.balance_sheet_notes}}
         <tr>
-          <td class="strong">
-            <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
-          </td>
-          <td></td>
+            <td class="strong">
+                <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
+            </td>
+            <td></td>
+        </tr>
+        {{end}}
+
+        {{if .cic_report}}
+        <tr>
+            <td class="strong">
+                <a href="#cicSection">Community Interest Report</a>
+            </td>
+            <td></td>
         </tr>
         {{end}}
         </tbody>
@@ -4436,10 +4445,15 @@
   <!--CIC REPORT SECTION START-->
   <div class="page" id="cicReport">
     <div class="header">
-      <h1 class="text--center">
-        <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-      </h1>
-      <h2 class="text--center">Community Interest Annual Report</h2>
+      <h1 class="text--center">COMMUNITY INTEREST ANNUAL REPORT</h1>
+        <h3 class="text--center strong">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+        </h3>
+        <h3 class="text--center strong">Company Number:
+            <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
+            ({{getJurisdiction $companyNumber}})
+        </h3>
+        <h3 class="text--center">Year Ending: {{$period.current_period_end_on_formatted}}</h3>
     </div>
 
     {{if $cicStatements := .cic_report.statements}}
@@ -4478,10 +4492,26 @@
 
     {{if $approvalData := .cic_report.approval}}
     <div>
-      <p>{{$approvalData.name}}</p>
-      <p>{{$approvalData.date}} </p>
+        <p>
+            This report was approved by the board of directors on
+            <br />
+            <strong>
+                {{$approvalData.date}}
+            </strong>
+            <br />
+        </p>
+
+        <p>
+            And signed on behalf of the board by:
+            <br />
+            <strong>
+                Name: <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{$approvalData.name}}</ix:nonNumeric> <br />
+                Status: Director
+            </strong>
+        </p>
     </div>
     {{end}}
+      <div id="cicSection" class="section-marker"></div>
 
   </div>
   <!--CIC REPORT SECTION END-->
