@@ -32,7 +32,7 @@
     <company-accounts-library.version>1.1.0-rc1</company-accounts-library.version>
     <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
     <spring-test.version>5.0.8.RELEASE</spring-test.version>
-    <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
+    <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
     <api-sdk-java.version>4.2.0</api-sdk-java.version>
     <private-api-sdk-java.version>2.0.0</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.1</api-sdk-manager-java-library.version>
