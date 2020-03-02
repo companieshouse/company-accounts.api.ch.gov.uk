@@ -1434,14 +1434,14 @@
                     <strong>Directors' report period ended
                         <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
                     </strong>
-            </p>
+                </p>
+                <p>
+                    The directors present their report with the financial statements of the company for the period ended {{$period.current_period_end_on_formatted}}
+                </p>
 
 
 
             {{if $directorsStatements := $directorsReport.directors_report_statements}}
-                  <p>
-                    The directors present their report with the financial statements of the company for the period ended {{$period.current_period_end_on_formatted}}
-                  </p>
 
                   <div>
                       {{if $directorsStatements.principal_activities}}
