@@ -293,7 +293,6 @@
           <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsTypeFullOrAbbreviated" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
-          <ix:nonNumeric name="core:DateAuthorisationFinancialStatementsForIssue" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
             <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
 
 
@@ -1402,10 +1401,19 @@
         {{end}}
         {{if .small_full_accounts.balance_sheet_notes}}
         <tr>
-          <td class="strong">
-            <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
-          </td>
-          <td></td>
+            <td class="strong">
+                <a href="#BalanceSheetNotesSection">Balance sheet notes</a>
+            </td>
+            <td></td>
+        </tr>
+        {{end}}
+
+        {{if .cic_report}}
+        <tr>
+            <td class="strong">
+                <a href="#cicSection">Community Interest Report</a>
+            </td>
+            <td></td>
         </tr>
         {{end}}
         </tbody>
@@ -1414,25 +1422,26 @@
 
     <!-- DIRECTORS REPORT -->
 
-    <div class="page">
-      <div class="header">
-        <h1 class="text--center">
-          <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-        </h1>
-      </div>
 
-      <p class="text--center">
-        <strong>Directors report' period ended
-          <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
-        </strong>
-      </p>
+      {{if $directorsReport}}
+            <div class="page">
+                <div class="header">
+                    <h1 class="text--center">
+                        <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                    </h1>
+            </div>
+                <p class="text--center">
+                    <strong>Directors' report period ended
+                        <ix:nonNumeric format="ixt2:datedaymonthyearen" contextRef="CY_END" name="uk-bus:BalanceSheetDate">{{$period.current_period_end_on_formatted}}</ix:nonNumeric>
+                    </strong>
+                </p>
+                <p>
+                    The directors present their report with the financial statements of the company for the period ended {{$period.current_period_end_on_formatted}}
+                </p>
 
-        {{if $directorsReport}}
+
 
             {{if $directorsStatements := $directorsReport.directors_report_statements}}
-                  <p>
-                    The directors present their report with the financial statements of the company for the period ended 30 April 2017
-                  </p>
 
                   <div>
                       {{if $directorsStatements.principal_activities}}
@@ -1472,44 +1481,27 @@
             <strong>Directors</strong>
               </p>
 
-              {{$approvalContext := ""}}
-              {{$contextRef := ""}}
-              {{setValue "directorCounter" 0}}
-
               {{  range $index, $directors := $directorsReport.sorted_directors}}
 
-                    {{ $appointmentDateFormatted := $directors.appointment_date_formatted}}
-                    {{ $resDate := $directors.resignation_date_formatted}}
-
-                  {{$directorsLength := len $directors.names}}
+                  {{$directorsLength := len $directors.directors}}
 
                   <p>
-                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (not $appointmentDateFormatted) (not $resDate) }}the whole of the period from {{else}}the period of {{ end }}<br/>
+                      The {{if eq $directorsLength 1}} director{{else}} directors{{end}} shown below {{if eq $directorsLength 1}} has{{else}} have{{end}} held office during {{ if and (eq $directors.appointment_date_formatted $period.current_period_start_on_formatted) (eq $directors.resignation_date_formatted $period.current_period_end_on_formatted) }}the whole of the period from {{else}}the period of {{ end }}<br/>
 
-                      {{ if not $appointmentDateFormatted}}
-                          {{ $appointmentDateFormatted = $period.current_period_start_on_formatted }}
-                      {{end}}
-
-                      {{ if not $resDate}}
-                            {{ $resDate = $period.current_period_end_on_formatted }}
-                      {{end}}
-
-                      <strong>{{$appointmentDateFormatted}}
-                      to
-                      {{$resDate}}
+                      <strong>
+                        {{ $directors.appointment_date_formatted }}
+                        to
+                        {{ $directors.resignation_date_formatted }}
                       </strong>
                   </p>
 
-                  {{range $k, $directorName:= $directors.names }}
+                  {{range $k, $director:= $directors.directors }}
 
-                      {{incValue "directorCounter" }}
-                      {{$contextRef = printf "%s%d%s" "Director" (getValue "directorCounter") "_CY"}}
 
-                      <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$directorName}}<br/></ix:nonNumeric>
+                      {{$contextRef := printf "%s%s%s" "Director" (getMagnitudeFormatted $director.index) "_CY"}}
 
-                      {{if eq $directorName $directorsReport.approval.approval_name}}
-                            {{$approvalContext = $contextRef}}
-                      {{end}}
+                      <ix:nonNumeric contextRef="{{$contextRef}}" name="uk-bus:NameEntityOfficer">{{$director.name}}<br/></ix:nonNumeric>
+
                   {{end}}
                     <br/>
                     <br/>
@@ -1543,23 +1535,31 @@
             <p>
               And signed on behalf of the board by:
 
-              {{ if $approval.is_secretary }}
-                  {{ $approvalContext = "CompanySecretary1_CY" }}
-              {{end}}
-
-              <br/>
-              <strong>
-                Name: <ix:nonNumeric contextRef="{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
                 <br/>
-                Status: {{if eq $approvalContext  "CompanySecretary1_CY"}} Secretary {{else}} Director {{end}}
-              </strong>
+
+              {{ if $approval.is_secretary }}
+                <strong>
+                    Name: <ix:nonNumeric contextRef="CompanySecretary1_CY" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+
+                    <br/>
+                    Status: Secretary
+                </strong>
+              {{ else }}
+
+                <strong>
+                {{ $approvalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted $approval.director_index) "_CY" }}
+                Name: <ix:nonNumeric contextRef = "{{$approvalContext}}" name="uk-bus:NameEntityOfficer">{{$approval.approval_name}}</ix:nonNumeric>
+                <br/>
+                Status: Director
+                </strong>
+              <br/>
+                {{end}}
             </p>
 
               <div id="DirectorsReportSection" class="section-marker"></div>
 
           </div>
       {{end}}
-    </div>
 
     <!-- DIRECTORS REPORT END -->
 
@@ -2607,10 +2607,11 @@
           <br />
           and signed on behalf of the board by:
         </p>
+          {{ $accApprovalContext := printf "%s%s%s" "Director" (getMagnitudeFormatted .small_full_accounts.approval_index) "_CY" }}
         <p>
           Name:
 
-          <ix:nonNumeric contextRef="Director21_CY" name="uk-bus:NameEntityOfficer">{{.small_full_accounts.approval_name}}</ix:nonNumeric>
+          <ix:nonNumeric contextRef="{{$accApprovalContext}}" name="uk-bus:NameEntityOfficer">{{.small_full_accounts.approval_name}}</ix:nonNumeric>
 
           <br />
           Status: Director
@@ -4444,10 +4445,15 @@
   <!--CIC REPORT SECTION START-->
   <div class="page" id="cicReport">
     <div class="header">
-      <h1 class="text--center">
-        <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
-      </h1>
-      <h2 class="text--center">Community Interest Annual Report</h2>
+      <h1 class="text--center">COMMUNITY INTEREST ANNUAL REPORT</h1>
+        <h3 class="text--center strong">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+        </h3>
+        <h3 class="text--center strong">Company Number:
+            <ix:nonNumeric name="uk-bus:UKCompaniesHouseRegisteredNumber" contextRef="CY">{{$companyNumber}}</ix:nonNumeric>
+            ({{getJurisdiction $companyNumber}})
+        </h3>
+        <h3 class="text--center">Year Ending: {{$period.current_period_end_on_formatted}}</h3>
     </div>
 
     {{if $cicStatements := .cic_report.statements}}
@@ -4486,10 +4492,26 @@
 
     {{if $approvalData := .cic_report.approval}}
     <div>
-      <p>{{$approvalData.name}}</p>
-      <p>{{$approvalData.date}} </p>
+        <p>
+            This report was approved by the board of directors on
+            <br />
+            <strong>
+                {{$approvalData.date}}
+            </strong>
+            <br />
+        </p>
+
+        <p>
+            And signed on behalf of the board by:
+            <br />
+            <strong>
+                Name: <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{$approvalData.name}}</ix:nonNumeric> <br />
+                Status: Director
+            </strong>
+        </p>
     </div>
     {{end}}
+      <div id="cicSection" class="section-marker"></div>
 
   </div>
   <!--CIC REPORT SECTION END-->

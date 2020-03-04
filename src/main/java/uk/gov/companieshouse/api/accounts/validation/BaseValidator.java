@@ -34,6 +34,9 @@ public class BaseValidator {
     @Value("${mustMatch.directorOrSecretary}")
     protected String mustMatchDirectorOrSecretary;
 
+    @Value("${invalid.value}")
+    protected String invalidValue;
+
     /**
      * Validate the given total is correctly aggregated
      *
