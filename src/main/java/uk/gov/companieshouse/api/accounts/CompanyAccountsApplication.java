@@ -15,6 +15,9 @@ import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.accounts.utility.AccountNotePathsYamlReader;
+
+import java.util.Properties;
 
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
@@ -52,7 +55,17 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private LoggingInterceptor loggingInterceptor;
 
     public static void main(String[] args) {
-        SpringApplication.run(CompanyAccountsApplication.class, args);
+
+        SpringApplication application = new SpringApplication(CompanyAccountsApplication.class);
+        Properties properties = new Properties();
+
+        AccountNotePathsYamlReader accountNotePathsYamlReader = new AccountNotePathsYamlReader(properties);
+
+        accountNotePathsYamlReader.populatePropertiesFromYamlFile();
+
+        application.setDefaultProperties(properties);
+
+        application.run(args);
     }
 
     @Override

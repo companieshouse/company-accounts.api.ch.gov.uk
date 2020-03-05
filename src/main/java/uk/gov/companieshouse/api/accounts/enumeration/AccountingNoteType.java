@@ -64,6 +64,12 @@ public enum AccountingNoteType {
                     NoteType.CREDITORS_WITHIN,
                     SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE,
                     "small-full-accounts-note#creditors-within-one-year",
+                    true),
+    SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS(
+            AccountType.SMALL_FULL,
+            NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS,
+            SmallFullLinkType.OFF_BALANCE_SHEET_ARRANGEMENTS_NOTE,
+                    "small-full-accounts-note#off-balance-sheet-arrangements",
                     true);
 
     private AccountType accountType;
