@@ -3824,26 +3824,26 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if $stocksNote.total.current_amount}}
+            {{if isNotEmpty $stocksNote.total.current_amount}}
             <th class="table-heading" id="stocks-note-current-heading">{{$period.current_period_bs_date}}</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $stocksNote.total.previous_amount}}
+            {{if isNotEmpty $stocksNote.total.previous_amount}}
             <th class="table-heading" id="stocks-note-previous-heading">{{$period.previous_period_bs_date}}</th>
             {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if $stocksNote.total.current_amount}}
+            {{if isNotEmpty $stocksNote.total.current_amount}}
             <th class="table-heading" id="stocks-note-current-currency">£</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $stocksNote.total.previous_amount}}
+            {{if isNotEmpty $stocksNote.total.previous_amount}}
             <th class="table-heading" id="stocks-note-previous-currency">£</th>
             {{end}}
           </tr>
