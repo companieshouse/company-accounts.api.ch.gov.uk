@@ -3934,26 +3934,26 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if $debtorsNote.total.current_amount}}
+            {{if isNotEmpty $debtorsNote.total.current_amount}}
             <th class="table-heading" id="debtors-note-current-heading">{{$period.current_period_bs_date}}</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $debtorsNote.total.previous_amount}}
+            {{if isNotEmpty $debtorsNote.total.previous_amount}}
             <th class="table-heading" id="debtors-note-previous-heading">{{$period.previous_period_bs_date}}</th>
             {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if $debtorsNote.total.current_amount}}
+            {{if isNotEmpty $debtorsNote.total.current_amount}}
             <th class="table-heading" id="debtors-note-current-currency">£</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $debtorsNote.total.previous_amount}}
+            {{if isNotEmpty $debtorsNote.total.previous_amount}}
             <th class="table-heading" id="debtors-note-previous-currency">£</th>
             {{end}}
           </tr>
@@ -4120,26 +4120,26 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if $creditorsWithinOneYearNote.total.current_amount}}
+            {{if isNotEmpty $creditorsWithinOneYearNote.total.current_amount}}
             <th class="table-heading" id="creditors-within-one-year-note-current-heading">{{$period.current_period_bs_date}}</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $creditorsWithinOneYearNote.total.previous_amount}}
+            {{if isNotEmpty $creditorsWithinOneYearNote.total.previous_amount}}
             <th class="table-heading" id="creditors-within-one-year-note-previous-heading">{{$period.previous_period_bs_date}}</th>
             {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if $creditorsWithinOneYearNote.total.current_amount}}
+            {{if isNotEmpty $creditorsWithinOneYearNote.total.current_amount}}
             <th class="table-heading" id="creditors-within-one-year-note-current-currency">£</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $creditorsWithinOneYearNote.total.previous_amount}}
+            {{if isNotEmpty $creditorsWithinOneYearNote.total.previous_amount}}
             <th class="table-heading" id="creditors-within-one-year-note-previous-currency">£</th>
             {{end}}
           </tr>
@@ -4301,26 +4301,26 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if $creditorsAfterOneYearNote.total.current_amount}}
+            {{if isNotEmpty $creditorsAfterOneYearNote.total.current_amount}}
             <th class="table-heading" id="creditors-after-one-year-note-current-heading">{{$period.current_period_bs_date}}</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $creditorsAfterOneYearNote.total.previous_amount}}
+            {{if isNotEmpty $creditorsAfterOneYearNote.total.previous_amount}}
             <th class="table-heading" id="creditors-after-one-year-note-previous-heading">{{$period.previous_period_bs_date}}</th>
             {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if $creditorsAfterOneYearNote.total.current_amount}}
+            {{if isNotEmpty $creditorsAfterOneYearNote.total.current_amount}}
             <th class="table-heading" id="creditors-after-one-year-note-current-currency">£</th>
             {{else}}
             <th  class="table-heading">&#160;</th>
             {{end}}
 
-            {{if $creditorsAfterOneYearNote.total.previous_amount}}
+            {{if isNotEmpty $creditorsAfterOneYearNote.total.previous_amount}}
             <th class="table-heading" id="creditors-after-one-year-note-previous-currency">£</th>
             {{end}}
           </tr>
