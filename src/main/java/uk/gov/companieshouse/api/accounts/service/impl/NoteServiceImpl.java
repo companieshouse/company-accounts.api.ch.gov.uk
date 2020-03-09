@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -17,7 +14,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
-import uk.gov.companieshouse.api.accounts.repository.NoteRepository;
+import uk.gov.companieshouse.api.accounts.repository.AccountsNoteRepositoryFactory;
 import uk.gov.companieshouse.api.accounts.service.NoteService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -25,6 +22,10 @@ import uk.gov.companieshouse.api.accounts.transformer.NoteTransformerFactory;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidatorFactory;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -39,7 +40,7 @@ public class NoteServiceImpl implements NoteService {
     private NoteTransformerFactory<Note, NoteEntity> transformerFactory;
 
     @Autowired
-    private NoteRepository repository;
+    private AccountsNoteRepositoryFactory<NoteEntity> repositoryFactory;
 
     @Autowired
     private ParentResourceFactory<LinkType> parentResourceFactory;
@@ -62,7 +63,7 @@ public class NoteServiceImpl implements NoteService {
         entity.setId(generateID(companyAccountId, accountingNoteType.getNoteType()));
 
         try {
-            repository.insert(entity);
+            repositoryFactory.getRepository(accountingNoteType).insert(entity);
         } catch (DuplicateKeyException e) {
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
@@ -92,7 +93,7 @@ public class NoteServiceImpl implements NoteService {
         entity.setId(generateID(companyAccountId, accountingNoteType.getNoteType()));
 
         try {
-            repository.save(entity);
+            repositoryFactory.getRepository(accountingNoteType).save(entity);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -107,7 +108,7 @@ public class NoteServiceImpl implements NoteService {
         NoteEntity entity;
 
         try {
-            entity = repository
+           entity =  repositoryFactory.getRepository(accountingNoteType)
                     .findById(generateID(companyAccountId, accountingNoteType.getNoteType()))
                             .orElse(null);
         } catch (MongoException e) {
@@ -118,8 +119,9 @@ public class NoteServiceImpl implements NoteService {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
 
-        return new ResponseObject<>(ResponseStatus.FOUND,
-                transformerFactory.getTransformer(accountingNoteType).transform(entity));
+        Note note = transformerFactory.getTransformer(accountingNoteType).transform(entity);
+
+        return new ResponseObject<>(ResponseStatus.FOUND, note);
     }
 
     @Override
@@ -129,8 +131,8 @@ public class NoteServiceImpl implements NoteService {
         String id = generateID(companyAccountId, accountingNoteType.getNoteType());
 
         try {
-            if (repository.existsById(id)) {
-                repository.deleteById(id);
+            if (repositoryFactory.getRepository(accountingNoteType).existsById(id)) {
+                repositoryFactory.getRepository(accountingNoteType).deleteById(id);
                 parentResourceFactory.getParentResource(accountingNoteType.getAccountType())
                         .removeLink(companyAccountId, accountingNoteType.getLinkType(), request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);

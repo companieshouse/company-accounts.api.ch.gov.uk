@@ -7,9 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,11 +35,15 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
+
+import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = {"${controller.paths.smallfull.notes}"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,6 +73,9 @@ public class NoteController {
     @Autowired
     private ControllerPathProperties controllerPathProperties;
 
+    @Autowired
+    private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+
     @InitBinder
     protected void initBinder(final WebDataBinder webDataBinder) {
 
@@ -81,12 +91,12 @@ public class NoteController {
                                  @PathVariable("resource") NoteType noteType,
                                  BindingResult bindingResult,
                                  HttpServletRequest request
-                                 ) {
+    ) {
 
         String path = "${controller.paths.smallfull.notes}";
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
 
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
@@ -109,11 +119,98 @@ public class NoteController {
 
         }
 
+    }
+
+    @PutMapping
+    public ResponseEntity update(@Valid @RequestBody Note data,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("accountType") AccountType accountType,
+                                 @PathVariable("resource") NoteType noteType,
+                                 BindingResult bindingResult,
+                                 HttpServletRequest request) {
+
+        AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
+
+        if (!parentResourceFactory.getParentResource(accountType).childExists(request, accountingNoteType.getLinkType())) {
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        }
+
+        if (bindingResult.hasErrors()) {
+
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        }
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+
+            ResponseObject<Note> response = noteService.update(data, accountingNoteType, transaction, companyAccountId, request);
+
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+
+        } catch (DataException e) {
+
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to update resource: " + accountingNoteType.getLinkType().getLink(), e, request);
+            return apiResponseMapper.getErrorResponse();
+
+        }
 
     }
 
+    @GetMapping
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
+                              @PathVariable("accountType") AccountType accountType,
+                              @PathVariable("resource") NoteType noteType,
+                              HttpServletRequest request) {
+
+        AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+
+            ResponseObject<Note> response = noteService.find(accountingNoteType, companyAccountId);
+            return apiResponseMapper.mapGetResponse(response.getData(), request);
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve resource: " + accountingNoteType.getLinkType().getLink(), ex, request);
+            return apiResponseMapper.getErrorResponse();
+        }
+
+    }
+
+    @DeleteMapping
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("accountType") AccountType accountType,
+                                 @PathVariable("resource") NoteType noteType,
+                                 HttpServletRequest request) {
+
+        AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+
+            ResponseObject<Note> response = noteService.delete(accountingNoteType, companyAccountId, request);
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
+
+        } catch (DataException ex) {
+
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete resource: " + accountingNoteType.getLinkType().getLink(), ex, request);
+            return apiResponseMapper.getErrorResponse();
+
+        }
+
+    }
+
+
     @PostConstruct
-    void init () {
+    void init() {
 
         String[] requestMappings = AnnotationUtils
                 .findAnnotation(this.getClass(), RequestMapping.class).value();
@@ -133,7 +230,7 @@ public class NoteController {
 
             if (!matched) {
 
-                System.out.println(
+                STRUCTURED_LOGGER.error(
                         "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in AccountsResourceController; "
                                 + "This must be added for requests of this type to route to this controller");
             }

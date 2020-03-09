@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.MissingInfrastructureException;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
 import java.util.EnumMap;
 import java.util.List;
 
 @Component
-public class AccountsNoteRepositoryFactory<E extends BaseEntity> {
+public class AccountsNoteRepositoryFactory<E extends NoteEntity> {
 
     private final EnumMap<AccountingNoteType, AccountsNoteRepository<E>> repositoryMap = new EnumMap<>(AccountingNoteType.class);
 
