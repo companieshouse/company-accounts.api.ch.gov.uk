@@ -70,7 +70,7 @@ public enum AccountingNoteType {
             NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS,
             SmallFullLinkType.OFF_BALANCE_SHEET_ARRANGEMENTS_NOTE,
                     "small-full-accounts-note#off-balance-sheet-arrangements",
-                    true);
+                    false);
 
     private AccountType accountType;
     private NoteType noteType;

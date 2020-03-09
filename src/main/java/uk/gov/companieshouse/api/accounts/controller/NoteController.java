@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,10 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = {"${controller.paths.smallfull.notes}"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,6 +83,7 @@ public class NoteController {
                                  HttpServletRequest request
                                  ) {
 
+        String path = "${controller.paths.smallfull.notes}";
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
 
         if(bindingResult.hasErrors()) {
@@ -106,6 +110,34 @@ public class NoteController {
         }
 
 
+    }
+
+    @PostConstruct
+    void init () {
+
+        String[] requestMappings = AnnotationUtils
+                .findAnnotation(this.getClass(), RequestMapping.class).value();
+
+        for (Map.Entry<String, String> entry : controllerPathProperties.getPaths().entrySet()) {
+
+            boolean matched = false;
+
+            for (String requestMapping : requestMappings) {
+
+                if (requestMapping.equals("${controller.paths." + entry.getKey() + "}")) {
+
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+
+                System.out.println(
+                        "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in AccountsResourceController; "
+                                + "This must be added for requests of this type to route to this controller");
+            }
+        }
     }
 
 }

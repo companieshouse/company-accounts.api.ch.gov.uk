@@ -12,23 +12,23 @@ import java.util.Map;
 @Component
 public class NoteConverter extends PropertyEditorSupport {
 
-    private static final Map<String, NoteType> RESOURCE_MAP = new HashMap<>();
+    private static final Map<String, NoteType> NOTES_MAP = new HashMap<>();
 
     NoteConverter() {
 
-        Arrays.stream(NoteType.values()).forEach(noteType -> RESOURCE_MAP.put(noteType.getType(), noteType));
+        Arrays.stream(NoteType.values()).forEach(noteType -> NOTES_MAP.put(noteType.getType(), noteType));
 
     }
 
     public void setAsText(final String type) {
 
-        NoteType noteType = RESOURCE_MAP.get(type);
+        NoteType noteType = NOTES_MAP.get(type);
 
         if(noteType == null) {
 
             throw new InvalidPathParameterException("No resource found for: " + type);
         }
 
-        setSource(noteType);
+        setValue(noteType);
     }
 }
