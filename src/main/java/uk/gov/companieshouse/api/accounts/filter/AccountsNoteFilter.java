@@ -80,6 +80,7 @@ public class AccountsNoteFilter implements Filter {
         private String getPackageName(Matcher matcher) {
 
             return "." + getPackage(matcher.group(1)) +
+                    ".notes" +
                     "." + getPackage(matcher.group(2)) +
                     "." + getClassName(matcher.group(2));
         }
