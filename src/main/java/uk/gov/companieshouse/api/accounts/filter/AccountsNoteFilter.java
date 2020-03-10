@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.filter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.WordUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

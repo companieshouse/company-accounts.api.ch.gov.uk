@@ -12,9 +12,6 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OffBalanceSheetArrangements extends Note {
 
-    private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MIN_FIELD_LENGTH = 1;
-
     @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("details")
