@@ -21,7 +21,6 @@ import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.enumeration.NoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.LinkType;
-import uk.gov.companieshouse.api.accounts.model.ControllerPathProperties;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
@@ -34,13 +33,9 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.logging.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
 @RequestMapping(value = {"${controller.paths.notes.smallfull}"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,11 +61,6 @@ public class NoteController {
 
     @Autowired
     private ApiResponseMapper apiResponseMapper;
-
-    @Autowired
-    private ControllerPathProperties controllerPathProperties;
-
-    private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @InitBinder
     protected void initBinder(final WebDataBinder webDataBinder) {
