@@ -3,12 +3,20 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.offbalance
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.charset.CharSet;
 
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OffBalanceSheetArrangements extends Note {
 
+    private static final int MAX_FIELD_LENGTH = 20000;
+    private static final int MIN_FIELD_LENGTH = 1;
+
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("details")
     private String details;
 

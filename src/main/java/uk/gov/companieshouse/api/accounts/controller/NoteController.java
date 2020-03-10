@@ -85,10 +85,11 @@ public class NoteController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Note data,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,
                                  @PathVariable("noteType") NoteType noteType,
-                                 BindingResult bindingResult,
+
                                  HttpServletRequest request) {
 
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
@@ -119,11 +120,11 @@ public class NoteController {
     }
 
     @PutMapping
-    public ResponseEntity update(@Valid @RequestBody Note data,
+    public ResponseEntity update(@RequestBody @Valid Note data,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,
                                  @PathVariable("noteType") NoteType noteType,
-                                 BindingResult bindingResult,
                                  HttpServletRequest request) {
 
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
