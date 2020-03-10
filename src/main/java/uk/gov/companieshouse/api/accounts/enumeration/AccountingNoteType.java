@@ -45,7 +45,6 @@ public enum AccountingNoteType {
             NoteType.STOCKS,
             Parent.SMALL_FULL,
             SmallFullLinkType.STOCKS_NOTE,
-
             "small-full-accounts#stocks-note",
             true),
     SMALL_FULL_DEBTORS(

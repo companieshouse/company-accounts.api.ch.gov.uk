@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.filter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.WordUtils;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import uk.gov.companieshouse.api.accounts.utility.PackageResolver;
 
 @Component
 public class AccountsNoteFilter implements Filter {
@@ -32,6 +33,9 @@ public class AccountsNoteFilter implements Filter {
     private static final List<String> SUBMISSION_METHODS = Arrays.asList("POST", "PUT");
 
     private static final String ACCOUNTS_RESOURCE_PACKAGE = "accounts_resource_package";
+
+    @Autowired
+    private PackageResolver packageResolver;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -69,30 +73,12 @@ public class AccountsNoteFilter implements Filter {
                 // For requests of a given format, append an accounts resource package to the body
                 Matcher matcher = ACCOUNTS_RESOURCE_REGEX.matcher(request.getRequestURI());
                 if (matcher.find()) {
-                    j.put(ACCOUNTS_RESOURCE_PACKAGE, getPackageName(matcher));
+                    j.put(ACCOUNTS_RESOURCE_PACKAGE, packageResolver.getNotePackage(matcher.group(1), matcher.group(2)));
                 }
 
                 // Cache the body for later reading
                 body = j.toString();
             }
-        }
-
-        private String getPackageName(Matcher matcher) {
-
-            return "." + getPackage(matcher.group(1)) +
-                    ".notes" +
-                    "." + getPackage(matcher.group(2)) +
-                    "." + getClassName(matcher.group(2));
-        }
-
-        private String getPackage(String input) {
-
-            return input.replace("-", "").toLowerCase();
-        }
-
-        private String getClassName(String input) {
-
-            return WordUtils.capitalizeFully(input.replace("-", " ")).replace(" ", "");
         }
 
         @Override
