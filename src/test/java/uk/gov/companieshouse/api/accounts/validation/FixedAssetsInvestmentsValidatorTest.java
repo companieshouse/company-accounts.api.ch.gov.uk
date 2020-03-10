@@ -25,10 +25,11 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FixedInvestmentsValidatorTest {
+public class FixedAssetsInvestmentsValidatorTest {
 
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
@@ -48,6 +49,8 @@ public class FixedInvestmentsValidatorTest {
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
 
+    @Mock
+    private Transaction transaction;
 
     private FixedAssetsInvestments fixedAssetsInvestments;
     private Errors errors;
@@ -71,7 +74,7 @@ public class FixedInvestmentsValidatorTest {
 
         fixedAssetsInvestments.setDetails("test");
 
-        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+        errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -87,7 +90,7 @@ public class FixedInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
                 UNEXPECTED_DATA_VALUE);
 
-        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+        errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -101,7 +104,7 @@ public class FixedInvestmentsValidatorTest {
             ServiceException {
 
         fixedAssetsInvestments.setDetails("test");
-        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+        errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
         assertFalse(errors.hasErrors());
 
     }
@@ -116,7 +119,7 @@ public class FixedInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
                 MANDATORY_ELEMENT_MISSING_VALUE);
 
-        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+        errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -132,7 +135,7 @@ public class FixedInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateFixedAssetsInvestments(mockRequest, fixedAssetsInvestments, "");
+        errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,

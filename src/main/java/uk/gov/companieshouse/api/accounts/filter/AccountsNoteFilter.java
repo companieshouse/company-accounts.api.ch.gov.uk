@@ -27,11 +27,11 @@ import java.util.regex.Pattern;
 @Component
 public class AccountsNoteFilter implements Filter {
 
-    private static final Pattern ACCOUNTS_RESOURCE_REGEX = Pattern.compile("^/transactions/[^/]*/company-accounts/[^/]+/([^/]+)/([^/]+)(/[^/]+)?$");
+    private static final Pattern ACCOUNTS_RESOURCE_REGEX = Pattern.compile("^/transactions/[^/]*/company-accounts/[^/]+/([^/]+)/notes/([^/]+)$");
 
     private static final List<String> SUBMISSION_METHODS = Arrays.asList("POST", "PUT");
 
-    private static final String ACCOUNTS_RESOURCE_PACKAGE = "accountsResourcePackage";
+    private static final String ACCOUNTS_RESOURCE_PACKAGE = "accounts_resource_package";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -69,10 +69,7 @@ public class AccountsNoteFilter implements Filter {
                 // For requests of a given format, append an accounts resource package to the body
                 Matcher matcher = ACCOUNTS_RESOURCE_REGEX.matcher(request.getRequestURI());
                 if (matcher.find()) {
-                    j.put(ACCOUNTS_RESOURCE_PACKAGE,
-                            (matcher.group(3) != null ?
-                                    getPackageNameIncludingGroupThree(matcher) :
-                                    getPackageNameExcludingGroupThree(matcher)));
+                    j.put(ACCOUNTS_RESOURCE_PACKAGE, getPackageName(matcher));
                 }
 
                 // Cache the body for later reading
@@ -80,19 +77,11 @@ public class AccountsNoteFilter implements Filter {
             }
         }
 
-        private String getPackageNameExcludingGroupThree(Matcher matcher) {
+        private String getPackageName(Matcher matcher) {
 
             return "." + getPackage(matcher.group(1)) +
                     "." + getPackage(matcher.group(2)) +
                     "." + getClassName(matcher.group(2));
-        }
-
-        private String getPackageNameIncludingGroupThree(Matcher matcher) {
-
-            return "." + getPackage(matcher.group(1)) +
-                    "." + getPackage(matcher.group(2)) +
-                    "." + getPackage(matcher.group(3).replace("/", "")) +
-                    "." + getClassName(matcher.group(3).replace("/", ""));
         }
 
         private String getPackage(String input) {

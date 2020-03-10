@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.rest.notes.fixedassetsinvestmen
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 import javax.validation.Valid;
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FixedAssetsInvestments extends RestObject {
+public class FixedAssetsInvestments extends Note {
 
     private static final int MAX_FIELD_LENGTH = 20000;
     private static final int MIN_FIELD_LENGTH = 1;
