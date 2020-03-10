@@ -46,7 +46,7 @@ import java.util.Map;
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
 @RestController
-@RequestMapping(value = {"${controller.paths.smallfull.notes}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = {"${controller.paths.notes.smallfull}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class NoteController {
 
     @Autowired
@@ -73,7 +73,6 @@ public class NoteController {
     @Autowired
     private ControllerPathProperties controllerPathProperties;
 
-    @Autowired
     private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
 
     @InitBinder
@@ -88,12 +87,10 @@ public class NoteController {
     public ResponseEntity create(@Valid @RequestBody Note data,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,
-                                 @PathVariable("resource") NoteType noteType,
+                                 @PathVariable("noteType") NoteType noteType,
                                  BindingResult bindingResult,
-                                 HttpServletRequest request
-    ) {
+                                 HttpServletRequest request) {
 
-        String path = "${controller.paths.smallfull.notes}";
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
 
         if (bindingResult.hasErrors()) {
@@ -125,7 +122,7 @@ public class NoteController {
     public ResponseEntity update(@Valid @RequestBody Note data,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,
-                                 @PathVariable("resource") NoteType noteType,
+                                 @PathVariable("noteType") NoteType noteType,
                                  BindingResult bindingResult,
                                  HttpServletRequest request) {
 
@@ -164,7 +161,7 @@ public class NoteController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               @PathVariable("accountType") AccountType accountType,
-                              @PathVariable("resource") NoteType noteType,
+                              @PathVariable("noteType") NoteType noteType,
                               HttpServletRequest request) {
 
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
@@ -187,7 +184,7 @@ public class NoteController {
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,
-                                 @PathVariable("resource") NoteType noteType,
+                                 @PathVariable("noteType") NoteType noteType,
                                  HttpServletRequest request) {
 
         AccountingNoteType accountingNoteType = accountsNoteConverter.getAccountsNote(accountType, noteType);
@@ -231,7 +228,7 @@ public class NoteController {
             if (!matched) {
 
                 STRUCTURED_LOGGER.error(
-                        "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in AccountsResourceController; "
+                        "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in NoteController; "
                                 + "This must be added for requests of this type to route to this controller");
             }
         }
