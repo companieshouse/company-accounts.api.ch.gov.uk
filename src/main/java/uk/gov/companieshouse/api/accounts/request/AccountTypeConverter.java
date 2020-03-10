@@ -14,7 +14,7 @@ public class AccountTypeConverter extends PropertyEditorSupport {
 
     private static final Map<String, AccountType> ACCOUNT_TYPE_MAP = new HashMap<>();
 
-    AccountTypeConverter() {
+    public AccountTypeConverter() {
 
         Arrays.stream(AccountType.values()).forEach( accountType -> ACCOUNT_TYPE_MAP.put(accountType.getType(), accountType));
     }

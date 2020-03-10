@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,8 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
 
 import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPLICATION_NAME_SPACE;
 
@@ -203,36 +200,5 @@ public class NoteController {
             return apiResponseMapper.getErrorResponse();
 
         }
-
     }
-
-
-    @PostConstruct
-    void init() {
-
-        String[] requestMappings = AnnotationUtils
-                .findAnnotation(this.getClass(), RequestMapping.class).value();
-
-        for (Map.Entry<String, String> entry : controllerPathProperties.getPaths().entrySet()) {
-
-            boolean matched = false;
-
-            for (String requestMapping : requestMappings) {
-
-                if (requestMapping.equals("${controller.paths." + entry.getKey() + "}")) {
-
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (!matched) {
-
-                STRUCTURED_LOGGER.error(
-                        "No RequestMapping value for property: ${controller.paths." + entry.getKey() + "} in NoteController; "
-                                + "This must be added for requests of this type to route to this controller");
-            }
-        }
-    }
-
 }
