@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
+import uk.gov.companieshouse.api.accounts.enumeration.NoteType;
 import uk.gov.companieshouse.api.accounts.exception.InvalidPathParameterException;
 
 import java.util.HashMap;
@@ -18,43 +18,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AccountTypeConverterTest {
+class NoteConverterTest {
 
-    private AccountType accountTypeWithSmallFull = AccountType.SMALL_FULL;
-    private String OTHER_TEXT = "text";
+    private NoteType noteType = NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS;
+    private String otherType = "otherType";
+    private Map<String, NoteType> ACCOUNT_TYPE_MAP = new HashMap<>();
 
-    private Map<String, AccountType> ACCOUNT_TYPE_MAP = new HashMap<>();
-
-    private AccountTypeConverter converter;
+    private NoteConverter converter;
 
     @BeforeEach
     private void setup() {
 
-        ACCOUNT_TYPE_MAP.put(accountTypeWithSmallFull.getType(), accountTypeWithSmallFull);
-        converter = new AccountTypeConverter();
+        ACCOUNT_TYPE_MAP.put(noteType.getType(), noteType);
+        converter = new NoteConverter();
     }
 
     @Test
     @DisplayName("Get account type for the converter with the value from the map")
     void getAccountTypeForTheConverterSuccess() {
 
-        assertEquals(accountTypeWithSmallFull,
-                ACCOUNT_TYPE_MAP.get(accountTypeWithSmallFull.getType()));
-        converter.setAsText(accountTypeWithSmallFull.getType());
-        assertEquals(accountTypeWithSmallFull, converter.getValue());
+        assertEquals(noteType,
+                ACCOUNT_TYPE_MAP.get(noteType.getType()));
+        converter.setAsText(noteType.getType());
+        assertEquals(noteType, converter.getValue());
     }
 
     @Test
     @DisplayName("Get account type for the converter throws invalid parameter exception")
     void getAccountTypeForTheConverterThrowsInvalidParameterException() {
 
-        converter = new AccountTypeConverter();
-
-        AccountType type = ACCOUNT_TYPE_MAP.get(OTHER_TEXT);
+        NoteType type = ACCOUNT_TYPE_MAP.get(otherType);
         converter.setValue(type);
 
         assertThrows(InvalidPathParameterException.class,
-                () -> converter.setAsText(OTHER_TEXT));
+                () -> converter.setAsText(otherType));
         assertNull(converter.getValue());
     }
 }
