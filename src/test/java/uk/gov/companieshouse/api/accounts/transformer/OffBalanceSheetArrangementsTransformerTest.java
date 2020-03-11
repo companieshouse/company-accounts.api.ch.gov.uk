@@ -27,7 +27,7 @@ class OffBalanceSheetArrangementsTransformerTest {
     private OffBalanceSheetArrangementsTransformer offBalanceSheetArrangementsTransformer = new OffBalanceSheetArrangementsTransformer();
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+     void testTransformerWithEmptyRestObject() {
 
         OffBalanceSheetArrangementsEntity offBalanceSheetArrangementsEntity = offBalanceSheetArrangementsTransformer
                 .transform(new OffBalanceSheetArrangements());
@@ -40,7 +40,7 @@ class OffBalanceSheetArrangementsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+     void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         OffBalanceSheetArrangements offBalanceSheetArrangements = new OffBalanceSheetArrangements();
 
@@ -61,7 +61,7 @@ class OffBalanceSheetArrangementsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
+     void testTransformerWithEmptyEntityObject() {
 
         OffBalanceSheetArrangements offBalanceSheetArrangements = offBalanceSheetArrangementsTransformer
                 .transform(new OffBalanceSheetArrangementsEntity());
@@ -73,7 +73,7 @@ class OffBalanceSheetArrangementsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         OffBalanceSheetArrangementsEntity offBalanceSheetArrangementsEntity = new OffBalanceSheetArrangementsEntity();
         OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity = new OffBalanceSheetArrangementsDataEntity();
