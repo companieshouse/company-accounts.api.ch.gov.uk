@@ -34,8 +34,8 @@ class NoteConverterTest {
     }
 
     @Test
-    @DisplayName("Get account type for the converter with the value from the map")
-    void getAccountTypeForTheConverterSuccess() {
+    @DisplayName("Get note type for the converter with the value from the map")
+    void getNoteTypeForTheConverterSuccess() {
 
         assertEquals(noteType,
                 ACCOUNT_TYPE_MAP.get(noteType.getType()));
@@ -44,8 +44,8 @@ class NoteConverterTest {
     }
 
     @Test
-    @DisplayName("Get account type for the converter throws invalid parameter exception")
-    void getAccountTypeForTheConverterThrowsInvalidParameterException() {
+    @DisplayName("Get note type for the converter throws invalid parameter exception")
+    void getNoteTypeForTheConverterThrowsInvalidParameterException() {
 
         NoteType type = ACCOUNT_TYPE_MAP.get(otherType);
         converter.setValue(type);

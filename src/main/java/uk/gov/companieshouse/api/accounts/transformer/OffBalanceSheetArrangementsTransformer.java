@@ -34,7 +34,13 @@ public class OffBalanceSheetArrangementsTransformer implements NoteTransformer<O
 
         OffBalanceSheetArrangements offBalanceSheetArrangements = new OffBalanceSheetArrangements();
 
-        BeanUtils.copyProperties(entity.getData(), offBalanceSheetArrangements);
+        OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity;
+        if (entity.getData() != null) {
+            offBalanceSheetArrangementsDataEntity = entity.getData();
+        } else {
+            offBalanceSheetArrangementsDataEntity = new OffBalanceSheetArrangementsDataEntity();
+        }
+        BeanUtils.copyProperties(offBalanceSheetArrangementsDataEntity, offBalanceSheetArrangements);
 
         return offBalanceSheetArrangements;
 
