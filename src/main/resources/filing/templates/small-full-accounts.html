@@ -4410,6 +4410,40 @@
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
 
+      <!-- OFF BALANCE SHEET ARRANGEMENTS START -->
+      {{if $offBalanceSheetArrangements := $balanceSheetNotes.off_balance_sheet_arrangements}}
+      {{incValue "notes-page-count" }}
+      {{setValue "off-balance-sheet-arrangements-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+
+        <h2>{{getValue "notes-page-count"}}. Off balance sheet arrangements</h2>
+
+        {{if $offBalanceSheetArrangements.details}}
+        <div class="text-area-display" id="off-balance-sheet-arrangements-free-text-note">
+
+          <p class="text-area-display">
+            <ix:nonNumeric contextRef="CreditorsAfterOneYear_CY" name="core:GeneralDescriptionAnyOff-balanceSheetArrangementsIncludingNaturePurposeFinancialImpactOnEntity">{{$offBalanceSheetArrangements.details}}</ix:nonNumeric>
+          </p>
+
+        </div>
+        {{end}}
+
+      </div>
+
+      {{end}}
+      <!-- OFF BALANCE SHEET ARRANGEMENTS END -->
+
       {{end}}
     </div>
 
@@ -4505,7 +4539,7 @@
             And signed on behalf of the board by:
             <br />
             <strong>
-                Name: <ix:nonNumeric contextRef="Director1_CY" name="uk-bus:NameEntityOfficer">{{$approvalData.name}}</ix:nonNumeric> <br />
+                Name: {{$approvalData.name}}<br />
                 Status: Director
             </strong>
         </p>
