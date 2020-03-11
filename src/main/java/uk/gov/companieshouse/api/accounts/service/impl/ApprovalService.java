@@ -57,8 +57,7 @@ public class ApprovalService implements ResourceService<Approval> {
     public ResponseObject<Approval> create(Approval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = approvalValidator.validateApproval(rest, request);
-
+        Errors errors = approvalValidator.validateApproval(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -92,8 +91,29 @@ public class ApprovalService implements ResourceService<Approval> {
     @Override
     public ResponseObject<Approval> update(Approval rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
-        //TODO implement method
-        return null;
+
+        Errors errors = approvalValidator.validateApproval(rest, transaction, companyAccountId, request);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
+        String selfLink = createSelfLink(transaction, companyAccountId);
+        initLinks(rest, selfLink);
+        rest.setEtag(GenerateEtagUtil.generateEtag());
+        rest.setKind(Kind.APPROVAL.getValue());
+        ApprovalEntity approvalEntity = approvalTransformer.transform(rest);
+
+        String id = generateID(companyAccountId);
+        approvalEntity.setId(id);
+
+        try {
+
+            approvalRepository.save(approvalEntity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+        return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
@@ -119,7 +139,25 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Override
     public ResponseObject<Approval> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
-        return null;
+
+        String approvalId = generateID(companyAccountsId);
+
+        try {
+            if (approvalRepository.existsById(approvalId)) {
+
+                approvalRepository.deleteById(approvalId);
+
+                smallFullService
+                        .removeLink(companyAccountsId, SmallFullLinkType.APPROVAL, request);
+                return new ResponseObject<>(ResponseStatus.UPDATED);
+            } else {
+
+                return new ResponseObject<>(ResponseStatus.NOT_FOUND);
+            }
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
     }
 
     private String generateID(String companyAccountId) {
