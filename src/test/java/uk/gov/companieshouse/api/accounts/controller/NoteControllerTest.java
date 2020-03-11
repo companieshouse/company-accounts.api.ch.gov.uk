@@ -31,12 +31,10 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,9 +66,6 @@ public class NoteControllerTest {
     private ErrorMapper errorMapper;
 
     @Mock
-    private Map<String, String> parentLink;
-
-    @Mock
     private ParentResourceFactory<LinkType> parentResourceFactory;
 
     @Mock
@@ -85,7 +80,7 @@ public class NoteControllerTest {
 
     private static final NoteType noteType = NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS;
 
-    AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS;
+    private static final AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS;
 
 
     @Test
@@ -294,7 +289,7 @@ public class NoteControllerTest {
     @DisplayName("Delete Note resource - success")
     void deleteNoteResourceSuccess() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
 
         ResponseObject<Note> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
@@ -320,7 +315,7 @@ public class NoteControllerTest {
     @DisplayName("Delete Note resource - data exception thrown")
     void deleteNoteResourceDataException() throws DataException {
 
-        when(request.getAttribute(anyString())).thenReturn(transaction);
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(noteService.delete(accountingNoteTypeWithExplicitValidation, COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
