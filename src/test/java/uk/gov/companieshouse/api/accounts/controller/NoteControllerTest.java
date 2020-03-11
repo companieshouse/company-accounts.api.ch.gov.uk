@@ -85,13 +85,14 @@ public class NoteControllerTest {
 
     private static final NoteType noteType = NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS;
 
+    AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS;
+
+
     @Test
     @DisplayName("Note resource created successfully")
     void createNoteResourceSuccess() throws DataException{
 
         when(bindingResult.hasErrors()).thenReturn(false);
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -117,8 +118,6 @@ public class NoteControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(noteService.create(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID,request)).thenThrow(DataException.class);
@@ -156,8 +155,6 @@ public class NoteControllerTest {
     @DisplayName("Update Note resource - no parent link")
     void updateNoteResourceNoParentLink() {
 
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
-
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
 
@@ -173,8 +170,6 @@ public class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - has binding errors")
     void updateNoteResourceBindingErrors() {
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
@@ -195,8 +190,6 @@ public class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - success")
     void updateNoteResourceSuccess() throws DataException {
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(bindingResult.hasErrors()).thenReturn(false);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
@@ -228,8 +221,6 @@ public class NoteControllerTest {
     @DisplayName("Update Note resource - data exception thrown")
     void updateNoteResourceDataException() throws DataException {
 
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -254,8 +245,6 @@ public class NoteControllerTest {
     @Test
     @DisplayName("Get Note resource - success")
     void getNoteResourceSuccess() throws DataException {
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -283,8 +272,6 @@ public class NoteControllerTest {
     @DisplayName("Get Note resource - data exception thrown")
     void getNoteResourceDataException() throws DataException {
 
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
 
@@ -306,8 +293,6 @@ public class NoteControllerTest {
     @Test
     @DisplayName("Delete Note resource - success")
     void deleteNoteResourceSuccess() throws DataException {
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
@@ -334,8 +319,6 @@ public class NoteControllerTest {
     @Test
     @DisplayName("Delete Note resource - data exception thrown")
     void deleteNoteResourceDataException() throws DataException {
-
-        AccountingNoteType accountingNoteTypeWithExplicitValidation = AccountingNoteType.SMALL_FULL_DEBTORS;
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
