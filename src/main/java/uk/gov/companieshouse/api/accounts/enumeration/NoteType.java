@@ -11,7 +11,8 @@ public enum NoteType {
     DEBTORS("debtors"),
     CURRENT_ASSETS_INVESTMENTS("current-assets-investments"),
     CREDITORS_AFTER("creditors-after-more-than-one-year"),
-    CREDITORS_WITHIN("creditors-within-one-year");
+    CREDITORS_WITHIN("creditors-within-one-year"),
+    OFF_BALANCE_SHEET_ARRANGEMENTS("off-balance-sheet-arrangements");
 
     NoteType(String type) {
         this.type = type;

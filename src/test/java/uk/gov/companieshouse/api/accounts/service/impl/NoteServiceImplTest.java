@@ -1,17 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.mongodb.MongoException;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,6 +17,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.parent.ParentResource;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
+import uk.gov.companieshouse.api.accounts.repository.AccountsNoteRepository;
+import uk.gov.companieshouse.api.accounts.repository.AccountsNoteRepositoryFactory;
 import uk.gov.companieshouse.api.accounts.repository.NoteRepository;
 import uk.gov.companieshouse.api.accounts.service.NoteService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -38,6 +29,18 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidatorFactory;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -82,16 +85,25 @@ public class NoteServiceImplTest {
     @Mock
     private Errors errors;
 
+    @Mock
+    private AccountsNoteRepositoryFactory<NoteEntity> repositoryFactory;
+
+    @Mock
+    private AccountsNoteRepository<NoteEntity> accountsNoteRepository;
+
     @InjectMocks
     private NoteService noteService = new NoteServiceImpl();
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
     private static final String SELF_LINK = "selfLink";
-    
+    private AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
+
     @Test
     @DisplayName("Create - success - with explicit validation")
     void createSuccessWithExplicitValidation() throws DataException {
+
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
 
         AccountingNoteType accountingNoteTypeWithExplicitValidation = 
                 AccountingNoteType.SMALL_FULL_DEBTORS;
@@ -123,7 +135,7 @@ public class NoteServiceImplTest {
         
         assertMetaDataSetOnRestObject(accountingNoteTypeWithExplicitValidation);
         assertIdSetOnEntity();
-        verify(repository).insert(noteEntity);
+        verify(repositoryFactory.getRepository(accountingNoteType)).insert(noteEntity);
         verify(parentResource).addLink(
                  COMPANY_ACCOUNTS_ID, accountingNoteTypeWithExplicitValidation.getLinkType(), SELF_LINK, request);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -136,6 +148,8 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteTypeWithoutExplicitValidation =
                 AccountingNoteType.SMALL_FULL_ACCOUNTING_POLICIES;
+
+        when(repositoryFactory.getRepository(accountingNoteTypeWithoutExplicitValidation)).thenReturn(accountsNoteRepository);
 
         when(request.getRequestURI()).thenReturn(SELF_LINK);
 
@@ -157,7 +171,7 @@ public class NoteServiceImplTest {
         verify(validatorFactory, never()).getValidator(accountingNoteTypeWithoutExplicitValidation);
         assertMetaDataSetOnRestObject(accountingNoteTypeWithoutExplicitValidation);
         assertIdSetOnEntity();
-        verify(repository).insert(noteEntity);
+        verify(repositoryFactory.getRepository(accountingNoteTypeWithoutExplicitValidation)).insert(noteEntity);
         verify(parentResource).addLink(
                 COMPANY_ACCOUNTS_ID, accountingNoteTypeWithoutExplicitValidation.getLinkType(), SELF_LINK, request);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -195,6 +209,8 @@ public class NoteServiceImplTest {
         AccountingNoteType accountingNoteTypeWithExplicitValidation =
                 AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation)).thenReturn(accountsNoteRepository);
+
         when(validatorFactory.getValidator(accountingNoteTypeWithExplicitValidation))
                 .thenReturn(validator);
 
@@ -213,7 +229,7 @@ public class NoteServiceImplTest {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteTypeWithExplicitValidation.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.insert(noteEntity)).thenThrow(DuplicateKeyException.class);
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation).insert(noteEntity)).thenThrow(DuplicateKeyException.class);
 
         ResponseObject response =
                 noteService.create(
@@ -231,6 +247,8 @@ public class NoteServiceImplTest {
         AccountingNoteType accountingNoteTypeWithExplicitValidation =
                 AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation)).thenReturn(accountsNoteRepository);
+
         when(validatorFactory.getValidator(accountingNoteTypeWithExplicitValidation))
                 .thenReturn(validator);
 
@@ -249,7 +267,7 @@ public class NoteServiceImplTest {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteTypeWithExplicitValidation.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.insert(noteEntity)).thenThrow(MongoException.class);
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation).insert(noteEntity)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
                 noteService.create(
@@ -265,6 +283,8 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteTypeWithExplicitValidation =
                 AccountingNoteType.SMALL_FULL_DEBTORS;
+
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation)).thenReturn(accountsNoteRepository);
 
         when(validatorFactory.getValidator(accountingNoteTypeWithExplicitValidation))
                 .thenReturn(validator);
@@ -290,7 +310,7 @@ public class NoteServiceImplTest {
 
         assertMetaDataSetOnRestObject(accountingNoteTypeWithExplicitValidation);
         assertIdSetOnEntity();
-        verify(repository).save(noteEntity);
+        verify(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation)).save(noteEntity);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
     }
 
@@ -300,6 +320,8 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteTypeWithoutExplicitValidation =
                 AccountingNoteType.SMALL_FULL_ACCOUNTING_POLICIES;
+
+        when(repositoryFactory.getRepository(accountingNoteTypeWithoutExplicitValidation)).thenReturn(accountsNoteRepository);
 
         when(request.getRequestURI()).thenReturn(SELF_LINK);
 
@@ -318,7 +340,7 @@ public class NoteServiceImplTest {
         verify(validatorFactory, never()).getValidator(accountingNoteTypeWithoutExplicitValidation);
         assertMetaDataSetOnRestObject(accountingNoteTypeWithoutExplicitValidation);
         assertIdSetOnEntity();
-        verify(repository).save(noteEntity);
+        verify(repositoryFactory.getRepository(accountingNoteTypeWithoutExplicitValidation)).save(noteEntity);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
     }
 
@@ -353,6 +375,8 @@ public class NoteServiceImplTest {
         AccountingNoteType accountingNoteTypeWithExplicitValidation =
                 AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation)).thenReturn(accountsNoteRepository);
+
         when(validatorFactory.getValidator(accountingNoteTypeWithExplicitValidation))
                 .thenReturn(validator);
 
@@ -371,7 +395,7 @@ public class NoteServiceImplTest {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteTypeWithExplicitValidation.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.save(noteEntity)).thenThrow(MongoException.class);
+        when(repositoryFactory.getRepository(accountingNoteTypeWithExplicitValidation).save(noteEntity)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
                 noteService.update(
@@ -384,10 +408,12 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(noteEntity));
+        when(repositoryFactory.getRepository(accountingNoteType).findById(GENERATED_ID)).thenReturn(Optional.ofNullable(noteEntity));
 
         when(transformerFactory.getTransformer(accountingNoteType)).thenReturn(transformer);
 
@@ -405,10 +431,12 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(null));
+        when(repositoryFactory.getRepository(accountingNoteType).findById(GENERATED_ID)).thenReturn(Optional.ofNullable(null));
 
         ResponseObject response = noteService.find(accountingNoteType, COMPANY_ACCOUNTS_ID);
 
@@ -422,10 +450,12 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
+        when(repositoryFactory.getRepository(accountingNoteType).findById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () -> noteService.find(accountingNoteType, COMPANY_ACCOUNTS_ID));
     }
@@ -436,16 +466,18 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+        when(repositoryFactory.getRepository(accountingNoteType).existsById(GENERATED_ID)).thenReturn(true);
 
         when(parentResourceFactory.getParentResource(accountingNoteType.getAccountType())).thenReturn(parentResource);
 
         ResponseObject response = noteService.delete(accountingNoteType, COMPANY_ACCOUNTS_ID, request);
 
-        verify(repository).deleteById(GENERATED_ID);
+        verify(repositoryFactory.getRepository(accountingNoteType)).deleteById(GENERATED_ID);
         verify(parentResource).removeLink(COMPANY_ACCOUNTS_ID, accountingNoteType.getLinkType(), request);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
     }
@@ -456,14 +488,16 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(GENERATED_ID)).thenReturn(false);
+        when(repositoryFactory.getRepository(accountingNoteType).existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject response = noteService.delete(accountingNoteType, COMPANY_ACCOUNTS_ID, request);
 
-        verify(repository, never()).deleteById(GENERATED_ID);
+        verify(repositoryFactory.getRepository(accountingNoteType), never()).deleteById(GENERATED_ID);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
     }
 
@@ -473,10 +507,12 @@ public class NoteServiceImplTest {
 
         AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_DEBTORS;
 
+        when(repositoryFactory.getRepository(accountingNoteType)).thenReturn(accountsNoteRepository);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + accountingNoteType.getNoteType().getType()))
                 .thenReturn(GENERATED_ID);
 
-        when(repository.existsById(GENERATED_ID)).thenThrow(MongoException.class);
+        when(repositoryFactory.getRepository(accountingNoteType).existsById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
                 noteService.delete(accountingNoteType, COMPANY_ACCOUNTS_ID, request));
