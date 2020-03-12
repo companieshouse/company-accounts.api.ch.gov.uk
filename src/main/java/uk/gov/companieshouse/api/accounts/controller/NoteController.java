@@ -107,7 +107,7 @@ public class NoteController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid Note data,
+    public ResponseEntity update(@Valid @RequestBody Note data,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable("accountType") AccountType accountType,

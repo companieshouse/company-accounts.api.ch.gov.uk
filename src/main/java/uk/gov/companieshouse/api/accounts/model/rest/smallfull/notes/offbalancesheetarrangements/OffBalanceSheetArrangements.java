@@ -2,6 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.offbalance
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.NotNull;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
@@ -12,6 +13,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OffBalanceSheetArrangements extends Note {
 
+    @NotNull
     @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("details")
