@@ -36,7 +36,7 @@ import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.fixedassetsinvestments.FixedAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestments;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.FixedAssetsInvestmentsRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
