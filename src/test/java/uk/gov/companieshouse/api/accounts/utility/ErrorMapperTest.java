@@ -28,16 +28,16 @@ import java.util.List;
 public class ErrorMapperTest {
 
     @InjectMocks
-    ErrorMapper errorMapper;
+    private ErrorMapper errorMapper;
 
     @Mock
-    Environment environment;
+    private Environment environment;
 
     @Mock
     private BindingResult mockBindingResult;
 
     @Test
-    @DisplayName("Test Mapping Error to Error Model correctly ")
+    @DisplayName("Test Mapping Error to Error Model correctly")
     void testMapErrorToErrorModel() {
         when(mockBindingResult.getAllErrors()).thenReturn(getAllErrors());
         when(environment.resolvePlaceholders(any())).thenReturn("error_string");
@@ -49,13 +49,28 @@ public class ErrorMapperTest {
         assertTrue(errors.containsError(createMaxError("error_string", "$.object3.field3","0")));
         assertTrue(errors.containsError(createError("incorrect.total", "$.object4.field4")));
     }
+
+    @Test
+    @DisplayName("Test Mapping Error to Error Model with object name correctly")
+    void testMapErrorToErrorModelWithObjectName() {
+        when(mockBindingResult.getAllErrors()).thenReturn(getAllErrors());
+        when(environment.resolvePlaceholders(any())).thenReturn("error_string");
+        Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult, "objectInError");
+        assertTrue(errors.hasErrors());
+        assertEquals(4, errors.getErrorCount());
+        assertTrue(errors.containsError(createRangeError("error_string", "$.object_in_error.field1","0","9999")));
+        assertTrue(errors.containsError(createRangeError("error_string", "$.object_in_error.field2","0","9999")));
+        assertTrue(errors.containsError(createMaxError("error_string", "$.object_in_error.field3","0")));
+        assertTrue(errors.containsError(createError("incorrect.total", "$.object_in_error.field4")));
+    }
+
     private List<ObjectError> getAllErrors(){
         Object[] argument = {0,0,9999};
         FieldError fieldError1= new FieldError("object1","field1",null,true,null,argument,"value.outside.range");
         FieldError fieldError2= new FieldError("object2","field2",null,true,null,argument,"invalid.input.length");
         FieldError fieldError3= new FieldError("object3","field3",null,true,null,argument,"max.length.exceeded");
         FieldError fieldError4= new FieldError("object4","field4","incorrect.total");
-        List errorList = new ArrayList();
+        List<ObjectError> errorList = new ArrayList<>();
         errorList.add(fieldError1);
         errorList.add(fieldError2);
         errorList.add(fieldError3);
@@ -63,14 +78,14 @@ public class ErrorMapperTest {
         return errorList;
     }
 
-    private Error createRangeError(String error, String path,String upper, String lower) {
+    private Error createRangeError(String error, String path, String upper, String lower) {
         Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
         returnError.addErrorValue("upper",upper);
         returnError.addErrorValue("lower",lower);
         return returnError;
     }
-    private Error createMaxError(String error, String path,String maxLength) {
+    private Error createMaxError(String error, String path, String maxLength) {
         Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
         returnError.addErrorValue("max_length",maxLength);

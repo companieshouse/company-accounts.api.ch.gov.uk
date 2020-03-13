@@ -35,6 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -137,7 +139,7 @@ public class NoteControllerTest {
     void createNoteResourceErrors() {
 
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
+        when(errorMapper.mapBindingResultErrorsToErrorModel(eq(bindingResult), anyString())).thenReturn(new Errors());
 
         ResponseEntity responseEntity =
                 noteController.create(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType, noteType, request);
@@ -170,7 +172,7 @@ public class NoteControllerTest {
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
         when(parentResource.childExists(request, accountingNoteTypeWithExplicitValidation.getLinkType())).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(true);
-        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
+        when(errorMapper.mapBindingResultErrorsToErrorModel(eq(bindingResult), anyString())).thenReturn(new Errors());
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
 
         ResponseEntity responseEntity =
