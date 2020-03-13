@@ -11,8 +11,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestmentsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestments;
 
 
@@ -93,5 +94,13 @@ public class FixedAssetsInvestmentsTransformerTest {
         assertEquals(new HashMap<>(), fixedAssetsInvestments.getLinks());
         assertEquals(ETAG, fixedAssetsInvestments.getEtag());
         assertEquals(KIND, fixedAssetsInvestments.getKind());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_FIXED_ASSETS_INVESTMENTS,
+                fixedAssetsInvestmentsTransformer.getAccountingNoteType());
     }
 }
