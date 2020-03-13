@@ -83,7 +83,7 @@ public class NoteController {
 
         if (bindingResult.hasErrors()) {
 
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, data.getClass().getSimpleName());
             return new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
 
         }
@@ -124,7 +124,7 @@ public class NoteController {
 
         if (bindingResult.hasErrors()) {
 
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult, data.getClass().getSimpleName());
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 
         }
