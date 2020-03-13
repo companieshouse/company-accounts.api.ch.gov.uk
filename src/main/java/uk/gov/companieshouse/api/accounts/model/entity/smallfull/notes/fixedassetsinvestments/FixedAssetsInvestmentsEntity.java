@@ -1,10 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.fixedassetsinvestments;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
-@Document(collection = "notes")
-public class FixedAssetsInvestmentsEntity extends BaseEntity {
+public class FixedAssetsInvestmentsEntity extends NoteEntity {
 
     private FixedAssetsInvestmentsDataEntity data;
 

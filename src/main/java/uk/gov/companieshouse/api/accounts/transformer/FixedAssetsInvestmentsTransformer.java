@@ -2,12 +2,13 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestmentsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestmentsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestments;
 
 @Component
-public class FixedAssetsInvestmentsTransformer implements GenericTransformer<FixedAssetsInvestments, FixedAssetsInvestmentsEntity> {
+public class FixedAssetsInvestmentsTransformer implements NoteTransformer<FixedAssetsInvestments, FixedAssetsInvestmentsEntity> {
 
     @Override
     public FixedAssetsInvestmentsEntity transform(FixedAssetsInvestments rest) {
@@ -37,5 +38,10 @@ public class FixedAssetsInvestmentsTransformer implements GenericTransformer<Fix
         BeanUtils.copyProperties(fixedAssetsInvestmentsDataEntity, fixedAssetsInvestments);
 
         return fixedAssetsInvestments;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_FIXED_ASSETS_INVESTMENTS;
     }
 }
