@@ -3828,16 +3828,18 @@
             <th class="table-heading"></th>
             <th class="table-heading" id="stocks-note-current-heading">{{$period.current_period_bs_date}}</th>
 
+              {{if $previousPeriod}}
             <th class="table-heading" id="stocks-note-previous-heading">{{$period.previous_period_bs_date}}</th>
-
+            {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
             <th class="table-heading" id="stocks-note-current-currency">£</th>
 
+              {{if $previousPeriod}}
             <th class="table-heading" id="stocks-note-previous-currency">£</th>
-
+                {{end}}
           </tr>
 
           {{if $stocks := $stocksNote.stocks}}
@@ -3928,16 +3930,18 @@
             <th class="table-heading"></th>
             <th class="table-heading" id="debtors-note-current-heading">{{$period.current_period_bs_date}}</th>
 
+              {{if $previousPeriod}}
             <th class="table-heading" id="debtors-note-previous-heading">{{$period.previous_period_bs_date}}</th>
-
+              {{end}}
           </tr>
 
           <tr>
             <th class="table-heading"></th>
             <th class="table-heading" id="debtors-note-current-currency">£</th>
 
+              {{if $previousPeriod}}
             <th class="table-heading" id="debtors-note-previous-currency">£</th>
-
+                {{end}}
           </tr>
 
           {{if $tradeDebtors := $debtorsNote.trade_debtors}}
