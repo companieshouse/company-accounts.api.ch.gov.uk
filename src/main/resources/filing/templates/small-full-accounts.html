@@ -2238,7 +2238,9 @@
           <td id="net-current-assets-curr-val" class="strong total">
             {{emitIfNegative $net_current_assets.current_amount "("}}<ix:nonFraction {{if (lt $net_current_assets.current_amount 0.0)}} sign="-"{{end}} contextRef="CY_END" decimals="0" unitRef="GBP" name="core:NetCurrentAssetsLiabilities" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $net_current_assets.current_amount}}</ix:nonFraction>{{emitIfNegative $net_current_assets.current_amount ")"}}
           </td>
-          {{end}}
+            {{else}}
+            <td  class="figures">&#160;</td>
+            {{end}}
 
           {{if isNotEmpty $net_current_assets.previous_amount}}
           <td id="net-current-assets-prev-val" class="total">
@@ -3824,28 +3826,18 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if isNotEmpty $stocksNote.total.current_amount}}
             <th class="table-heading" id="stocks-note-current-heading">{{$period.current_period_bs_date}}</th>
-            {{else}}
-            <th  class="table-heading">&#160;</th>
-            {{end}}
 
-            {{if isNotEmpty $stocksNote.total.previous_amount}}
             <th class="table-heading" id="stocks-note-previous-heading">{{$period.previous_period_bs_date}}</th>
-            {{end}}
+
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if isNotEmpty $stocksNote.total.current_amount}}
             <th class="table-heading" id="stocks-note-current-currency">£</th>
-            {{else}}
-            <th  class="table-heading">&#160;</th>
-            {{end}}
 
-            {{if isNotEmpty $stocksNote.total.previous_amount}}
             <th class="table-heading" id="stocks-note-previous-currency">£</th>
-            {{end}}
+
           </tr>
 
           {{if $stocks := $stocksNote.stocks}}
@@ -3934,28 +3926,18 @@
 
           <tr>
             <th class="table-heading"></th>
-            {{if isNotEmpty $debtorsNote.total.current_amount}}
             <th class="table-heading" id="debtors-note-current-heading">{{$period.current_period_bs_date}}</th>
-            {{else}}
-            <th  class="table-heading">&#160;</th>
-            {{end}}
 
-            {{if isNotEmpty $debtorsNote.total.previous_amount}}
             <th class="table-heading" id="debtors-note-previous-heading">{{$period.previous_period_bs_date}}</th>
-            {{end}}
+
           </tr>
 
           <tr>
             <th class="table-heading"></th>
-            {{if isNotEmpty $debtorsNote.total.current_amount}}
             <th class="table-heading" id="debtors-note-current-currency">£</th>
-            {{else}}
-            <th  class="table-heading">&#160;</th>
-            {{end}}
 
-            {{if isNotEmpty $debtorsNote.total.previous_amount}}
             <th class="table-heading" id="debtors-note-previous-currency">£</th>
-            {{end}}
+
           </tr>
 
           {{if $tradeDebtors := $debtorsNote.trade_debtors}}
