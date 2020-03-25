@@ -24,14 +24,9 @@
     <api-helper-java.version>1.1.0-rc1</api-helper-java.version>
     <structured-logging.version>1.4.0-rc2</structured-logging.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
-    <environment-reader-library.version>1.3.1</environment-reader-library.version>
     <company-accounts-library.version>1.1.0-rc1</company-accounts-library.version>
-    <jackson-datatype-jsr310.version>2.9.6</jackson-datatype-jsr310.version>
-    <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
-    <api-sdk-java.version>4.2.0</api-sdk-java.version>
     <private-api-sdk-java.version>2.0.0</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.1</api-sdk-manager-java-library.version>
-    <gson.version>2.8.0</gson.version>
     <jackson-dataformat-yaml.version>2.3.0</jackson-dataformat-yaml.version>
 
     <!-- Maven and Surefire plugins -->
@@ -43,7 +38,6 @@
     <!-- JUnit testing -->
     <junit-jupiter-engine.version>5.2.0</junit-jupiter-engine.version>
     <mockito-junit-jupiter.version>2.18.0</mockito-junit-jupiter.version>
-    <hamcrest-library-version>1.3</hamcrest-library-version>
 
     <!-- Jacoco -->
     <jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
@@ -59,11 +53,6 @@
     <!-- Compile -->
     <dependency>
       <groupId>uk.gov.companieshouse</groupId>
-      <artifactId>environment-reader-library</artifactId>
-      <version>${environment-reader-library.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.gov.companieshouse</groupId>
       <artifactId>api-helper-java</artifactId>
       <version>${api-helper-java.version}</version>
     </dependency>
@@ -72,11 +61,6 @@
       <artifactId>aws-java-sdk-s3</artifactId>
       <version>${aws-java-sdk.version}</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>uk.gov.companieshouse</groupId>
-        <artifactId>api-sdk-java</artifactId>
-        <version>${api-sdk-java.version}</version>
     </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
@@ -109,25 +93,9 @@
       <version>${structured-logging.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>${hibernate-validator.version}</version>
-    </dependency>
-    <dependency>
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>company-accounts-library</artifactId>
       <version>${company-accounts-library.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>${gson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -151,17 +119,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>${mockito-junit-jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>${jackson-datatype-jsr310.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>${hamcrest-library-version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
