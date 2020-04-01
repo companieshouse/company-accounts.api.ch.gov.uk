@@ -25,7 +25,7 @@
     <structured-logging.version>1.4.0-rc2</structured-logging.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
     <company-accounts-library.version>1.1.0-rc1</company-accounts-library.version>
-    <private-api-sdk-java.version>2.0.0</private-api-sdk-java.version>
+    <private-api-sdk-java.version>2.0.27</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.1</api-sdk-manager-java-library.version>
 
     <!-- Maven and Surefire plugins -->
