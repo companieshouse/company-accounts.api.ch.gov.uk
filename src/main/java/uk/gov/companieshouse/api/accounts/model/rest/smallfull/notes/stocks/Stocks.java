@@ -3,8 +3,6 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
 
 import javax.validation.Valid;
 

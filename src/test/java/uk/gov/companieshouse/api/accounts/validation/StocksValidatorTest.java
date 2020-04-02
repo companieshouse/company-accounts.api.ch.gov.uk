@@ -9,12 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -26,7 +27,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,7 +66,7 @@ public class StocksValidatorTest {
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
 
-    private @Valid Stocks stocks;
+    private Stocks stocks;
     private Errors errors;
 
     @Mock
@@ -422,6 +422,15 @@ public class StocksValidatorTest {
         assertThrows(DataException.class,
             () -> validator.validateStocks(stocks,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("validator returns stocks note")
+    void testStockNoteReturned() {
+
+        AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_STOCKS;
+
+        assertEquals(noteType, validator.getAccountingNoteType());
     }
 
     private void createValidNoteCurrentPeriod() {
