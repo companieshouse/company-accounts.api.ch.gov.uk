@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksDataEn
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 
 import java.util.HashMap;
 
