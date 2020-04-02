@@ -104,7 +104,7 @@ public class StocksValidatorTest {
 
         mockValidBalanceSheetCurrentPeriod();
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -121,7 +121,7 @@ public class StocksValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -132,7 +132,7 @@ public class StocksValidatorTest {
 
         createValidNoteCurrentPeriod();
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -146,7 +146,7 @@ public class StocksValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -166,7 +166,9 @@ public class StocksValidatorTest {
 
     @Test
     @DisplayName("Cross validation passes with valid note for multiple year filer")
-    void testSuccessfulCrossValidationForMultipleYearFiler() throws DataException {
+    void testSuccessfulCrossValidationForMultipleYearFiler() throws DataException, ServiceException {
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
@@ -181,7 +183,9 @@ public class StocksValidatorTest {
 
     @Test
     @DisplayName("Cross validation fails with valid note for multiple year filer")
-    void testErrorReturnedCrossValidationForMultipleYearFiler() throws DataException {
+    void testErrorReturnedCrossValidationForMultipleYearFiler() throws DataException, ServiceException {
+
+        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
@@ -206,7 +210,7 @@ public class StocksValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -229,7 +233,7 @@ public class StocksValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -261,7 +265,7 @@ public class StocksValidatorTest {
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
             MANDATORY_ELEMENT_MISSING_VALUE);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -301,7 +305,7 @@ public class StocksValidatorTest {
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -336,7 +340,7 @@ public class StocksValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
             UNEXPECTED_DATA_VALUE);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(2, errors.getErrorCount());
@@ -365,7 +369,7 @@ public class StocksValidatorTest {
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
-        errors = validator.validateStocks(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
@@ -388,7 +392,7 @@ public class StocksValidatorTest {
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
         assertThrows(DataException.class,
-            () -> validator.validateStocks(stocks,
+            () -> validator.validateSubmission(stocks,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
@@ -403,7 +407,7 @@ public class StocksValidatorTest {
         when(mockCurrentPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
-            () -> validator.validateStocks(stocks,
+            () -> validator.validateSubmission(stocks,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
@@ -420,7 +424,7 @@ public class StocksValidatorTest {
         when(mockPreviousPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
         assertThrows(DataException.class,
-            () -> validator.validateStocks(stocks,
+            () -> validator.validateSubmission(stocks,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
