@@ -1,9 +1,14 @@
 package uk.gov.companieshouse.api.accounts.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.model.entity.notes.stocks.StocksEntity;
 
 @Repository
-public interface StocksRepository extends MongoRepository<StocksEntity, String> {
+public interface StocksRepository extends AccountsNoteRepository<StocksEntity> {
+
+    @Override
+    default AccountingNoteType getAccountsNote() {
+        return AccountingNoteType.SMALL_FULL_STOCKS;
+    }
 }

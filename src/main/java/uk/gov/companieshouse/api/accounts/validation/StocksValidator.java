@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.stocks.Stocks;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -21,7 +22,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class StocksValidator extends BaseValidator implements CrossValidator<Stocks> {
+public class StocksValidator extends BaseValidator implements NoteValidator<Stocks> {
 
     private static final String STOCKS_PATH = "$.stocks";
     private static final String STOCKS_CURRENT_PERIOD_PATH =
@@ -76,7 +77,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
     }
 
     private Errors validateIfEmptyResource(Stocks stocks,
-            HttpServletRequest request, String companyAccountsId) throws DataException {
+                                           HttpServletRequest request, String companyAccountsId) throws DataException {
 
         Errors errors = new Errors();
 
@@ -109,7 +110,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
         } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue, hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
-                crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+                validateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
             }
         }
 
@@ -139,7 +140,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
 
         } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue, hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
-                crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
+                validatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
             }
         }
 
@@ -229,22 +230,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         validateAggregateTotal(total, sum, STOCKS_CURRENT_PERIOD_TOTAL_PATH, errors);
     }
 
-    @Override
-    public Errors crossValidate(Stocks stocks,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
-
-        crossValidateCurrentPeriodFields(stocks.getCurrentPeriod(), currentPeriodBalanceSheet, errors);
-        crossValidatePreviousPeriodFields(stocks.getPreviousPeriod(), previousPeriodBalanceSheet, errors);
-
-        return errors;
-    }
-
-    private void crossValidatePreviousPeriodFields(PreviousPeriod previousPeriodNote,
+    private void validatePreviousPeriodFields(PreviousPeriod previousPeriodNote,
                                                    BalanceSheet previousPeriodBalanceSheet,
                                                    Errors errors) {
 
@@ -302,7 +288,7 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         }
     }
 
-    private void crossValidateCurrentPeriodFields(CurrentPeriod currentPeriodCreditors,
+    private void validateCurrentPeriodFields(CurrentPeriod currentPeriodCreditors,
                                                   BalanceSheet currentPeriodBalanceSheet,
                                                   Errors errors) {
 
@@ -391,5 +377,24 @@ public class StocksValidator extends BaseValidator implements CrossValidator<Sto
         return !Optional.ofNullable(previousPeriodNote)
             .map(PreviousPeriod::getTotal)
             .isPresent();
+    }
+
+    @Override
+    public Errors validateSubmission(Stocks note, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+       Errors errors = new Errors();
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountId);
+
+        validateCurrentPeriodFields(note.getCurrentPeriod(), currentPeriodBalanceSheet, errors);
+        validatePreviousPeriodFields(note.getPreviousPeriod(), previousPeriodBalanceSheet, errors);
+
+        return errors;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_STOCKS;
     }
 }
