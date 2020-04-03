@@ -46,36 +46,6 @@ public class StocksValidator extends BaseValidator implements NoteValidator<Stoc
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validateStocks(@Valid Stocks stocks, Transaction transaction,
-                                 String companyAccountsId,
-                                 HttpServletRequest request) throws DataException {
-
-
-        Errors errors = validateIfEmptyResource(stocks, request, companyAccountsId);
-
-        if (errors.hasErrors()) {
-            return errors;
-        }
-
-        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
-
-        CurrentPeriod currentPeriodNote = stocks.getCurrentPeriod();
-        PreviousPeriod previousPeriodNote = stocks.getPreviousPeriod();
-
-        validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
-
-        if (isMultipleYearFiler) {
-            validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
-        } else {
-            validatePreviousPeriodNotPresent(stocks.getPreviousPeriod(), errors);
-        }
-
-        return errors;
-    }
-
     private Errors validateIfEmptyResource(Stocks stocks,
                                            HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -382,13 +352,22 @@ public class StocksValidator extends BaseValidator implements NoteValidator<Stoc
     @Override
     public Errors validateSubmission(Stocks note, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-       Errors errors = new Errors();
+        Errors errors = validateIfEmptyResource(note, request, companyAccountId);
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
+        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
         BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountId);
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountId);
-
-        validateCurrentPeriodFields(note.getCurrentPeriod(), currentPeriodBalanceSheet, errors);
-        validatePreviousPeriodFields(note.getPreviousPeriod(), previousPeriodBalanceSheet, errors);
+        CurrentPeriod currentPeriodNote = note.getCurrentPeriod();
+        PreviousPeriod previousPeriodNote = note.getPreviousPeriod();
+        validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
+        if (isMultipleYearFiler) {
+            validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
+        } else {
+            validatePreviousPeriodNotPresent(note.getPreviousPeriod(), errors);
+        }
 
         return errors;
     }
