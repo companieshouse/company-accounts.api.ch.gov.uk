@@ -97,36 +97,6 @@ public class StocksValidatorTest {
     }
 
     @Test
-    @DisplayName("Note validation and cross validation passes with valid note for first year filer")
-    void testSuccessfulFirstYearNoteValidationAndCrossValidation() throws DataException {
-
-        createValidNoteCurrentPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-
-        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Note validation and cross validation passes with valid note for multiple year filer")
-    void testSuccessfulMultipleYearNoteValidationAndCrossValidation() throws ServiceException, DataException {
-
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-        mockValidBalanceSheetPreviousPeriod();
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
     @DisplayName("Note validation passes with valid note for first year filer")
     void testSuccessfulFirstYearNoteValidation() throws DataException {
 
@@ -145,53 +115,6 @@ public class StocksValidatorTest {
         createValidNotePreviousPeriod();
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Cross validation passes with valid note for first year filer")
-    void testSuccessfulCrossValidationForFirstYearFiler() throws DataException {
-
-        createValidNoteCurrentPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-
-        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Cross validation passes with valid note for multiple year filer")
-    void testSuccessfulCrossValidationForMultipleYearFiler() throws DataException, ServiceException {
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-        mockValidBalanceSheetPreviousPeriod();
-
-        errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertFalse(errors.hasErrors());
-    }
-
-    @Test
-    @DisplayName("Cross validation fails with valid note for multiple year filer")
-    void testErrorReturnedCrossValidationForMultipleYearFiler() throws DataException, ServiceException {
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
-
-        mockValidBalanceSheetCurrentPeriod();
-        mockValidBalanceSheetPreviousPeriod();
 
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
