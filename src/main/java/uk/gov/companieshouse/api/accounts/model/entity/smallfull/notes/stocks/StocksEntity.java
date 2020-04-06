@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.stocks;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.stocks;
 
 import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 

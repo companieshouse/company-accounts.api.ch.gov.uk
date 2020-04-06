@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.employees;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees;
 
 import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;

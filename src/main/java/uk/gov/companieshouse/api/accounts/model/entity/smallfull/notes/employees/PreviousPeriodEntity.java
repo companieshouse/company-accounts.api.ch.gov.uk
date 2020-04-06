@@ -1,23 +1,12 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.employees;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees;
 
 import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class CurrentPeriodEntity {
+public class PreviousPeriodEntity {
 
-    @Field("details")
-    private String details;
-    
     @Field("average_number_of_employees")
     private Long averageNumberOfEmployees;
-    
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
 
     public Long getAverageNumberOfEmployees() {
         return averageNumberOfEmployees;
@@ -29,7 +18,7 @@ public class CurrentPeriodEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(averageNumberOfEmployees, details);
+        return Objects.hash(averageNumberOfEmployees);
     }
 
     @Override
@@ -40,11 +29,10 @@ public class CurrentPeriodEntity {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof CurrentPeriodEntity)) {
+        if (!(obj instanceof PreviousPeriodEntity)) {
             return false;
         }
-        CurrentPeriodEntity other = (CurrentPeriodEntity) obj;
-        return Objects.equals(averageNumberOfEmployees, other.averageNumberOfEmployees)
-                && Objects.equals(details, other.details);
+        PreviousPeriodEntity other = (PreviousPeriodEntity) obj;
+        return Objects.equals(averageNumberOfEmployees, other.averageNumberOfEmployees);
     }
 }
