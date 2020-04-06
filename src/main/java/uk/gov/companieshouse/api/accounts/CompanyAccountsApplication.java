@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import uk.gov.companieshouse.api.accounts.interceptor.AuthenticationInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
@@ -19,11 +21,15 @@ import uk.gov.companieshouse.api.accounts.utility.AccountsNotesPathsYamlReader;
 
 import java.util.Properties;
 import uk.gov.companieshouse.api.accounts.utility.YamlResourceMapper;
+import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
 
 @SpringBootApplication
 public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
+
+    // Path pattern for URLs requiring authorization
+    private static final String AUTH_PATH_PATTERN = "/transactions/{transactionId}/company-accounts";
 
     @Autowired
     private TransactionInterceptor transactionInterceptor;
@@ -54,6 +60,12 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private LoggingInterceptor loggingInterceptor;
+    
+    @Autowired
+    private TokenPermissionsInterceptor tokenPermissionsInterceptor;
+    
+    @Autowired
+    private AuthenticationInterceptor authenticationInterceptor;
 
     public static void main(String[] args) {
 
@@ -75,6 +87,12 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
         registry.addInterceptor(loggingInterceptor)
             .excludePathPatterns("/healthcheck");
+
+        registry.addInterceptor(tokenPermissionsInterceptor)
+            .addPathPatterns(AUTH_PATH_PATTERN);
+
+        registry.addInterceptor(authenticationInterceptor)
+            .addPathPatterns(AUTH_PATH_PATTERN);
 
         registry.addInterceptor(transactionInterceptor)
             .addPathPatterns(

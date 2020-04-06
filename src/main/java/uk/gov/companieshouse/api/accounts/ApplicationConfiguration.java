@@ -2,14 +2,17 @@ package uk.gov.companieshouse.api.accounts;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.annotation.RequestScope;
+
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.accountsdates.impl.AccountsDatesHelperImpl;
+import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
 import uk.gov.companieshouse.charset.validation.CharSetValidation;
 import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
 import uk.gov.companieshouse.environment.EnvironmentReader;
@@ -46,5 +49,10 @@ public class ApplicationConfiguration {
     @Bean
     public AccountsDatesHelper getAccountsDatesHelper() {
         return new AccountsDatesHelperImpl();
+    }
+
+    @Bean
+    public TokenPermissionsInterceptor tokenPermissionsInterceptor() {
+        return new TokenPermissionsInterceptor();
     }
 }
