@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.DebtorsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.debtors.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.debtors.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.debtors.DebtorsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.debtors.DebtorsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.debtors.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
 
 import java.util.HashMap;
 
@@ -37,7 +38,7 @@ public class DebtorsTransformerTest {
 
     @Test
     @DisplayName("Tests debtors transformer with empty object which should result in null values")
-    public void testTransformerWithEmptyObject() {
+    void testTransformerWithEmptyObject() {
 
         DebtorsEntity debtorsEntity = debtorsTransformer.transform(new Debtors());
 
@@ -48,7 +49,7 @@ public class DebtorsTransformerTest {
 
     @Test
     @DisplayName("Tests debtors transformer with empty previous period")
-    public void testTransformerWithEmptyPreviousPeriod() {
+    void testTransformerWithEmptyPreviousPeriod() {
 
         Debtors debtors = new Debtors();
         CurrentPeriod currentPeriod = new CurrentPeriod();
@@ -75,7 +76,7 @@ public class DebtorsTransformerTest {
 
     @Test
     @DisplayName("Tests debtors transformer with populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    void testRestToEntityTransformerWithPopulatedObject() {
 
         Debtors debtors = new Debtors();
         CurrentPeriod currentPeriod = new CurrentPeriod();
@@ -124,7 +125,7 @@ public class DebtorsTransformerTest {
 
     @Test
     @DisplayName("Tests debtors transformer with populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    void testEntityToRestTransformerWithPopulatedObject() {
 
         DebtorsEntity debtorsEntity = new DebtorsEntity();
         DebtorsDataEntity debtorsDataEntity = new DebtorsDataEntity();
@@ -170,5 +171,13 @@ public class DebtorsTransformerTest {
         assertEquals(PREPAYMENTS_PREVIOUS, debtors.getPreviousPeriod().getPrepaymentsAndAccruedIncome());
         assertEquals(TRADE_DEBTORS_PREVIOUS, debtors.getPreviousPeriod().getTradeDebtors());
         assertEquals(TOTAL_PREVIOUS, debtors.getPreviousPeriod().getTotal());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_DEBTORS,
+                debtorsTransformer.getAccountingNoteType());
     }
 }
