@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.employees;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

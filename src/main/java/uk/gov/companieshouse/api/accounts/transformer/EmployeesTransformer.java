@@ -2,17 +2,17 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.EmployeesEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.employees.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.Employees;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.employees.PreviousPeriod;
-
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees.EmployeesDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees.EmployeesEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.Employees;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.PreviousPeriod;
 
 @Component
-public class EmployeesTransformer implements GenericTransformer<Employees, EmployeesEntity> {
+public class EmployeesTransformer implements NoteTransformer<Employees, EmployeesEntity> {
 
     @Override
     public EmployeesEntity transform(Employees rest) {
@@ -64,5 +64,10 @@ public class EmployeesTransformer implements GenericTransformer<Employees, Emplo
             employees.setPreviousPeriod(previousPeriod);
         }
         return employees;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_EMPLOYEES;
     }
 }

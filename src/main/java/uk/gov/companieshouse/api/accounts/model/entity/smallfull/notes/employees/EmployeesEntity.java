@@ -1,11 +1,9 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.employees;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.employees;
 
 import java.util.Objects;
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
-@Document(collection = "notes")
-public class EmployeesEntity extends BaseEntity {
+public class EmployeesEntity extends NoteEntity {
 
     private EmployeesDataEntity data;
 
