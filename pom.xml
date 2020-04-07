@@ -24,10 +24,11 @@
     <api-helper-java.version>1.1.0-rc1</api-helper-java.version>
     <structured-logging.version>1.4.0-rc2</structured-logging.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
-    <company-accounts-library.version>1.1.0-rc1</company-accounts-library.version>
+    <company-accounts-library.version>1.2.4</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.27</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.1</api-sdk-manager-java-library.version>
     <api-security-java.version>0.2.9</api-security-java.version>
+    <commons-io.version>2.4</commons-io.version>
 
     <!-- Maven and Surefire plugins -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -102,6 +103,11 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
 
     <!-- Test -->

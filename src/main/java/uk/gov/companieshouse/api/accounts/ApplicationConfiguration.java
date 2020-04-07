@@ -12,6 +12,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import uk.gov.companieshouse.accountsdates.AccountsDatesHelper;
 import uk.gov.companieshouse.accountsdates.impl.AccountsDatesHelperImpl;
+import uk.gov.companieshouse.api.accounts.interceptor.AuthenticationInterceptor;
 import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
 import uk.gov.companieshouse.charset.validation.CharSetValidation;
 import uk.gov.companieshouse.charset.validation.impl.CharSetValidationImpl;
@@ -54,5 +55,10 @@ public class ApplicationConfiguration {
     @Bean
     public TokenPermissionsInterceptor tokenPermissionsInterceptor() {
         return new TokenPermissionsInterceptor();
+    }
+
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() {
+        return new AuthenticationInterceptor();
     }
 }
