@@ -27,7 +27,7 @@
     <company-accounts-library.version>1.2.4</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.27</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.1</api-sdk-manager-java-library.version>
-    <api-security-java.version>0.2.9</api-security-java.version>
+    <api-security-java.version>0.2.10</api-security-java.version>
     <commons-io.version>2.4</commons-io.version>
 
     <!-- Jacoco -->
