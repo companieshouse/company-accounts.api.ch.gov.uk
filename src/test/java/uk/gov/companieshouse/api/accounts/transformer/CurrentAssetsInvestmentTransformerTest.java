@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments.CurrentAssetsInvestmentsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.CurrentAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestmentsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.CurrentAssetsInvestments;
 
 import java.util.HashMap;
 
@@ -92,5 +93,14 @@ public class CurrentAssetsInvestmentTransformerTest {
         assertEquals(new HashMap<>(), currentAssetsInvestments.getLinks());
         assertEquals(ETAG, currentAssetsInvestments.getEtag());
         assertEquals(KIND, currentAssetsInvestments.getKind());
+    }
+
+    @Test
+    @DisplayName("transformer returns correct note note")
+    void testCorrectNoteReturned() {
+
+        AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_CURRENT_ASSETS_INVESTMENTS;
+
+        assertEquals(noteType, currentAssetsInvestmentsTransformer.getAccountingNoteType());
     }
 }

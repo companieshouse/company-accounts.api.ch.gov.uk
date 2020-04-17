@@ -1,13 +1,11 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments;
 
 import com.google.gson.Gson;
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
 import java.util.Objects;
 
-@Document(collection = "notes")
-public class CurrentAssetsInvestmentsEntity extends BaseEntity {
+public class CurrentAssetsInvestmentsEntity extends NoteEntity {
 
     private CurrentAssetsInvestmentsDataEntity data;
 
