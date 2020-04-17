@@ -52,8 +52,13 @@ public class CurrentInvestmentsValidatorTest {
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
 
+    @Mock
+    private Transaction transaction;
+
     private CurrentAssetsInvestments currentAssetsInvestments;
+
     private Errors errors;
+
     private CurrentAssetsInvestmentsValidator validator;
 
 
@@ -73,8 +78,6 @@ public class CurrentInvestmentsValidatorTest {
 
         currentAssetsInvestments.setDetails("test");
 
-        Transaction transaction = new Transaction();
-
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertFalse(errors.hasErrors());
@@ -90,8 +93,6 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
             UNEXPECTED_DATA_VALUE);
 
-        Transaction transaction = new Transaction();
-
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
@@ -106,7 +107,6 @@ public class CurrentInvestmentsValidatorTest {
             ServiceException {
 
         currentAssetsInvestments.setDetails("test");
-        Transaction transaction = new Transaction();
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
         assertFalse(errors.hasErrors());
@@ -121,8 +121,6 @@ public class CurrentInvestmentsValidatorTest {
 
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
             MANDATORY_ELEMENT_MISSING_VALUE);
-
-        Transaction transaction = new Transaction();
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
@@ -139,8 +137,6 @@ public class CurrentInvestmentsValidatorTest {
 
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
             EMPTY_RESOURCE_VALUE);
-
-        Transaction transaction = new Transaction();
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
