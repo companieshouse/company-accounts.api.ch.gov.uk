@@ -2,8 +2,8 @@ package uk.gov.companieshouse.api.accounts.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
 
 @Repository
-public interface CurrentAssetsInvestmentsRepository extends MongoRepository<CurrentAssetsInvestmentsEntity, String> {
+public interface CurrentAssetsInvestmentsRepository extends AccountsNoteRepository<CurrentAssetsInvestmentsEntity> {
 }

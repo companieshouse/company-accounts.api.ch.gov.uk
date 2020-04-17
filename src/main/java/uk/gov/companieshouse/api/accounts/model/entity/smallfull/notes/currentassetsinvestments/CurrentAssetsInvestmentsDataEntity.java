@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.currentassetsinvestments;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments;
 
 import com.google.gson.Gson;
 import org.springframework.data.mongodb.core.mapping.Field;
