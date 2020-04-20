@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestmentsDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestmentsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.CurrentAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestments;
 
 import java.util.HashMap;
 
