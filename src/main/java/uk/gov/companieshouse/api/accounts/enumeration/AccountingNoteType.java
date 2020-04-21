@@ -24,7 +24,7 @@ public enum AccountingNoteType {
             NoteType.INTANGIBLE_ASSETS,
             Parent.SMALL_FULL,
             SmallFullLinkType.INTANGIBLE_ASSETS_NOTE,
-            "small-full-accounts-note#intangible-assets",
+            "small-full-accounts-note#intangibleassets-assets",
             true),
     SMALL_FULL_TANGIBLE_ASSETS(
             AccountType.SMALL_FULL,

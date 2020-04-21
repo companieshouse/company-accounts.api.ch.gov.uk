@@ -15,7 +15,7 @@ public class FixedAssets {
     private Long tangible;
 
     @Range(min=MIN_RANGE, max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("intangible")
+    @JsonProperty("intangibleassets")
     private Long intangible;
 
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")

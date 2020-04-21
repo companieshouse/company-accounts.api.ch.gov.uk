@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.intangible;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 

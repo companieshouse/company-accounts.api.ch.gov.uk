@@ -19,7 +19,7 @@ public class AccountingPoliciesTransformerTest {
     private static final String BASIS_OF_MEAS = "basis of measurement policy";
     private static final String TURNOVER = "turnover policy";
     private static final String TANGIBLE = "tangible policy";
-    private static final String INTANGIBLE = "intangible policy";
+    private static final String INTANGIBLE = "intangibleassets policy";
     private static final String VALUATION = "valuation policy";
     private static final String OTHER = "other policies";
 

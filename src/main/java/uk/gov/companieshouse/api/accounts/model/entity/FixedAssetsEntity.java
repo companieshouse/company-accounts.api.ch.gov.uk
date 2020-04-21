@@ -7,7 +7,7 @@ public class FixedAssetsEntity {
     @Field("tangible")
     private Long tangible;
 
-    @Field("intangible")
+    @Field("intangibleassets")
     private Long intangible;
 
     @Field("investments")
