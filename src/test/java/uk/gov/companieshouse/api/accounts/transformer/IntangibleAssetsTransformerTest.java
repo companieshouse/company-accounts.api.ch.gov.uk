@@ -162,7 +162,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the REST object when the nested cost objects is not null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested cost objects is not null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostNotNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -186,7 +186,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the REST object when the nested amortisation object is not null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation object is not null")
     void TestOtherIntangibleAssetsMapFromRestObjectAmortisationNotNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -212,7 +212,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the REST object when the nested amortisation and cost objects are not null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNotNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -238,7 +238,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the REST object when the nested amortisation and cost objects are null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -313,7 +313,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the REST object when the nested amortisation and cost objects are not null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
     void TestTotalMapFromRestObjectCostAndAmortisationNotNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -339,7 +339,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangibleassets assets field map from the REST object when the nested amortisation and cost objects are null")
+    @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
     void TestTotalMapFromRestObjectCostAndAmortisationNull() {
 
         IntangibleAssets intangibleassets = createIntangibleAssets();
@@ -480,7 +480,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the entity object when the nested cost object is not null")
+    @DisplayName("Test other intangible assets field map from the entity object when the nested cost object is not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectCostNotNull() {
 
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
@@ -509,7 +509,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the entity object when the nested amortisation object is not null")
+    @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation object is not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationNotNull() {
 
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
@@ -538,7 +538,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the entity object when the nested amortisation and cost objects are not null")
+    @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation and cost objects are not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationAndCostNotNull() {
 
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
@@ -569,7 +569,7 @@ public class IntangibleAssetsTransformerTest {
     }
 
     @Test
-    @DisplayName("Test other intangible assets assets field map from the entity object when the nested amortisation and cost objects are null")
+    @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation and cost objects are null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationAndCostNull() {
 
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
@@ -645,7 +645,7 @@ public class IntangibleAssetsTransformerTest {
         assertNull(intangibleAssets.getTotal().getCost());
     }
     @Test
-    @DisplayName("Test other intangible assets assets field map from the ENTITY object when the nested amortisation and cost objects are not null")
+    @DisplayName("Test other intangible assets field map from the ENTITY object when the nested amortisation and cost objects are not null")
     void TestTotalMapFromEntityObjectCostAndAmortisationNotNull() {
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setTotal(createIntangibleAssetsResourceEntity(false, false));
@@ -668,7 +668,7 @@ public class IntangibleAssetsTransformerTest {
         assertAmortisationFieldsMapped(intangibleAssets.getTotal().getAmortisation());
     }
     @Test
-    @DisplayName("Test other intangible assets assets field map from the ENTITY object when the nested amortisation and cost objects are null")
+    @DisplayName("Test other intangible assets field map from the ENTITY object when the nested amortisation and cost objects are null")
     void TestTotalMapFromEntityObjectCostAndAmortisationNull() {
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setTotal(createIntangibleAssetsResourceEntity(true, true));
