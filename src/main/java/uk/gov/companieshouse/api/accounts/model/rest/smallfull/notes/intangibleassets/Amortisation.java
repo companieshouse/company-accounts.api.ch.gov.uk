@@ -1,22 +1,34 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.intangible;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Range;
 
-public class AmortisationEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Amortisation {
 
-    @Field("at_period_end")
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = -99999999;
+    private static final int ZERO = 0;
+
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("at_period_end")
     private Long atPeriodEnd;
 
-    @Field("at_period_start")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("at_period_start")
     private Long atPeriodStart;
 
-    @Field("charge_for_year")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("charge_for_year")
     private Long chargeForYear;
 
-    @Field("on_disposals")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("on_disposals")
     private Long onDisposals;
 
-    @Field("other_adjustments")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("other_adjustments")
     private Long otherAdjustments;
 
     public Long getAtPeriodEnd() {
@@ -57,16 +69,5 @@ public class AmortisationEntity {
 
     public void setOtherAdjustments(Long otherAdjustments) {
         this.otherAdjustments = otherAdjustments;
-    }
-
-    @Override
-    public String toString() {
-        return "AmortisationEntity{" +
-                "atPeriodEnd=" + atPeriodEnd +
-                ", atPeriodStart=" + atPeriodStart +
-                ", chargeForYear=" + chargeForYear +
-                ", onDisposals=" + onDisposals +
-                ", otherAdjustments=" + otherAdjustments +
-                '}';
     }
 }

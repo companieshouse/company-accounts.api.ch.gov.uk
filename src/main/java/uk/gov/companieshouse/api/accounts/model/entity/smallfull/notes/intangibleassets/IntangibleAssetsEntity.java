@@ -1,10 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.intangible;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
-@Document(collection = "notes")
-public class IntangibleAssetsEntity extends BaseEntity {
+public class IntangibleAssetsEntity extends NoteEntity {
 
     private IntangibleAssetsDataEntity data;
 

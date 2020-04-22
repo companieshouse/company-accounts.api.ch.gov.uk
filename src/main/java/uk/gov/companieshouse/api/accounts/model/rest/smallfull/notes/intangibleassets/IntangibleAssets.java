@@ -1,8 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.intangible;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
@@ -10,10 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class IntangibleAssets extends RestObject {
-
-    private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MIN_FIELD_LENGTH = 1;
+public class IntangibleAssets extends Note {
 
     @Valid
     @JsonProperty("goodwill")

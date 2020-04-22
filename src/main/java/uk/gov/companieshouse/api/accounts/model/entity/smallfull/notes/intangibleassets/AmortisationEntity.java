@@ -1,34 +1,22 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.intangible;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.Range;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Amortisation {
+public class AmortisationEntity {
 
-    private static final int MAX_RANGE = 99999999;
-    private static final int MIN_RANGE = -99999999;
-    private static final int ZERO = 0;
-
-    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("at_period_end")
+    @Field("at_period_end")
     private Long atPeriodEnd;
 
-    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("at_period_start")
+    @Field("at_period_start")
     private Long atPeriodStart;
 
-    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("charge_for_year")
+    @Field("charge_for_year")
     private Long chargeForYear;
 
-    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("on_disposals")
+    @Field("on_disposals")
     private Long onDisposals;
 
-    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("other_adjustments")
+    @Field("other_adjustments")
     private Long otherAdjustments;
 
     public Long getAtPeriodEnd() {
@@ -69,5 +57,16 @@ public class Amortisation {
 
     public void setOtherAdjustments(Long otherAdjustments) {
         this.otherAdjustments = otherAdjustments;
+    }
+
+    @Override
+    public String toString() {
+        return "AmortisationEntity{" +
+                "atPeriodEnd=" + atPeriodEnd +
+                ", atPeriodStart=" + atPeriodStart +
+                ", chargeForYear=" + chargeForYear +
+                ", onDisposals=" + onDisposals +
+                ", otherAdjustments=" + otherAdjustments +
+                '}';
     }
 }
