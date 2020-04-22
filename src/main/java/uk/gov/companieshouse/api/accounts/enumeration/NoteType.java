@@ -4,7 +4,7 @@ public enum NoteType {
 
     ACCOUNTING_POLICIES("accounting-policies"),
     EMPLOYEES("employees"),
-    INTANGIBLE_ASSETS("intangibleassets-assets"),
+    INTANGIBLE_ASSETS("intangible-assets"),
     TANGIBLE_ASSETS("tangible-assets"),
     FIXED_ASSETS_INVESTMENTS("fixed-assets-investments"),
     STOCKS("stocks"),
