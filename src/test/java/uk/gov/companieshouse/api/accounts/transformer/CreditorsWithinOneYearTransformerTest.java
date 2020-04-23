@@ -11,13 +11,14 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.PreviousPeriod;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +48,14 @@ public class CreditorsWithinOneYearTransformerTest {
         assertNotNull(creditorsWithinOneYearEntity);
         assertNull(creditorsWithinOneYearEntity.getData().getEtag());
         assertEquals(new HashMap<>(), creditorsWithinOneYearEntity.getData().getLinks());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_CREDITORS_WITHIN,
+                creditorsWithinOneYearTransformer.getAccountingNoteType());
     }
 
     @Test
