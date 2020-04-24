@@ -1,15 +1,15 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
+import uk.gov.companieshouse.api.accounts.model.rest.Note;
 
 import javax.validation.Valid;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CreditorsWithinOneYear extends RestObject {
+public class CreditorsWithinOneYear extends Note {
 
     @Valid
     @JsonProperty("current_period")

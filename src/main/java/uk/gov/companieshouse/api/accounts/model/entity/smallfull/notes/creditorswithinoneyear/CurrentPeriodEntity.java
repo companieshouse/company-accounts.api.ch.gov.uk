@@ -1,53 +1,34 @@
-package uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import org.hibernate.validator.constraints.Range;
-import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
-import uk.gov.companieshouse.charset.CharSet;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.validation.constraints.Size;
 import java.util.Objects;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CurrentPeriod {
+public class CurrentPeriodEntity {
 
-    private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MIN_FIELD_LENGTH = 1;
-    private static final int MAX_RANGE = 99999999;
-    private static final int MIN_RANGE = 0;
-
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("accruals_and_deferred_income")
+    @Field("accruals_and_deferred_income")
     private Long accrualsAndDeferredIncome;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("bank_loans_and_overdrafts")
+    @Field("bank_loans_and_overdrafts")
     private Long bankLoansAndOverdrafts;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("finance_leases_and_hire_purchase_contracts")
+    @Field("finance_leases_and_hire_purchase_contracts")
     private Long financeLeasesAndHirePurchaseContracts;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("other_creditors")
+    @Field("other_creditors")
     private Long otherCreditors;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("taxation_and_social_security")
+    @Field("taxation_and_social_security")
     private Long taxationAndSocialSecurity;
 
-    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
-    @JsonProperty("trade_creditors")
+    @Field("trade_creditors")
     private Long tradeCreditors;
 
-    @JsonProperty("total")
+    @Field("total")
     private Long total;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("details")
+    @Field("details")
     private String details;
 
     public Long getAccrualsAndDeferredIncome() {
@@ -117,8 +98,8 @@ public class CurrentPeriod {
     @Override
     public boolean equals(Object o) {
         if (this == o) {return true;}
-        if (!(o instanceof CurrentPeriod)) {return false;}
-        CurrentPeriod that = (CurrentPeriod) o;
+        if (!(o instanceof CurrentPeriodEntity)) {return false;}
+        CurrentPeriodEntity that = (CurrentPeriodEntity) o;
         return Objects.equals(getAccrualsAndDeferredIncome(), that.getAccrualsAndDeferredIncome()) &&
             Objects.equals(getBankLoansAndOverdrafts(), that.getBankLoansAndOverdrafts()) &&
             Objects.equals(getFinanceLeasesAndHirePurchaseContracts(), that.getFinanceLeasesAndHirePurchaseContracts()) &&

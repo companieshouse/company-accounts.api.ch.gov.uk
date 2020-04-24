@@ -1,32 +1,54 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.hibernate.validator.constraints.Range;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.charset.CharSet;
 
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
-public class PreviousPeriodEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CurrentPeriod {
 
-    @Field("accruals_and_deferred_income")
+    private static final int MAX_FIELD_LENGTH = 20000;
+    private static final int MIN_FIELD_LENGTH = 1;
+    private static final int MAX_RANGE = 99999999;
+    private static final int MIN_RANGE = 0;
+
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("accruals_and_deferred_income")
     private Long accrualsAndDeferredIncome;
 
-    @Field("bank_loans_and_overdrafts")
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("bank_loans_and_overdrafts")
     private Long bankLoansAndOverdrafts;
 
-    @Field("finance_leases_and_hire_purchase_contracts")
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("finance_leases_and_hire_purchase_contracts")
     private Long financeLeasesAndHirePurchaseContracts;
 
-    @Field("other_creditors")
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("other_creditors")
     private Long otherCreditors;
 
-    @Field("taxation_and_social_security")
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("taxation_and_social_security")
     private Long taxationAndSocialSecurity;
 
-    @Field("trade_creditors")
+    @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("trade_creditors")
     private Long tradeCreditors;
 
-    @Field("total")
+    @JsonProperty("total")
     private Long total;
+
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("details")
+    private String details;
 
     public Long getAccrualsAndDeferredIncome() {
         return accrualsAndDeferredIncome;
@@ -84,18 +106,27 @@ public class PreviousPeriodEntity {
         this.total = total;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {return true;}
-        if (!(o instanceof PreviousPeriodEntity)) {return false;}
-        PreviousPeriodEntity that = (PreviousPeriodEntity) o;
+        if (!(o instanceof CurrentPeriod)) {return false;}
+        CurrentPeriod that = (CurrentPeriod) o;
         return Objects.equals(getAccrualsAndDeferredIncome(), that.getAccrualsAndDeferredIncome()) &&
             Objects.equals(getBankLoansAndOverdrafts(), that.getBankLoansAndOverdrafts()) &&
             Objects.equals(getFinanceLeasesAndHirePurchaseContracts(), that.getFinanceLeasesAndHirePurchaseContracts()) &&
             Objects.equals(getOtherCreditors(), that.getOtherCreditors()) &&
             Objects.equals(getTaxationAndSocialSecurity(), that.getTaxationAndSocialSecurity()) &&
             Objects.equals(getTradeCreditors(), that.getTradeCreditors()) &&
-            Objects.equals(getTotal(), that.getTotal());
+            Objects.equals(getTotal(), that.getTotal()) &&
+            Objects.equals(getDetails(), that.getDetails());
     }
 
     @Override
@@ -103,7 +134,7 @@ public class PreviousPeriodEntity {
 
         return Objects.hash(getAccrualsAndDeferredIncome(), getBankLoansAndOverdrafts(),
             getFinanceLeasesAndHirePurchaseContracts(), getOtherCreditors(), getTaxationAndSocialSecurity(),
-            getTradeCreditors(), getTotal());
+            getTradeCreditors(), getTotal(), getDetails());
     }
 
     @Override
