@@ -18,7 +18,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
@@ -169,7 +168,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
         }
     }
 
-    private void validatePreviousPeriodFields(@Valid PreviousPeriod creditorsPreviousPeriod,
+    private void validatePreviousPeriodFields(PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
 
         if (creditorsPreviousPeriod.getTotal() == null) {
@@ -179,7 +178,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
         }
     }
 
-    private void validatePreviousTotalCalculationCorrect(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
+    private void validatePreviousTotalCalculationCorrect(PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -240,7 +239,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
         }
     }
 
-    private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+    private void validateCurrentPeriodTotalCalculation(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
