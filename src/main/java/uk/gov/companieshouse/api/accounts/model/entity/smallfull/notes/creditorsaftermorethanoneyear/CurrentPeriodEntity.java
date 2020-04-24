@@ -1,8 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-public class PreviousPeriodEntity {
+public class CurrentPeriodEntity {
 
     @Field("bank_loans_and_overdrafts")
     private Long bankLoansAndOverdrafts;
@@ -15,6 +15,9 @@ public class PreviousPeriodEntity {
 
     @Field("total")
     private Long total;
+
+    @Field("details")
+    private String details;
 
     public Long getBankLoansAndOverdrafts() {
         return bankLoansAndOverdrafts;
@@ -46,5 +49,13 @@ public class PreviousPeriodEntity {
 
     public void setTotal(Long total) {
         this.total = total;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 }

@@ -2,16 +2,17 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -20,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class CreditorsAfterOneYearValidator extends BaseValidator implements CrossValidator<CreditorsAfterOneYear> {
+public class CreditorsAfterOneYearValidator extends BaseValidator implements NoteValidator<CreditorsAfterMoreThanOneYear> {
 
     private static final String CREDITORS_AFTER_PATH = "$.creditors_after_one_year";
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH = CREDITORS_AFTER_PATH +
@@ -57,8 +58,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
                 currentPeriodNote.getTotal() == null;
     }
 
-    private Errors validateIfEmptyResource(CreditorsAfterOneYear creditorsAfterOneYear,
-            HttpServletRequest request, String companyAccountsId) throws DataException {
+    private Errors validateIfEmptyResource(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear,
+                                           HttpServletRequest request, String companyAccountsId) throws DataException {
 
         Errors errors = new Errors();
 
@@ -68,8 +69,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
                 companyAccountsId);
 
         if ((currentPeriodBalanceSheet == null && previousPeriodBalanceSheet == null) &&
-                (creditorsAfterOneYear.getCurrentPeriod() == null &&
-                        creditorsAfterOneYear.getPreviousPeriod() == null)) {
+                (creditorsAfterMoreThanOneYear.getCurrentPeriod() == null &&
+                        creditorsAfterMoreThanOneYear.getPreviousPeriod() == null)) {
 
             addEmptyResourceError(errors, CREDITORS_AFTER_PATH);
         }
@@ -77,12 +78,13 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         return errors;
     }
 
-    public Errors validateCreditorsAfterOneYear(@Valid CreditorsAfterOneYear creditorsAfterOneYear,
+    @Override
+    public Errors validateSubmission(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear,
             Transaction transaction,
             String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        Errors errors = validateIfEmptyResource(creditorsAfterOneYear, request, companyAccountsId);
+        Errors errors = validateIfEmptyResource(creditorsAfterMoreThanOneYear, request, companyAccountsId);
 
         if (errors.hasErrors()) {
             return errors;
@@ -95,15 +97,15 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
                 companyAccountsId);
 
-        CurrentPeriod currentPeriodNote = creditorsAfterOneYear.getCurrentPeriod();
-        PreviousPeriod previousPeriodNote = creditorsAfterOneYear.getPreviousPeriod();
+        CurrentPeriod currentPeriodNote = creditorsAfterMoreThanOneYear.getCurrentPeriod();
+        PreviousPeriod previousPeriodNote = creditorsAfterMoreThanOneYear.getPreviousPeriod();
 
         validateCurrentPeriod(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
         if (isMultipleYearFiler) {
             validatePreviousPeriod(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else {
-            validatePreviousPeriodNotPresent(creditorsAfterOneYear.getPreviousPeriod(), errors);
+            validatePreviousPeriodNotPresent(creditorsAfterMoreThanOneYear.getPreviousPeriod(), errors);
         }
 
         return errors;
@@ -185,7 +187,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         }
     }
 
-    private void validatePreviousPeriodFields(@Valid PreviousPeriod creditorsPreviousPeriod,
+    private void validatePreviousPeriodFields(PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
 
         if (creditorsPreviousPeriod.getTotal() == null) {
@@ -195,7 +197,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         }
     }
 
-    private void validatePreviousTotalCalculationCorrect(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
+    private void validatePreviousTotalCalculationCorrect(PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -250,7 +252,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         }
     }
 
-    private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+    private void validateCurrentPeriodTotalCalculation(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -267,20 +269,19 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
                 , errors);
     }
 
-    @Override
-    public Errors crossValidate(CreditorsAfterOneYear creditorsAfterOneYear,
-            HttpServletRequest request,
-            String companyAccountsId,
-            Errors errors) throws DataException {
+    private Errors crossValidate(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
 
         BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
                 companyAccountsId);
         BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
                 companyAccountsId);
 
-        crossValidateCurrentPeriodFields(creditorsAfterOneYear.getCurrentPeriod(),
+        crossValidateCurrentPeriodFields(creditorsAfterMoreThanOneYear.getCurrentPeriod(),
                 currentPeriodBalanceSheet, errors);
-        crossValidatePreviousPeriodFields(creditorsAfterOneYear.getPreviousPeriod(),
+        crossValidatePreviousPeriodFields(creditorsAfterMoreThanOneYear.getPreviousPeriod(),
                 previousPeriodBalanceSheet, errors);
 
         return errors;
@@ -445,6 +446,11 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Cro
         return ! Optional.ofNullable(previousPeriodNote)
                 .map(PreviousPeriod :: getTotal)
                 .isPresent();
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_CREDITORS_AFTER;
     }
 }
 

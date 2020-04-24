@@ -10,11 +10,11 @@ import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.repository.CreditorsAfterOneYearRepository;
+import uk.gov.companieshouse.api.accounts.repository.smallfull.CreditorsAfterOneYearRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class CreditorsAfterOneYearService implements ResourceService<CreditorsAfterOneYear> {
+public class CreditorsAfterOneYearService implements ResourceService<CreditorsAfterMoreThanOneYear> {
 
     private CreditorsAfterOneYearRepository repository;
     private CreditorsAfterOneYearTransformer transformer;
@@ -51,8 +51,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> create(CreditorsAfterOneYear rest,
-            Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+    public ResponseObject<CreditorsAfterMoreThanOneYear> create(CreditorsAfterMoreThanOneYear rest,
+                                                                Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
         // Details value should not be saved if no other current period fields are provided
         CurrentPeriod currentPeriod = rest.getCurrentPeriod();
@@ -60,7 +60,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             rest.setCurrentPeriod(null);
         }
 
-        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateSubmission(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -69,7 +69,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
         }
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CreditorsAfterOneYearEntity entity = transformer.transform(rest);
+        CreditorsAfterMoreThanOneYearEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -88,8 +88,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> update(CreditorsAfterOneYear rest,
-            Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+    public ResponseObject<CreditorsAfterMoreThanOneYear> update(CreditorsAfterMoreThanOneYear rest,
+                                                                Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
         // Details value should not be saved if no other current period fields are provided
         CurrentPeriod currentPeriod = rest.getCurrentPeriod();
@@ -97,7 +97,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
             rest.setCurrentPeriod(null);
         }
 
-        Errors errors = validator.validateCreditorsAfterOneYear(rest, transaction, companyAccountId, request);
+        Errors errors = validator.validateSubmission(rest, transaction, companyAccountId, request);
 
         if (errors.hasErrors()) {
 
@@ -106,7 +106,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
 
-        CreditorsAfterOneYearEntity entity = transformer.transform(rest);
+        CreditorsAfterMoreThanOneYearEntity entity = transformer.transform(rest);
         entity.setId(generateID(companyAccountId));
 
         try {
@@ -120,8 +120,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-        CreditorsAfterOneYearEntity entity;
+    public ResponseObject<CreditorsAfterMoreThanOneYear> find(String companyAccountsId, HttpServletRequest request) throws DataException {
+        CreditorsAfterMoreThanOneYearEntity entity;
 
         try {
             entity = repository.findById(generateID(companyAccountsId)).orElse(null);
@@ -138,8 +138,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
     @Override
-    public ResponseObject<CreditorsAfterOneYear> delete(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
+    public ResponseObject<CreditorsAfterMoreThanOneYear> delete(String companyAccountsId,
+                                                                HttpServletRequest request) throws DataException {
 
         String creditorsAfterOneYearId = generateID(companyAccountsId);
 
@@ -164,8 +164,8 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
     }
 
 
-    private void setMetadataOnRestObject(CreditorsAfterOneYear rest, Transaction transaction,
-            String companyAccountsId) {
+    private void setMetadataOnRestObject(CreditorsAfterMoreThanOneYear rest, Transaction transaction,
+                                         String companyAccountsId) {
 
         rest.setLinks(createSelfLink(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
@@ -187,7 +187,7 @@ public class CreditorsAfterOneYearService implements ResourceService<CreditorsAf
                 + ResourceName.CREDITORS_AFTER_ONE_YEAR.getName();
     }
 
-    public String getSelfLinkFromCreditorsAfterOneYearEntity(CreditorsAfterOneYearEntity entity) {
+    public String getSelfLinkFromCreditorsAfterOneYearEntity(CreditorsAfterMoreThanOneYearEntity entity) {
         return entity.getData().getLinks().get(BasicLinkType.SELF.getLink());
     }
 }
