@@ -46,18 +46,6 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
         this.previousPeriodService = previousPeriodService;
     }
 
-    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null &&
-                isCreditorsNumericFieldsNull(currentPeriodNote));
-    }
-
-    private boolean isCreditorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
-        return currentPeriodNote.getBankLoansAndOverdrafts() == null &&
-                currentPeriodNote.getOtherCreditors() == null &&
-                currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts() == null &&
-                currentPeriodNote.getTotal() == null;
-    }
-
     private Errors validateIfEmptyResource(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear,
                                            HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -80,9 +68,7 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
 
     @Override
     public Errors validateSubmission(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear,
-            Transaction transaction,
-            String companyAccountsId,
-            HttpServletRequest request) throws DataException {
+            Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = validateIfEmptyResource(creditorsAfterMoreThanOneYear, request, companyAccountsId);
 
@@ -111,8 +97,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
         return errors;
     }
 
-    private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
-            BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+    private void validateCurrentPeriod(CurrentPeriod currentPeriodNote, BalanceSheet currentPeriodBalanceSheet,
+                                       Errors errors) {
 
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
         boolean hasCurrentPeriodBalanceSheetNoteValue =
@@ -136,9 +122,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
         }
     }
 
-    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
-            String errorPath,
-            Errors errors) {
+    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet, String errorPath,
+                                                    Errors errors) {
 
         if (hasCurrentPeriodBalanceSheet) {
             addError(errors, unexpectedData, errorPath);
@@ -148,8 +133,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
         return true;
     }
 
-    private void validatePreviousPeriod(PreviousPeriod previousPeriodNote,
-            BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+    private void validatePreviousPeriod(PreviousPeriod previousPeriodNote, BalanceSheet previousPeriodBalanceSheet,
+                                        Errors errors) {
 
         boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
         boolean hasPreviousPeriodBalanceSheetNoteValue =
@@ -215,8 +200,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
     }
 
     private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetValue,
-            boolean hasCurrentPeriodNoteData,
-            Errors errors) {
+                                                boolean hasCurrentPeriodNoteData,
+                                                Errors errors) {
 
         if (hasCurrentPeriodBalanceSheetValue && ! hasCurrentPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_AFTER_CURRENT_PERIOD_PATH);
@@ -230,8 +215,8 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
     }
 
     private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetValue,
-            boolean hasPreviousPeriodNoteData,
-            Errors errors) {
+                                                 boolean hasPreviousPeriodNoteData,
+                                                 Errors errors) {
 
         if (hasPreviousPeriodBalanceSheetValue && ! hasPreviousPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_AFTER_PREVIOUS_PERIOD_PATH);
