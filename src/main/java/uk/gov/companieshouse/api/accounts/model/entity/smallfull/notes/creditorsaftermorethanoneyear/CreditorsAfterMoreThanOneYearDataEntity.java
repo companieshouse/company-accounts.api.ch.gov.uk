@@ -1,10 +1,10 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear;
 
 import java.util.Objects;
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
-public class CreditorsAfterOneYearDataEntity extends BaseDataEntity {
+public class CreditorsAfterMoreThanOneYearDataEntity extends BaseDataEntity {
 
     @Field("current_period")
     private CurrentPeriodEntity currentPeriodEntity;
@@ -32,9 +32,9 @@ public class CreditorsAfterOneYearDataEntity extends BaseDataEntity {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (! (o instanceof CreditorsAfterOneYearDataEntity))
+        if (! (o instanceof CreditorsAfterMoreThanOneYearDataEntity))
             return false;
-        CreditorsAfterOneYearDataEntity that = (CreditorsAfterOneYearDataEntity) o;
+        CreditorsAfterMoreThanOneYearDataEntity that = (CreditorsAfterMoreThanOneYearDataEntity) o;
         return Objects.equals(getCurrentPeriodEntity(), that.getCurrentPeriodEntity()) &&
                 Objects.equals(getPreviousPeriodEntity(), that.getPreviousPeriodEntity());
     }
@@ -46,7 +46,7 @@ public class CreditorsAfterOneYearDataEntity extends BaseDataEntity {
 
     @Override
     public String toString() {
-        return "CreditorsAfterOneYearDataEntity{" +
+        return "CreditorsAfterMoreThanOneYearDataEntity{" +
                 "currentPeriodEntity=" + currentPeriodEntity +
                 ", previousPeriodEntity=" + previousPeriodEntity +
                 '}';
