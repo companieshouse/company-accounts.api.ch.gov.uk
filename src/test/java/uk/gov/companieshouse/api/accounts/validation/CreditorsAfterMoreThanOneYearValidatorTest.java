@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
@@ -36,7 +37,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CreditorsAfterMoreThanOneYearValidatorTest {
 
-    private static final String CREDITORS_AFTER_PATH = "$.creditors_after_one_year";
+    private static final String CREDITORS_AFTER_PATH = "$.creditors_after_more_than_one_year";
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH = CREDITORS_AFTER_PATH +
             ".current_period";
     private static final String CREDITORS_AFTER_PREVIOUS_PERIOD_PATH = CREDITORS_AFTER_PATH +
@@ -87,13 +88,13 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
     @Mock
     private HttpServletRequest mockRequest;
 
-    private CreditorsAfterOneYearValidator validator;
+    private CreditorsAfterMoreThanOneYearValidator validator;
 
     @BeforeEach
     void setup() {
         creditorsAfterMoreThanOneYear = new CreditorsAfterMoreThanOneYear();
         errors = new Errors();
-        validator = new CreditorsAfterOneYearValidator(mockCompanyService, mockCurrentPeriodService, mockPreviousPeriodService);
+        validator = new CreditorsAfterMoreThanOneYearValidator(mockCompanyService, mockCurrentPeriodService, mockPreviousPeriodService);
     }
 
     @Test
@@ -397,6 +398,14 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
         assertThrows(DataException.class,
                 () -> validator.validateSubmission(creditorsAfterMoreThanOneYear,
                         mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_CREDITORS_AFTER,
+                validator.getAccountingNoteType());
     }
 
     private void createValidNoteCurrentPeriod() {

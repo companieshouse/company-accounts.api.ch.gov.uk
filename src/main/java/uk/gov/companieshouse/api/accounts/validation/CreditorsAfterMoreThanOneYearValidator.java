@@ -21,9 +21,9 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class CreditorsAfterOneYearValidator extends BaseValidator implements NoteValidator<CreditorsAfterMoreThanOneYear> {
+public class CreditorsAfterMoreThanOneYearValidator extends BaseValidator implements NoteValidator<CreditorsAfterMoreThanOneYear> {
 
-    private static final String CREDITORS_AFTER_PATH = "$.creditors_after_one_year";
+    private static final String CREDITORS_AFTER_PATH = "$.creditors_after_more_than_one_year";
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH = CREDITORS_AFTER_PATH +
             ".current_period";
     private static final String CREDITORS_AFTER_PREVIOUS_PERIOD_PATH = CREDITORS_AFTER_PATH +
@@ -38,9 +38,9 @@ public class CreditorsAfterOneYearValidator extends BaseValidator implements Not
     private PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public CreditorsAfterOneYearValidator(CompanyService companyService,
-            CurrentPeriodService currentPeriodService,
-            PreviousPeriodService previousPeriodService) {
+    public CreditorsAfterMoreThanOneYearValidator(CompanyService companyService,
+                                                  CurrentPeriodService currentPeriodService,
+                                                  PreviousPeriodService previousPeriodService) {
         this.companyService = companyService;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
