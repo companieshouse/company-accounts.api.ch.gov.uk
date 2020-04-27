@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYearDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYearEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CurrentPeriodEntity;
@@ -148,6 +149,14 @@ public class CreditorsAfterMoreThanOneYearTransformerTest {
         assertEquals(new HashMap<>(), creditorsAfterMoreThanOneYear.getLinks());
         assertEquals(ETAG, creditorsAfterMoreThanOneYear.getEtag());
         assertEquals(KIND, creditorsAfterMoreThanOneYear.getKind());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_CREDITORS_AFTER,
+                creditorsAfterOneYearTransformer.getAccountingNoteType());
     }
 
 
