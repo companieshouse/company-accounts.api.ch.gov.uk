@@ -1,25 +1,38 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.tangible;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Range;
 
-public class CostEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Cost {
 
-    @Field("additions")
+    private static final int MAX_RANGE = 99999999;
+    private static final int ZERO = 0;
+    private static final int MIN_RANGE = -99999999;
+
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("additions")
     private Long additions;
 
-    @Field("at_period_end")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("at_period_end")
     private Long atPeriodEnd;
 
-    @Field("at_period_start")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("at_period_start")
     private Long atPeriodStart;
 
-    @Field("disposals")
+    @Range(min = ZERO, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("disposals")
     private Long disposals;
 
-    @Field("revaluations")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("revaluations")
     private Long revaluations;
 
-    @Field("transfers")
+    @Range(min = MIN_RANGE, max = MAX_RANGE, message = "value.outside.range")
+    @JsonProperty("transfers")
     private Long transfers;
 
     public Long getAdditions() {
@@ -68,17 +81,5 @@ public class CostEntity {
 
     public void setTransfers(Long transfers) {
         this.transfers = transfers;
-    }
-
-    @Override
-    public String toString() {
-        return "CostEntity{" +
-                "additions=" + additions +
-                ", atPeriodEnd=" + atPeriodEnd +
-                ", atPeriodStart=" + atPeriodStart +
-                ", disposals=" + disposals +
-                ", revaluations=" + revaluations +
-                ", transfers=" + transfers +
-                '}';
     }
 }

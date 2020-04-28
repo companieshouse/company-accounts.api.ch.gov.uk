@@ -8,16 +8,17 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Depreciation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -26,7 +27,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class TangibleAssetsValidator extends BaseValidator implements CrossValidator<TangibleAssets> {
+public class TangibleAssetsValidator extends BaseValidator implements NoteValidator<TangibleAssets> {
 
     private CompanyService companyService;
 
@@ -56,7 +57,8 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
 
-    public Errors validateTangibleAssets(TangibleAssets tangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
+    @Override
+    public Errors validateSubmission(TangibleAssets tangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
         Errors errors = new Errors();
@@ -936,8 +938,7 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
         return TANGIBLE_NOTE + "." + subResource.getJsonPath() + pathSuffix;
     }
 
-    @Override
-    public Errors crossValidate(TangibleAssets tangibleAssets,
+    private Errors crossValidate(TangibleAssets tangibleAssets,
                                 HttpServletRequest request,
                                 String companyAccountsId,
                                 Errors errors) throws DataException {
@@ -1038,6 +1039,11 @@ public class TangibleAssetsValidator extends BaseValidator implements CrossValid
                 .map(ResponseObject::getData)
                 .map(PreviousPeriod::getBalanceSheet)
                 .orElse(null);
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_TANGIBLE_ASSETS;
     }
 
     private enum TangibleSubResource {

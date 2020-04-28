@@ -1,10 +1,8 @@
-package uk.gov.companieshouse.api.accounts.model.entity.notes.tangible;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
-@Document(collection = "notes")
-public class TangibleAssetsEntity extends BaseEntity {
+public class TangibleAssetsEntity extends NoteEntity {
 
     private TangibleAssetsDataEntity data;
 

@@ -12,15 +12,16 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.CostEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.DepreciationEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsResourceEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.CostEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.DepreciationEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsResourceEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Depreciation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssetsResource;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -1437,6 +1438,13 @@ public class TangibleAssetsTransformerTest {
         assertRestObjectFieldsMapped(tangibleAssets);
         assertAdditionalInformationMapped(tangibleAssets);
         assertNetBookValueFieldsMapped(tangibleAssets.getTotal());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_TANGIBLE_ASSETS, transformer.getAccountingNoteType());
     }
     
     private TangibleAssets createTangibleAssets() {
