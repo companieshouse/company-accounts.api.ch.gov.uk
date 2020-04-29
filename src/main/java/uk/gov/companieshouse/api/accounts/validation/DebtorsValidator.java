@@ -99,21 +99,13 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
-        boolean hasCurrentPeriodBalanceSheetNoteValue =
-                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
-        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
+        boolean hasCurrentPeriodNote = currentPeriodNote != null;
 
-        if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
-
-            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
-                    DEBTORS_PATH_CURRENT, errors)) {
-                validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
-                hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
+        if (hasCurrentPeriodNote && hasCurrentPeriodBalanceSheet) {
             validateCurrentPeriodFields(currentPeriodNote, errors);
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+        } else {
+            validateCurrentPeriodExists(hasCurrentPeriodBalanceSheet, hasCurrentPeriodNote, errors);
         }
     }
 
@@ -160,9 +152,9 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
     }
 
     private void validateCurrentPeriodFields(CurrentPeriod debtorsCurrentPeriod, Errors errors) {
-        if (debtorsCurrentPeriod.getTotal() == null) {
+        if (debtorsCurrentPeriod.getTotal() == null && debtorsCurrentPeriod.getDetails() == null) {
             addError(errors, mandatoryElementMissing, CURRENT_TOTAL_PATH);
-        } else {
+        } else if (debtorsCurrentPeriod.getTotal() != null){
             validateCurrentPeriodTotalCalculation(debtorsCurrentPeriod, errors);
         }
     }
