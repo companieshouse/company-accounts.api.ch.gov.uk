@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
@@ -152,7 +153,7 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
     }
 
     private void validateCurrentPeriodFields(CurrentPeriod debtorsCurrentPeriod, Errors errors) {
-        if (debtorsCurrentPeriod.getTotal() == null && debtorsCurrentPeriod.getDetails() == null) {
+        if (debtorsCurrentPeriod.getTotal() == null && StringUtils.isBlank(debtorsCurrentPeriod.getDetails())) {
             addError(errors, mandatoryElementMissing, CURRENT_TOTAL_PATH);
         } else if (debtorsCurrentPeriod.getTotal() != null){
             validateCurrentPeriodTotalCalculation(debtorsCurrentPeriod, errors);
