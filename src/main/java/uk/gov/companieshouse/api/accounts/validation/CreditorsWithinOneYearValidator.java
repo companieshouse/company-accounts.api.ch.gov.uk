@@ -118,7 +118,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
         boolean hasCurrentPeriodBalanceSheetNoteValue =
                 ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
-        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
+        boolean hasCurrentPeriodNoteData = currentPeriodNote != null && currentPeriodNote.getTotal() != null;
 
         if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
 
