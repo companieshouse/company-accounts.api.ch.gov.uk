@@ -136,22 +136,9 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         }
     }
 
-    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
-            String errorPath,
-            Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheet) {
-            addError(errors, unexpectedData, errorPath);
-            return false;
-        }
-
-        return true;
-    }
-
     private void validatePreviousPeriod(PreviousPeriod previousPeriodNote,
             BalanceSheet previousPeriodBalanceSheet, Errors errors) {
 
-        boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
         boolean hasPreviousPeriodBalanceSheetNoteValue =
                 ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
         boolean hasPreviousPeriodNoteData = previousPeriodNote != null && previousPeriodNote.getTotal() != null;
@@ -187,7 +174,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     private void validatePreviousPeriodFields(@Valid PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
 
-        if (creditorsPreviousPeriod != null && creditorsPreviousPeriod.getTotal() == null) {
+        if (creditorsPreviousPeriod.getTotal() == null) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
         } else {
             validatePreviousTotalCalculationCorrect(creditorsPreviousPeriod, errors);
@@ -242,7 +229,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     }
 
     private void validateCurrentPeriodFields(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
-        if (creditorsCurrentPeriod!= null && creditorsCurrentPeriod.getTotal() == null) {
+        if (creditorsCurrentPeriod.getTotal() == null) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
         } else {
             validateCurrentPeriodTotalCalculation(creditorsCurrentPeriod, errors);
