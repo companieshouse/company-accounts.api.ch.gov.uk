@@ -77,6 +77,12 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             addEmptyResourceError(errors, CREDITORS_WITHIN_PATH);
         }
 
+        if ((creditorsWithinOneYear.getCurrentPeriod() == null &&
+                        creditorsWithinOneYear.getPreviousPeriod() == null)) {
+
+            addEmptyResourceError(errors, CREDITORS_WITHIN_PATH);
+        }
+
         return errors;
     }
 
@@ -115,20 +121,16 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
-        boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
         boolean hasCurrentPeriodBalanceSheetNoteValue =
-                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
+                ! isPreviousPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
         boolean hasCurrentPeriodNoteData = currentPeriodNote != null && currentPeriodNote.getTotal() != null;
 
         if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
 
-            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
-                    CREDITORS_WITHIN_CURRENT_PERIOD_PATH, errors)) {
                 validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
 
         } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
-                hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
+                hasCurrentPeriodNoteData, errors) && currentPeriodNote != null) {
             validateCurrentPeriodFields(currentPeriodNote, errors);
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
         }
@@ -152,17 +154,14 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
         boolean hasPreviousPeriodBalanceSheetNoteValue =
                 ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
-        boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
+        boolean hasPreviousPeriodNoteData = previousPeriodNote != null && previousPeriodNote.getTotal() != null;
 
         if (! hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
 
-            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet,
-                    CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH, errors)) {
                 validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
 
         } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue,
-                hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
+                hasPreviousPeriodNoteData, errors) && previousPeriodNote != null) {
             validatePreviousPeriodFields(previousPeriodNote, errors);
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
                     errors);
@@ -188,7 +187,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     private void validatePreviousPeriodFields(@Valid PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
 
-        if (creditorsPreviousPeriod.getTotal() == null) {
+        if (creditorsPreviousPeriod != null && creditorsPreviousPeriod.getTotal() == null) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
         } else {
             validatePreviousTotalCalculationCorrect(creditorsPreviousPeriod, errors);
@@ -197,51 +196,45 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
     private void validatePreviousTotalCalculationCorrect(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
-        Long bankLoans =
-                Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
-        Long amountsDueUnderFinance =
-                Optional.ofNullable(creditorsPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
-        Long tradeCreditors =
-                Optional.ofNullable(creditorsPreviousPeriod.getTradeCreditors()).orElse(0L);
-        Long taxation =
-                Optional.ofNullable(creditorsPreviousPeriod.getTaxationAndSocialSecurity()).orElse(0L);
-        Long accruals =
-                Optional.ofNullable(creditorsPreviousPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
-        Long otherCreditors =
-                Optional.ofNullable(creditorsPreviousPeriod.getOtherCreditors()).orElse(0L);
+            Long bankLoans =
+                    Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
+            Long amountsDueUnderFinance =
+                    Optional.ofNullable(creditorsPreviousPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
+            Long tradeCreditors =
+                    Optional.ofNullable(creditorsPreviousPeriod.getTradeCreditors()).orElse(0L);
+            Long taxation =
+                    Optional.ofNullable(creditorsPreviousPeriod.getTaxationAndSocialSecurity()).orElse(0L);
+            Long accruals =
+                    Optional.ofNullable(creditorsPreviousPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
+            Long otherCreditors =
+                    Optional.ofNullable(creditorsPreviousPeriod.getOtherCreditors()).orElse(0L);
 
-        Long total = creditorsPreviousPeriod.getTotal();
-        Long sum =
-                bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
+            Long total = creditorsPreviousPeriod.getTotal();
+            Long sum =
+                    bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
 
-        validateAggregateTotal(total, sum,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH, errors);
+            validateAggregateTotal(total, sum,
+                    CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH, errors);
     }
 
-    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetValue,
+    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetNoteValue,
             boolean hasCurrentPeriodNoteData,
             Errors errors) {
 
-        if (hasCurrentPeriodBalanceSheetValue && ! hasCurrentPeriodNoteData) {
+        if (hasCurrentPeriodBalanceSheetNoteValue && ! hasCurrentPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
-            return false;
-        } else if (! hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
-            addError(errors, unexpectedData, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
             return false;
         }
 
         return true;
     }
 
-    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetValue,
+    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetNoteValue,
             boolean hasPreviousPeriodNoteData,
             Errors errors) {
 
-        if (hasPreviousPeriodBalanceSheetValue && ! hasPreviousPeriodNoteData) {
+        if (hasPreviousPeriodBalanceSheetNoteValue && ! hasPreviousPeriodNoteData) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
-            return false;
-        } else if (! hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
-            addError(errors, unexpectedData, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
             return false;
         }
 
@@ -249,7 +242,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
     }
 
     private void validateCurrentPeriodFields(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
-        if (creditorsCurrentPeriod.getTotal() == null) {
+        if (creditorsCurrentPeriod!= null && creditorsCurrentPeriod.getTotal() == null) {
             addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
         } else {
             validateCurrentPeriodTotalCalculation(creditorsCurrentPeriod, errors);
@@ -258,25 +251,25 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
     private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
 
-        Long bankLoans =
-                Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
-        Long amountsDueUnderFinance =
-                Optional.ofNullable(creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
-        Long tradeCreditors =
-                Optional.ofNullable(creditorsCurrentPeriod.getTradeCreditors()).orElse(0L);
-        Long taxation =
-                Optional.ofNullable(creditorsCurrentPeriod.getTaxationAndSocialSecurity()).orElse(0L);
-        Long accruals =
-                Optional.ofNullable(creditorsCurrentPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
-        Long otherCreditors =
-                Optional.ofNullable(creditorsCurrentPeriod.getOtherCreditors()).orElse(0L);
+            Long bankLoans =
+                    Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
+            Long amountsDueUnderFinance =
+                    Optional.ofNullable(creditorsCurrentPeriod.getFinanceLeasesAndHirePurchaseContracts()).orElse(0L);
+            Long tradeCreditors =
+                    Optional.ofNullable(creditorsCurrentPeriod.getTradeCreditors()).orElse(0L);
+            Long taxation =
+                    Optional.ofNullable(creditorsCurrentPeriod.getTaxationAndSocialSecurity()).orElse(0L);
+            Long accruals =
+                    Optional.ofNullable(creditorsCurrentPeriod.getAccrualsAndDeferredIncome()).orElse(0L);
+            Long otherCreditors =
+                    Optional.ofNullable(creditorsCurrentPeriod.getOtherCreditors()).orElse(0L);
 
-        Long total = creditorsCurrentPeriod.getTotal();
-        Long sum =
-                bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
+            Long total = creditorsCurrentPeriod.getTotal();
+            Long sum =
+                    bankLoans + amountsDueUnderFinance + tradeCreditors + taxation + accruals + otherCreditors;
 
-        validateAggregateTotal(total, sum, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH
-                , errors);
+            validateAggregateTotal(total, sum, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH
+                    , errors);
     }
 
     @Override
