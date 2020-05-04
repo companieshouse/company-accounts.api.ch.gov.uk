@@ -18,7 +18,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
@@ -119,7 +118,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
             validateCurrentPeriodFields(currentPeriodNote, errors);
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
-        } else if  (currentPeriodBalanceSheet != null) {
+        } else if (currentPeriodBalanceSheet != null) {
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
         } else if (currentPeriodBalanceSheet == null && currentPeriodNote != null) {
@@ -137,7 +136,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
             validatePreviousPeriodFields(previousPeriodNote, errors);
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
 
-        } else if  (previousPeriodBalanceSheet != null) {
+        } else if (previousPeriodBalanceSheet != null) {
 
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
 
@@ -163,7 +162,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
         }
     }
 
-    private void validatePreviousPeriodFields(@Valid PreviousPeriod creditorsPreviousPeriod,
+    private void validatePreviousPeriodFields(PreviousPeriod creditorsPreviousPeriod,
                                               Errors errors) {
 
         if (creditorsPreviousPeriod.getTotal() != null) {
