@@ -9,8 +9,8 @@ public enum AccountingNoteType {
             AccountType.SMALL_FULL,
             NoteType.ACCOUNTING_POLICIES,
             Parent.SMALL_FULL,
-            SmallFullLinkType.ACCOUNTING_POLICY_NOTE,
-            "small-full-accounts-note#accounting-policy",
+            SmallFullLinkType.ACCOUNTING_POLICIES_NOTE,
+            "small-full-accounts-note#accounting-policies",
             false),
     SMALL_FULL_EMPLOYEES(
             AccountType.SMALL_FULL,

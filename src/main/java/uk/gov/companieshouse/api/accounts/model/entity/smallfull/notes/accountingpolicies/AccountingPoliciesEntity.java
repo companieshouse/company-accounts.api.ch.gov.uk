@@ -1,10 +1,9 @@
-package uk.gov.companieshouse.api.accounts.model.entity;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.api.accounts.model.entity.NoteEntity;
 
-@Document(collection = "notes")
-public class AccountingPoliciesEntity extends BaseEntity {
+public class AccountingPoliciesEntity extends NoteEntity {
 
     @Field("data")
     private AccountingPoliciesDataEntity data;

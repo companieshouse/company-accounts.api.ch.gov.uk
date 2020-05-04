@@ -1,28 +1,48 @@
-package uk.gov.companieshouse.api.accounts.model.entity;
+package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.accountingpolicies;
 
-import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.Size;
 
-import javax.validation.constraints.NotNull;
+import uk.gov.companieshouse.api.accounts.model.rest.Note;
+import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.charset.CharSet;
 
-public class AccountingPoliciesDataEntity extends BaseDataEntity {
+import javax.validation.constraints.NotBlank;
 
-    @NotNull
-    @Field("basis_of_measurement_and_preparation")
+@JsonInclude(Include.NON_NULL)
+public class AccountingPolicies extends Note {
+
+    @NotBlank
+    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("basis_of_measurement_and_preparation")
     private String basisOfMeasurementAndPreparation;
 
-    @Field("turnover_policy")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("turnover_policy")
     private String turnoverPolicy;
 
-    @Field("tangible_fixed_assets_depreciation_policy")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("tangible_fixed_assets_depreciation_policy")
     private String tangibleFixedAssetsDepreciationPolicy;
 
-    @Field("intangible_fixed_assets_amortisation_policy")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("intangible_fixed_assets_amortisation_policy")
     private String intangibleFixedAssetsAmortisationPolicy;
 
-    @Field("valuation_information_and_policy")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("valuation_information_and_policy")
     private String valuationInformationAndPolicy;
 
-    @Field("other_accounting_policy")
+    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
+    @CharSetValid(CharSet.CHARACTER_SET_3)
+    @JsonProperty("other_accounting_policy")
     private String otherAccountingPolicy;
 
     public String getBasisOfMeasurementAndPreparation() {
@@ -75,7 +95,7 @@ public class AccountingPoliciesDataEntity extends BaseDataEntity {
 
     @Override
     public String toString() {
-        return "AccountingPoliciesDataEntity{" +
+        return "AccountingPolicies{" +
                 "basisOfMeasurementAndPreparation='" + basisOfMeasurementAndPreparation + '\'' +
                 ", turnoverPolicy='" + turnoverPolicy + '\'' +
                 ", tangibleFixedAssetsDepreciationPolicy='" + tangibleFixedAssetsDepreciationPolicy + '\'' +

@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.links;
 public enum SmallFullLinkType implements LinkType {
 
     SELF("self"),
-    ACCOUNTING_POLICY_NOTE("accounting_policy_note"),
+    ACCOUNTING_POLICIES_NOTE("accounting_policies_note"),
     APPROVAL("approval"),
     CREDITORS_AFTER_MORE_THAN_ONE_YEAR_NOTE("creditors_after_more_than_one_year_note"),
     CREDITORS_WITHIN_ONE_YEAR_NOTE("creditors_within_one_year_note"),
