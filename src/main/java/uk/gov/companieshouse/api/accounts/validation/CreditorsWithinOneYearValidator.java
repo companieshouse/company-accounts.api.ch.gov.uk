@@ -120,8 +120,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             validateCurrentPeriodFields(currentPeriodNote, errors);
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
-        } else if  (currentPeriodBalanceSheet != null && currentPeriodNote == null) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
+        } else if  (currentPeriodBalanceSheet != null) {
+            crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
 
         } else if (currentPeriodBalanceSheet == null && currentPeriodNote != null) {
 
@@ -138,8 +138,9 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             validatePreviousPeriodFields(previousPeriodNote, errors);
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
 
-        } else if  (previousPeriodBalanceSheet != null && previousPeriodNote == null) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
+        } else if  (previousPeriodBalanceSheet != null) {
+
+            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
 
         } else if (previousPeriodBalanceSheet == null && previousPeriodNote != null) {
 
