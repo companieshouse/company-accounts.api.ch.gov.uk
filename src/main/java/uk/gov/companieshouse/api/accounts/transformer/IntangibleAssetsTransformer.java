@@ -2,14 +2,15 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.*;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.*;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
 
 @Component
-public class IntangibleAssetsTransformer implements GenericTransformer<IntangibleAssets, IntangibleAssetsEntity> {
+public class IntangibleAssetsTransformer implements NoteTransformer<IntangibleAssets, IntangibleAssetsEntity> {
 
     @Override
     public IntangibleAssetsEntity transform(IntangibleAssets rest) {
@@ -112,5 +113,10 @@ public class IntangibleAssetsTransformer implements GenericTransformer<Intangibl
         }
 
         return restResource;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS;
     }
 }

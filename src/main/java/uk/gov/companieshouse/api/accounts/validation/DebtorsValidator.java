@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.Debtors;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.debtors.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.Debtors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -21,7 +22,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class DebtorsValidator extends BaseValidator implements CrossValidator<Debtors> {
+public class DebtorsValidator extends BaseValidator implements NoteValidator<Debtors> {
 
     private static final String DEBTORS_PATH = "$.debtors";
     private static final String DEBTORS_PATH_PREVIOUS = DEBTORS_PATH + ".previous_period";
@@ -40,17 +41,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         this.companyService = companyService;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
-    }
-
-    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
-                && isDebtorsNumericFieldsNull(currentPeriodNote));
-    }
-
-    boolean isDebtorsNumericFieldsNull(CurrentPeriod currentPeriodNote) {
-        return currentPeriodNote.getTotal() == null && currentPeriodNote.getOtherDebtors() == null
-                && currentPeriodNote.getPrepaymentsAndAccruedIncome() == null
-                && currentPeriodNote.getTradeDebtors() == null;
     }
 
     private Errors validateIfEmptyResource(Debtors debtors,
@@ -73,8 +63,8 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         return errors;
     }
 
-    public Errors validateDebtors(@Valid Debtors debtors, Transaction transaction,
-            String companyAccountsId,
+    @Override
+    public Errors validateSubmission(Debtors debtors, Transaction transaction, String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
         Errors errors = validateIfEmptyResource(debtors, request, companyAccountsId);
@@ -284,24 +274,6 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
         }
     }
 
-    @Override
-    public Errors crossValidate(Debtors debtors, HttpServletRequest request,
-            String companyAccountsId,
-            Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
-
-        crossValidateCurrentPeriodFields(debtors.getCurrentPeriod(), currentPeriodBalanceSheet,
-                errors);
-        crossValidatePreviousPeriodFields(debtors.getPreviousPeriod(), previousPeriodBalanceSheet
-                , errors);
-
-        return errors;
-    }
-
     private void crossValidateCurrentPeriodFields(CurrentPeriod currentPeriodDebtors,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
@@ -419,5 +391,11 @@ public class DebtorsValidator extends BaseValidator implements CrossValidator<De
                 .map(BalanceSheet :: getCurrentAssets)
                 .map(CurrentAssets :: getDebtors)
                 .isPresent();
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+
+        return AccountingNoteType.SMALL_FULL_DEBTORS;
     }
 }

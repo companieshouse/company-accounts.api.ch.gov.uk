@@ -8,21 +8,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.CurrentAssetsInvestments;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestments;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -49,9 +52,13 @@ public class CurrentInvestmentsValidatorTest {
     @Mock
     private PreviousPeriodService mockPreviousPeriodService;
 
+    @Mock
+    private Transaction transaction;
 
     private CurrentAssetsInvestments currentAssetsInvestments;
+
     private Errors errors;
+
     private CurrentAssetsInvestmentsValidator validator;
 
 
@@ -71,7 +78,7 @@ public class CurrentInvestmentsValidatorTest {
 
         currentAssetsInvestments.setDetails("test");
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertFalse(errors.hasErrors());
     }
@@ -86,7 +93,7 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
             UNEXPECTED_DATA_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
@@ -100,7 +107,8 @@ public class CurrentInvestmentsValidatorTest {
             ServiceException {
 
         currentAssetsInvestments.setDetails("test");
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
         assertFalse(errors.hasErrors());
 
     }
@@ -114,7 +122,7 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
             MANDATORY_ELEMENT_MISSING_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -130,12 +138,21 @@ public class CurrentInvestmentsValidatorTest {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
             EMPTY_RESOURCE_VALUE);
 
-        errors = validator.validateCurrentAssetsInvestments(mockRequest, currentAssetsInvestments, "");
+        errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
         assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
             CURRENT_ASSETS_DETAILS_PATH)));
 
+    }
+
+    @Test
+    @DisplayName("transformer returns correct note note")
+    void testCorrectNoteReturned() {
+
+        AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_CURRENT_ASSETS_INVESTMENTS;
+
+        assertEquals(noteType, validator.getAccountingNoteType());
     }
 
     private Error createError(String error, String path) {

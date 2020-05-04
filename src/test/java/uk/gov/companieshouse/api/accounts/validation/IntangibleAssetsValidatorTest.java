@@ -8,16 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -84,7 +85,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -111,7 +112,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.cost.at_period_start")));
@@ -136,7 +137,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
@@ -167,7 +168,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
@@ -188,7 +189,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
@@ -205,7 +206,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -235,7 +236,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
@@ -267,7 +268,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
@@ -297,7 +298,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
@@ -331,7 +332,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
@@ -365,7 +366,7 @@ class IntangibleAssetsValidatorTest {
         intangibleAssets.setGoodwill(goodwill);
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
@@ -428,7 +429,7 @@ class IntangibleAssetsValidatorTest {
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(10, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
@@ -512,7 +513,7 @@ class IntangibleAssetsValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createPreviousPeriodResponseObject(1L));
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(13, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_start")));
@@ -554,7 +555,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
 
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
@@ -580,7 +581,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(4, errors.getErrorCount());
 
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
@@ -608,7 +609,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
@@ -642,7 +643,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
@@ -673,7 +674,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.amortisation.at_period_start")));
@@ -709,7 +710,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_start")));
@@ -742,7 +743,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
@@ -778,7 +779,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(3, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
@@ -801,7 +802,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
@@ -826,7 +827,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
@@ -857,7 +858,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
@@ -889,7 +890,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
@@ -920,7 +921,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
@@ -953,7 +954,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
@@ -998,7 +999,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
 
     }
@@ -1042,7 +1043,7 @@ class IntangibleAssetsValidatorTest {
 
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1092,7 +1093,7 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
     }
 
@@ -1139,7 +1140,7 @@ class IntangibleAssetsValidatorTest {
         ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_KEY, CURRENT_BALANCE_SHEET_NOT_EQUAL);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_KEY, PREVIOUS_BALANCE_SHEET_NOT_EQUAL);
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
@@ -1184,7 +1185,7 @@ class IntangibleAssetsValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -1229,7 +1230,7 @@ class IntangibleAssetsValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(createPreviousPeriodResponseObject(0L));
 
-        Errors errors = validator.validateIntangibleAssets(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
     }
@@ -1295,5 +1296,13 @@ class IntangibleAssetsValidatorTest {
 
         return new ResponseObject<>(ResponseStatus.FOUND, previousPeriod);
     }
-    
+
+    @Test
+    @DisplayName("transformer returns correct note note")
+    void testCorrectNoteReturned() {
+
+        AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS;
+
+        assertEquals(noteType, validator.getAccountingNoteType());
+    }
 }

@@ -1,6 +1,4 @@
-artifact_name       := company-accounts.api.ch.gov.uk
-version             := "unversioned"
-
+artifact_name := company-accounts.api.ch.gov.uk
 
 .PHONY: all
 all: build
@@ -15,9 +13,8 @@ clean:
 
 .PHONY: build
 build:
-	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
 	mvn package -DskipTests=true
-	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
+	cp ./target/$(artifact_name)-unversioned.jar ./$(artifact_name).jar
 
 .PHONY: test
 test: test-unit
@@ -28,7 +25,9 @@ test-unit: clean
 
 .PHONY: package
 package:
-	@test -s ./$(artifact_name).jar || { echo "ERROR: Service JAR not found"; exit 1; }
+ifndef version
+	$(error No version given. Aborting)
+endif
 	$(info Packaging version: $(version))
 	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
 	mvn package -DskipTests=true

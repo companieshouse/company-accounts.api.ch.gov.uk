@@ -2,67 +2,73 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CreditorsAfterOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorsafteroneyearentity.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CreditorsAfterOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorsafteroneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYearDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorsaftermorethanoneyear.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CreditorsAfterMoreThanOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaftermorethanoneyear.PreviousPeriod;
 
 
 @Component
-public class CreditorsAfterOneYearTransformer implements GenericTransformer<CreditorsAfterOneYear, CreditorsAfterOneYearEntity>  {
+public class CreditorsAfterOneYearTransformer implements NoteTransformer<CreditorsAfterMoreThanOneYear, CreditorsAfterMoreThanOneYearEntity>  {
 
     @Override
-    public CreditorsAfterOneYearEntity transform(CreditorsAfterOneYear rest) {
+    public CreditorsAfterMoreThanOneYearEntity transform(CreditorsAfterMoreThanOneYear rest) {
 
-        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
-        CreditorsAfterOneYearEntity creditorsAfterOneYearEntity = new CreditorsAfterOneYearEntity();
+        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity = new CreditorsAfterMoreThanOneYearDataEntity();
+        CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity = new CreditorsAfterMoreThanOneYearEntity();
 
-        BeanUtils.copyProperties(rest, creditorsAfterOneYearDataEntity);
+        BeanUtils.copyProperties(rest, creditorsAfterMoreThanOneYearDataEntity);
 
         if (rest.getCurrentPeriod() != null) {
             CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
             BeanUtils.copyProperties(rest.getCurrentPeriod(), currentPeriodEntity);
-            creditorsAfterOneYearDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
+            creditorsAfterMoreThanOneYearDataEntity.setCurrentPeriodEntity(currentPeriodEntity);
         }
 
         if (rest.getPreviousPeriod() != null) {
             PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
             BeanUtils.copyProperties(rest.getPreviousPeriod(), previousPeriodEntity);
-            creditorsAfterOneYearDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
+            creditorsAfterMoreThanOneYearDataEntity.setPreviousPeriodEntity(previousPeriodEntity);
         }
 
-        creditorsAfterOneYearEntity.setData(creditorsAfterOneYearDataEntity);
+        creditorsAfterMoreThanOneYearEntity.setData(creditorsAfterMoreThanOneYearDataEntity);
 
-        return creditorsAfterOneYearEntity;
+        return creditorsAfterMoreThanOneYearEntity;
     }
 
     @Override
-    public CreditorsAfterOneYear transform(CreditorsAfterOneYearEntity entity) {
-        CreditorsAfterOneYear creditorsAfterOneYear = new CreditorsAfterOneYear();
-        CreditorsAfterOneYearDataEntity creditorsAfterOneYearDataEntity;
+    public CreditorsAfterMoreThanOneYear transform(CreditorsAfterMoreThanOneYearEntity entity) {
+        CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear = new CreditorsAfterMoreThanOneYear();
+        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity;
 
         if (entity.getData() != null) {
-            creditorsAfterOneYearDataEntity = entity.getData();
+            creditorsAfterMoreThanOneYearDataEntity = entity.getData();
         } else {
-            creditorsAfterOneYearDataEntity = new CreditorsAfterOneYearDataEntity();
+            creditorsAfterMoreThanOneYearDataEntity = new CreditorsAfterMoreThanOneYearDataEntity();
         }
 
-        BeanUtils.copyProperties(creditorsAfterOneYearDataEntity, creditorsAfterOneYear);
+        BeanUtils.copyProperties(creditorsAfterMoreThanOneYearDataEntity, creditorsAfterMoreThanOneYear);
 
-        if (creditorsAfterOneYearDataEntity.getCurrentPeriodEntity() != null) {
+        if (creditorsAfterMoreThanOneYearDataEntity.getCurrentPeriodEntity() != null) {
             CurrentPeriod currentPeriod = new CurrentPeriod();
-            BeanUtils.copyProperties(creditorsAfterOneYearDataEntity.getCurrentPeriodEntity(), currentPeriod);
-            creditorsAfterOneYear.setCurrentPeriod(currentPeriod);
+            BeanUtils.copyProperties(creditorsAfterMoreThanOneYearDataEntity.getCurrentPeriodEntity(), currentPeriod);
+            creditorsAfterMoreThanOneYear.setCurrentPeriod(currentPeriod);
         }
 
-        if (creditorsAfterOneYearDataEntity.getPreviousPeriodEntity() != null) {
+        if (creditorsAfterMoreThanOneYearDataEntity.getPreviousPeriodEntity() != null) {
             PreviousPeriod previousPeriod = new PreviousPeriod();
-            BeanUtils.copyProperties(creditorsAfterOneYearDataEntity.getPreviousPeriodEntity(), previousPeriod);
-            creditorsAfterOneYear.setPreviousPeriod(previousPeriod);
+            BeanUtils.copyProperties(creditorsAfterMoreThanOneYearDataEntity.getPreviousPeriodEntity(), previousPeriod);
+            creditorsAfterMoreThanOneYear.setPreviousPeriod(previousPeriod);
         }
-        return creditorsAfterOneYear;
+        return creditorsAfterMoreThanOneYear;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_CREDITORS_AFTER;
     }
 }

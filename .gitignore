@@ -1,26 +1,18 @@
-# IntelliJ files
-.idea
-*.iml
+# Build artifacts
+target/
+*.jar
+*.zip
 
 # Eclipse files
 .classpath
 .project
 .settings
-/bin/
+bin/
 
-company-accounts.api.ch.gov.uk.jar
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
+# IntelliJ files
+.idea/
+*.iml
 
-# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
-!/.mvn/wrapper/maven-wrapper.jar
-
-*.DS_Store
-build.log
+# Mac files
+.DS_Store
+._*

@@ -2,16 +2,17 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.CurrentPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.creditorswithinoneyear.PreviousPeriodEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYearDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYearEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.CurrentPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.creditorswithinoneyear.PreviousPeriodEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.PreviousPeriod;
 
 @Component
-public class CreditorsWithinOneYearTransformer implements GenericTransformer<CreditorsWithinOneYear, CreditorsWithinOneYearEntity> {
+public class CreditorsWithinOneYearTransformer implements NoteTransformer<CreditorsWithinOneYear, CreditorsWithinOneYearEntity> {
 
     @Override
     public CreditorsWithinOneYearEntity transform(CreditorsWithinOneYear rest) {
@@ -64,5 +65,10 @@ public class CreditorsWithinOneYearTransformer implements GenericTransformer<Cre
             creditorsWithinOneYear.setPreviousPeriod(previousPeriod);
         }
         return creditorsWithinOneYear;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_CREDITORS_WITHIN;
     }
 }

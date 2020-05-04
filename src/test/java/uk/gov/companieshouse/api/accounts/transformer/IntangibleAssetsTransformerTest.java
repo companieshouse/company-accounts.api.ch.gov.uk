@@ -7,15 +7,16 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.AmortisationEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.CostEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.IntangibleAssetsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.IntangibleAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.intangible.IntangibleAssetsResourceEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.AmortisationEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.CostEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsResourceEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
 
 
 import java.util.HashMap;
@@ -74,6 +75,13 @@ public class IntangibleAssetsTransformerTest {
 
         assertNull(intangibleAssetsEntity.getData().getGoodwill().getAmortisation());
 
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS, transformer.getAccountingNoteType());
     }
 
     @Test

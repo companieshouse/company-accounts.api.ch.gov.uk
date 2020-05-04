@@ -2,13 +2,14 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CreditorsWithinOneYear;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.creditorswithinoneyear.PreviousPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CreditorsWithinOneYear;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -17,11 +18,10 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
-public class CreditorsWithinOneYearValidator extends BaseValidator implements CrossValidator<CreditorsWithinOneYear> {
+public class CreditorsWithinOneYearValidator extends BaseValidator implements NoteValidator<CreditorsWithinOneYear> {
 
     private static final String CREDITORS_WITHIN_PATH = "$.creditors_within_one_year";
     private static final String CREDITORS_WITHIN_CURRENT_PERIOD_PATH = CREDITORS_WITHIN_PATH +
@@ -44,20 +44,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         this.companyService = companyService;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
-    }
-
-    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
-        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
-                && creditorsNumberFieldsAreNull(currentPeriodNote));
-    }
-
-    private boolean creditorsNumberFieldsAreNull(CurrentPeriod currentPeriodNote) {
-        return currentPeriodNote.getTotal() == null && currentPeriodNote.getTradeCreditors() == null &&
-                currentPeriodNote.getAccrualsAndDeferredIncome() == null &&
-                currentPeriodNote.getOtherCreditors() == null &&
-                currentPeriodNote.getTaxationAndSocialSecurity() == null &&
-                currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts() == null &&
-                currentPeriodNote.getBankLoansAndOverdrafts() == null;
     }
 
     private Errors validateIfEmptyResource(CreditorsWithinOneYear creditorsWithinOneYear,
@@ -84,6 +70,10 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
                                                  Transaction transaction,
                                                  String companyAccountsId,
                                                  HttpServletRequest request) throws DataException {
+
+
+    @Override
+    public Errors validateSubmission(CreditorsWithinOneYear creditorsWithinOneYear, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = validateIfEmptyResource(creditorsWithinOneYear, request, companyAccountsId);
 
@@ -172,7 +162,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         }
     }
 
-    private void validatePreviousTotalCalculationCorrect(@Valid PreviousPeriod creditorsPreviousPeriod, Errors errors) {
+    private void validatePreviousTotalCalculationCorrect(PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -201,7 +191,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         }
     }
 
-    private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod creditorsCurrentPeriod, Errors errors) {
+    private void validateCurrentPeriodTotalCalculation(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsCurrentPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -402,5 +392,10 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
         return !Optional.ofNullable(previousPeriodNote)
                 .map(PreviousPeriod::getTotal)
                 .isPresent();
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_CREDITORS_WITHIN;
     }
 }

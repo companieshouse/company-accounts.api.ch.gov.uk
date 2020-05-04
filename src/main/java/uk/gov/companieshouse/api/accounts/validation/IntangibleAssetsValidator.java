@@ -2,16 +2,17 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Amortisation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.IntangibleAssetsResource;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.intangible.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -27,7 +28,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component
-public class IntangibleAssetsValidator  extends BaseValidator implements CrossValidator<IntangibleAssets>   {
+public class IntangibleAssetsValidator extends BaseValidator implements NoteValidator<IntangibleAssets>{
 
     private CompanyService companyService;
 
@@ -59,7 +60,8 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
     private static final String AMORTISATION_AT_PERIOD_END = ".amortisation.at_period_end";
     private static final String AMORTISATION_AT_PERIOD_START = ".amortisation.at_period_start";
 
-    public Errors validateIntangibleAssets(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
+    @Override
+    public Errors validateSubmission(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
     throws DataException {
         Errors errors = new Errors();
 
@@ -96,6 +98,25 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
                 addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             }
         }
+    }
+
+    private Errors crossValidate(IntangibleAssets intangibleAssets,
+                                HttpServletRequest request,
+                                String companyAccountsId,
+                                Errors errors) throws DataException {
+
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
+                companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
+                companyAccountsId);
+
+        if (currentPeriodBalanceSheet != null) {
+            crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
+        }
+        if (previousPeriodBalanceSheet != null) {
+            crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
+        }
+        return errors;
     }
 
     private void verifySubResourcesAreValid(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler, List<IntangibleSubResource> invalidSubResources) {
@@ -762,26 +783,6 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
             .orElse(0L);
     }
 
-    @Override
-    public Errors crossValidate(IntangibleAssets intangibleAssets,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
-
-        if (currentPeriodBalanceSheet != null) {
-            crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
-        }
-        if (previousPeriodBalanceSheet != null) {
-            crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
-        }
-        return errors;
-    }
-
     private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
                                             IntangibleAssets intangibleAssets) throws DataException {
 
@@ -867,6 +868,11 @@ public class IntangibleAssetsValidator  extends BaseValidator implements CrossVa
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
 
         return INTANGIBLE_NOTE + "." + intangibleSubResource.getJsonPath() + pathSuffix;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS;
     }
 
     private enum IntangibleSubResource {

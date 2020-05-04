@@ -2,18 +2,19 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.CostEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.DepreciationEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.notes.tangible.TangibleAssetsResourceEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Cost;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.Depreciation;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssets;
-import uk.gov.companieshouse.api.accounts.model.rest.notes.tangible.TangibleAssetsResource;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.CostEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.DepreciationEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.tangibleassets.TangibleAssetsResourceEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.Depreciation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssets;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleassets.TangibleAssetsResource;
 
 @Component
-public class TangibleAssetsTransformer implements GenericTransformer<TangibleAssets, TangibleAssetsEntity> {
+public class TangibleAssetsTransformer implements NoteTransformer<TangibleAssets, TangibleAssetsEntity> {
 
     @Override
     public TangibleAssetsEntity transform(TangibleAssets entity) {
@@ -152,5 +153,10 @@ public class TangibleAssetsTransformer implements GenericTransformer<TangibleAss
         }
 
         return restResource;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_TANGIBLE_ASSETS;
     }
 }
