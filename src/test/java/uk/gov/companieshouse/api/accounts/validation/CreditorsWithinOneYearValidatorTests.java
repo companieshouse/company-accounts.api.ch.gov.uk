@@ -1,13 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +24,15 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -63,6 +64,9 @@ public class CreditorsWithinOneYearValidatorTests {
 
     private static final String INCORRECT_TOTAL_NAME = "incorrectTotal";
     private static final String INCORRECT_TOTAL_VALUE = "incorrect_total";
+
+    private static final String EMPTY_RESOURCE_NAME = "emptyResource";
+    private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
 
     private CreditorsWithinOneYear creditorsWithinOneYear;
     private Errors errors;
@@ -156,18 +160,21 @@ public class CreditorsWithinOneYearValidatorTests {
         mockValidBalanceSheetCurrentPeriod();
         mockValidBalanceSheetPreviousPeriod();
 
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateSubmission(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
     @Test
@@ -219,13 +226,9 @@ public class CreditorsWithinOneYearValidatorTests {
         errors = validator.validateSubmission(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
@@ -270,7 +273,7 @@ public class CreditorsWithinOneYearValidatorTests {
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
-    @Test
+   /* @Test
     @DisplayName("Errors returned when balance sheet period values empty but note periods not empty")
     void testErrorThrownWhenBalanceSheetPeriodValuesEmptyButNotPeriodsNotEmpty() throws ServiceException,
             DataException {
@@ -299,7 +302,7 @@ public class CreditorsWithinOneYearValidatorTests {
                 CREDITORS_WITHIN_CURRENT_PERIOD_PATH)));
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
-    }
+    }*/
 
     @Test
     @DisplayName("Errors returned when no totals provided")
@@ -323,13 +326,9 @@ public class CreditorsWithinOneYearValidatorTests {
         errors = validator.validateSubmission(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
@@ -387,6 +386,26 @@ public class CreditorsWithinOneYearValidatorTests {
     void getAccountingNoteType() {
 
         assertEquals(AccountingNoteType.SMALL_FULL_CREDITORS_WITHIN, validator.getAccountingNoteType());
+    }
+
+    @Test
+    @DisplayName("Test users submit empty resource with no balance sheet")
+    void testNoBalanceSheetAndEmptyResourceSubmitted() throws DataException, ServiceException {
+
+        createValidNoteCurrentPeriod();
+        createValidNotePreviousPeriod();
+
+        CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
+
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
+                EMPTY_RESOURCE_VALUE);
+
+        Errors  errors = validator.validateSubmission(creditorsWithinOneYear,
+                mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
+                CREDITORS_WITHIN_PATH)));
     }
 
     private void createValidNoteCurrentPeriod() {

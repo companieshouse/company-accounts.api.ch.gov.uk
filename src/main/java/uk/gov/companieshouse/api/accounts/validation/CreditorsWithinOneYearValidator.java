@@ -98,57 +98,31 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
             BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
-        boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
-        boolean hasCurrentPeriodBalanceSheetNoteValue =
-                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
-        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
-
-        if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
-
-            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
-                    CREDITORS_WITHIN_CURRENT_PERIOD_PATH, errors)) {
-                validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
-                hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
+        if(currentPeriodBalanceSheet != null && currentPeriodNote != null) {
             validateCurrentPeriodFields(currentPeriodNote, errors);
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+
+        } else if (currentPeriodBalanceSheet == null && currentPeriodNote != null) {
+            validateCurrentPeriodFields(currentPeriodNote, errors);
+
+        } else if (currentPeriodBalanceSheet != null){
+            crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
         }
-    }
-
-    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
-            String errorPath,
-            Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheet) {
-            addError(errors, unexpectedData, errorPath);
-            return false;
-        }
-
-        return true;
     }
 
     private void validatePreviousPeriod(PreviousPeriod previousPeriodNote,
             BalanceSheet previousPeriodBalanceSheet, Errors errors) {
 
-        boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
-        boolean hasPreviousPeriodBalanceSheetNoteValue =
-                ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
-        boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
-
-        if (! hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
-
-            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet,
-                    CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH, errors)) {
-                validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
-
-        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue,
-                hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
+        if(previousPeriodBalanceSheet != null && previousPeriodNote != null) {
             validatePreviousPeriodFields(previousPeriodNote, errors);
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
                     errors);
+
+        } else if (previousPeriodBalanceSheet == null && previousPeriodNote != null) {
+            validatePreviousPeriodFields(previousPeriodNote, errors);
+
+        } else if (previousPeriodBalanceSheet != null){
+            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
         }
     }
 
@@ -171,14 +145,12 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
     private void validatePreviousPeriodFields(PreviousPeriod creditorsPreviousPeriod,
             Errors errors) {
 
-        if (creditorsPreviousPeriod.getTotal() == null) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH);
-        } else {
-            validatePreviousTotalCalculationCorrect(creditorsPreviousPeriod, errors);
+        if (creditorsPreviousPeriod.getTotal() != null) {
+            validatePreviousTotalCalculation(creditorsPreviousPeriod, errors);
         }
     }
 
-    private void validatePreviousTotalCalculationCorrect(PreviousPeriod creditorsPreviousPeriod, Errors errors) {
+    private void validatePreviousTotalCalculation(PreviousPeriod creditorsPreviousPeriod, Errors errors) {
 
         Long bankLoans =
                 Optional.ofNullable(creditorsPreviousPeriod.getBankLoansAndOverdrafts()).orElse(0L);
@@ -201,40 +173,8 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH, errors);
     }
 
-    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetValue,
-            boolean hasCurrentPeriodNoteData,
-            Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheetValue && ! hasCurrentPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
-            return false;
-        } else if (! hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
-            addError(errors, unexpectedData, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetValue,
-            boolean hasPreviousPeriodNoteData,
-            Errors errors) {
-
-        if (hasPreviousPeriodBalanceSheetValue && ! hasPreviousPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
-            return false;
-        } else if (! hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
-            addError(errors, unexpectedData, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
-            return false;
-        }
-
-        return true;
-    }
-
     private void validateCurrentPeriodFields(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
-        if (creditorsCurrentPeriod.getTotal() == null) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH);
-        } else {
+        if (creditorsCurrentPeriod.getTotal() != null) {
             validateCurrentPeriodTotalCalculation(creditorsCurrentPeriod, errors);
         }
     }
