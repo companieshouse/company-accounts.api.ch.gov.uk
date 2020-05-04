@@ -102,7 +102,7 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
         } else if (currentPeriodBalanceSheet == null && currentPeriodNote != null) {
             validateCurrentPeriodFields(currentPeriodNote, errors);
-        } else if (currentPeriodBalanceSheet != null && currentPeriodNote == null){
+        } else if (currentPeriodBalanceSheet != null){
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
         }
     }
@@ -115,7 +115,7 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
         } else if (previousPeriodBalanceSheet == null && previousPeriodNote != null) {
             validatePreviousPeriodFields(previousPeriodNote, errors);
-        } else if (previousPeriodBalanceSheet != null && previousPeriodNote == null){
+        } else if (previousPeriodBalanceSheet != null){
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
         }
     }
