@@ -155,27 +155,6 @@ public class CreditorsWithinOneYearValidatorTests {
     }
 
     @Test
-    @DisplayName("Errors returned for empty note when balance sheet periods have values")
-    void testErrorsReturnedWhenNoDataPresentButBalanceSheetPeriodValuesProvided() throws ServiceException, DataException {
-
-        mockValidBalanceSheetCurrentPeriod();
-        mockValidBalanceSheetPreviousPeriod();
-
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        errors = validator.validateSubmission(creditorsWithinOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_CURRENT_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH)));
-    }
-
-    @Test
     @DisplayName("Error returned for first year filer if previous period provided in note")
     void testUnexpectedDataErrorReturnedForFirstYearFiler() throws ServiceException, DataException {
 
@@ -387,7 +366,7 @@ public class CreditorsWithinOneYearValidatorTests {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);
 
-       Errors  errors = validator.validateCreditorsWithinOneYear(creditorsWithinOneYear,
+       Errors  errors = validator.validateSubmission(creditorsWithinOneYear,
                 mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
        assertEquals(1, errors.getErrorCount());
@@ -405,6 +384,9 @@ public class CreditorsWithinOneYearValidatorTests {
         creditorsWithinOneYear.getCurrentPeriod().setDetails(TEST_DETAILS);
 
         assertTrue(validator.validateIfOnlyDetails(creditorsWithinOneYear.getCurrentPeriod()));
+    }
+
+    @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
 

@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Component
@@ -46,6 +47,20 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
         this.previousPeriodService = previousPeriodService;
     }
 
+    public boolean validateIfOnlyDetails(CurrentPeriod currentPeriodNote) {
+        return (currentPeriodNote != null && currentPeriodNote.getDetails() != null
+                && creditorsNumberFieldsAreNull(currentPeriodNote));
+    }
+
+    private boolean creditorsNumberFieldsAreNull(CurrentPeriod currentPeriodNote) {
+        return currentPeriodNote.getTotal() == null && currentPeriodNote.getTradeCreditors() == null &&
+                currentPeriodNote.getAccrualsAndDeferredIncome() == null &&
+                currentPeriodNote.getOtherCreditors() == null &&
+                currentPeriodNote.getTaxationAndSocialSecurity() == null &&
+                currentPeriodNote.getFinanceLeasesAndHirePurchaseContracts() == null &&
+                currentPeriodNote.getBankLoansAndOverdrafts() == null;
+    }
+
     private Errors validateIfEmptyResource(CreditorsWithinOneYear creditorsWithinOneYear,
                                            HttpServletRequest request, String companyAccountsId) throws DataException {
 
@@ -65,12 +80,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
 
         return errors;
     }
-
-    public Errors validateCreditorsWithinOneYear(@Valid CreditorsWithinOneYear creditorsWithinOneYear,
-                                                 Transaction transaction,
-                                                 String companyAccountsId,
-                                                 HttpServletRequest request) throws DataException {
-
 
     @Override
     public Errors validateSubmission(CreditorsWithinOneYear creditorsWithinOneYear, Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
@@ -212,25 +221,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
 
         validateAggregateTotal(total, sum, CREDITORS_WITHIN_CURRENT_PERIOD_TOTAL_PATH
                 , errors);
-    }
-
-    @Override
-    public Errors crossValidate(CreditorsWithinOneYear creditorsWithinOneYear,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
-
-        crossValidateCurrentPeriodFields(creditorsWithinOneYear.getCurrentPeriod(),
-                currentPeriodBalanceSheet, errors);
-        crossValidatePreviousPeriodFields(creditorsWithinOneYear.getPreviousPeriod(),
-                previousPeriodBalanceSheet, errors);
-
-        return errors;
     }
 
     private void crossValidatePreviousPeriodFields(PreviousPeriod previousPeriodNote,
