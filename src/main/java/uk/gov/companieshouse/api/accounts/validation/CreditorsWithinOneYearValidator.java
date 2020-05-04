@@ -77,12 +77,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             addEmptyResourceError(errors, CREDITORS_WITHIN_PATH);
         }
 
-        if ((creditorsWithinOneYear.getCurrentPeriod() == null &&
-                creditorsWithinOneYear.getPreviousPeriod() == null)) {
-
-            addEmptyResourceError(errors, CREDITORS_WITHIN_PATH);
-        }
-
         return errors;
     }
 
@@ -145,7 +139,7 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
             crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
 
         } else if  (previousPeriodBalanceSheet != null && previousPeriodNote == null) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
+            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
 
         } else if (previousPeriodBalanceSheet == null && previousPeriodNote != null) {
 
@@ -198,30 +192,6 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements Cr
 
         validateAggregateTotal(total, sum,
                 CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH, errors);
-    }
-
-    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetNoteValue,
-                                                boolean hasCurrentPeriodNoteData,
-                                                Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheetNoteValue && !hasCurrentPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_CURRENT_PERIOD_PATH);
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetNoteValue,
-                                                 boolean hasPreviousPeriodNoteData,
-                                                 Errors errors) {
-
-        if (hasPreviousPeriodBalanceSheetNoteValue && !hasPreviousPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH);
-            return false;
-        }
-
-        return true;
     }
 
     private void validateCurrentPeriodFields(CurrentPeriod creditorsCurrentPeriod, Errors errors) {
