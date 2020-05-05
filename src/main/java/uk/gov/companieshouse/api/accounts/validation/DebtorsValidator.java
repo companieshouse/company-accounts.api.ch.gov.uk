@@ -94,49 +94,29 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
         return errors;
     }
 
-
     private void validateCurrentPeriod(CurrentPeriod currentPeriodNote,
-            BalanceSheet currentPeriodBalanceSheet, Errors errors) {
+                                       BalanceSheet currentPeriodBalanceSheet, Errors errors) {
 
-        boolean hasCurrentPeriodBalanceSheet = currentPeriodBalanceSheet != null;
-        boolean hasCurrentPeriodBalanceSheetNoteValue =
-                ! isCurrentPeriodBalanceSheetDataNull(currentPeriodBalanceSheet);
-        boolean hasCurrentPeriodNoteData = currentPeriodNote != null;
-
-        if (! hasCurrentPeriodBalanceSheetNoteValue && hasCurrentPeriodNoteData) {
-
-            if (validateNoUnexpectedDataPresent(hasCurrentPeriodBalanceSheet,
-                    DEBTORS_PATH_CURRENT, errors)) {
-                validateCurrentPeriodFields(currentPeriodNote, errors);
-            }
-
-        } else if (validateCurrentPeriodExists(hasCurrentPeriodBalanceSheetNoteValue,
-                hasCurrentPeriodNoteData, errors) && hasCurrentPeriodNoteData) {
+        if(currentPeriodBalanceSheet != null && currentPeriodNote != null) {
             validateCurrentPeriodFields(currentPeriodNote, errors);
+            crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
+        } else if (currentPeriodBalanceSheet == null && currentPeriodNote != null) {
+            validateCurrentPeriodFields(currentPeriodNote, errors);
+        } else if (currentPeriodBalanceSheet != null){
             crossValidateCurrentPeriodFields(currentPeriodNote, currentPeriodBalanceSheet, errors);
         }
     }
 
     private void validatePreviousPeriod(PreviousPeriod previousPeriodNote,
-            BalanceSheet previousPeriodBalanceSheet, Errors errors) {
+                                        BalanceSheet previousPeriodBalanceSheet, Errors errors) {
 
-        boolean hasPreviousPeriodBalanceSheet = previousPeriodBalanceSheet != null;
-        boolean hasPreviousPeriodBalanceSheetNoteValue =
-                ! isPreviousPeriodBalanceSheetDataNull(previousPeriodBalanceSheet);
-        boolean hasPreviousPeriodNoteData = previousPeriodNote != null;
-
-        if (! hasPreviousPeriodBalanceSheetNoteValue && hasPreviousPeriodNoteData) {
-
-            if (validateNoUnexpectedDataPresent(hasPreviousPeriodBalanceSheet,
-                    DEBTORS_PATH_PREVIOUS, errors)) {
-                validatePreviousPeriodFields(previousPeriodNote, errors);
-            }
-
-        } else if (validatePreviousPeriodExists(hasPreviousPeriodBalanceSheetNoteValue,
-                hasPreviousPeriodNoteData, errors) && hasPreviousPeriodNoteData) {
+        if(previousPeriodBalanceSheet != null && previousPeriodNote != null) {
             validatePreviousPeriodFields(previousPeriodNote, errors);
-            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet,
-                    errors);
+            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
+        } else if (previousPeriodBalanceSheet == null && previousPeriodNote != null) {
+            validatePreviousPeriodFields(previousPeriodNote, errors);
+        } else if (previousPeriodBalanceSheet != null){
+            crossValidatePreviousPeriodFields(previousPeriodNote, previousPeriodBalanceSheet, errors);
         }
     }
 
@@ -148,63 +128,18 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
         }
     }
 
-    private boolean validateNoUnexpectedDataPresent(boolean hasCurrentPeriodBalanceSheet,
-            String errorPath, Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheet) {
-            addError(errors, unexpectedData, errorPath);
-            return false;
-        }
-
-        return true;
-    }
-
     private void validateCurrentPeriodFields(CurrentPeriod debtorsCurrentPeriod, Errors errors) {
-        if (debtorsCurrentPeriod.getTotal() == null) {
-            addError(errors, mandatoryElementMissing, CURRENT_TOTAL_PATH);
-        } else {
+
+        if (debtorsCurrentPeriod.getTotal() != null) {
             validateCurrentPeriodTotalCalculation(debtorsCurrentPeriod, errors);
         }
     }
 
-    private void validatePreviousPeriodFields(@Valid PreviousPeriod debtorsPreviousPeriod,
-            Errors errors) {
+    private void validatePreviousPeriodFields(@Valid PreviousPeriod debtorsPreviousPeriod, Errors errors) {
 
-        if (debtorsPreviousPeriod.getTotal() == null) {
-            addError(errors, mandatoryElementMissing, PREVIOUS_TOTAL_PATH);
-        } else {
+        if (debtorsPreviousPeriod.getTotal() != null) {
             validatePreviousPeriodTotalCalculation(debtorsPreviousPeriod, errors);
         }
-    }
-
-    private boolean validateCurrentPeriodExists(boolean hasCurrentPeriodBalanceSheetValue,
-            boolean hasCurrentPeriodNoteData,
-            Errors errors) {
-
-        if (hasCurrentPeriodBalanceSheetValue && ! hasCurrentPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, DEBTORS_PATH_CURRENT);
-            return false;
-        } else if (! hasCurrentPeriodBalanceSheetValue && hasCurrentPeriodNoteData) {
-            addError(errors, unexpectedData, DEBTORS_PATH_CURRENT);
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validatePreviousPeriodExists(boolean hasPreviousPeriodBalanceSheetValue,
-            boolean hasPreviousPeriodNoteData,
-            Errors errors) {
-
-        if (hasPreviousPeriodBalanceSheetValue && ! hasPreviousPeriodNoteData) {
-            addError(errors, mandatoryElementMissing, DEBTORS_PATH_PREVIOUS);
-            return false;
-        } else if (! hasPreviousPeriodBalanceSheetValue && hasPreviousPeriodNoteData) {
-            addError(errors, unexpectedData, DEBTORS_PATH_PREVIOUS);
-            return false;
-        }
-
-        return true;
     }
 
     private void validateCurrentPeriodTotalCalculation(@Valid CurrentPeriod debtorsCurrentPeriod,
