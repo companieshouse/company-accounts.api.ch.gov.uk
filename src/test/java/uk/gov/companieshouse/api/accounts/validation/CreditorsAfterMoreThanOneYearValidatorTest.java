@@ -174,18 +174,21 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
         mockValidBalanceSheetCurrentPeriod();
         mockValidBalanceSheetPreviousPeriod();
 
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
+                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
+        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
+                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
+
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
 
         errors = validator.validateSubmission(creditorsAfterMoreThanOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_CURRENT_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
+                CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
     @Test
@@ -237,13 +240,9 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
         errors = validator.validateSubmission(creditorsAfterMoreThanOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
@@ -288,36 +287,6 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
                 CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
-    @Test
-    @DisplayName("Errors returned when balance sheet period values empty but note periods not empty")
-    void testErrorThrownWhenBalanceSheetPeriodValuesEmptyButNotPeriodsNotEmpty() throws ServiceException,
-            DataException {
-
-        createValidNoteCurrentPeriod();
-        createValidNotePreviousPeriod();
-
-        mockBalanceSheetCurrentPeriodWithoutNoteValue();
-        mockBalanceSheetPreviousPeriodWithoutNoteValue();
-
-        when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(true);
-
-        ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME, INCORRECT_TOTAL_VALUE);
-        ReflectionTestUtils.setField(validator, CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME,
-                CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
-                PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-                UNEXPECTED_DATA_VALUE);
-
-        errors = validator.validateSubmission(creditorsAfterMoreThanOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
-
-        assertTrue(errors.hasErrors());
-        assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                CREDITORS_AFTER_CURRENT_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                CREDITORS_AFTER_PREVIOUS_PERIOD_PATH)));
-    }
 
     @Test
     @DisplayName("Errors returned when no totals provided")
@@ -341,13 +310,9 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
         errors = validator.validateSubmission(creditorsAfterMoreThanOneYear, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
+        assertEquals(2, errors.getErrorCount());
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_AFTER_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
                 CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
