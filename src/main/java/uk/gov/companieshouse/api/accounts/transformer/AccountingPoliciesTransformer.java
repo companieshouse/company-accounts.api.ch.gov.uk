@@ -2,12 +2,13 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountingPoliciesDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountingPoliciesEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies.AccountingPoliciesDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies.AccountingPoliciesEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.accountingpolicies.AccountingPolicies;
 
 @Component
-public class AccountingPoliciesTransformer implements GenericTransformer<AccountingPolicies, AccountingPoliciesEntity> {
+public class AccountingPoliciesTransformer implements NoteTransformer<AccountingPolicies, AccountingPoliciesEntity> {
 
     @Override
     public AccountingPoliciesEntity transform(AccountingPolicies rest) {
@@ -30,5 +31,10 @@ public class AccountingPoliciesTransformer implements GenericTransformer<Account
         BeanUtils.copyProperties(accountingPoliciesDataEntity, accountingPolicies);
 
         return accountingPolicies;
+    }
+
+    @Override
+    public AccountingNoteType getAccountingNoteType() {
+        return AccountingNoteType.SMALL_FULL_ACCOUNTING_POLICIES;
     }
 }

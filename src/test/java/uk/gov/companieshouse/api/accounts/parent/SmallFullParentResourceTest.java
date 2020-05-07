@@ -51,8 +51,8 @@ public class SmallFullParentResourceTest {
 
         when(request.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.ACCOUNTING_POLICY_NOTE.getLink())).thenReturn(null);
-        assertFalse(smallFullParentResource.childExists(request, SmallFullLinkType.ACCOUNTING_POLICY_NOTE));
+        when(smallFullLinks.get(SmallFullLinkType.ACCOUNTING_POLICIES_NOTE.getLink())).thenReturn(null);
+        assertFalse(smallFullParentResource.childExists(request, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE));
     }
 
     @Test
@@ -61,24 +61,24 @@ public class SmallFullParentResourceTest {
 
         when(request.getAttribute(AttributeName.SMALLFULL.getValue())).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.ACCOUNTING_POLICY_NOTE.getLink())).thenReturn(PARENT_LINK);
-        assertTrue(smallFullParentResource.childExists(request, SmallFullLinkType.ACCOUNTING_POLICY_NOTE));
+        when(smallFullLinks.get(SmallFullLinkType.ACCOUNTING_POLICIES_NOTE.getLink())).thenReturn(PARENT_LINK);
+        assertTrue(smallFullParentResource.childExists(request, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE));
     }
 
     @Test
     @DisplayName("Add link")
     void addLink() throws DataException {
 
-        smallFullParentResource.addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICY_NOTE, PARENT_LINK, request);
-        verify(smallFullService).addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICY_NOTE, PARENT_LINK, request);
+        smallFullParentResource.addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE, PARENT_LINK, request);
+        verify(smallFullService).addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE, PARENT_LINK, request);
     }
 
     @Test
     @DisplayName("Remove link")
     void removeLink() throws DataException {
 
-        smallFullParentResource.removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICY_NOTE, request);
-        verify(smallFullService).removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICY_NOTE, request);
+        smallFullParentResource.removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE, request);
+        verify(smallFullService).removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.ACCOUNTING_POLICIES_NOTE, request);
     }
 
     @Test

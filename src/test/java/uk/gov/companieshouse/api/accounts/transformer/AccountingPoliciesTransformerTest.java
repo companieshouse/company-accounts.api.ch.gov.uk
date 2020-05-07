@@ -2,9 +2,10 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountingPoliciesDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.AccountingPoliciesEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPolicies;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies.AccountingPoliciesDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies.AccountingPoliciesEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.accountingpolicies.AccountingPolicies;
 
 import java.util.HashMap;
 
@@ -102,5 +103,13 @@ public class AccountingPoliciesTransformerTest {
         assertEquals(VALUATION, accountingPolicies.getValuationInformationAndPolicy());
         assertEquals(OTHER, accountingPolicies.getOtherAccountingPolicy());
         assertEquals(new HashMap<>(), accountingPolicies.getLinks());
+    }
+
+    @Test
+    @DisplayName("Get accounting note type")
+    void getAccountingNoteType() {
+
+        assertEquals(AccountingNoteType.SMALL_FULL_ACCOUNTING_POLICIES,
+                accountingPoliciesTransformer.getAccountingNoteType());
     }
 }

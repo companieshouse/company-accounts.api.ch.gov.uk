@@ -1,49 +1,29 @@
-package uk.gov.companieshouse.api.accounts.model.rest;
+package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accountingpolicies;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.Size;
-import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
-import uk.gov.companieshouse.charset.CharSet;
+import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-@JsonInclude(Include.NON_NULL)
-public class AccountingPolicies extends RestObject {
+public class AccountingPoliciesDataEntity extends BaseDataEntity {
 
-    private static final int MAX_FIELD_LENGTH = 20000;
-    private static final int MIN_FIELD_LENGTH = 1;
-
-    @NotBlank
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("basis_of_measurement_and_preparation")
+    @NotNull
+    @Field("basis_of_measurement_and_preparation")
     private String basisOfMeasurementAndPreparation;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("turnover_policy")
+    @Field("turnover_policy")
     private String turnoverPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("tangible_fixed_assets_depreciation_policy")
+    @Field("tangible_fixed_assets_depreciation_policy")
     private String tangibleFixedAssetsDepreciationPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("intangible_fixed_assets_amortisation_policy")
+    @Field("intangible_fixed_assets_amortisation_policy")
     private String intangibleFixedAssetsAmortisationPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("valuation_information_and_policy")
+    @Field("valuation_information_and_policy")
     private String valuationInformationAndPolicy;
 
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("other_accounting_policy")
+    @Field("other_accounting_policy")
     private String otherAccountingPolicy;
 
     public String getBasisOfMeasurementAndPreparation() {
@@ -96,7 +76,7 @@ public class AccountingPolicies extends RestObject {
 
     @Override
     public String toString() {
-        return "AccountingPolicies{" +
+        return "AccountingPoliciesDataEntity{" +
                 "basisOfMeasurementAndPreparation='" + basisOfMeasurementAndPreparation + '\'' +
                 ", turnoverPolicy='" + turnoverPolicy + '\'' +
                 ", tangibleFixedAssetsDepreciationPolicy='" + tangibleFixedAssetsDepreciationPolicy + '\'' +
