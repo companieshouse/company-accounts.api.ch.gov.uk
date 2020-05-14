@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 
+import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
@@ -24,11 +25,11 @@ public class Director extends RestObject {
     @JsonProperty("name")
     private String name;
 
-    @WithinCurrentPeriod
+    @WithinCurrentPeriod(accountType = AccountType.SMALL_FULL)
     @JsonProperty("appointment_date")
     private LocalDate appointmentDate;
 
-    @WithinCurrentPeriod
+    @WithinCurrentPeriod(accountType = AccountType.SMALL_FULL)
     @JsonProperty("resignation_date")
     private LocalDate resignationDate;
 

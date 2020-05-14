@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.parent;
 
+import java.time.LocalDate;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,19 @@ public class SmallFullParentResource implements ParentResource<SmallFullLinkType
     public AccountType getParent() {
 
         return AccountType.SMALL_FULL;
+    }
+
+    @Override
+    public LocalDate getPeriodStartOn(HttpServletRequest request) {
+
+        return ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
+                        .getNextAccounts().getPeriodStartOn();
+    }
+
+    @Override
+    public LocalDate getPeriodEndOn(HttpServletRequest request) {
+
+        return ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
+                .getNextAccounts().getPeriodEndOn();
     }
 }

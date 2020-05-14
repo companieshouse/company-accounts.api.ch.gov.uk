@@ -8,6 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 
 @Documented
 @Retention(RUNTIME)
@@ -15,6 +16,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = WithinCurrentPeriodImpl.class)
 public @interface WithinCurrentPeriod {
 
+    AccountType accountType();
     String message() default "{date.outside.currentPeriod}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
