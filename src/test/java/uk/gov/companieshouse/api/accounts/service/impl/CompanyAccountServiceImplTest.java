@@ -39,7 +39,7 @@ import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
@@ -164,8 +164,8 @@ public class CompanyAccountServiceImplTest {
         verify(companyAccount, times(1)).setEtag(anyString());
         verify(companyAccount, times(1)).setLinks(anyMap());
         verify(companyAccount, times(1)).setKind(Kind.COMPANY_ACCOUNTS.getValue());
-        verify(companyAccount, times(1)).setNextAccounts(any(AccountingPeriod.class));
-        verify(companyAccount, times(1)).setLastAccounts(any(AccountingPeriod.class));
+        verify(companyAccount, times(1)).setNextAccounts(any(LastAccounts.class));
+        verify(companyAccount, times(1)).setLastAccounts(any(LastAccounts.class));
 
         verify(companyAccountEntity, times(1)).setId(anyString());
 
@@ -212,8 +212,8 @@ public class CompanyAccountServiceImplTest {
         verify(companyAccount, times(1)).setEtag(anyString());
         verify(companyAccount, times(1)).setLinks(anyMap());
         verify(companyAccount, times(1)).setKind(Kind.COMPANY_ACCOUNTS.getValue());
-        verify(companyAccount, times(1)).setNextAccounts(any(AccountingPeriod.class));
-        verify(companyAccount, never()).setLastAccounts(any(AccountingPeriod.class));
+        verify(companyAccount, times(1)).setNextAccounts(any(LastAccounts.class));
+        verify(companyAccount, never()).setLastAccounts(any(LastAccounts.class));
 
         verify(companyAccountEntity, times(1)).setId(anyString());
 

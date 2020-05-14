@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ class AfterCurrentPeriodImplTest {
     private AfterCurrentPeriodImpl afterCurrentPeriod;
 
     @Mock
-    private AccountingPeriod accountingPeriod;
+    private LastAccounts accountingPeriod;
 
     @Mock
     private ConstraintValidatorContext context;

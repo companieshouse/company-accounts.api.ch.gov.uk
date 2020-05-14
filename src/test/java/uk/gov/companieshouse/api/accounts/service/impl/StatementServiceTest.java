@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
@@ -75,7 +75,7 @@ public class StatementServiceTest {
     @Mock
     private CompanyAccount companyAccountMock;
     @Mock
-    private AccountingPeriod accountingPeriodMock;
+    private LastAccounts accountingPeriodMock;
     @Mock
     private Transaction transactionMock;
     @Mock

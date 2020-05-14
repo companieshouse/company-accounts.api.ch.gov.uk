@@ -1,14 +1,18 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -18,15 +22,15 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StatementTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
 public class StatementService implements ResourceService<Statement> {
@@ -60,11 +64,11 @@ public class StatementService implements ResourceService<Statement> {
     public ResponseObject<Statement> create(Statement rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        CompanyAccount companyAccount =
-            ((CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()));
+        SmallFull smallFull =
+            ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()));
 
         setMetadataOnRestObject(rest, transaction, companyAccountId,
-            getPeriodEndOn(companyAccount));
+            getPeriodEndOn(smallFull));
 
         StatementEntity statementEntity = transformer.transform(rest);
         statementEntity.setId(generateID(companyAccountId));
@@ -93,11 +97,11 @@ public class StatementService implements ResourceService<Statement> {
     public ResponseObject<Statement> update(Statement rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
 
-        CompanyAccount companyAccount =
-            ((CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue()));
+        SmallFull smallFull =
+                ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()));
 
         setMetadataOnRestObject(rest, transaction, companyAccountId,
-            getPeriodEndOn(companyAccount));
+            getPeriodEndOn(smallFull));
 
         StatementEntity statementEntity = transformer.transform(rest);
         statementEntity.setId(generateID(companyAccountId));
@@ -144,14 +148,14 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     /**
-     * Get the period end on stored in CompanyAccount
+     * Get the period end on stored in SmallFull
      *
-     * @param companyAccount
+     * @param smallFull
      * @return period end on formatted.
      */
-    private LocalDate getPeriodEndOn(CompanyAccount companyAccount) {
+    private LocalDate getPeriodEndOn(SmallFull smallFull) {
 
-        return companyAccount.getNextAccounts().getPeriodEndOn();
+        return smallFull.getNextAccounts().getPeriodEndOn();
     }
 
     /**

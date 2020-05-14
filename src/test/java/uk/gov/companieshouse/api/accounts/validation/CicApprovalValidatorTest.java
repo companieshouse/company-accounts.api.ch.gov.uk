@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -74,7 +74,7 @@ public class CicApprovalValidatorTest {
     }
     private CompanyAccount createCompanyAccount(){
         CompanyAccount companyAccount = new CompanyAccount();
-        AccountingPeriod accountingPeriod = new AccountingPeriod();
+        LastAccounts accountingPeriod = new LastAccounts();
         accountingPeriod.setPeriodEndOn(LocalDate.of(2018, Month.NOVEMBER, 1));
         companyAccount.setNextAccounts(accountingPeriod);
         return  companyAccount;

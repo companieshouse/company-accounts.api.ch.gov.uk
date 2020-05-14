@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
@@ -121,7 +121,7 @@ public class ApprovalValidatorTest {
 
     private CompanyAccount createCompanyAccount(){
         CompanyAccount companyAccount = new CompanyAccount();
-        AccountingPeriod accountingPeriod = new AccountingPeriod();
+        LastAccounts accountingPeriod = new LastAccounts();
         accountingPeriod.setPeriodEndOn(LocalDate.of(2018, Month.NOVEMBER, 1));
         companyAccount.setNextAccounts(accountingPeriod);
         return  companyAccount;

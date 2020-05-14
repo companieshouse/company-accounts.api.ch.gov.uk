@@ -17,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +37,7 @@ public class WithinCurrentPeriodImplTest {
     private CompanyAccount companyAccount;
 
     @Mock
-    private AccountingPeriod accountingPeriod;
+    private LastAccounts accountingPeriod;
 
     private static final LocalDate PERIOD_START_ON = LocalDate.of(2018, 1, 1);
     private static final LocalDate PERIOD_END_ON = LocalDate.of(2019, 1, 1);

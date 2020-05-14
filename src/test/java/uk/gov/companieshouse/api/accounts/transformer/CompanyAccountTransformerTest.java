@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.AccountingPeriodEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +59,7 @@ public class CompanyAccountTransformerTest {
         companyAccount.setKind(KIND);
         companyAccount.setLinks(new HashMap<>());
 
-        AccountingPeriod nextAccounts = new AccountingPeriod();
+        LastAccounts nextAccounts = new LastAccounts();
         nextAccounts.setPeriodStartOn(NEXT_ACCOUNTS_PERIOD_START_ON);
         nextAccounts.setPeriodEndOn(NEXT_ACCOUNTS_PERIOD_END_ON);
         companyAccount.setNextAccounts(nextAccounts);
@@ -91,12 +91,12 @@ public class CompanyAccountTransformerTest {
         companyAccount.setKind(ETAG);
         companyAccount.setLinks(new HashMap<>());
 
-        AccountingPeriod nextAccounts = new AccountingPeriod();
+        LastAccounts nextAccounts = new LastAccounts();
         nextAccounts.setPeriodStartOn(NEXT_ACCOUNTS_PERIOD_START_ON);
         nextAccounts.setPeriodEndOn(NEXT_ACCOUNTS_PERIOD_END_ON);
         companyAccount.setNextAccounts(nextAccounts);
 
-        AccountingPeriod lastAccounts = new AccountingPeriod();
+        LastAccounts lastAccounts = new LastAccounts();
         lastAccounts.setPeriodStartOn(LAST_ACCOUNTS_PERIOD_START_ON);
         lastAccounts.setPeriodEndOn(LAST_ACCOUNTS_PERIOD_END_ON);
         companyAccount.setLastAccounts(lastAccounts);
@@ -165,7 +165,7 @@ public class CompanyAccountTransformerTest {
         assertEquals(KIND, companyAccount.getKind());
         assertEquals(new HashMap<>(), companyAccount.getLinks());
 
-        AccountingPeriod nextAccounts = companyAccount.getNextAccounts();
+        LastAccounts nextAccounts = companyAccount.getNextAccounts();
         assertNotNull(nextAccounts);
         assertEquals(NEXT_ACCOUNTS_PERIOD_START_ON, nextAccounts.getPeriodStartOn());
         assertEquals(NEXT_ACCOUNTS_PERIOD_END_ON, nextAccounts.getPeriodEndOn());
@@ -202,12 +202,12 @@ public class CompanyAccountTransformerTest {
         assertEquals(KIND, companyAccount.getKind());
         assertEquals(new HashMap<>(), companyAccount.getLinks());
 
-        AccountingPeriod nextAccounts = companyAccount.getNextAccounts();
+        LastAccounts nextAccounts = companyAccount.getNextAccounts();
         assertNotNull(nextAccounts);
         assertEquals(NEXT_ACCOUNTS_PERIOD_START_ON, nextAccounts.getPeriodStartOn());
         assertEquals(NEXT_ACCOUNTS_PERIOD_END_ON, nextAccounts.getPeriodEndOn());
 
-        AccountingPeriod lastAccounts = companyAccount.getLastAccounts();
+        LastAccounts lastAccounts = companyAccount.getLastAccounts();
         assertNotNull(lastAccounts);
         assertEquals(LAST_ACCOUNTS_PERIOD_START_ON, lastAccounts.getPeriodStartOn());
         assertEquals(LAST_ACCOUNTS_PERIOD_END_ON, lastAccounts.getPeriodEndOn());
