@@ -9,13 +9,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.MongoException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,21 +29,26 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DuplicateKeyException;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.StatementEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.Statement;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.repository.StatementRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.StatementTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,7 +81,7 @@ public class StatementServiceTest {
     @Mock
     private CompanyAccount companyAccountMock;
     @Mock
-    private LastAccounts accountingPeriodMock;
+    private NextAccounts accountingPeriodMock;
     @Mock
     private Transaction transactionMock;
     @Mock
@@ -96,6 +102,8 @@ public class StatementServiceTest {
     private StatementsServiceProperties statementsServicePropertiesMock;
     @Mock
     private StatementEntity statementEntityMock;
+    @Mock
+    private SmallFull smallFull;
 
     @InjectMocks
     private StatementService statementService;
@@ -112,16 +120,10 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the successful creation of a Statement resource")
     void shouldCreateStatement() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+    	setUpStatementStubbing();
+    	setUpTransactionStubbing();
+    	
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
@@ -138,16 +140,10 @@ public class StatementServiceTest {
     @DisplayName("Tests the creation of a Statement Resource when profitAndLossService.find returns a NOT FOUND")
     void creationWhenProfitAndLossNotFound() throws DataException {
 
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.NOT_FOUND);
+    	setUpStatementStubbing();
+    	setUpTransactionStubbing();
+    	
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
@@ -163,17 +159,13 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a Statement resource")
     void shouldNotCreateStatementHttpDuplicateKeyError() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-        when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
+    	setUpStatementStubbing();
+    	when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
                 .thenThrow(DuplicateKeyException.class);
 
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+    	setUpTransactionStubbing();
+    	
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
@@ -188,20 +180,16 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating a Statement resource")
     void shouldThrowMongoExceptionWhenCreating() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-        when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
+    	setUpStatementStubbing();
+    	when(statementRepositoryMock.insert(ArgumentMatchers.any(StatementEntity.class)))
                 .thenThrow(MongoException.class);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
+        setUpTransactionStubbing();
+        
         assertThrows(DataException.class,
                 () -> statementService.create(statementMock, transactionMock, "", requestMock));
     }
@@ -209,15 +197,10 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the successful update of a Statement resource")
     void shouldUpdateStatement() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+    	setUpStatementStubbing();
+    	setUpTransactionStubbing();
+    	
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
@@ -231,17 +214,13 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when updating a Statement resource")
     void shouldThrowMongoExceptionWhenUpdating() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(companyAccountMock);
-        when(companyAccountMock.getNextAccounts()).thenReturn(accountingPeriodMock);
-        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
-        when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
+    	setUpStatementStubbing();
+    	when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
                 .thenThrow(MongoException.class);
 
-        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
-        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
+    	setUpTransactionStubbing();
+    	
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
 
@@ -336,6 +315,19 @@ public class StatementServiceTest {
         statement.setLegalStatements(new HashMap<>()); //to set real values
 
         return statement;
+    }
+    
+    private void setUpStatementStubbing() {
+        when(requestMock.getAttribute(anyString())).thenReturn(smallFull);
+        when(smallFull.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
+        when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+    }
+    
+    private void setUpTransactionStubbing() {
+        when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
+        when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
     }
 
 }

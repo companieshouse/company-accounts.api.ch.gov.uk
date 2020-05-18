@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
@@ -57,6 +59,9 @@ public class SmallFullControllerTest {
     @Mock
     private HttpServletRequest httpServletRequest;
 
+    @Mock
+    private BindingResult bindingResult;
+
     @InjectMocks
     private SmallFullController smallFullController;
 
@@ -77,7 +82,7 @@ public class SmallFullControllerTest {
             .create(smallFull, transaction, "123456", request);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
             responseObject.getData(), responseObject.getErrors());
-        ResponseEntity response = smallFullController.create(smallFull, "123456", request);
+        ResponseEntity response = smallFullController.create(smallFull, bindingResult, "123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

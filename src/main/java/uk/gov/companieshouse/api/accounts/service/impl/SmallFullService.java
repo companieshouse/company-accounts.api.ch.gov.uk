@@ -53,11 +53,13 @@ public class SmallFullService implements
     public SmallFullService(SmallFullRepository smallFullRepository,
         SmallFullTransformer smallFullTransformer,
         CompanyAccountService companyAccountService,
-        KeyIdGenerator keyIdGenerator) {
+        KeyIdGenerator keyIdGenerator,
+        CompanyService companyService) {
         this.smallFullRepository = smallFullRepository;
         this.smallFullTransformer = smallFullTransformer;
         this.companyAccountService = companyAccountService;
         this.keyIdGenerator = keyIdGenerator;
+        this.companyService = companyService;
     }
 
     @Override

@@ -1,12 +1,16 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import java.time.LocalDate;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.parent.ParentResource;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
 
@@ -17,7 +21,7 @@ public class WithinCurrentPeriodImpl implements ConstraintValidator<WithinCurren
     private HttpServletRequest request;
 
     @Autowired
-    private ParentResourceFactory parentResourceFactory;
+    private ParentResourceFactory<LinkType> parentResourceFactory;
 
     private AccountType accountType;
 
@@ -28,7 +32,7 @@ public class WithinCurrentPeriodImpl implements ConstraintValidator<WithinCurren
             return true;
         }
 
-        ParentResource parentResource = parentResourceFactory.getParentResource(accountType);
+        ParentResource<LinkType> parentResource = parentResourceFactory.getParentResource(accountType);
 
         LocalDate periodStart = parentResource.getPeriodStartOn(request);
         LocalDate periodEnd = parentResource.getPeriodEndOn(request);

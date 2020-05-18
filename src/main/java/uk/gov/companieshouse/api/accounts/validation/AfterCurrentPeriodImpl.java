@@ -1,13 +1,16 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
+import java.time.LocalDate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
 
 @Component
@@ -17,7 +20,7 @@ public class AfterCurrentPeriodImpl implements ConstraintValidator<AfterCurrentP
     private HttpServletRequest request;
 
     @Autowired
-    private ParentResourceFactory parentResourceFactory;
+    private ParentResourceFactory<LinkType> parentResourceFactory;
 
     private AccountType accountType;
 

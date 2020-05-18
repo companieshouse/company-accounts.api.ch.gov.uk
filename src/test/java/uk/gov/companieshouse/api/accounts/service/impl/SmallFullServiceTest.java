@@ -11,11 +11,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.MongoException;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,19 +28,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.MissingAccountingPeriodException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
+import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
+import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
+import uk.gov.companieshouse.api.model.company.account.NextAccountsApi;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,26 +98,46 @@ public class SmallFullServiceTest {
     @Mock
     private KeyIdGenerator keyIdGenerator;
 
+    @Mock
+    private CompanyService companyService;
+
+    @Mock
+    private CompanyProfileApi companyProfileApi;
+
+    @Mock
+    private CompanyAccountApi companyAccountApi;
+
+    @Mock
+    private NextAccounts nextAccounts;
+
+    @Mock
+    private LastAccounts lastAccounts;
+
+    @Mock
+    private NextAccountsApi nextAccountsApi;
+
+    @Mock
+    private LastAccountsApi lastAccountsApi;
+
     @InjectMocks
     private SmallFullService smallFullService;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String GENERATED_ID = "generatedId";
     private static final String SELF_LINK = "self_link";
-
-    @BeforeEach
-    void setUp() {
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
-                .thenReturn(GENERATED_ID);
-    }
+    private static final String COMPANY_NUMBER = "companyNo";
 
     @Test
     @DisplayName("Tests the successful creation of a smallFull resource")
-    public void createAccountSuccess() throws DataException {
+    public void createAccountSuccess() throws DataException, ServiceException {
+    	setUpKeyIdGeneratorStubbing();
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
 
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+        setUpTransactionStubbing();
+        setUpCompanyProfileApiStubbing();
+        
+        when(smallFull.getNextAccounts()).thenReturn(nextAccounts);
+        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
         ResponseObject<SmallFull> result = smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
@@ -113,15 +146,19 @@ public class SmallFullServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating a smallFull resource")
-    public void createSmallfullDuplicateKey() throws DataException {
+    public void createSmallfullDuplicateKey() throws DataException, ServiceException {
+    	setUpKeyIdGeneratorStubbing();
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
 
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+        setUpTransactionStubbing();
+        setUpCompanyProfileApiStubbing();
 
-        ResponseObject response = smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
+        when(smallFull.getNextAccounts()).thenReturn(nextAccounts);
+        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        ResponseObject<SmallFull> response = smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
         assertNull(response.getData());
@@ -129,13 +166,17 @@ public class SmallFullServiceTest {
 
     @Test
     @DisplayName("Tests the mongo exception when creating a small full")
-    void createSmallfullMongoExceptionFailure() {
+    void createSmallfullMongoExceptionFailure() throws ServiceException {
+    	setUpKeyIdGeneratorStubbing();
         doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
             .any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
 
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+        setUpTransactionStubbing();
+        setUpCompanyProfileApiStubbing();
+
+        when(smallFull.getNextAccounts()).thenReturn(nextAccounts);
+        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
         Executable executable = () -> {
             smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -144,8 +185,35 @@ public class SmallFullServiceTest {
     }
 
     @Test
+    @DisplayName("Create company accounts - company service exception")
+    void createCompanyAccountsCompanyServiceException()
+            throws ServiceException {
+        setUpTransactionStubbing();
+        setUpCompanyProfileApiNoNextAccountsStubbing();
+
+        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        assertThrows(MissingAccountingPeriodException.class,
+                () -> smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Create company accounts - company without next accounts")
+    void createCompanyAccountsForCompanyWithoutNextAccounts()
+            throws ServiceException {
+
+        setUpTransactionStubbing();
+
+        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
+        assertThrows(MissingAccountingPeriodException.class,
+                () -> smallFullService.create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
     @DisplayName("Tests the successful find of a small full resource")
     public void findSmallfull() throws DataException {
+    	setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
         when(smallFullTransformer.transform(smallFullEntity)).thenReturn(smallFull);
         ResponseObject<SmallFull> result = smallFullService
@@ -157,6 +225,7 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of a small full resource")
     public void findSmallfullMongoException() {
+    	setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID)).thenThrow(mongoException);
         Executable executable = () -> {
             smallFullService.find(COMPANY_ACCOUNTS_ID, request);
@@ -167,6 +236,7 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the successful removal of a small full link")
     void removeLinkSuccess() {
+    	setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
 
@@ -183,7 +253,7 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the  removal of a small full link where the repository throws a Mongo exception")
     void removeLinkMongoException() {
-
+    	setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
 
         when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
@@ -202,6 +272,7 @@ public class SmallFullServiceTest {
     @Test
     @DisplayName("Tests the  removal of a small full link where the entity is not found")
     void removeLinkSmallFullEntityNotFound() {
+    	setUpKeyIdGeneratorStubbing();
 
         SmallFullEntity smallFullEntity = null;
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(smallFullEntity));
@@ -212,5 +283,28 @@ public class SmallFullServiceTest {
                 () -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
 
         verify(smallFullRepository, never()).save(smallFullEntity);
+    }
+    
+    private void setUpKeyIdGeneratorStubbing() {
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
+        .thenReturn(GENERATED_ID);
+    }
+    
+    private void setUpTransactionStubbing() {
+        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+    }
+    
+    private void setUpCompanyProfileApiStubbing() {
+        when(companyProfileApi.getAccounts()).thenReturn(companyAccountApi);
+        when(companyProfileApi.getAccounts().getNextAccounts()).thenReturn(nextAccountsApi);
+        when(companyProfileApi.getAccounts().getNextAccounts().getPeriodStartOn()).thenReturn(LocalDate.now());
+        when(companyProfileApi.getAccounts().getNextAccounts().getPeriodEndOn()).thenReturn(LocalDate.now().plusYears(1L));
+        when(companyProfileApi.getAccounts().getLastAccounts()).thenReturn(lastAccountsApi);
+    }
+    
+    private void setUpCompanyProfileApiNoNextAccountsStubbing() {
+        when(companyProfileApi.getAccounts()).thenReturn(companyAccountApi);
     }
 }

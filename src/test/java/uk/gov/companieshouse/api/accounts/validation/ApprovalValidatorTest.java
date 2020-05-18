@@ -1,5 +1,16 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.Month;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,10 +20,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -20,16 +32,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
-import java.time.Month;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -61,7 +63,7 @@ public class ApprovalValidatorTest {
 
         validator.dateInvalid = "date.invalid";
         approval = new Approval();
-        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createCompanyAccount());
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createSmallFullAccount());
     }
 
     @Test
@@ -119,12 +121,12 @@ public class ApprovalValidatorTest {
         assertTrue(errors.containsError(createError(INVALID_VALUE, "$.approval.name")));
     }
 
-    private CompanyAccount createCompanyAccount(){
-        CompanyAccount companyAccount = new CompanyAccount();
-        LastAccounts accountingPeriod = new LastAccounts();
+    private SmallFull createSmallFullAccount(){
+        SmallFull smallFull = new SmallFull();
+        NextAccounts accountingPeriod = new NextAccounts();
         accountingPeriod.setPeriodEndOn(LocalDate.of(2018, Month.NOVEMBER, 1));
-        companyAccount.setNextAccounts(accountingPeriod);
-        return  companyAccount;
+        smallFull.setNextAccounts(accountingPeriod);
+        return smallFull;
     }
 
     private Error createError(String error, String path) {
