@@ -1,0 +1,65 @@
+package uk.gov.companieshouse.api.accounts.validation;
+
+import java.time.LocalDate;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+@Component
+public class WithinSetDaysOfPeriodEndImpl implements ConstraintValidator<WithinSetDaysOfPeriodEnd, LocalDate> {
+
+    private int numOfDays;
+    private boolean allowNulls;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private CompanyService companyService;
+    
+    @Override
+    public boolean isValid(LocalDate date, ConstraintValidatorContext context) {
+
+        if (allowNulls && date == null) {
+
+            return true;
+
+        } else if (!allowNulls && date == null) {
+
+        	return false;
+        }
+
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+        try {
+            CompanyProfileApi companyProfile = companyService
+                    .getCompanyProfile(transaction.getCompanyNumber());
+
+            LocalDate periodEnd = companyProfile.getAccounts().getNextAccounts().getPeriodEndOn();
+
+            return date.isBefore(periodEnd.plusDays(numOfDays)) && date
+                    .isAfter(periodEnd.minusDays(numOfDays));
+
+        } catch (ServiceException e) {
+
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void initialize(WithinSetDaysOfPeriodEnd constraintAnnotation) {
+        
+    	this.numOfDays = constraintAnnotation.numOfDays();
+    	this.allowNulls = constraintAnnotation.allowNulls();
+    }
+}

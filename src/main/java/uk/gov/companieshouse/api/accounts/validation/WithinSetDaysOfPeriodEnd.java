@@ -12,8 +12,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(FIELD)
-@Constraint(validatedBy = WithinSetDaysImpl.class)
-public @interface WithinSetDays {
+@Constraint(validatedBy = WithinSetDaysOfPeriodEndImpl.class)
+public @interface WithinSetDaysOfPeriodEnd {
 
 	int numOfDays();
 	boolean allowNulls() default true;

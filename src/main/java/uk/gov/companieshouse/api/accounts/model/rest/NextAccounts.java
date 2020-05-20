@@ -7,7 +7,7 @@ import javax.validation.constraints.PastOrPresent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.gov.companieshouse.api.accounts.validation.WithinSetDays;
+import uk.gov.companieshouse.api.accounts.validation.WithinSetDaysOfPeriodEnd;
 
 public class NextAccounts {
 
@@ -17,7 +17,7 @@ public class NextAccounts {
     @JsonProperty("period_end_on")
     @NotNull
     @PastOrPresent
-    @WithinSetDays(numOfDays=7)
+    @WithinSetDaysOfPeriodEnd(numOfDays=7)
     private LocalDate periodEndOn;
 
     public LocalDate getPeriodStartOn() { return periodStartOn; }
