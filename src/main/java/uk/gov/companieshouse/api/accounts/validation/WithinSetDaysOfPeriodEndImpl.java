@@ -60,7 +60,7 @@ public class WithinSetDaysOfPeriodEndImpl implements ConstraintValidator<WithinS
     @Override
     public void initialize(WithinSetDaysOfPeriodEnd constraintAnnotation) {
 
-    	this.numOfDays = constraintAnnotation.numOfDays();
+    	this.numOfDays = constraintAnnotation.numOfDays() + 1; // add one to so that if a user were to submit a date on the constraint, it is treated as valid
     	this.allowNulls = constraintAnnotation.allowNulls();
     }
 }
