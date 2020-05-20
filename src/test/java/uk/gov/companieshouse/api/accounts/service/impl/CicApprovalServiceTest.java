@@ -127,7 +127,7 @@ public class CicApprovalServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = cicApprovalService
+        ResponseObject<CicApproval> response = cicApprovalService
             .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
@@ -161,7 +161,7 @@ public class CicApprovalServiceTest {
         errors.addError(error);
         doReturn(errors).when(cicApprovalValidator)
                 .validateCicReportApproval(cicApproval, request);
-        ResponseObject response = cicApprovalService
+        ResponseObject<CicApproval> response = cicApprovalService
                 .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
@@ -193,7 +193,7 @@ public class CicApprovalServiceTest {
         errors.addError(error);
         doReturn(errors).when(cicApprovalValidator)
                 .validateCicReportApproval(cicApproval, request);
-        ResponseObject response = cicApprovalService
+        ResponseObject<CicApproval> response = cicApprovalService
                 .update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());

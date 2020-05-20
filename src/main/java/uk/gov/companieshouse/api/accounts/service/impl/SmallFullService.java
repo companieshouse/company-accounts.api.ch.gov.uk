@@ -1,32 +1,43 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.MissingAccountingPeriodException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
+import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.service.ParentService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.LinkService;
+import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.SmallFullTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
 public class SmallFullService implements
-    ParentService<SmallFull, SmallFullLinkType> {
+    ResourceService<SmallFull>, LinkService<SmallFullLinkType> {
 
     private SmallFullRepository smallFullRepository;
 
@@ -36,15 +47,19 @@ public class SmallFullService implements
 
     private KeyIdGenerator keyIdGenerator;
 
+    private CompanyService companyService;
+
     @Autowired
     public SmallFullService(SmallFullRepository smallFullRepository,
         SmallFullTransformer smallFullTransformer,
         CompanyAccountService companyAccountService,
-        KeyIdGenerator keyIdGenerator) {
+        KeyIdGenerator keyIdGenerator,
+        CompanyService companyService) {
         this.smallFullRepository = smallFullRepository;
         this.smallFullTransformer = smallFullTransformer;
         this.companyAccountService = companyAccountService;
         this.keyIdGenerator = keyIdGenerator;
+        this.companyService = companyService;
     }
 
     @Override
@@ -56,14 +71,17 @@ public class SmallFullService implements
         initLinks(smallFull, selfLink);
         smallFull.setEtag(GenerateEtagUtil.generateEtag());
         smallFull.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
-        SmallFullEntity baseEntity = smallFullTransformer.transform(smallFull);
-        baseEntity.setId(generateID(companyAccountId));
-
         try {
+	        CompanyProfileApi companyProfile =
+	                companyService.getCompanyProfile(transaction.getCompanyNumber());
+	        setAccountingPeriodDatesOnRestObject(smallFull, companyProfile);
+	        SmallFullEntity baseEntity = smallFullTransformer.transform(smallFull);
+	        baseEntity.setId(generateID(companyAccountId));
+
             smallFullRepository.insert(baseEntity);
         } catch (DuplicateKeyException dke) {
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-        } catch (MongoException e) {
+        } catch (MongoException|ServiceException e) {
             throw new DataException(e);
         }
 
@@ -89,6 +107,34 @@ public class SmallFullService implements
 
         SmallFull smallFull = smallFullTransformer.transform(smallFullEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, smallFull);
+    }
+
+    @Override
+    public ResponseObject<SmallFull> update(SmallFull smallFull, Transaction transaction,
+        String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+    	String smallFullId = generateID(companyAccountId);
+    	
+        try {
+        	SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId).orElseThrow(() -> new DataException("Failed to find Small Full Account using Company Account ID: " + companyAccountId));
+        	
+        	smallFull.setLinks(smallFullEntity.getData().getLinks());
+            smallFull.setEtag(GenerateEtagUtil.generateEtag());
+            smallFull.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
+
+	        CompanyProfileApi companyProfile =
+	                companyService.getCompanyProfile(transaction.getCompanyNumber());
+	        setAccountingPeriodDatesOnRestObject(smallFull, companyProfile);
+	        SmallFullEntity baseEntity = smallFullTransformer.transform(smallFull);
+	        baseEntity.setId(smallFullId);
+
+            smallFullRepository.save(baseEntity);
+        } catch (MongoException|ServiceException e) {
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
     @Override
@@ -126,6 +172,43 @@ public class SmallFullService implements
             smallFullRepository.save(smallFullEntity);
         } catch (MongoException e) {
             throw new DataException(e);
+        }
+    }
+
+    private void setAccountingPeriodDatesOnRestObject(SmallFull rest, CompanyProfileApi companyProfile) {
+
+        if (companyProfile.getAccounts() != null) {
+
+            if (companyProfile.getAccounts().getNextAccounts() != null) {
+
+                NextAccounts nextAccounts;
+            	if(rest.getNextAccounts() != null) {
+            		nextAccounts = rest.getNextAccounts();
+            	} else {
+            		nextAccounts = new NextAccounts();
+            		rest.setNextAccounts(nextAccounts);
+            	}
+                nextAccounts.setPeriodStartOn(companyProfile.getAccounts().getNextAccounts().getPeriodStartOn());
+                if(rest.getNextAccounts().getPeriodEndOn() == null) {
+                	nextAccounts.setPeriodEndOn(companyProfile.getAccounts().getNextAccounts().getPeriodEndOn());
+                }
+            } else {
+
+                throw new MissingAccountingPeriodException("No next accounts found for company: "
+                        + companyProfile.getCompanyNumber() + " trying to file their accounts");
+            }
+
+            if (companyProfile.getAccounts().getLastAccounts() != null) {
+
+                LastAccounts lastAccounts = new LastAccounts();
+                lastAccounts.setPeriodStartOn(companyProfile.getAccounts().getLastAccounts().getPeriodStartOn());
+                lastAccounts.setPeriodEndOn(companyProfile.getAccounts().getLastAccounts().getPeriodEndOn());
+                rest.setLastAccounts(lastAccounts);
+            }
+        } else {
+
+            throw new MissingAccountingPeriodException("No accounts found for company: "
+                    + companyProfile.getCompanyNumber() + " trying to file their accounts");
         }
     }
 

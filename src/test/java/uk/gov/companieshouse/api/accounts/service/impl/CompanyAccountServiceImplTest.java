@@ -5,20 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.DisplayName;
@@ -29,36 +27,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.PayableResource;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.MissingAccountingPeriodException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.privatetransaction.PrivateTransactionResourceHandler;
 import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTransactionPatch;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.company.account.CompanyAccountApi;
-import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
-import uk.gov.companieshouse.api.model.company.account.NextAccountsApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
-import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
-
-import java.io.IOException;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -72,9 +65,6 @@ public class CompanyAccountServiceImplTest {
 
     @Mock
     private ApiClientService apiClientService;
-
-    @Mock
-    private CompanyService companyService;
 
     @Mock
     private TransactionService transactionService;
@@ -112,8 +102,6 @@ public class CompanyAccountServiceImplTest {
     @Mock
     private Map<String, String> companyAccountsLinks;
 
-    private static final String COMPANY_NUMBER = "companyNumber";
-
     private static final String TRANSACTION_ID = "transactionId";
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -134,11 +122,6 @@ public class CompanyAccountServiceImplTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, true);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
-
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
@@ -154,7 +137,7 @@ public class CompanyAccountServiceImplTest {
 
         when(transactionService.getPayableResources(transaction)).thenReturn(Arrays.asList(PayableResource.CIC));
 
-        ResponseObject response = companyAccountService.create(companyAccount, transaction, request);
+        ResponseObject<CompanyAccount> response = companyAccountService.create(companyAccount, transaction, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -164,8 +147,6 @@ public class CompanyAccountServiceImplTest {
         verify(companyAccount, times(1)).setEtag(anyString());
         verify(companyAccount, times(1)).setLinks(anyMap());
         verify(companyAccount, times(1)).setKind(Kind.COMPANY_ACCOUNTS.getValue());
-        verify(companyAccount, times(1)).setNextAccounts(any(AccountingPeriod.class));
-        verify(companyAccount, times(1)).setLastAccounts(any(AccountingPeriod.class));
 
         verify(companyAccountEntity, times(1)).setId(anyString());
 
@@ -182,11 +163,6 @@ public class CompanyAccountServiceImplTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, false);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
-
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
@@ -202,7 +178,7 @@ public class CompanyAccountServiceImplTest {
 
         when(transactionService.getPayableResources(transaction)).thenReturn(new ArrayList<>());
 
-        ResponseObject response = companyAccountService.create(companyAccount, transaction, request);
+        ResponseObject<CompanyAccount> response = companyAccountService.create(companyAccount, transaction, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -212,8 +188,6 @@ public class CompanyAccountServiceImplTest {
         verify(companyAccount, times(1)).setEtag(anyString());
         verify(companyAccount, times(1)).setLinks(anyMap());
         verify(companyAccount, times(1)).setKind(Kind.COMPANY_ACCOUNTS.getValue());
-        verify(companyAccount, times(1)).setNextAccounts(any(AccountingPeriod.class));
-        verify(companyAccount, never()).setLastAccounts(any(AccountingPeriod.class));
 
         verify(companyAccountEntity, times(1)).setId(anyString());
 
@@ -223,72 +197,18 @@ public class CompanyAccountServiceImplTest {
     }
 
     @Test
-    @DisplayName("Create company accounts - company without next accounts")
-    void createCompanyAccountsForCompanyWithoutNextAccounts()
-            throws ServiceException {
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(false, false);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
-
-        assertThrows(MissingAccountingPeriodException.class,
-                () -> companyAccountService.create(companyAccount, transaction, request));
-    }
-
-    @Test
-    @DisplayName("Create company accounts - company without any accounts")
-    void createCompanyAccountsForCompanyWithoutAnyAccounts()
-            throws ServiceException {
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(new CompanyProfileApi());
-
-        assertThrows(MissingAccountingPeriodException.class,
-                () -> companyAccountService.create(companyAccount, transaction, request));
-    }
-
-    @Test
-    @DisplayName("Create company accounts - company service exception")
-    void createCompanyAccountsCompanyServiceException()
-            throws ServiceException {
-
-        when(transaction.getLinks()).thenReturn(transactionLinks);
-        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(ServiceException.class);
-
-        assertThrows(DataException.class,
-                () -> companyAccountService.create(companyAccount, transaction, request));
-    }
-
-    @Test
     @DisplayName("Create company accounts - duplicate key exception")
     void createCompanyAccountsDuplicateKeyException()
-            throws ServiceException, PatchException, DataException {
+            throws PatchException, DataException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, true);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
 
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
         when(repository.insert(companyAccountEntity)).thenThrow(DuplicateKeyException.class);
 
-        ResponseObject response = companyAccountService.create(companyAccount, transaction, request);
+        ResponseObject<CompanyAccount> response = companyAccountService.create(companyAccount, transaction, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
@@ -298,16 +218,10 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Create company accounts - Mongo exception")
-    void createCompanyAccountsMongoException()
-            throws ServiceException {
+    void createCompanyAccountsMongoException() {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, true);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
 
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
@@ -319,16 +233,10 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Create company accounts - IO exception")
-    void createCompanyAccountsIOException()
-            throws ServiceException, IOException {
+    void createCompanyAccountsIOException() throws IOException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, true);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
 
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
@@ -348,11 +256,6 @@ public class CompanyAccountServiceImplTest {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
-
-        when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
-
-        CompanyProfileApi companyProfile = createCompanyProfile(true, true);
-        when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfile);
 
         when(transformer.transform(companyAccount)).thenReturn(companyAccountEntity);
 
@@ -384,7 +287,7 @@ public class CompanyAccountServiceImplTest {
 
         when(transformer.transform(companyAccountEntity)).thenReturn(companyAccount);
 
-        ResponseObject response = companyAccountService.findById(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CompanyAccount> response = companyAccountService.findById(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.FOUND, response.getStatus());
@@ -401,7 +304,7 @@ public class CompanyAccountServiceImplTest {
         when(repository.findById(COMPANY_ACCOUNTS_ID))
                 .thenReturn(Optional.ofNullable(companyAccountEntity));
 
-        ResponseObject response = companyAccountService.findById(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CompanyAccount> response = companyAccountService.findById(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -482,23 +385,5 @@ public class CompanyAccountServiceImplTest {
         CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC_REPORT;
 
         assertThrows(MongoException.class, () -> companyAccountService.removeLink(COMPANY_ACCOUNTS_ID, linkType));
-    }
-
-    private CompanyProfileApi createCompanyProfile(boolean hasNextAccounts, boolean hasLastAccounts) {
-
-        CompanyProfileApi companyProfile = new CompanyProfileApi();
-
-        CompanyAccountApi accounts = new CompanyAccountApi();
-
-        if (hasNextAccounts) {
-            accounts.setNextAccounts(new NextAccountsApi());
-        }
-
-        if (hasLastAccounts) {
-            accounts.setLastAccounts(new LastAccountsApi());
-        }
-
-        companyProfile.setAccounts(accounts);
-        return companyProfile;
     }
 }

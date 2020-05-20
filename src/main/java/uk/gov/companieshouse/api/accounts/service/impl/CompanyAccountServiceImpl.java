@@ -1,43 +1,42 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoException;
-
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.MissingAccountingPeriodException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.links.TransactionLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.AccountingPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.model.transaction.Resource;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Service
@@ -53,9 +52,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     private ApiClientService apiClientService;
 
     @Autowired
-    private CompanyService companyService;
-
-    @Autowired
     private TransactionService transactionService;
 
     /**
@@ -69,10 +65,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
         try {
             String id = generateID();
             setMetadataOnRestObject(companyAccount, transaction, id);
-
-            CompanyProfileApi companyProfile =
-                    companyService.getCompanyProfile(transaction.getCompanyNumber());
-            setAccountingPeriodDatesOnRestObject(companyAccount, companyProfile);
 
             CompanyAccountEntity companyAccountEntity =
                     companyAccountTransformer.transform(companyAccount);
@@ -181,36 +173,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     private String getSelfLink(CompanyAccount companyAccount) {
         return companyAccount.getLinks().get(CompanyAccountLinkType.SELF.getLink());
-    }
-
-    private void setAccountingPeriodDatesOnRestObject(CompanyAccount rest, CompanyProfileApi companyProfile) {
-
-        if (companyProfile.getAccounts() != null) {
-
-            if (companyProfile.getAccounts().getNextAccounts() != null) {
-
-                AccountingPeriod nextAccounts = new AccountingPeriod();
-                nextAccounts.setPeriodStartOn(companyProfile.getAccounts().getNextAccounts().getPeriodStartOn());
-                nextAccounts.setPeriodEndOn(companyProfile.getAccounts().getNextAccounts().getPeriodEndOn());
-                rest.setNextAccounts(nextAccounts);
-            } else {
-
-                throw new MissingAccountingPeriodException("No next accounts found for company: "
-                        + companyProfile.getCompanyNumber() + " trying to file their accounts");
-            }
-
-            if (companyProfile.getAccounts().getLastAccounts() != null) {
-
-                AccountingPeriod lastAccounts = new AccountingPeriod();
-                lastAccounts.setPeriodStartOn(companyProfile.getAccounts().getLastAccounts().getPeriodStartOn());
-                lastAccounts.setPeriodEndOn(companyProfile.getAccounts().getLastAccounts().getPeriodEndOn());
-                rest.setLastAccounts(lastAccounts);
-            }
-        } else {
-
-            throw new MissingAccountingPeriodException("No accounts found for company: "
-                    + companyProfile.getCompanyNumber() + " trying to file their accounts");
-        }
     }
 
     public String generateID() {

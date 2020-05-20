@@ -1,25 +1,26 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.Approval;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.api.accounts.AttributeName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.model.rest.Approval;
+import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.model.validation.Error;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
 public class ApprovalValidator extends BaseValidator {
@@ -32,16 +33,15 @@ public class ApprovalValidator extends BaseValidator {
     @Autowired
     private DirectorService directorService;
 
-
     public Errors validateApproval(Approval approval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
-        CompanyAccount companyAccount = (CompanyAccount) request
-            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        SmallFull smallFull = (SmallFull) request
+            .getAttribute(AttributeName.SMALLFULL.getValue());
 
-        LocalDate periodEndDate = companyAccount.getNextAccounts().getPeriodEndOn();
+        LocalDate periodEndDate = smallFull.getNextAccounts().getPeriodEndOn();
         LocalDate approvalDate = approval.getDate();
 
         if (approvalDate.isBefore(periodEndDate) || approvalDate.isEqual(periodEndDate)) {

@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.parent;
 
+import java.time.LocalDate;
 import javax.servlet.http.HttpServletRequest;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -16,4 +17,8 @@ public interface ParentResource<L extends LinkType> {
             throws DataException;
 
     AccountType getParent();
+
+    LocalDate getPeriodStartOn(HttpServletRequest request);
+
+    LocalDate getPeriodEndOn(HttpServletRequest request);
 }
