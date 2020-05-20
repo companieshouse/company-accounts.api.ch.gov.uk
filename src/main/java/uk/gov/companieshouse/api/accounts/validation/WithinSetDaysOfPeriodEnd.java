@@ -15,8 +15,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = WithinSetDaysOfPeriodEndImpl.class)
 public @interface WithinSetDaysOfPeriodEnd {
 
-	int numOfDays();
-	boolean allowNulls() default true;
+    int numOfDays();
+    boolean allowNulls() default true;
     String message() default "{date.invalid}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

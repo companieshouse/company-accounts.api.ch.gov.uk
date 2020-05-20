@@ -122,8 +122,7 @@ public class SmallFullService implements
         	smallFull.setLinks(smallFullEntity.getData().getLinks());
             smallFull.setEtag(GenerateEtagUtil.generateEtag());
             smallFull.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
-        	
-        	
+
 	        CompanyProfileApi companyProfile =
 	                companyService.getCompanyProfile(transaction.getCompanyNumber());
 	        setAccountingPeriodDatesOnRestObject(smallFull, companyProfile);
