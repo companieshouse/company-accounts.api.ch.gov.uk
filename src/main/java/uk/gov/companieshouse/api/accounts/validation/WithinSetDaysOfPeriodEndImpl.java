@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
+import uk.gov.companieshouse.api.accounts.exception.UncheckedDataException;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -51,14 +52,14 @@ public class WithinSetDaysOfPeriodEndImpl implements ConstraintValidator<WithinS
 
         } catch (ServiceException e) {
 
-            throw new RuntimeException(e);
+            throw new UncheckedDataException("Error fetching company profile", e);
         }
 
     }
 
     @Override
     public void initialize(WithinSetDaysOfPeriodEnd constraintAnnotation) {
-        
+
     	this.numOfDays = constraintAnnotation.numOfDays();
     	this.allowNulls = constraintAnnotation.allowNulls();
     }

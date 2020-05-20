@@ -43,7 +43,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.repository.CompanyAccountRepository;
 import uk.gov.companieshouse.api.accounts.sdk.ApiClientService;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.TransactionService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -66,9 +65,6 @@ public class CompanyAccountServiceImplTest {
 
     @Mock
     private ApiClientService apiClientService;
-
-    @Mock
-    private CompanyService companyService;
 
     @Mock
     private TransactionService transactionService;
@@ -203,7 +199,7 @@ public class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Create company accounts - duplicate key exception")
     void createCompanyAccountsDuplicateKeyException()
-            throws ServiceException, PatchException, DataException {
+            throws PatchException, DataException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -222,8 +218,7 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Create company accounts - Mongo exception")
-    void createCompanyAccountsMongoException()
-            throws ServiceException {
+    void createCompanyAccountsMongoException() {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
@@ -238,8 +233,7 @@ public class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Create company accounts - IO exception")
-    void createCompanyAccountsIOException()
-            throws ServiceException, IOException {
+    void createCompanyAccountsIOException() throws IOException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
