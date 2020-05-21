@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.Valid;
 
 public class SmallFull extends RestObject {
 
+    @Valid
     @JsonProperty("next_accounts")
     private NextAccounts nextAccounts;
 
