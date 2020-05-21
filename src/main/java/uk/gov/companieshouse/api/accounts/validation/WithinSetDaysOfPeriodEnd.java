@@ -17,7 +17,7 @@ public @interface WithinSetDaysOfPeriodEnd {
 
     int numOfDays();
     boolean allowNulls() default true;
-    String message() default "{date.invalid}";
+    String message() default "{date.outsideRange.periodEnd}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
