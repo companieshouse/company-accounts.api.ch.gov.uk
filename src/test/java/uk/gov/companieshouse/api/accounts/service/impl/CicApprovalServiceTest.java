@@ -98,11 +98,11 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful creation of an CicApproval resource")
-    public void canCreateAnCicReportApproval() throws DataException {
+    void canCreateAnCicReportApproval() throws DataException {
         when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
             cicReportApprovalEntity);
         doReturn(new Errors()).when(cicApprovalValidator)
-            .validateCicReportApproval(cicApproval, request);
+            .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -115,14 +115,14 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating an CicApproval resource")
-    public void createCicReportApprovalDuplicateKey() throws DataException {
+    void createCicReportApprovalDuplicateKey() throws DataException {
         doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
             .transform(ArgumentMatchers
                 .any(CicApproval.class));
         when(cicReportApprovalRepository.insert(cicReportApprovalEntity))
             .thenThrow(duplicateKeyException);
         doReturn(new Errors()).when(cicApprovalValidator)
-            .validateCicReportApproval(cicApproval, request);
+            .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -141,7 +141,7 @@ public class CicApprovalServiceTest {
             .transform(ArgumentMatchers
                 .any(CicApproval.class));
         doReturn(new Errors()).when(cicApprovalValidator)
-            .validateCicReportApproval(cicApproval, request);
+            .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         when(cicReportApprovalRepository.insert(cicReportApprovalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -160,7 +160,7 @@ public class CicApprovalServiceTest {
         Error error = new Error("error","location","jsonpath","validation");
         errors.addError(error);
         doReturn(errors).when(cicApprovalValidator)
-                .validateCicReportApproval(cicApproval, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         ResponseObject<CicApproval> response = cicApprovalService
                 .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
@@ -173,7 +173,7 @@ public class CicApprovalServiceTest {
         when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
                 cicReportApprovalEntity);
         doReturn(new Errors()).when(cicApprovalValidator)
-                .validateCicReportApproval(cicApproval, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -192,7 +192,7 @@ public class CicApprovalServiceTest {
         Error error = new Error("error","location","jsonpath","validation");
         errors.addError(error);
         doReturn(errors).when(cicApprovalValidator)
-                .validateCicReportApproval(cicApproval, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         ResponseObject<CicApproval> response = cicApprovalService
                 .update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
@@ -206,7 +206,7 @@ public class CicApprovalServiceTest {
                 .transform(ArgumentMatchers
                         .any(CicApproval.class));
         doReturn(new Errors()).when(cicApprovalValidator)
-                .validateCicReportApproval(cicApproval, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         when(cicReportApprovalRepository.save(cicReportApprovalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);

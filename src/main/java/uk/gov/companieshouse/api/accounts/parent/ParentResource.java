@@ -21,4 +21,6 @@ public interface ParentResource<L extends LinkType> {
     LocalDate getPeriodStartOn(HttpServletRequest request);
 
     LocalDate getPeriodEndOn(HttpServletRequest request);
+
+    LocalDate getPeriodEndOn(String companyAccountsId, HttpServletRequest request);
 }
