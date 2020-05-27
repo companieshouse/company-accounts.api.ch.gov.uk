@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.UncheckedDataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
@@ -58,5 +59,15 @@ public class SmallFullParentResource implements ParentResource<SmallFullLinkType
 
         return ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
                 .getNextAccounts().getPeriodEndOn();
+    }
+
+    @Override
+    public LocalDate getPeriodEndOn(String companyAccountsId, HttpServletRequest request) {
+
+        try {
+            return smallFullService.find(companyAccountsId, request).getData().getNextAccounts().getPeriodEndOn();
+        } catch (DataException e) {
+            throw new UncheckedDataException("Failed to retrieve small full resource", e);
+        }
     }
 }

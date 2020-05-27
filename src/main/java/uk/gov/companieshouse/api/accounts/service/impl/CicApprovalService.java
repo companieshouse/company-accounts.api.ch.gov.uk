@@ -57,7 +57,7 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     public ResponseObject<CicApproval> create(CicApproval rest, Transaction transaction,
                                               String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, request);
+        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, companyAccountId, request);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -94,7 +94,7 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     public ResponseObject<CicApproval> update(CicApproval rest, Transaction transaction,
                                               String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, request);
+        Errors errors = cicApprovalValidator.validateCicReportApproval(rest, companyAccountId, request);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);

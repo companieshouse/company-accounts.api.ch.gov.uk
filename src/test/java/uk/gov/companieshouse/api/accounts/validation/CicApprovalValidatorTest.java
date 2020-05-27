@@ -43,6 +43,8 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public class CicApprovalValidatorTest {
 
     private static final String COMPANY_NUMBER = "12345678";
+    
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
 	private Errors errors;
 
@@ -93,7 +95,7 @@ public class CicApprovalValidatorTest {
     void validateApprovalWithValidDateNoAssociatedAccounts() throws DataException {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(false));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertFalse(errors.hasErrors());
     }
 
@@ -102,7 +104,7 @@ public class CicApprovalValidatorTest {
     void validateApprovalDateBeforePeriodEndNoAssociatedAccounts() throws DataException {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(false));
         cicApproval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
@@ -113,7 +115,7 @@ public class CicApprovalValidatorTest {
     void validateApprovalDateSameAsPeriodEndNoAssociatedAccounts() throws DataException {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(false));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
@@ -127,7 +129,7 @@ public class CicApprovalValidatorTest {
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
         when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.OCTOBER, 30));
         cicApproval.setDate(LocalDate.of(2018, Month.OCTOBER, 31));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertFalse(errors.hasErrors());
     }
 
@@ -139,7 +141,7 @@ public class CicApprovalValidatorTest {
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
         when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 3));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
@@ -153,7 +155,7 @@ public class CicApprovalValidatorTest {
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
         when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2 ));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
-        errors = validator.validateCicReportApproval(cicApproval,httpServletRequestMock);
+        errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));

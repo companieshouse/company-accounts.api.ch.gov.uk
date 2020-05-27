@@ -40,7 +40,7 @@ public class CicApprovalValidator extends BaseValidator {
     	this.parentResourceFactory = parentResourceFactory;
     }
     
-    public Errors validateCicReportApproval(CicApproval cicApproval, HttpServletRequest request) throws DataException {
+    public Errors validateCicReportApproval(CicApproval cicApproval, String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
@@ -69,7 +69,7 @@ public class CicApprovalValidator extends BaseValidator {
 
             // If an account type does exist, derive the period end date from the account type in case it has been edited via the ARD functionality
             if (accountType != null) {
-                periodEndDate = parentResourceFactory.getParentResource(accountType).getPeriodEndOn(request);
+                periodEndDate = parentResourceFactory.getParentResource(accountType).getPeriodEndOn(companyAccountsId, request);
             }
 
             LocalDate approvalDate = cicApproval.getDate();
