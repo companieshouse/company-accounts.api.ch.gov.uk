@@ -4,6 +4,7 @@ public enum CompanyAccountLinkType implements LinkType {
 
     SELF("self"),
     SMALL_FULL("small_full_accounts"),
+    MICRO("micro_accounts"),
     TRANSACTION("transaction"),
     CIC_REPORT("cic_report");
 
