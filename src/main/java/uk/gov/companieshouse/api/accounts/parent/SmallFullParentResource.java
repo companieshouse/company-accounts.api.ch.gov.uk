@@ -70,6 +70,4 @@ public class SmallFullParentResource implements ParentResource<SmallFullLinkType
             throw new UncheckedDataException("Failed to retrieve small full resource", e);
         }
     }
-
-
 }
