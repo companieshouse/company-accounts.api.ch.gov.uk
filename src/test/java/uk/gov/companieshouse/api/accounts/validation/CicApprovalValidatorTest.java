@@ -127,7 +127,7 @@ public class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.OCTOBER, 30));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.OCTOBER, 30));
         cicApproval.setDate(LocalDate.of(2018, Month.OCTOBER, 31));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertFalse(errors.hasErrors());
@@ -139,7 +139,7 @@ public class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 3));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 3));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
@@ -153,7 +153,7 @@ public class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2 ));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2 ));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
