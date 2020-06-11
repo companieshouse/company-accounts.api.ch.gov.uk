@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.mongodb.MongoException;
 
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -23,6 +24,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -48,6 +50,9 @@ public class SmallFullService implements
     private KeyIdGenerator keyIdGenerator;
 
     private CompanyService companyService;
+
+    @Autowired
+    private StatementService statementService;
 
     @Autowired
     public SmallFullService(SmallFullRepository smallFullRepository,
@@ -133,6 +138,8 @@ public class SmallFullService implements
         } catch (MongoException|ServiceException e) {
             throw new DataException(e);
         }
+
+        invalidateStatementsIfExisting(companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
@@ -226,5 +233,19 @@ public class SmallFullService implements
         Map<String, String> map = new HashMap<>();
         map.put(SmallFullLinkType.SELF.getLink(), link);
         smallFull.setLinks(map);
+    }
+
+    private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
+
+            Statement statement = new Statement();
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+            statement.setHasAgreedToLegalStatements(false);
+
+            statementService.update(statement, transaction, companyAccountId, request);
+        }
     }
 }
