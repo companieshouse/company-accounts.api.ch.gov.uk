@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.mongodb.MongoException;
 
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -24,7 +23,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.SmallFullEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.NextAccounts;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
-import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.repository.SmallFullRepository;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
