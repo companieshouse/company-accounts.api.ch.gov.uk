@@ -139,7 +139,7 @@ public class SmallFullService implements
             throw new DataException(e);
         }
 
-        invalidateStatementsIfExisting(companyAccountId, request);
+        statementService.invalidateStatementsIfExisting(companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
@@ -233,19 +233,5 @@ public class SmallFullService implements
         Map<String, String> map = new HashMap<>();
         map.put(SmallFullLinkType.SELF.getLink(), link);
         smallFull.setLinks(map);
-    }
-
-    private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
-        if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
-
-            Statement statement = new Statement();
-            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-            statement.setHasAgreedToLegalStatements(false);
-
-            statementService.update(statement, transaction, companyAccountId, request);
-        }
     }
 }
