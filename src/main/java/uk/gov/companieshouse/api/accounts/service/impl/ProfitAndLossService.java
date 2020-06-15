@@ -1,11 +1,17 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
@@ -14,7 +20,6 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.CurrentPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.links.PreviousPeriodLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.profitloss.ProfitAndLossEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.ProfitAndLossRepository;
@@ -25,10 +30,6 @@ import uk.gov.companieshouse.api.accounts.transformer.ProfitAndLossTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ProfitAndLossValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
@@ -91,7 +92,7 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
                     .addLink(companyAccountId, PreviousPeriodLinkType.PROFIT_AND_LOSS, selfLink, request);
         }
 
-        invalidateStatementsIfExisting(companyAccountId, request);
+        statementService.invalidateStatementsIfExisting(companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -163,7 +164,7 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
                             .removeLink(companyAccountsId, PreviousPeriodLinkType.PROFIT_AND_LOSS, request);
                 }
 
-                invalidateStatementsIfExisting(companyAccountsId, request);
+                statementService.invalidateStatementsIfExisting(companyAccountsId, request);
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
 
@@ -213,19 +214,5 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
     private boolean isCurrentPeriod(AccountingPeriod period) {
 
         return period.equals(AccountingPeriod.CURRENT_PERIOD);
-    }
-
-    private void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
-        if (statementService.find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
-
-            Statement statement = new Statement();
-            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
-            statement.setHasAgreedToLegalStatements(false);
-
-            statementService.update(statement, transaction, companyAccountId, request);
-        }
     }
 }

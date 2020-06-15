@@ -143,6 +143,28 @@ public class StatementService implements ResourceService<Statement> {
         return null;
     }
 
+    /**
+     * Find any statements for the company account and set the HasAgreedToLegalStatements to false.
+     * 
+     * @param companyAccountId
+     * @param request
+     * 
+     * @throws DataException
+     */
+    public void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
+        throws DataException {
+
+        if (find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
+
+            Statement statement = new Statement();
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+
+            statement.setHasAgreedToLegalStatements(false);
+
+            update(statement, transaction, companyAccountId, request);
+        }
+    }
+
     private String generateID(String companyAccountId) {
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.STATEMENTS.getName());
     }

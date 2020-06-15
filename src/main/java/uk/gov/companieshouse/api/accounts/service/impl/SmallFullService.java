@@ -39,28 +39,23 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public class SmallFullService implements
     ResourceService<SmallFull>, LinkService<SmallFullLinkType> {
 
+    @Autowired
     private SmallFullRepository smallFullRepository;
 
+    @Autowired
     private SmallFullTransformer smallFullTransformer;
 
+    @Autowired
     private CompanyAccountService companyAccountService;
 
+    @Autowired
     private KeyIdGenerator keyIdGenerator;
 
+    @Autowired
     private CompanyService companyService;
 
     @Autowired
-    public SmallFullService(SmallFullRepository smallFullRepository,
-        SmallFullTransformer smallFullTransformer,
-        CompanyAccountService companyAccountService,
-        KeyIdGenerator keyIdGenerator,
-        CompanyService companyService) {
-        this.smallFullRepository = smallFullRepository;
-        this.smallFullTransformer = smallFullTransformer;
-        this.companyAccountService = companyAccountService;
-        this.keyIdGenerator = keyIdGenerator;
-        this.companyService = companyService;
-    }
+    private StatementService statementService;
 
     @Override
     public ResponseObject<SmallFull> create(SmallFull smallFull, Transaction transaction,
@@ -133,6 +128,8 @@ public class SmallFullService implements
         } catch (MongoException|ServiceException e) {
             throw new DataException(e);
         }
+
+        statementService.invalidateStatementsIfExisting(companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
