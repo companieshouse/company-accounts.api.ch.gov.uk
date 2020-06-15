@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -32,6 +35,7 @@ import org.springframework.dao.DuplicateKeyException;
 
 import com.mongodb.MongoException;
 
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -273,6 +277,39 @@ public class StatementServiceTest {
                 () -> statementService.find(COMPANY_ACCOUNTS_ID, requestMock));
     }
 
+    @Test
+    @DisplayName("Tests the Has Agreed To Legal Statements flag has been set to false on a Statement")
+    void shouldSetHasAgreedToLegalStatementsToFalse() throws DataException {
+    	
+        when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
+        .thenReturn(RESOURCE_ID);
+        when(statementRepositoryMock.findById(RESOURCE_ID))
+        	.thenReturn(Optional.ofNullable(statementEntityMock));
+
+    	setUpStatementStubbingForFindAndUpdate();
+    	setUpTransactionStubbing();
+
+        statementService.invalidateStatementsIfExisting(COMPANY_ACCOUNTS_ID, requestMock);
+
+        verify(requestMock).getAttribute(AttributeName.TRANSACTION.getValue());
+    }
+
+    @Test
+    @DisplayName("Tests the Has Agreed To Legal Statements flag has not been set to false on a Statement")
+    void shouldNotSetHasAgreedToLegalStatementsToFalse() throws DataException {
+    	
+        when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
+        	.thenReturn(RESOURCE_ID);
+        when(statementRepositoryMock.findById(RESOURCE_ID))
+    		.thenReturn(null);
+        StatementEntity statementEntity = null;
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(statementEntity));
+
+        statementService.invalidateStatementsIfExisting(COMPANY_ACCOUNTS_ID, requestMock);
+
+        verify(requestMock, times(0)).getAttribute(AttributeName.TRANSACTION.getValue());
+    }
+
     private StatementEntity createStatementEntity() {
         StatementEntity statementEntity = new StatementEntity();
         statementEntity.setId(LEGAL_STATEMENT_ID);
@@ -323,6 +360,20 @@ public class StatementServiceTest {
         when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
+    }
+    
+    private void setUpStatementStubbingForFindAndUpdate() throws DataException {
+        when(requestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(smallFull);
+       
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObject);
+        
+        when(smallFull.getNextAccounts()).thenReturn(accountingPeriodMock);
+        when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
+        when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
+        doReturn(statementMock).when(statementTransformerMock).transform(statementEntityMock);
+        doReturn(statementEntityMock).when(statementTransformerMock).transform(any(Statement.class));
     }
     
     private void setUpTransactionStubbing() {
