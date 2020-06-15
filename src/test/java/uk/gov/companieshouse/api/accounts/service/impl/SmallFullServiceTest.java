@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -118,6 +119,9 @@ public class SmallFullServiceTest {
 
     @Mock
     private LastAccountsApi lastAccountsApi;
+
+    @Mock
+    private StatementService statementService;
 
     @InjectMocks
     private SmallFullService smallFullService;
@@ -312,6 +316,7 @@ public class SmallFullServiceTest {
         when(smallFull.getNextAccounts()).thenReturn(nextAccounts);
 
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
+        doNothing().when(statementService).invalidateStatementsIfExisting(COMPANY_ACCOUNTS_ID, request);
 
         ResponseObject<SmallFull> responseObject = smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
 

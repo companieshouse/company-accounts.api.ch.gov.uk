@@ -1,6 +1,21 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -10,7 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
-import uk.gov.companieshouse.api.accounts.AttributeName;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod;
@@ -29,22 +46,6 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ProfitAndLossValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -123,15 +124,10 @@ public class ProfitAndLossServiceTest {
                 ResourceName.PROFIT_LOSS.getName()))
                     .thenReturn(GENERATED_ID);
 
-        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
-        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
-
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
 
-        verify(statementService).update(any(Statement.class), eq(transaction), eq(COMPANY_ACCOUNTS_ID), eq(request));
+        verify(statementService).invalidateStatementsIfExisting(eq(COMPANY_ACCOUNTS_ID), eq(request));
         assertMetaDataSetOnRestObject(true);
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryInsertCalled();
@@ -193,9 +189,6 @@ public class ProfitAndLossServiceTest {
                 ResourceName.PREVIOUS_PERIOD.getName() + "-" +
                 ResourceName.PROFIT_LOSS.getName()))
                     .thenReturn(GENERATED_ID);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
-        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period);
@@ -409,15 +402,10 @@ public class ProfitAndLossServiceTest {
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
-        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
-        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
-
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
 
-        verify(statementService).update(any(Statement.class), eq(transaction), eq(COMPANY_ACCOUNTS_ID), eq(request));
+        verify(statementService).invalidateStatementsIfExisting(eq(COMPANY_ACCOUNTS_ID), eq(request));
         assertRepositoryDeleteByIdCalled();
         assertWhetherSmallFullServiceCalledToRemoveLink(true,true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
@@ -436,9 +424,6 @@ public class ProfitAndLossServiceTest {
                     .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND);
-        when(statementService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseObject<ProfitAndLoss> response =
                 profitAndLossService.delete(COMPANY_ACCOUNTS_ID, request, period);
