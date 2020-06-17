@@ -108,6 +108,9 @@ public class StatementServiceTest {
     private StatementEntity statementEntityMock;
     @Mock
     private SmallFull smallFull;
+    @Mock
+    private ResponseObject<SmallFull> responseObjectSmallFull;
+
 
     @InjectMocks
     private StatementService statementService;
@@ -201,12 +204,18 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the successful update of a Statement resource")
     void shouldUpdateStatement() throws DataException {
-    	setUpStatementStubbing();
+    	setUpStatementStubbingForUpdate();
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
                 thenReturn(responseObject);
+
+        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).
+        thenReturn(responseObjectSmallFull);
+        
+        responseObjectSmallFull.setStatus(ResponseStatus.FOUND);
+        when(responseObjectSmallFull.getData()).thenReturn(smallFull);
 
         ResponseObject<Statement> result =
                 statementService.update(statementMock, transactionMock, "", requestMock);
@@ -218,7 +227,7 @@ public class StatementServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when updating a Statement resource")
     void shouldThrowMongoExceptionWhenUpdating() throws DataException {
-    	setUpStatementStubbing();
+    	setUpStatementStubbingForUpdate();
     	when(statementRepositoryMock.save(ArgumentMatchers.any(StatementEntity.class)))
                 .thenThrow(MongoException.class);
 
@@ -362,18 +371,28 @@ public class StatementServiceTest {
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
     }
     
-    private void setUpStatementStubbingForFindAndUpdate() throws DataException {
-        when(requestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(smallFull);
-       
-        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+    private void setUpStatementStubbingForUpdate() throws DataException {
         
+        ResponseObject<ProfitAndLoss> responseObjectProfitAndLoss = new ResponseObject<>(ResponseStatus.FOUND);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
+                thenReturn(responseObjectProfitAndLoss);
+        
+        responseObjectSmallFull.setStatus(ResponseStatus.FOUND);
+        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).
+                thenReturn(responseObjectSmallFull);
+        
+        when(responseObjectSmallFull.getData()).thenReturn(smallFull);
         when(smallFull.getNextAccounts()).thenReturn(accountingPeriodMock);
         when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
         when(statementsServicePropertiesMock.getCloneOfStatements()).thenReturn(legalStatements);
-        doReturn(statementMock).when(statementTransformerMock).transform(statementEntityMock);
         doReturn(statementEntityMock).when(statementTransformerMock).transform(any(Statement.class));
+    }
+    
+    private void setUpStatementStubbingForFindAndUpdate() throws DataException {
+        when(requestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(smallFull);
+        doReturn(statementMock).when(statementTransformerMock).transform(statementEntityMock);
+       
+        setUpStatementStubbingForUpdate();
     }
     
     private void setUpTransactionStubbing() {
