@@ -96,10 +96,10 @@ public class StatementService implements ResourceService<Statement> {
     @Override
     public ResponseObject<Statement> update(Statement rest, Transaction transaction,
         String companyAccountId, HttpServletRequest request) throws DataException {
-
-        SmallFull smallFull =
-                ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()));
-
+        
+        ResponseObject<SmallFull> smallFullResponse = smallFullService.find(companyAccountId, request);
+        SmallFull smallFull = smallFullResponse.getData();
+        
         setMetadataOnRestObject(rest, transaction, companyAccountId,
             getPeriodEndOn(smallFull));
 
