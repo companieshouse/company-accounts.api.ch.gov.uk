@@ -22,8 +22,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -156,11 +159,45 @@ class DirectorsApprovalValidatorTest {
         assertTrue(errors.containsError(createError(MUST_MATCH_DIRECTOR_OR_SECRETARY, "$.directors_approval.name")));
     }
 
+    @Test
+    @DisplayName("Validate when director is reappointed")
+    void validateApprovalWithReappointedDirectors() throws DataException {
+
+        DirectorsApproval directorsApproval = createDirectorsApproval(DIRECTOR_NAME);
+
+        Director[] directors = createReappointedDirector();
+
+        when(secretaryService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createSecretary()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, directors));
+
+        Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        assertFalse(errors.hasErrors());
+        assertNull(directors[0].getResignationDate());
+    }
     private Director[] createDirectors() {
 
         Director[] directors = new Director[1];
         directors[0] = new Director();
         directors[0].setName(DIRECTOR_NAME);
+
+        return directors;
+    }
+
+    private Director[] createReappointedDirector() {
+
+        Director[] directors = new Director[2];
+
+        Director director = createDirectors()[0];
+
+        director.setResignationDate(LocalDate.of(2017, 03, 01));
+        director.setAppointmentDate(LocalDate.of(2017, 04, 01));
+
+        directors[0] = director;
+
+        director = createDirectors()[0];
+        director.setAppointmentDate(LocalDate.of(2017, 01, 01));
+
+        directors[1] = director;
 
         return directors;
     }
