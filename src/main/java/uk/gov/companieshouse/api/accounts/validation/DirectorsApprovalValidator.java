@@ -52,7 +52,20 @@ public class DirectorsApprovalValidator extends BaseValidator{
 
             List<String> allNames = new ArrayList<>();
             if (directors != null) {
-                Arrays.stream(directors).filter(d -> d.getResignationDate() == null).forEach(director -> allNames.add(director.getName()));
+
+                Arrays.stream(directors).map(
+                        dir -> {
+
+                            if(dir.getResignationDate() == null) {
+                                return dir;
+                            }
+                            else if (dir.getAppointmentDate().isAfter(dir.getResignationDate())) {
+                                dir.setResignationDate(null);
+                                return dir;
+                            }
+                            return dir;
+                        }
+                ).filter(d -> d.getResignationDate() == null).forEach(director -> allNames.add(director.getName()));
             }
 
             if (secretary != null) {
