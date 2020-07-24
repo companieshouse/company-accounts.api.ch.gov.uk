@@ -3,13 +3,13 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.accounting
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.Size;
-
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.api.accounts.validation.ValidRegulatoryStandards;
 import uk.gov.companieshouse.charset.CharSet;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @JsonInclude(Include.NON_NULL)
 public class AccountingPolicies extends Note {
@@ -18,6 +18,7 @@ public class AccountingPolicies extends Note {
     @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
     @CharSetValid(CharSet.CHARACTER_SET_3)
     @JsonProperty("basis_of_measurement_and_preparation")
+    @ValidRegulatoryStandards
     private String basisOfMeasurementAndPreparation;
 
     @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")
