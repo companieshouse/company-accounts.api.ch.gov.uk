@@ -15,10 +15,8 @@ import javax.validation.constraints.Size;
 public class AccountingPolicies extends Note {
 
     @NotBlank
-    @Size(max = MAX_FIELD_LENGTH, message = "max.length.exceeded")
-    @CharSetValid(CharSet.CHARACTER_SET_3)
-    @JsonProperty("basis_of_measurement_and_preparation")
     @ValidRegulatoryStandards
+    @JsonProperty("basis_of_measurement_and_preparation")
     private String basisOfMeasurementAndPreparation;
 
     @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message="invalid.input.length")

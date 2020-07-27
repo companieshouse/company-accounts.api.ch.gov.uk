@@ -46,6 +46,13 @@ class ValidRegulatoryStandardsImplTest {
     }
 
     @Test
+    @DisplayName("Test when regulatory standard is null")
+    void testRegulatoryStandardNull() {
+
+        assertTrue(regulatoryStandards.isValid(null, context));
+    }
+
+    @Test
     @DisplayName("Test when regulatory standard is other than FRS101 or FRS102")
     void testRegulatoryStandardOther() {
 
