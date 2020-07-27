@@ -1,9 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,16 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.LoansToDirectorsServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
-import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors")
@@ -33,20 +28,12 @@ public class LoansToDirectorsController {
     private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Autowired
-    private ErrorMapper errorMapper;
-
-    @Autowired
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody LoansToDirectors loansToDirectors, BindingResult bindingResult,
+    public ResponseEntity create(@RequestBody LoansToDirectors loansToDirectors,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        if (bindingResult.hasErrors()) {
-            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
