@@ -190,7 +190,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
         rest.setLinks(createLinks(transaction, companyAccountsId, loanId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.DIRECTORS_REPORT_DIRECTOR.getValue());
+        rest.setKind(Kind.LOANS_TO_DIRECTORS_LOAN.getValue());
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String loanId) {
