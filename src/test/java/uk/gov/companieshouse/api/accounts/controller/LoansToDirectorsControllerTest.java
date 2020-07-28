@@ -56,13 +56,13 @@ class LoansToDirectorsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
                 loansToDirectors);
 
         when(loansToDirectorsService.create(loansToDirectors, transaction,
                 COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<LoansToDirectors> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
 
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
@@ -86,7 +86,7 @@ class LoansToDirectorsControllerTest {
         when(loansToDirectorsService.create(loansToDirectors, transaction,
                 COMPANY_ACCOUNT_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<LoansToDirectors> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         when(apiResponseMapper.getErrorResponse())
@@ -106,12 +106,12 @@ class LoansToDirectorsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+        ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
                 loansToDirectors);
         when(loansToDirectorsService.find(COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<LoansToDirectors> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
 
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
@@ -135,7 +135,7 @@ class LoansToDirectorsControllerTest {
         when(loansToDirectorsService.find(COMPANY_ACCOUNT_ID, request))
                 .thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<LoansToDirectors> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
@@ -152,13 +152,13 @@ class LoansToDirectorsControllerTest {
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 loansToDirectors);
 
         when(loansToDirectorsService.delete(COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
+        ResponseEntity<LoansToDirectors> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
@@ -182,7 +182,7 @@ class LoansToDirectorsControllerTest {
         when(loansToDirectorsService.delete(COMPANY_ACCOUNT_ID, request))
                 .thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<LoansToDirectors> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
