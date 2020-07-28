@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -40,6 +41,9 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
+    private LoanServiceImpl loanService;
 
     @Override
     public ResponseObject<LoansToDirectors> create(LoansToDirectors rest, Transaction transaction,
@@ -89,6 +93,11 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
             HttpServletRequest request) throws DataException {
 
         String id = generateID(companyAccountsId);
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        loanService.deleteAll(transaction, companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
