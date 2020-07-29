@@ -67,9 +67,10 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
         if (restResource != null) {
 
             BeanUtils.copyProperties(restResource, entityResource);
+            return entityResource;
         }
 
-        return entityResource;
+        return null;
     }
 
     private LoanBreakdownResource mapEntityResourceToRestResource(LoanBreakdownResourceEntity entityResource) {
@@ -79,8 +80,9 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
         if (entityResource != null) {
 
             BeanUtils.copyProperties(entityResource, restResource);
+            return restResource;
         }
 
-        return restResource;
+        return null;
     }
 }

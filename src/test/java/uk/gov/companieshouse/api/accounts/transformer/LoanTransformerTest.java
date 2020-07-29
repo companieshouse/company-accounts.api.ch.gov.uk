@@ -102,6 +102,5 @@ class LoanTransformerTest {
         assertEquals(loanBreakdownResource.getAdvancesCreditsRepaid(), loan.getBreakdown().getAdvancesCreditsRepaid());
         assertEquals(loanBreakdownResource.getBalanceAtPeriodEnd(), loan.getBreakdown().getBalanceAtPeriodEnd());
         assertEquals(loanBreakdownResource.getBalanceAtPeriodStart(), loan.getBreakdown().getBalanceAtPeriodStart());
-
     }
 }
