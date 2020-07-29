@@ -37,7 +37,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
     private KeyIdGenerator keyIdGenerator;
 
-    private static final Pattern LOAN_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/loans-to-directors/notes/loans/(.*)$");
+    private static final Pattern LOAN_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/loans-to-directors/loans/(.*)$");
 
     private static final String LOANS_LINK = "loans";
 
@@ -205,8 +205,8 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountsId + "/"
-                + ResourceName.SMALL_FULL.getName() + "/"
-                + ResourceName.LOANS_TO_DIRECTORS.getName() + "/notes/"
+                + ResourceName.SMALL_FULL.getName() + "/notes/"
+                + ResourceName.LOANS_TO_DIRECTORS.getName() + "/"
                 + ResourceName.LOANS.getName();
     }
 
@@ -219,8 +219,8 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
-                + ResourceName.SMALL_FULL.getName() + "/"
-                + ResourceName.LOANS_TO_DIRECTORS.getName() + "/notes/"
+                + ResourceName.SMALL_FULL.getName() + "/notes/"
+                + ResourceName.LOANS_TO_DIRECTORS.getName() + "/"
                 + ResourceName.LOANS.getName() + "/"
                 + loanId;
     }
