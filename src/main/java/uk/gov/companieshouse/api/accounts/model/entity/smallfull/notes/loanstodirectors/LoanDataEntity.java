@@ -1,8 +1,9 @@
 package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors;
 
 import org.springframework.data.mongodb.core.mapping.Field;
+import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
-public class LoanDataEntity {
+public class LoanDataEntity extends BaseDataEntity {
 
     @Field("director_name")
     private String directorName;
