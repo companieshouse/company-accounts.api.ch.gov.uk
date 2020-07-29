@@ -2,7 +2,6 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodir
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanBreakdownResourceEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,7 +14,7 @@ public class Loan extends RestObject {
     private String description;
 
     @JsonProperty("breakdown")
-    private LoanBreakdownResourceEntity breakdown;
+    private LoanBreakdownResource breakdown;
 
     public String getDirectorName() {
         return directorName;
@@ -33,11 +32,11 @@ public class Loan extends RestObject {
         this.description = description;
     }
 
-    public LoanBreakdownResourceEntity getBreakdown() {
+    public LoanBreakdownResource getBreakdown() {
         return breakdown;
     }
 
-    public void setBreakdown(LoanBreakdownResourceEntity breakdown) {
+    public void setBreakdown(LoanBreakdownResource breakdown) {
         this.breakdown = breakdown;
     }
 }
