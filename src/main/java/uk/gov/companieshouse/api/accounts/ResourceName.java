@@ -25,7 +25,8 @@ public enum ResourceName {
     DIRECTORS_REPORT("directors-report"),
     DIRECTORS("directors"),
     SECRETARY("secretary"),
-    LOANS_TO_DIRECTORS("loans-to-directors");
+    LOANS_TO_DIRECTORS("loans-to-directors"),
+    LOANS("loans");
 
     private String name;
 

@@ -1,13 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import com.mongodb.MongoException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -24,6 +22,10 @@ import uk.gov.companieshouse.api.accounts.transformer.LoansToDirectorsTransforme
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirectors, LoansToDirectorsLinkType>,
         LoansToDirectorsService {
@@ -39,6 +41,9 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
+    private LoanServiceImpl loanService;
 
     @Override
     public ResponseObject<LoansToDirectors> create(LoansToDirectors rest, Transaction transaction,
@@ -89,7 +94,10 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
         String id = generateID(companyAccountsId);
 
-        // TODO: remove all child resources here once implemented
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        loanService.deleteAll(transaction, companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
@@ -153,7 +161,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         String resourceId = generateID(companyAccountsId);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to find loans to directors entity to which to add director"));
+                        "Failed to find loans to directors entity to which to add loan"));
         if (entity.getData().getLoans() == null) {
 
             entity.getData().setLoans(new HashMap<>());
@@ -176,7 +184,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         String resourceId = generateID(companyAccountsId);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to find loans to directors entity from which to remove director"));
+                        "Failed to find loans to directors entity from which to remove loan"));
 
         entity.getData().getLoans().remove(loanId);
 
