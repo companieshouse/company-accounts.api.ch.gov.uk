@@ -378,7 +378,7 @@ class LoanServiceImplTest {
     }
 
     private void assertMetaDataSetOnRestObject() {
-        verify(loan, times(1)).setKind(Kind.LOANS_TO_DIRECTORS_LOAN.getValue());
+        verify(loan, times(1)).setKind(Kind.LOANS_TO_DIRECTORS_LOANS.getValue());
         verify(loan, times(1)).setEtag(anyString());
         verify(loan, times(1)).setLinks(anyMap());
     }

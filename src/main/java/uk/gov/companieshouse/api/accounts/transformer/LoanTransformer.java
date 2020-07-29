@@ -2,9 +2,11 @@ package uk.gov.companieshouse.api.accounts.transformer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanBreakdownResourceEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
 
 @Component
 public class LoanTransformer implements GenericTransformerForMultipleResources<Loan, LoanEntity> {
@@ -29,6 +31,12 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
         LoanDataEntity loanDataEntity = new LoanDataEntity();
         BeanUtils.copyProperties(entity, loanDataEntity);
 
+        if (entity.getBreakdown() != null) {
+
+            loanDataEntity.setBreakdown(
+                    mapRestResourceToEntityResource(entity.getBreakdown()));
+        }
+
         LoanEntity loanEntity = new LoanEntity();
         loanEntity.setData(loanDataEntity);
 
@@ -39,8 +47,40 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
     public Loan transform(LoanEntity entity) {
 
         Loan loan = new Loan();
-        BeanUtils.copyProperties(entity.getData(), loan);
+        LoanDataEntity dataEntity = entity.getData();
+
+        BeanUtils.copyProperties(dataEntity, loan);
+
+        if (dataEntity.getBreakdown() != null) {
+
+            loan.setBreakdown(
+                    mapEntityResourceToRestResource(dataEntity.getBreakdown()));
+        }
 
         return loan;
+    }
+
+    private LoanBreakdownResourceEntity mapRestResourceToEntityResource(LoanBreakdownResource restResource) {
+
+        LoanBreakdownResourceEntity entityResource = new LoanBreakdownResourceEntity();
+
+        if (restResource != null) {
+
+            BeanUtils.copyProperties(restResource, entityResource);
+        }
+
+        return entityResource;
+    }
+
+    private LoanBreakdownResource mapEntityResourceToRestResource(LoanBreakdownResourceEntity entityResource) {
+
+        LoanBreakdownResource restResource = new LoanBreakdownResource();
+
+        if (entityResource != null) {
+
+            BeanUtils.copyProperties(entityResource, restResource);
+        }
+
+        return restResource;
     }
 }

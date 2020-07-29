@@ -1,16 +1,15 @@
 package uk.gov.companieshouse.api.accounts.transformer;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanBreakdownResourceEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,8 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoanTransformerTest {
 
-    @Mock
-    private LoanBreakdownResourceEntity loanBreakdownResourceEntity;
+    private LoanBreakdownResource loanBreakdownResource = new LoanBreakdownResource();
 
     private static final String DIRECTOR_NAME = "name";
     private static final String DESCRIPTION = "description";
@@ -30,15 +28,6 @@ class LoanTransformerTest {
 
     private LoanTransformer transformer = new LoanTransformer();
 
-    @BeforeEach
-    private void setup() {
-        LoanBreakdownResourceEntity loanBreakdownResourceEntity = new LoanBreakdownResourceEntity();
-        loanBreakdownResourceEntity.setAdvancesCreditsMade(1L);
-        loanBreakdownResourceEntity.setAdvancesCreditsRepaid(1L);
-        loanBreakdownResourceEntity.setBalanceAtPeriodEnd(1L);
-        loanBreakdownResourceEntity.setBalanceAtPeriodStart(1L);
-    }
-
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
@@ -46,8 +35,7 @@ class LoanTransformerTest {
         Loan loan = new Loan();
         loan.setDirectorName(DIRECTOR_NAME);
         loan.setDescription(DESCRIPTION);
-        loan.setBreakdown(loanBreakdownResourceEntity);
-
+        loan.setBreakdown(loanBreakdownResource);
 
         LoanEntity loanEntity = transformer.transform(loan);
 
@@ -84,6 +72,12 @@ class LoanTransformerTest {
 
     private LoanEntity getLoanEntity() {
 
+        LoanBreakdownResourceEntity loanBreakdownResourceEntity = new LoanBreakdownResourceEntity();
+        loanBreakdownResourceEntity.setAdvancesCreditsMade(1L);
+        loanBreakdownResourceEntity.setAdvancesCreditsRepaid(1L);
+        loanBreakdownResourceEntity.setBalanceAtPeriodEnd(1L);
+        loanBreakdownResourceEntity.setBalanceAtPeriodStart(1L);
+
         LoanDataEntity loanDataEntity = new LoanDataEntity();
         loanDataEntity.setDirectorName(DIRECTOR_NAME);
         loanDataEntity.setDescription(DESCRIPTION);
@@ -96,8 +90,18 @@ class LoanTransformerTest {
     }
 
     private void assertRestFieldsSet(Loan loan) {
+        loanBreakdownResource.setBalanceAtPeriodStart(1L);
+        loanBreakdownResource.setBalanceAtPeriodEnd(1L);
+        loanBreakdownResource.setAdvancesCreditsMade(1L);
+        loanBreakdownResource.setAdvancesCreditsRepaid(1L);
+
         assertEquals(DIRECTOR_NAME, loan.getDirectorName());
         assertEquals(DESCRIPTION, loan.getDescription());
-        assertEquals(loanBreakdownResourceEntity, loan.getBreakdown());
+
+        assertEquals(loanBreakdownResource.getAdvancesCreditsMade(), loan.getBreakdown().getAdvancesCreditsMade());
+        assertEquals(loanBreakdownResource.getAdvancesCreditsRepaid(), loan.getBreakdown().getAdvancesCreditsRepaid());
+        assertEquals(loanBreakdownResource.getBalanceAtPeriodEnd(), loan.getBreakdown().getBalanceAtPeriodEnd());
+        assertEquals(loanBreakdownResource.getBalanceAtPeriodStart(), loan.getBreakdown().getBalanceAtPeriodStart());
+
     }
 }
