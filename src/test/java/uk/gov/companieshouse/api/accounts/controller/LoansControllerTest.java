@@ -244,7 +244,7 @@ public class LoansControllerTest {
 
     @Test
     @DisplayName("Tests the update of a Loan when the Loan ID doesnt exist")
-    void UpdateDirectorResourceWhenIdIsNull() throws DataException {
+    void updateDirectorResourceWhenIdIsNull() throws DataException {
 
         when(request.getAttribute(anyString())).thenReturn(loansToDirectors).thenReturn(transaction);
 
