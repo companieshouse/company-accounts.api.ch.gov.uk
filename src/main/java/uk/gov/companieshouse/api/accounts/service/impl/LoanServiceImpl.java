@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoanRepository;
 import uk.gov.companieshouse.api.accounts.service.LoansToDirectorsService;
 import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
@@ -18,6 +19,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.LoanTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.LoanValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,8 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     private LoansToDirectorsService loansToDirectorsService;
 
     private KeyIdGenerator keyIdGenerator;
+    
+    private LoanValidator loanValidator;
 
     private static final Pattern LOAN_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/loans-to-directors/loans/(.*)$");
 
@@ -43,12 +47,14 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
 
     @Autowired
-    public LoanServiceImpl(LoanTransformer transformer, LoanRepository repository, LoansToDirectorsService loansToDirectorsService, KeyIdGenerator keyIdGenerator) {
+    public LoanServiceImpl(LoanTransformer transformer, LoanRepository repository, LoansToDirectorsService loansToDirectorsService,
+    		KeyIdGenerator keyIdGenerator, LoanValidator loanValidator) {
 
         this.transformer = transformer;
         this.repository = repository;
         this.loansToDirectorsService = loansToDirectorsService;
         this.keyIdGenerator = keyIdGenerator;
+        this.loanValidator = loanValidator;
     }
 
     @Override
@@ -88,6 +94,11 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     @Override
     public ResponseObject<Loan> create(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
+        Errors errors = loanValidator.validateLoan(rest);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         String loanId = keyIdGenerator.generateRandom();
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, loanId);
@@ -113,6 +124,11 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
     @Override
     public ResponseObject<Loan> update(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = loanValidator.validateLoan(rest);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         String loanId = getLoanId(request);
 
