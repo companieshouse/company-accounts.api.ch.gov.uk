@@ -84,11 +84,11 @@ class LoanServiceImplTest {
     private static final String LOAN_SELF_LINK = "loanSelfLink";
 
     private static final String URI = "/transactions/transactionId/company-accounts/" +
-            COMPANY_ACCOUNTS_ID + "/small-full/loans-to-directors/notes/loans/" +
+            COMPANY_ACCOUNTS_ID + "/small-full/notes/loans-to-directors/loans/" +
              LOAN_ID;
 
     private static final String LOAN_LINK = TRANSACTION_SELF_LINK + "/company-accounts/" +
-            COMPANY_ACCOUNTS_ID + "/small-full/loans-to-directors/notes/loans";
+            COMPANY_ACCOUNTS_ID + "/small-full/notes/loans-to-directors/loans";
 
     @Test
     @DisplayName("Tests the successful creation of a loan resource")

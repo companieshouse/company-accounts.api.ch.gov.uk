@@ -8,7 +8,8 @@ public enum AttributeName {
     CURRENT_PERIOD("current-period"),
     PREVIOUS_PERIOD("previous-period"),
     CIC_REPORT("cic-report"),
-    DIRECTORS_REPORT("directors-report");
+    DIRECTORS_REPORT("directors-report"),
+    LOANS_TO_DIRECTORS("loans-to-directors");
 
     private String value;
 
