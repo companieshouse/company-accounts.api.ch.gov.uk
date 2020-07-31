@@ -15,6 +15,8 @@ public class LoanValidator extends BaseValidator {
 
     private static final String LOANS_DESCRIPTION = LOANS_PATH + ".description";
 
+    private static final String LOANS_BREAKDOWN_PATH = LOANS_PATH + ".breakdown";
+
     private static final String LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_MADE = LOANS_PATH + ".breakdown.advances_credits_made";
 
     private static final String LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_REPAID = LOANS_PATH + ".breakdown.advances_credits_repaid";
@@ -37,30 +39,34 @@ public class LoanValidator extends BaseValidator {
 		}
 
 		LoanBreakdownResource loanBreakdown = loan.getBreakdown();
-		Boolean missingBreakdownElement = false;
 		
-		if (loanBreakdown.getAdvancesCreditsMade() == null) {
-			missingBreakdownElement = true;
-            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_MADE);
-		}
-
-		if (loanBreakdown.getAdvancesCreditsRepaid() == null) {
-			missingBreakdownElement = true;
-            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_REPAID);
-		}
-
-		if (loanBreakdown.getBalanceAtPeriodStart() == null) {
-			missingBreakdownElement = true;
-            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
-		}
-
-		if (loanBreakdown.getBalanceAtPeriodEnd() == null) {
-			missingBreakdownElement = true;
-            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
-		}
-		
-		if(!missingBreakdownElement) {
-			validateLoanCalculation(loanBreakdown, errors);
+		if(loanBreakdown == null) {
+            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH);
+		} else {
+			Boolean missingBreakdownElement = false;
+			if (loanBreakdown.getAdvancesCreditsMade() == null) {
+				missingBreakdownElement = true;
+	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_MADE);
+			}
+	
+			if (loanBreakdown.getAdvancesCreditsRepaid() == null) {
+				missingBreakdownElement = true;
+	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_REPAID);
+			}
+	
+			if (loanBreakdown.getBalanceAtPeriodStart() == null) {
+				missingBreakdownElement = true;
+	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+			}
+	
+			if (loanBreakdown.getBalanceAtPeriodEnd() == null) {
+				missingBreakdownElement = true;
+	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+			}
+			
+			if(!missingBreakdownElement) {
+				validateLoanCalculation(loanBreakdown, errors);
+			}
 		}
 		
 		return errors;
