@@ -1,7 +1,23 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 
-import com.mongodb.MongoException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -12,34 +28,24 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
+
+import com.mongodb.MongoException;
+
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoanEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoanRepository;
 import uk.gov.companieshouse.api.accounts.service.LoansToDirectorsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.LoanTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.LoanValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -73,6 +79,12 @@ class LoanServiceImplTest {
     private LoanEntity loanEntity;
 
     @Mock
+    private LoanValidator loanValidator;
+
+    @Mock
+    private Errors errors;
+    
+    @Mock
     private Map<String, String> links;
 
     @InjectMocks
@@ -93,6 +105,9 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a loan resource")
     void createLoanSuccess() throws DataException {
+
+        when(loanValidator.validateLoan(loan)).thenReturn(errors);        
+        when(errors.hasErrors()).thenReturn(false);
 
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
 
@@ -119,6 +134,9 @@ class LoanServiceImplTest {
     @DisplayName("Tests the creation of a loan resource where the repository throws a duplicate key exception")
     void createLoanDuplicateKeyException() throws DataException {
 
+        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
 
         when(transformer.transform(loan)).thenReturn(loanEntity);
@@ -143,6 +161,9 @@ class LoanServiceImplTest {
     @DisplayName("Tests the creation of a loan resource where the repository throws a Mongo exception")
     void createLoanMongoException() throws DataException {
 
+        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+        
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
 
         when(transformer.transform(loan)).thenReturn(loanEntity);
@@ -162,8 +183,25 @@ class LoanServiceImplTest {
     }
 
     @Test
+    @DisplayName("Tests the creation of a loan resource where the validator returns errors")
+    void createLoanWithValidationErrors() throws DataException {
+
+    	when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+        
+        ResponseObject<Loan> response =
+                loanService.create(loan, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        assertNull(response.getData());
+        assertNotNull(response.getErrors());
+    }
+
+    @Test
     @DisplayName("Tests the successful update of a loan resource")
     void updateLoanSuccess() throws DataException {
+
+        when(loanValidator.validateLoan(loan)).thenReturn(errors);
 
         when(request.getRequestURI()).thenReturn(URI);
 
@@ -186,6 +224,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the update of a loan resource where the repository throws a Mongo exception")
     void updateLoanMongoException() {
 
+        when(loanValidator.validateLoan(loan)).thenReturn(errors);
         when(request.getRequestURI()).thenReturn(URI);
 
         when(transformer.transform(loan)).thenReturn(loanEntity);
@@ -201,6 +240,21 @@ class LoanServiceImplTest {
         assertMetaDataSetOnRestObject();
         assertIdGeneratedForDatabaseEntity();
         assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the update of a loan resource where the validator returns errors")
+    void updateLoanWithValidationErrors() throws DataException {
+
+    	when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+        
+        ResponseObject<Loan> response =
+                loanService.update(loan, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        assertNull(response.getData());
+        assertNotNull(response.getErrors());
     }
 
     @Test
