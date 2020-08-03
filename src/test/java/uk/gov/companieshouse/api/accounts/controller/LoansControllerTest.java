@@ -137,7 +137,7 @@ public class LoansControllerTest {
     
     @Test
     @DisplayName("Tests the creation of a Loan where the controller returns a bad request binding error for invalid length")
-    void createLoanAndBadRequestResponseServiceThrowsDataException() throws DataException {
+    void createLoanReturnBadRequestForBindingErrors() throws DataException {
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
@@ -317,6 +317,21 @@ public class LoansControllerTest {
                 .update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
         verify(apiResponseMapper, times(1))
                 .getErrorResponse();
+    }
+    
+    @Test
+    @DisplayName("Tests the update of a Loan where the controller returns a bad request binding error for invalid length")
+    void updateLoanReturnBadRequestForBindingErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+        
+        ResponseEntity response =
+                controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @Test
