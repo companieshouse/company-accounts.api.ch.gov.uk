@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +20,11 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.LoanServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
@@ -34,10 +38,17 @@ public class LoansController {
     @Autowired
     private ApiResponseMapper apiResponseMapper;
 
+    @Autowired
+    private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody Loan loan, @PathVariable("companyAccountId") String companyAccountId,
+    public ResponseEntity create(@Valid @RequestBody Loan loan, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
     		HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -96,13 +107,16 @@ public class LoansController {
                     "Failed to retrieve Loans", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
-
-
     }
 
     @PutMapping("/{loanId}")
-    public ResponseEntity update(@RequestBody Loan loan, @PathVariable("companyAccountId") String companyAccountId,
+    public ResponseEntity update(@Valid @RequestBody Loan loan, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
     		@PathVariable("loanId") String loanId, HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
         if (loansToDirectors.getLoans().get(loanId) == null) {
