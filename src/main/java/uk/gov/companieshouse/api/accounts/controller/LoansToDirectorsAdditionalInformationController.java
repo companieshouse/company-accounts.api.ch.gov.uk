@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +19,11 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
@@ -36,10 +40,19 @@ public class LoansToDirectorsAdditionalInformationController {
     @Autowired
     private ApiResponseMapper apiResponseMapper;
 
+    @Autowired
+    private ErrorMapper errorMapper;
+
     @PostMapping
-    public ResponseEntity create(@RequestBody AdditionalInformation additionalInformation,
+    public ResponseEntity create(@Valid @RequestBody AdditionalInformation additionalInformation,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         Transaction transaction =
                 (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
@@ -60,13 +73,19 @@ public class LoansToDirectorsAdditionalInformationController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody AdditionalInformation additionalInformation,
+    public ResponseEntity update(@Valid @RequestBody AdditionalInformation additionalInformation,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
         LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
         if(loansToDirectors.getLinks().get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction =
