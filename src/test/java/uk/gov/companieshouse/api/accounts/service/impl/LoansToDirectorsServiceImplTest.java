@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -85,6 +86,9 @@ public class LoansToDirectorsServiceImplTest {
 
     @Mock
     private LoanServiceImpl loanService;
+
+    @Mock
+    private LoansToDirectorsAdditionalInformationService additionalInformationService;
 
     @InjectMocks
     private LoansToDirectorsServiceImpl service;
@@ -211,6 +215,8 @@ public class LoansToDirectorsServiceImplTest {
     @DisplayName("Tests the successful deletion of a loans to directors resource")
     void deleteLoansToDirectorsSuccess() throws DataException {
 
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -223,6 +229,9 @@ public class LoansToDirectorsServiceImplTest {
         assertWhetherSmallFullServiceCalledToRemoveLink(true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertNull(response.getData());
+
+        verify(loanService).deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+        verify(additionalInformationService).delete(COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
