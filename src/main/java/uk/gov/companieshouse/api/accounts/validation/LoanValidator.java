@@ -17,10 +17,6 @@ public class LoanValidator extends BaseValidator {
 
     private static final String LOANS_BREAKDOWN_PATH = LOANS_PATH + ".breakdown";
 
-    private static final String LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_MADE = LOANS_PATH + ".breakdown.advances_credits_made";
-
-    private static final String LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_REPAID = LOANS_PATH + ".breakdown.advances_credits_repaid";
-
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = LOANS_PATH + ".breakdown.balance_at_period_start";
 
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = LOANS_PATH + ".breakdown.balance_at_period_end";
@@ -44,15 +40,6 @@ public class LoanValidator extends BaseValidator {
             addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH);
 		} else {
 			Boolean missingBreakdownElement = false;
-			if (loanBreakdown.getAdvancesCreditsMade() == null) {
-				missingBreakdownElement = true;
-	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_MADE);
-			}
-	
-			if (loanBreakdown.getAdvancesCreditsRepaid() == null) {
-				missingBreakdownElement = true;
-	            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_ADVANCES_CREDIT_REPAID);
-			}
 	
 			if (loanBreakdown.getBalanceAtPeriodStart() == null) {
 				missingBreakdownElement = true;
@@ -73,7 +60,18 @@ public class LoanValidator extends BaseValidator {
 	}
 	
 	private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, Errors errors) {
-		if ((loanBreakdown.getBalanceAtPeriodStart() + loanBreakdown.getAdvancesCreditsMade()) - loanBreakdown.getAdvancesCreditsRepaid() != loanBreakdown.getBalanceAtPeriodEnd()) {
+		Long advancesCreditsMade = 0L;
+		Long advancesCreditsRepaid = 0L;
+		
+		if (loanBreakdown.getAdvancesCreditsMade() != null) {
+			advancesCreditsMade = loanBreakdown.getAdvancesCreditsMade();
+		}
+		
+		if (loanBreakdown.getAdvancesCreditsRepaid() != null) {
+			advancesCreditsRepaid = loanBreakdown.getAdvancesCreditsRepaid();
+		}
+		
+		if ((loanBreakdown.getBalanceAtPeriodStart() + advancesCreditsMade) - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
             addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
 		}
 	}
