@@ -29,8 +29,6 @@ public class LoanValidatorTest {
 
     private static final String LOANS_PATH = "$.loans";
     private static final String LOANS_DIRECTOR_NAME_PATH = LOANS_PATH + ".director_name";
-    private static final String LOANS_DESCRIPTION_PATH = LOANS_PATH + ".description";
-    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = LOANS_PATH +  ".breakdown.balance_at_period_start";
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = LOANS_PATH +  ".breakdown.balance_at_period_end";
 
     private static final String LOAN_DIRECTOR_NAME = "directorName";
@@ -98,49 +96,30 @@ public class LoanValidatorTest {
     }
 
     @Test
-    @DisplayName("Loan validation with missing description")
-    void testMissingLoanDescriptionDirectorsName() {
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
-
-    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
-    	
-        createValidLoanBreakdown();
-
-        errors = validator.validateLoan(loan);
-
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-        		LOANS_DESCRIPTION_PATH)));
-
-        assertEquals(1, errors.getErrorCount());
-    }
-
-    @Test
     @DisplayName("Loan validation with missing balance_at_period_start")
-    void testMissingLoanBreakdownBalanceAtPeriodStart() {
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
+    void testSuccessfulLoanCalculationValidationWithMissingBalanceAtPeriodStart() {
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
     	
-        createValidLoanBreakdown();
+        LoanBreakdownResource loanBreakdown = new LoanBreakdownResource();
+        loanBreakdown.setBalanceAtPeriodStart(null);
+        loanBreakdown.setAdvancesCreditsMade(2000L);
+        loanBreakdown.setAdvancesCreditsRepaid(1000L);
+        loanBreakdown.setBalanceAtPeriodEnd(1000L);
+
+        loan.setBreakdown(loanBreakdown);
 
         loan.getBreakdown().setBalanceAtPeriodStart(null);
         
         errors = validator.validateLoan(loan);
 
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-        		LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
-
-        assertEquals(1, errors.getErrorCount());
+        assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Loan validation with missing advances_credits_made")
     void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade() {
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
@@ -161,8 +140,6 @@ public class LoanValidatorTest {
     @Test
     @DisplayName("Loan validation with missing advances_credits_repaid")
     void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid() {
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
