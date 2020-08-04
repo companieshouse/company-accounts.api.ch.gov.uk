@@ -29,9 +29,6 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     public static final String APPLICATION_NAME_SPACE = "company-accounts.api.ch.gov.uk";
 
-    // Path pattern for URLs requiring authorization
-    private static final String AUTH_PATH_PATTERN = "/transactions/{transactionId}/company-accounts";
-
     @Autowired
     private TransactionInterceptor transactionInterceptor;
 
@@ -93,10 +90,13 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
             .excludePathPatterns("/healthcheck");
 
         registry.addInterceptor(tokenPermissionsInterceptor)
-            .addPathPatterns(AUTH_PATH_PATTERN);
+            .addPathPatterns(
+                    "/transactions/{transactionId}/company-accounts",
+                    "/transactions/{transactionId}/company-accounts/**");
 
         registry.addInterceptor(authenticationInterceptor)
-            .addPathPatterns(AUTH_PATH_PATTERN);
+            .addPathPatterns("/transactions/{transactionId}/company-accounts",
+                    "/transactions/{transactionId}/company-accounts/**");
 
         registry.addInterceptor(transactionInterceptor)
             .addPathPatterns(
