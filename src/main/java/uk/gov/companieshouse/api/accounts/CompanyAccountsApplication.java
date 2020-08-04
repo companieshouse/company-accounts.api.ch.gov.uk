@@ -95,7 +95,8 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                     "/transactions/{transactionId}/company-accounts/**");
 
         registry.addInterceptor(authenticationInterceptor)
-            .addPathPatterns("/transactions/{transactionId}/company-accounts",
+            .addPathPatterns(
+                    "/transactions/{transactionId}/company-accounts",
                     "/transactions/{transactionId}/company-accounts/**");
 
         registry.addInterceptor(transactionInterceptor)
