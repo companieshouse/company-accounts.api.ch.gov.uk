@@ -9,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 @Component
 public class LoanValidator extends BaseValidator {
 
-    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loans.breakdown.balance_at_period_end";
+    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
 
 	public Errors validateLoan(Loan loan) {
 
