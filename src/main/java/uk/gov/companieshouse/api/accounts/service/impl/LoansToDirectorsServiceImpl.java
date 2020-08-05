@@ -45,6 +45,9 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     @Autowired
     private LoanServiceImpl loanService;
 
+    @Autowired
+    private LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInformationService;
+
     @Override
     public ResponseObject<LoansToDirectors> create(LoansToDirectors rest, Transaction transaction,
             String companyAccountsId, HttpServletRequest request) throws DataException {
@@ -98,6 +101,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
         loanService.deleteAll(transaction, companyAccountsId, request);
+        loansToDirectorsAdditionalInformationService.delete(companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
