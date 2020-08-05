@@ -175,8 +175,6 @@ class DirectorsApprovalValidatorTest {
 
         Errors errors = validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertFalse(errors.hasErrors());
-        assertNull(directors[2].getResignationDate());
-        assertNull(directors[1].getResignationDate());
         assertEquals(newDirector.getResignationDate(), directors[0].getResignationDate());
     }
 

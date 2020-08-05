@@ -14,7 +14,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,37 +47,36 @@ public class DirectorsApprovalValidator extends BaseValidator{
                 .map(ResponseObject::getDataForMultipleResources)
                 .orElse(null);
 
-        if (secretary != null || directors != null) {
 
-            List<String> allNames = new ArrayList<>();
-            if (directors != null) {
+        List<String> allNames = new ArrayList<>();
 
-                Arrays.stream(directors).map(
-                        dir -> {
+        if (directors != null) {
 
-                            if(dir.getResignationDate() == null) {
-                                return dir;
-                            }
-                            else if (dir.getAppointmentDate().isAfter(dir.getResignationDate())) {
-                                dir.setResignationDate(null);
-                                return dir;
-                            }
-                            return dir;
-                        }
-                ).filter(d -> d.getResignationDate() == null).forEach(director -> allNames.add(director.getName()));
-            }
-
-            if (secretary != null) {
-                allNames.add(secretary);
-            }
-
-            if (!allNames.contains(directorsApproval.getName())) {
-
-                addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
+            for(Director director : directors) {
+                if (isValidDirector(director)) {
+                    allNames.add(director.getName());
+                }
             }
         }
 
+        if (secretary != null) {
+            allNames.add(secretary);
+        }
+
+        if (!allNames.contains(directorsApproval.getName())) {
+
+            addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
+        }
+
+
         return errors;
+    }
+
+    private boolean isValidDirector(Director director) {
+
+        return director.getResignationDate() == null
+                || (director.getAppointmentDate() != null
+                && director.getAppointmentDate().isAfter(director.getResignationDate()));
     }
 }
 
