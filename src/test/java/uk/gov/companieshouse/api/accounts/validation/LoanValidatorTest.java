@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoanValidatorTest {
 
-    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loans.breakdown.balance_at_period_end";
+    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
 
     private static final String LOAN_DIRECTOR_NAME = "directorName";
     private static final String LOAN_DESCRIPTION = "description";
