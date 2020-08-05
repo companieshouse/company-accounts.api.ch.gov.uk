@@ -63,7 +63,7 @@ public class DirectorsApprovalValidator extends BaseValidator{
             allNames.add(secretary);
         }
 
-        if (!allNames.contains(directorsApproval.getName())) {
+        if (!allNames.isEmpty() && !allNames.contains(directorsApproval.getName())) {
 
             addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
         }
