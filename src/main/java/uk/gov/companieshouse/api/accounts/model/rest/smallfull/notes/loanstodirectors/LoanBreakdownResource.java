@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors;
 
+import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,10 +20,12 @@ public class LoanBreakdownResource {
     @JsonProperty("advances_credits_repaid")
     private Long advancesCreditsRepaid;
 
+    @NotNull
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("balance_at_period_start")
     private Long balanceAtPeriodStart;
 
+    @NotNull
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("balance_at_period_end")
     private Long balanceAtPeriodEnd;
