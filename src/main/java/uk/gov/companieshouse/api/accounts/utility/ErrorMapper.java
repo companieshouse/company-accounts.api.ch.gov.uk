@@ -6,6 +6,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
@@ -30,7 +31,7 @@ public class ErrorMapper {
 
         Errors errors = new Errors();
 
-        for (Object object : bindingResult.getAllErrors()) {
+        for (ObjectError object : bindingResult.getAllErrors()) {
 
             if (object instanceof FieldError) {
                 FieldError fieldError = (FieldError) object;
@@ -48,7 +49,7 @@ public class ErrorMapper {
 
         Errors errors = new Errors();
 
-        for (Object object : bindingResult.getAllErrors()) {
+        for (ObjectError object : bindingResult.getAllErrors()) {
 
             if (object instanceof FieldError) {
                 FieldError fieldError = (FieldError) object;
