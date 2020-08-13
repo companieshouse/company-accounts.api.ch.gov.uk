@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class ApprovalServiceTest {
+class ApprovalServiceTest {
 
     @Mock
     private HttpServletRequest request;
@@ -152,7 +152,7 @@ public class ApprovalServiceTest {
 
         ResponseObject<Approval> result = approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(result.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, result.getStatus());
         assertNull(result.getData());
 
         verify(smallFullService, never())
