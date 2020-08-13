@@ -6,6 +6,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -157,7 +159,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
         return environmentReader.getMandatoryString(IXBRL_VALIDATOR_URI);
     }
 
-    private class FileMessageResource extends ByteArrayResource {
+    private static class FileMessageResource extends ByteArrayResource {
 
         /**
          * The filename to be associated with the {@link MimeMessage} in the form data.
@@ -179,6 +181,28 @@ public class TnepValidationServiceImpl implements TnepValidationService {
         @Override
         public String getFilename() {
             return filename;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof FileMessageResource)) {
+                return false;
+            }
+
+            if (!super.equals(o)) {
+                return false;
+            }
+
+            FileMessageResource that = (FileMessageResource) o;
+            return Objects.equals(filename, that.filename);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), filename);
         }
     }
 }
