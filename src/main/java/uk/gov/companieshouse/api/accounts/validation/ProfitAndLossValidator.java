@@ -3,16 +3,13 @@ package uk.gov.companieshouse.api.accounts.validation;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -29,8 +26,7 @@ public class ProfitAndLossValidator extends BaseValidator {
     private static final String PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR = PROFIT_AND_LOSS + ".profit_or_loss_for_financial_year";
     private static final String TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR = PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR + ".total_profit_or_loss_for_financial_year";
 
-    public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss, String companyAccountsId,
-                                     HttpServletRequest request, Transaction transaction) throws DataException {
+    public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss) {
 
         Errors errors = new Errors();
 

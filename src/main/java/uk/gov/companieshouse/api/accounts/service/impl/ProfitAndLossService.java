@@ -62,7 +62,7 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
                                                 String companyAccountId, HttpServletRequest request, AccountingPeriod period)
         throws DataException {
 
-        Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
+        Errors errors = profitLossValidator.validateProfitLoss(rest);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -102,7 +102,7 @@ public class ProfitAndLossService implements PeriodService<ProfitAndLoss> {
                                                 String companyAccountId, HttpServletRequest request, AccountingPeriod period)
         throws DataException {
 
-        Errors errors = profitLossValidator.validateProfitLoss(rest, companyAccountId, request, transaction);
+        Errors errors = profitLossValidator.validateProfitLoss(rest);
         if(errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }

@@ -169,7 +169,7 @@ public class SmallFullServiceTest {
         ResponseObject<SmallFull> response = smallFullService
                 .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
-        assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
     }
 

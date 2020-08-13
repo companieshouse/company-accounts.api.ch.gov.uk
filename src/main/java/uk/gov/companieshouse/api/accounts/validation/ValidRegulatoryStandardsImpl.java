@@ -13,7 +13,7 @@ public class ValidRegulatoryStandardsImpl implements ConstraintValidator<ValidRe
     public boolean isValid(String basisOfPreparation, ConstraintValidatorContext context) {
 
         return StringUtils.isBlank(basisOfPreparation)
-                || basisOfPreparation.trim().toLowerCase().equals("these financial statements have been prepared in accordance with the provisions of financial reporting standard 101")
-                || basisOfPreparation.trim().toLowerCase().equals("these financial statements have been prepared in accordance with the provisions of section 1a (small entities) of financial reporting standard 102");
+                || basisOfPreparation.trim().equalsIgnoreCase("these financial statements have been prepared in accordance with the provisions of financial reporting standard 101")
+                || basisOfPreparation.trim().equalsIgnoreCase("these financial statements have been prepared in accordance with the provisions of section 1a (small entities) of financial reporting standard 102");
     }
 }

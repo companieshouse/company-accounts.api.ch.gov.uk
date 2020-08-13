@@ -138,13 +138,13 @@ public class CurrentPeriodServiceTest {
 
         ResponseObject response = currentPeriodService.create(currentPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
-        assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
     }
 
     @Test
     @DisplayName("Tests the mongo exception when creating a current period")
-    void createSmallfullMongoExceptionFailure() throws DataException {
+    void createSmallFullMongoExceptionFailure() throws DataException {
 
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
