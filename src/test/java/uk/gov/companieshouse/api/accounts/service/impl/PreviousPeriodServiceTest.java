@@ -136,7 +136,7 @@ public class PreviousPeriodServiceTest {
 
         ResponseObject response = previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
-        assertEquals(response.getStatus(), ResponseStatus.DUPLICATE_KEY_ERROR);
+        assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
     }
 

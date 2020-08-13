@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
@@ -16,10 +15,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.CompanyService;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,12 +27,6 @@ public class ProfitAndLossValidatorTest {
     private ProfitAndLoss profitAndLoss;
 
     private Errors errors;
-
-    @Mock
-    private Transaction transaction;
-
-    @Mock
-    private HttpServletRequest request;
 
     @Mock
     private GrossProfitOrLoss grossProfitOrLoss;
@@ -53,7 +42,6 @@ public class ProfitAndLossValidatorTest {
 
     private ProfitAndLossValidator validator;
 
-    private static final String COMPANY_ACCOUNTS_ID = "123abcefg";
     private static final String INCORRECT_TOTAL = "incorrect_total";
     private static final String INCORRECT_TOTAL_KEY = "incorrectTotal";
 
@@ -69,11 +57,11 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test submission of empty Profit and Loss")
-    void testSubmissionOfEmptyProfitAndLoss() throws DataException {
+    void testSubmissionOfEmptyProfitAndLoss() {
 
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
@@ -81,20 +69,20 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test successful input of Gross Profit or Loss fields")
-    void testCorrectGrossProfitOrLossEntry() throws DataException {
+    void testCorrectGrossProfitOrLossEntry() {
         createValidGrossProfitOrLoss();
         createValidOperatingTotal();
         createValidTotalProfitOrLossBeforeTax();
         createValidTotalProfitOrLossForFinancialYear();
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test Gross profit or loss fields do no match with total")
-    void grossProfitOrLossFieldsDoNotMatchTotal() throws DataException {
+    void grossProfitOrLossFieldsDoNotMatchTotal() {
 
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
         grossProfitOrLoss.setCostOfSales(3L);
@@ -105,7 +93,7 @@ public class ProfitAndLossValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.gross_profit_or_loss.gross_total")));
@@ -114,19 +102,19 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test successful input of operating Profit or Loss fields")
-    void testOperatingTotalEntry() throws DataException {
+    void testOperatingTotalEntry() {
 
         createValidOperatingTotal();
         createValidTotalProfitOrLossBeforeTax();
         createValidTotalProfitOrLossForFinancialYear();
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test operating profit or loss fields do no match with total")
-    void operatingProfitOfLossFieldsDoNotMatchTotal() throws DataException {
+    void operatingProfitOfLossFieldsDoNotMatchTotal() {
 
         createValidOperatingTotal();
         operatingProfitOrLoss.setOperatingTotal(0L);
@@ -134,7 +122,7 @@ public class ProfitAndLossValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.operating_profit_or_loss.operating_total")));
@@ -142,19 +130,19 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test successful input of profit or loss before tax fields")
-    void testTotalProfitOrLossBeforeTaxEntry() throws DataException {
+    void testTotalProfitOrLossBeforeTaxEntry() {
 
         createValidTotalProfitOrLossBeforeTax();
         createValidTotalProfitOrLossForFinancialYear();
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test profit or loss before tax fields do no match with total")
-    void profitOrLossBeforeTaxFieldsDoNotMatchTotal() throws DataException {
+    void profitOrLossBeforeTaxFieldsDoNotMatchTotal() {
 
         createValidTotalProfitOrLossBeforeTax();
         profitOrLossBeforeTax.setTotalProfitOrLossBeforeTax(0L);
@@ -162,7 +150,7 @@ public class ProfitAndLossValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_before_tax.total_profit_or_loss_before_tax")));
@@ -170,18 +158,18 @@ public class ProfitAndLossValidatorTest {
 
     @Test
     @DisplayName("Test successful input of profit or loss for financial year fields")
-    void testTotalProfitOrLossForFinancialYearEntry() throws DataException {
+    void testTotalProfitOrLossForFinancialYearEntry() {
 
         createValidTotalProfitOrLossForFinancialYear();
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test profit or loss for financial year fields do no match with total")
-    void profitOrLossForFinancialYearDoNotMatchTotal() throws DataException {
+    void profitOrLossForFinancialYearDoNotMatchTotal() {
 
         createValidTotalProfitOrLossForFinancialYear();
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(0L);
@@ -189,7 +177,7 @@ public class ProfitAndLossValidatorTest {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_KEY, INCORRECT_TOTAL);
 
-        errors = validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction);
+        errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));

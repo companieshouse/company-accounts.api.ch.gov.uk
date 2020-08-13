@@ -111,7 +111,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -142,7 +142,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -177,7 +177,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -207,7 +207,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -238,7 +238,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -267,7 +267,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -297,7 +297,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.PREVIOUS_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -327,7 +327,7 @@ public class ProfitAndLossServiceTest {
 
         AccountingPeriod period = AccountingPeriod.CURRENT_PERIOD;
 
-        when(validator.validateProfitLoss(profitAndLoss, COMPANY_ACCOUNTS_ID, request, transaction))
+        when(validator.validateProfitLoss(profitAndLoss))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
