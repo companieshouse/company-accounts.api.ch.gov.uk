@@ -20,6 +20,7 @@ public class NoteConverter extends PropertyEditorSupport {
 
     }
 
+    @Override
     public void setAsText(final String type) {
 
         NoteType noteType = NOTES_MAP.get(type);

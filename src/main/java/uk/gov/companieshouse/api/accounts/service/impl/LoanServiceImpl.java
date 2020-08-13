@@ -192,7 +192,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
     private String getLoanId(HttpServletRequest request) {
 
-        String loanId = null;
+        String loanId = "";
 
         Matcher matcher = LOAN_ID_REGEX.matcher(request.getRequestURI());
         if (matcher.find()) {

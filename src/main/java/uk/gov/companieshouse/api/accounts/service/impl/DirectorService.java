@@ -222,7 +222,7 @@ public class DirectorService implements MultipleResourceService<Director> {
 
     private String getDirectorId(HttpServletRequest request) {
 
-        String directorId = null;
+        String directorId = "";
 
         Matcher matcher = DIRECTOR_ID_REGEX.matcher(request.getRequestURI());
         if (matcher.find()) {
