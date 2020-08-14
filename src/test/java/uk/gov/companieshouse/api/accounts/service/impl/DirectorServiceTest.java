@@ -224,8 +224,7 @@ class DirectorServiceTest {
 
         when(request.getRequestURI()).thenReturn(URI);
 
-        DirectorEntity directorEntity = null;
-        when(repository.findById(DIRECTOR_ID)).thenReturn(Optional.ofNullable(directorEntity));
+        when(repository.findById(DIRECTOR_ID)).thenReturn(Optional.empty());
 
         ResponseObject<Director> response =
                 directorService.find(COMPANY_ACCOUNTS_ID, request);
