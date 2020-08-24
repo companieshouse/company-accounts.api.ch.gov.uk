@@ -58,6 +58,17 @@ public class DirectorValidatorTest {
     }
 
     @Test
+    @DisplayName("get valid directors - service returns null")
+    void getValidDirectorsNullReturned() throws DataException {
+
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+
+        List<String> validNames = directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertTrue(validNames.isEmpty());
+    }
+
+    @Test
     @DisplayName("get no valid directors - none found")
     void getValidDirectorsNoneFound() throws DataException {
 
