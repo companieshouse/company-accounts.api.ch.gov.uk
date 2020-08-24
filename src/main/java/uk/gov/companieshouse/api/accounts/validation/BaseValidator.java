@@ -34,6 +34,9 @@ public class BaseValidator {
     @Value("${mustMatch.directorOrSecretary}")
     protected String mustMatchDirectorOrSecretary;
 
+    @Value("${mustMatch.director}")
+    protected String mustMatchDirector;
+
     @Value("${invalid.value}")
     protected String invalidValue;
 

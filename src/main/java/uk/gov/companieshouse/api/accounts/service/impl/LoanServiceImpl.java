@@ -94,7 +94,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     @Override
     public ResponseObject<Loan> create(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = loanValidator.validateLoan(rest);
+        Errors errors = loanValidator.validateLoan(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
@@ -125,7 +125,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     @Override
     public ResponseObject<Loan> update(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
 
-        Errors errors = loanValidator.validateLoan(rest);
+        Errors errors = loanValidator.validateLoan(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }

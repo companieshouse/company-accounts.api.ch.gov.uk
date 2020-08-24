@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -13,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +27,9 @@ public class DirectorsApprovalValidator extends BaseValidator{
     @Autowired
     private DirectorService directorService;
 
+    @Autowired
+    private DirectorValidator directorValidator;
+
     public Errors validateApproval(DirectorsApproval directorsApproval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {
 
@@ -41,23 +42,7 @@ public class DirectorsApprovalValidator extends BaseValidator{
                 .map(Secretary::getName)
                 .orElse(null);
 
-        ResponseObject<Director> directorsReportResponseObject = directorService.findAll(transaction, companyAccountId, request);
-
-        Director[] directors = Optional.of(directorsReportResponseObject)
-                .map(ResponseObject::getDataForMultipleResources)
-                .orElse(null);
-
-
-        List<String> allNames = new ArrayList<>();
-
-        if (directors != null) {
-
-            for(Director director : directors) {
-                if (isValidDirector(director)) {
-                    allNames.add(director.getName());
-                }
-            }
-        }
+        List<String> allNames = directorValidator.getValidDirectorNames(transaction, companyAccountId, request);
 
         if (secretary != null) {
             allNames.add(secretary);
@@ -68,15 +53,7 @@ public class DirectorsApprovalValidator extends BaseValidator{
             addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
         }
 
-
         return errors;
-    }
-
-    private boolean isValidDirector(Director director) {
-
-        return director.getResignationDate() == null
-                || (director.getAppointmentDate() != null
-                && director.getAppointmentDate().isAfter(director.getResignationDate()));
     }
 }
 
