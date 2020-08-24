@@ -59,8 +59,8 @@ public class LoanValidator extends BaseValidator {
 		}
 	}
 
-	private void crossValidateDirectorNameDR(Loan loan, Transaction transaction,
-											 String companyAccountId, HttpServletRequest request, Errors errors) throws DataException {
+	private void crossValidateDirectorNameDR(Loan loan, Transaction transaction, String companyAccountId, HttpServletRequest request, Errors errors)
+			throws DataException {
 
 		if (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND) {
 			String directorName = loan.getDirectorName();

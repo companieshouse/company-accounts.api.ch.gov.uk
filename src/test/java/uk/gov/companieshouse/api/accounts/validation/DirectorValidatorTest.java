@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class DirectorValidatorTest {
 
     @Mock
-    DirectorService directorService;
+    private DirectorService directorService;
 
     @Mock
     private Transaction transaction;
@@ -38,6 +38,7 @@ public class DirectorValidatorTest {
     private HttpServletRequest request;
 
     @InjectMocks
+    private
     DirectorValidator directorValidator;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";

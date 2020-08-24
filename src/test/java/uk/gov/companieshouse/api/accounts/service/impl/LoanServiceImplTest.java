@@ -279,7 +279,6 @@ class LoanServiceImplTest {
 
         when(request.getRequestURI()).thenReturn(URI);
 
-        LoanEntity loanEntity = null;
         when(repository.findById(LOAN_ID)).thenReturn(Optional.empty());
 
         ResponseObject<Loan> response =

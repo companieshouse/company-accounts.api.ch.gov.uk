@@ -32,7 +32,7 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LoanValidatorTest {
+class LoanValidatorTest {
 
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
 
@@ -50,10 +50,10 @@ public class LoanValidatorTest {
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @Mock
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     @Mock
-    Transaction transaction;
+    private Transaction transaction;
 
     @Mock
     private Errors errors;
