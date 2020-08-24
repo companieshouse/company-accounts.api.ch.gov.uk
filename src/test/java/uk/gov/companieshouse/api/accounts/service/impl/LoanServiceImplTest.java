@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -106,7 +105,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the successful creation of a loan resource")
     void createLoanSuccess() throws DataException {
 
-        when(loanValidator.validateLoan(loan)).thenReturn(errors);        
+        when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
@@ -134,7 +133,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the creation of a loan resource where the repository throws a duplicate key exception")
     void createLoanDuplicateKeyException() throws DataException {
 
-        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
@@ -161,7 +160,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the creation of a loan resource where the repository throws a Mongo exception")
     void createLoanMongoException() throws DataException {
 
-        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         
         when(keyIdGenerator.generateRandom()).thenReturn(LOAN_ID);
@@ -186,7 +185,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the creation of a loan resource where the validator returns errors")
     void createLoanWithValidationErrors() throws DataException {
 
-    	when(loanValidator.validateLoan(loan)).thenReturn(errors);
+    	when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
         
         ResponseObject<Loan> response =
@@ -201,7 +200,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the successful update of a loan resource")
     void updateLoanSuccess() throws DataException {
 
-        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         when(request.getRequestURI()).thenReturn(URI);
 
@@ -222,9 +221,9 @@ class LoanServiceImplTest {
 
     @Test
     @DisplayName("Tests the update of a loan resource where the repository throws a Mongo exception")
-    void updateLoanMongoException() {
+    void updateLoanMongoException() throws DataException {
 
-        when(loanValidator.validateLoan(loan)).thenReturn(errors);
+        when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(request.getRequestURI()).thenReturn(URI);
 
         when(transformer.transform(loan)).thenReturn(loanEntity);
@@ -246,7 +245,7 @@ class LoanServiceImplTest {
     @DisplayName("Tests the update of a loan resource where the validator returns errors")
     void updateLoanWithValidationErrors() throws DataException {
 
-    	when(loanValidator.validateLoan(loan)).thenReturn(errors);
+    	when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
         
         ResponseObject<Loan> response =
@@ -281,7 +280,7 @@ class LoanServiceImplTest {
         when(request.getRequestURI()).thenReturn(URI);
 
         LoanEntity loanEntity = null;
-        when(repository.findById(LOAN_ID)).thenReturn(Optional.ofNullable(loanEntity));
+        when(repository.findById(LOAN_ID)).thenReturn(Optional.empty());
 
         ResponseObject<Loan> response =
                 loanService.find(COMPANY_ACCOUNTS_ID, request);
