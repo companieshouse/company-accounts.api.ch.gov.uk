@@ -19,7 +19,7 @@ import java.util.List;
 public class LoanValidator extends BaseValidator {
 
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
-	private static final String LOANS_DIRECTOR_NAME = "$.loan.directorName";
+	private static final String LOANS_DIRECTOR_NAME = "$.loan.director_name";
 
 	@Autowired
 	private DirectorService directorService;
