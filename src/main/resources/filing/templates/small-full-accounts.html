@@ -4453,14 +4453,18 @@
               <tr class="figures">
                 <td>Advances or credits made:</td>
                 <td class="strong figure">
+                  {{if $loan.advances_credits_made}}
                   <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditMadeInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_made}}</ix:nonfraction>
+                  {{end}}
                 </td>
               </tr>
 
               <tr class="figures">
                 <td>Advances or credits repaid:</td>
                 <td class="strong figure">
+                  {{if $loan.advances_credits_repaid}}
                   <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditRepaidInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_repaid}}</ix:nonfraction>
+                  {{end}}
                 </td>
               </tr>
 
