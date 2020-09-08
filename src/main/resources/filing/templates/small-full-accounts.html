@@ -4431,9 +4431,11 @@
                 <td colspan="2">Description of the transaction:</td>
               </tr>
 
-              {{$loanCYContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_CY"}}
-              {{$loanCYEndContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_CY_END"}}
-              {{$loanPYEndContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_PY_END"}}
+              {{setValue "loanIndex" $index}}
+              {{incValue "loanIndex"}}
+              {{$loanCYContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_CY"}}
+              {{$loanCYEndContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_CY_END"}}
+              {{$loanPYEndContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_PY_END"}}
 
               <tr>
                 <td class="strong figure" colspan="2" style="text-align: left">
@@ -4469,14 +4471,12 @@
                 </td>
               </tr>
 
-              {{if $index + 1 < len($loans)
-                <!-- If more loans are to be printed, add a spacer row for separation -->
-                <tr>
-                  <td colspan="2">
-                    <hr>
-                  </td>
-                </tr>
-              {{end}}
+
+              <tr>
+                <td colspan="2">
+                  <hr/>
+                </td>
+              </tr>
             {{end}}
           </tbody>
         </table>
