@@ -4396,6 +4396,103 @@
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
 
+      <!-- LOANS TO DIRECTORS START -->
+      {{if $loansToDirectors := $balanceSheetNotes.loans_to_directors}}
+      {{incValue "notes-page-count" }}
+      {{setValue "loans-to-directors-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+
+        <h2>{{getValue "notes-page-count"}}. Loans to directors</h2>
+
+        {{if $loans := $loansToDirectors.loans}}
+        <table class="split-equally">
+          <tbody>
+            {{  range $index, $loan := $loans }}
+              <tr>
+                <td>Name of director receiving advance or credit:</td>
+                <td class="strong figure">
+                  {{$directorContextRef := printf "%s%s%s" "Director" (getMagnitudeFormatted $loan.director_index) "_CY"}}
+                  <ix:nonnumeric contextref="{{$directorContextRef}}" name="uk-bus:NameEntityOfficer">{{$loan.director_name}}</ix:nonnumeric>
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="2">Description of the transaction:</td>
+              </tr>
+
+              {{$loanCYContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_CY"}}
+              {{$loanCYEndContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_CY_END"}}
+              {{$loanPYEndContextRef := printf "%s%s%s" "LoanToDirector" (getMagnitudeFormatted $index + 1) "_PY_END"}}
+
+              <tr>
+                <td class="strong figure" colspan="2" style="text-align: left">
+                  <ix:nonnumeric contextref="{{$loanCYContextRef}}" name="direp:DescriptionSpecificAdvanceOrCreditItsConditionsIndicativeInterestRateDirectors">{{$loan.description}}</ix:nonnumeric>
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Balance at {{$period.previous_period_end_on_formatted}}</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanPYEndContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.balance_at_period_start}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Advances or credits made:</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditMadeInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_made}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Advances or credits repaid:</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditRepaidInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_repaid}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Balance at {{$period.current_period_end_on_formatted}}</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanCYEndContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.balance_at_period_end}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              {{if $index + 1 < len($loans)
+                <!-- If more loans are to be printed, add a spacer row for separation -->
+                <tr>
+                  <td colspan="2">
+                    <hr>
+                  </td>
+                </tr>
+              {{end}}
+            {{end}}
+          </tbody>
+        </table>
+        {{end}}
+
+        {{if $additionalInfo := $loansToDirectors.additional_information}}
+        <div class="text-area-display">
+          <p class="text-area-display">
+            <ix:nonnumeric contextref="CY" name="direp:GeneralDescriptionAdvancesCreditsToDirectorsIncludingTermsInterestRates">{{$additionalInfo.details}}</ix:nonnumeric>
+          </p>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+      <!-- LOANS TO DIRECTORS END -->
+
       <!-- OFF BALANCE SHEET ARRANGEMENTS START -->
       {{if $offBalanceSheetArrangements := $balanceSheetNotes.off_balance_sheet_arrangements}}
       {{incValue "notes-page-count" }}
