@@ -1317,6 +1317,886 @@
             </xbrli:period>
           </xbrli:context>
           {{end}}
+
+          <xbrli:context id="LoanToDirector1_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director1</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>1</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector1_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director1</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>1</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector1_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director1</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>1</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector2_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director2</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>2</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector2_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director2</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>2</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector2_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director2</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>2</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector3_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director3</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>3</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector3_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director3</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>3</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector3_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director3</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>3</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector4_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director4</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>4</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector4_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director4</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>4</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector4_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director4</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>4</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector5_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director5</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>5</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector5_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director5</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>5</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector5_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director5</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>5</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector6_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director6</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>6</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector6_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director6</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>6</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector6_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director6</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>6</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector7_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director7</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>7</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector7_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director7</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>7</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector7_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director7</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>7</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector8_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director8</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>8</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector8_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director8</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>8</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector8_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director8</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>8</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector9_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director9</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>9</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector9_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director9</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>9</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector9_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director9</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>9</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector10_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director10</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>10</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector10_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director10</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>10</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector10_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director10</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>10</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector11_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director11</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>11</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector11_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director11</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>11</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector11_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director11</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>11</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector12_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director12</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>12</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector12_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director12</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>12</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector12_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director12</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>12</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector13_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director13</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>13</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector13_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director13</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>13</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector13_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director13</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>13</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector14_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director14</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>14</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector14_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director14</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>14</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector14_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director14</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>14</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector15_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director15</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>15</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector15_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director15</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>15</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector15_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director15</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>15</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector16_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director16</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>16</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector16_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director16</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>16</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector16_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director16</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>16</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector17_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director17</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>17</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector17_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director17</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>17</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector17_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director17</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>17</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector18_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director18</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>18</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector18_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director18</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>18</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector18_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director18</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>18</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector19_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director19</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>19</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector19_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director19</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>19</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector19_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director19</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>19</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+
+          <xbrli:context id="LoanToDirector20_CY">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director20</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>20</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:startDate>{{$current_period_start_on}}</xbrli:startDate>
+              <xbrli:endDate>{{$current_period_end_on}}</xbrli:endDate>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector20_PY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director20</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>20</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$previous_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
+          <xbrli:context id="LoanToDirector20_CY_END">
+            <xbrli:entity>
+              <xbrli:identifier scheme="http://www.companieshouse.gov.uk/">{{$companyNumber}}</xbrli:identifier>
+              <xbrli:segment>
+                <xbrldi:explicitmember dimension="uk-bus:EntityOfficersDimension">uk-bus:Director20</xbrldi:explicitmember>
+                <xbrldi:typedmember dimension="direp:X-SpecificAdvanceOrCreditDirectorsGroupingDimension">
+                  <direp:specificadvanceorcreditdirectorsgroupingdimension.domain>20</direp:specificadvanceorcreditdirectorsgroupingdimension.domain>
+                </xbrldi:typedmember>
+              </xbrli:segment>
+            </xbrli:entity>
+            <xbrli:period>
+              <xbrli:instant>{{$current_period_end_on}}</xbrli:instant>
+            </xbrli:period>
+          </xbrli:context>
         </ix:resources>
       </ix:header>
     </div>
@@ -4395,6 +5275,113 @@
 
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
+
+      <!-- LOANS TO DIRECTORS START -->
+      {{if $loansToDirectors := $balanceSheetNotes.loans_to_directors}}
+      {{incValue "notes-page-count" }}
+      {{setValue "loans-to-directors-id" (getValue "notes-page-count") }}
+
+      <div class="page">
+        <div class="header">
+          <h1 class="text--center">
+            <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+          </h1>
+        </div>
+
+        <h2 class="text--center">Notes to the Financial Statements</h2>
+        <p class="text--center">
+          <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+        </p>
+
+        <h2>{{getValue "notes-page-count"}}. Loans to directors</h2>
+
+        {{if $loans := $loansToDirectors.loans}}
+        <table class="split-equally">
+          <tbody>
+            {{  range $index, $loan := $loans }}
+              <tr>
+                <td>Name of director receiving advance or credit:</td>
+                <td class="strong figure">
+                  {{$directorContextRef := printf "%s%s%s" "Director" (getMagnitudeFormatted $loan.director_index) "_CY"}}
+                  <ix:nonnumeric contextref="{{$directorContextRef}}" name="uk-bus:NameEntityOfficer">{{$loan.director_name}}</ix:nonnumeric>
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan="2">Description of the transaction:</td>
+              </tr>
+
+              {{setValue "loanIndex" $index}}
+              {{incValue "loanIndex"}}
+              {{$loanCYContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_CY"}}
+              {{$loanCYEndContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_CY_END"}}
+              {{$loanPYEndContextRef := printf "%s%s%s" "LoanToDirector" (getValue "loanIndex") "_PY_END"}}
+
+              <tr>
+                <td class="strong figure" colspan="2" style="text-align: left">
+                  <ix:nonnumeric contextref="{{$loanCYContextRef}}" name="direp:DescriptionSpecificAdvanceOrCreditItsConditionsIndicativeInterestRateDirectors">{{$loan.description}}</ix:nonnumeric>
+                </td>
+              </tr>
+
+              <tr>
+                <th class="table-heading"></th>
+                <th class="table-heading">&#163;</th>
+              </tr>
+
+              <tr class="figures">
+                <td>Balance at {{$period.previous_period_end_on_formatted}}</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanPYEndContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.balance_at_period_start}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Advances or credits made:</td>
+                <td class="strong figure">
+                  {{if $loan.advances_credits_made}}
+                  <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditMadeInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_made}}</ix:nonfraction>
+                  {{end}}
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Advances or credits repaid:</td>
+                <td class="strong figure">
+                  {{if $loan.advances_credits_repaid}}
+                  <ix:nonfraction contextref="{{$loanCYContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditRepaidInPeriodDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.advances_credits_repaid}}</ix:nonfraction>
+                  {{end}}
+                </td>
+              </tr>
+
+              <tr class="figures">
+                <td>Balance at {{$period.current_period_end_on_formatted}}</td>
+                <td class="strong figure">
+                  <ix:nonfraction contextref="{{$loanCYEndContextRef}}" decimals="0" unitref="GBP" name="direp:AmountSpecificAdvanceOrCreditDirectors" format="ixt2:numdotdecimal">{{getMagnitudeFormatted $loan.balance_at_period_end}}</ix:nonfraction>
+                </td>
+              </tr>
+
+              {{ if lt (getValue "loanIndex") (len $loans) }}
+              <tr>
+                <td colspan="2">
+                  <hr/>
+                </td>
+              </tr>
+              {{ end }}
+            {{end}}
+          </tbody>
+        </table>
+        {{end}}
+
+        {{if $additionalInfo := $loansToDirectors.additional_information}}
+        <div class="text-area-display">
+          <p class="text-area-display">
+            <ix:nonnumeric contextref="CY" name="direp:GeneralDescriptionAdvancesCreditsToDirectorsIncludingTermsInterestRates">{{$additionalInfo.details}}</ix:nonnumeric>
+          </p>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+      <!-- LOANS TO DIRECTORS END -->
 
       <!-- OFF BALANCE SHEET ARRANGEMENTS START -->
       {{if $offBalanceSheetArrangements := $balanceSheetNotes.off_balance_sheet_arrangements}}
