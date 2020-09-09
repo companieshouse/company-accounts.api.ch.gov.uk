@@ -4480,12 +4480,13 @@
                 </td>
               </tr>
 
-
+              {{ if lt (getValue "loanIndex") (len $loans) }}
               <tr>
                 <td colspan="2">
                   <hr/>
                 </td>
               </tr>
+              {{ end }}
             {{end}}
           </tbody>
         </table>
