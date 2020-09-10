@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
 import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
@@ -36,13 +39,24 @@ public class DirectorService implements MultipleResourceService<Director> {
 
     private KeyIdGenerator keyIdGenerator;
 
+    private LoanServiceImpl loanService;
+    private LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInfoService;
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
+
     @Autowired
     public DirectorService(DirectorTransformer transformer, DirectorRepository repository,
-                           DirectorsReportService directorsReportService, KeyIdGenerator keyIdGenerator) {
+                           DirectorsReportService directorsReportService,
+                           LoanServiceImpl loanService,
+                           LoansToDirectorsServiceImpl loansToDirectorsService,
+                           LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInfoService,
+                           KeyIdGenerator keyIdGenerator) {
 
         this.transformer = transformer;
         this.repository = repository;
         this.directorsReportService = directorsReportService;
+        this.loanService = loanService;
+        this.loansToDirectorsService = loansToDirectorsService;
+        this.loansToDirectorsAdditionalInfoService = loansToDirectorsAdditionalInfoService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
@@ -76,6 +90,7 @@ public class DirectorService implements MultipleResourceService<Director> {
 
         directorsReportService.addDirector(companyAccountId, directorId, getSelfLink(rest), request);
 
+        directorsResourceChanged(transaction, companyAccountId, request);
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -97,6 +112,9 @@ public class DirectorService implements MultipleResourceService<Director> {
 
             throw new DataException(e);
         }
+
+        directorsResourceChanged(transaction, companyAccountId, request);
+
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
@@ -155,6 +173,12 @@ public class DirectorService implements MultipleResourceService<Director> {
 
                 directorsReportService
                         .removeDirector(companyAccountsId, directorId, request);
+
+                Transaction transaction = (Transaction) request
+                                .getAttribute(AttributeName.TRANSACTION.getValue());
+                //TODO: check that transaction must exist at this point (which I'm fairly certain of).
+                directorsResourceChanged(transaction, companyAccountsId, request);
+
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -164,6 +188,7 @@ public class DirectorService implements MultipleResourceService<Director> {
 
             throw new DataException(e);
         }
+
     }
 
     @Override
@@ -178,6 +203,7 @@ public class DirectorService implements MultipleResourceService<Director> {
             throw new DataException(e);
         }
 
+        directorsResourceChanged(transaction, companyAccountId, request);
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
@@ -230,5 +256,24 @@ public class DirectorService implements MultipleResourceService<Director> {
         }
 
         return directorId;
+    }
+
+    private void directorsResourceChanged(Transaction transaction, String companyAccountsId,
+                    HttpServletRequest request) throws DataException {
+
+        ResponseObject<LoansToDirectors> loansToDirectorsResponse =
+                        loansToDirectorsService.find(companyAccountsId, request);
+
+        if (loansToDirectorsResponse.getStatus() == ResponseStatus.FOUND) {
+
+            loanService.deleteAll(transaction, companyAccountsId, request);
+
+            // If there are no LoansToDirectors AND no loansToDirectorsAdditionalInformation, then
+            // delete the parent loansToDirectors resource
+            ResponseObject<AdditionalInformation> additionalInfoResponse = loansToDirectorsAdditionalInfoService.find(companyAccountsId, request);
+            if (additionalInfoResponse.getStatus() != ResponseStatus.FOUND) {
+                loansToDirectorsService.delete(companyAccountsId, request);
+            }
+        }
     }
 }
