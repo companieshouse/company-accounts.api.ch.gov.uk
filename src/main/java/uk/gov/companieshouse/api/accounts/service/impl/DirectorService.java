@@ -88,7 +88,7 @@ public class DirectorService implements MultipleResourceService<Director> {
 
         directorsReportService.addDirector(companyAccountId, directorId, getSelfLink(rest), request);
 
-        directorsResourceChanged(transaction, companyAccountId, request);
+        removeAssociatedLoans(transaction, companyAccountId, request);
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -111,7 +111,7 @@ public class DirectorService implements MultipleResourceService<Director> {
             throw new DataException(e);
         }
 
-        directorsResourceChanged(transaction, companyAccountId, request);
+        removeAssociatedLoans(transaction, companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
@@ -174,7 +174,7 @@ public class DirectorService implements MultipleResourceService<Director> {
 
                 Transaction transaction = (Transaction) request
                                 .getAttribute(AttributeName.TRANSACTION.getValue());
-                directorsResourceChanged(transaction, companyAccountsId, request);
+                removeAssociatedLoans(transaction, companyAccountsId, request);
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
@@ -200,7 +200,7 @@ public class DirectorService implements MultipleResourceService<Director> {
             throw new DataException(e);
         }
 
-        directorsResourceChanged(transaction, companyAccountId, request);
+        removeAssociatedLoans(transaction, companyAccountId, request);
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
@@ -255,7 +255,7 @@ public class DirectorService implements MultipleResourceService<Director> {
         return directorId;
     }
 
-    private void directorsResourceChanged(Transaction transaction, String companyAccountsId,
+    private void removeAssociatedLoans(Transaction transaction, String companyAccountsId,
                     HttpServletRequest request) throws DataException {
 
         ResponseObject<LoansToDirectors> loansToDirectorsResponse =
