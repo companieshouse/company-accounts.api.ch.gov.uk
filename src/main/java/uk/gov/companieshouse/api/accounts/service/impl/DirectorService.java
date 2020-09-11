@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
@@ -176,7 +178,6 @@ public class DirectorService implements MultipleResourceService<Director> {
 
                 Transaction transaction = (Transaction) request
                                 .getAttribute(AttributeName.TRANSACTION.getValue());
-                //TODO: check that transaction must exist at this point (which I'm fairly certain of).
                 directorsResourceChanged(transaction, companyAccountsId, request);
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
@@ -265,13 +266,12 @@ public class DirectorService implements MultipleResourceService<Director> {
                         loansToDirectorsService.find(companyAccountsId, request);
 
         if (loansToDirectorsResponse.getStatus() == ResponseStatus.FOUND) {
-
-            loanService.deleteAll(transaction, companyAccountsId, request);
-
-            // If there are no LoansToDirectors AND no loansToDirectorsAdditionalInformation, then
-            // delete the parent loansToDirectors resource
-            ResponseObject<AdditionalInformation> additionalInfoResponse = loansToDirectorsAdditionalInfoService.find(companyAccountsId, request);
-            if (additionalInfoResponse.getStatus() != ResponseStatus.FOUND) {
+            LoansToDirectors loansToDirectors = loansToDirectorsResponse.getData();
+            if (StringUtils.isNotBlank(loansToDirectors.getLinks().get(
+                            LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()))) {
+                // additionalInfo exists, just delete loans
+                loanService.deleteAll(transaction, companyAccountsId, request);
+            } else {
                 loansToDirectorsService.delete(companyAccountsId, request);
             }
         }
