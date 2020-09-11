@@ -19,7 +19,6 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
@@ -42,7 +41,6 @@ public class DirectorService implements MultipleResourceService<Director> {
     private KeyIdGenerator keyIdGenerator;
 
     private LoanServiceImpl loanService;
-    private LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInfoService;
     private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Autowired
@@ -50,7 +48,6 @@ public class DirectorService implements MultipleResourceService<Director> {
                            DirectorsReportService directorsReportService,
                            LoanServiceImpl loanService,
                            LoansToDirectorsServiceImpl loansToDirectorsService,
-                           LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInfoService,
                            KeyIdGenerator keyIdGenerator) {
 
         this.transformer = transformer;
@@ -58,7 +55,6 @@ public class DirectorService implements MultipleResourceService<Director> {
         this.directorsReportService = directorsReportService;
         this.loanService = loanService;
         this.loansToDirectorsService = loansToDirectorsService;
-        this.loansToDirectorsAdditionalInfoService = loansToDirectorsAdditionalInfoService;
         this.keyIdGenerator = keyIdGenerator;
     }
 
