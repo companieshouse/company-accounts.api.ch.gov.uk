@@ -86,9 +86,6 @@ class DirectorServiceTest {
     @Mock
     private LoansToDirectors loansToDirectors;
 
-    @Mock
-    private Map<String, String> loans;
-
     @InjectMocks
     private DirectorService directorService;
 
