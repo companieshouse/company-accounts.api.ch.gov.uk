@@ -27,8 +27,10 @@ import org.springframework.dao.DuplicateKeyException;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -41,6 +43,25 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorServiceTest {
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String DIRECTOR_ID = "directorId";
+    private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
+    private static final String DIRECTOR_SELF_LINK = "directorSelfLink";
+    private static final String LOANS_TO_DIRECTORS_ADDITIONAL_INFO_LINK = "ltdAdditionalInfoLink";
+
+    private static final String URI = "/transactions/transactionId/company-accounts/" +
+                                        COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
+                                        "/directors/" + DIRECTOR_ID;
+
+    private static final String DIRECTORS_LINK = TRANSACTION_SELF_LINK + "/company-accounts/" +
+                                                COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
+                                                "/directors";
+
+    private static final boolean LOANS_TO_DIRECTORS_EXISTS = true;
+    private static final boolean LOANS_TO_DIRECTORS_ABSENT = false;
+    private static final boolean LOANS_TO_DIRECTORS_ADDITIONAL_INFO_EXISTS = true;
+    private static final boolean LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT = false;
 
     @Mock
     private DirectorTransformer transformer;
@@ -70,37 +91,38 @@ class DirectorServiceTest {
     private DirectorEntity directorEntity;
 
     @Mock
-    private Map<String, String> links;
+    private Map<String, String> directorLinks;
+
+    @Mock
+    private Map<String, String> loansToDirectorLinks;
+
+    @Mock
+    private LoanServiceImpl loanService;
+
+    @Mock
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
+
+    @Mock
+    private LoansToDirectors loansToDirectors;
 
     @InjectMocks
     private DirectorService directorService;
 
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String DIRECTOR_ID = "directorId";
-    private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
-    private static final String DIRECTOR_SELF_LINK = "directorSelfLink";
-
-    private static final String URI = "/transactions/transactionId/company-accounts/" +
-                                        COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
-                                        "/directors/" + DIRECTOR_ID;
-
-    private static final String DIRECTORS_LINK = TRANSACTION_SELF_LINK + "/company-accounts/" +
-                                                COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
-                                                "/directors";
-
     @Test
-    @DisplayName("Tests the successful creation of a director resource")
-    void createDirectorSuccess() throws DataException {
+    @DisplayName("Tests the successful creation of a director resource, loans to directors resource absent")
+    void createDirectorSuccessLtdNotPresent() throws DataException {
 
         when(keyIdGenerator.generateRandom()).thenReturn(DIRECTOR_ID);
 
         when(transformer.transform(director)).thenReturn(directorEntity);
 
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_ABSENT, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
+
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
-        when(director.getLinks()).thenReturn(links);
-        when(links.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTOR_SELF_LINK);
+        when(director.getLinks()).thenReturn(directorLinks);
+        when(directorLinks.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTOR_SELF_LINK);
 
         ResponseObject<Director> response =
                 directorService.create(director, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -111,6 +133,66 @@ class DirectorServiceTest {
         assertWhetherDirectorsReportServiceCalledToAddDirector(true);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
         assertEquals(director, response.getData());
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(false);
+    }
+
+    @Test
+    @DisplayName("Tests the successful creation of a director resource, loans to directors resource exists, LTD additional info present")
+    void createDirectorSuccessLtdPresentAdditionalInfoPresent() throws DataException {
+
+        when(keyIdGenerator.generateRandom()).thenReturn(DIRECTOR_ID);
+
+        when(transformer.transform(director)).thenReturn(directorEntity);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_EXISTS, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_EXISTS);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(director.getLinks()).thenReturn(directorLinks);
+        when(directorLinks.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTOR_SELF_LINK);
+
+        ResponseObject<Director> response =
+                directorService.create(director, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherDirectorsReportServiceCalledToAddDirector(true);
+        assertEquals(ResponseStatus.CREATED, response.getStatus());
+        assertEquals(director, response.getData());
+        assertWhetherAllLoansDeleted(true);
+        assertWhetherLoansToDirectorsDeleted(false);
+    }
+
+    @Test
+    @DisplayName("Tests the successful creation of a director resource, loans to directors resource exists, LTD additional info absent")
+    void createDirectorSuccessLtdPresentAdditionalInfoNotPresent() throws DataException {
+
+        when(keyIdGenerator.generateRandom()).thenReturn(DIRECTOR_ID);
+
+        when(transformer.transform(director)).thenReturn(directorEntity);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_EXISTS, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        when(director.getLinks()).thenReturn(directorLinks);
+        when(directorLinks.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTOR_SELF_LINK);
+
+        ResponseObject<Director> response =
+                directorService.create(director, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryInsertCalled();
+        assertWhetherDirectorsReportServiceCalledToAddDirector(true);
+        assertEquals(ResponseStatus.CREATED, response.getStatus());
+        assertEquals(director, response.getData());
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(true);
     }
 
     @Test
@@ -160,8 +242,8 @@ class DirectorServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful update of a director resource")
-    void updateDirectorSuccess() throws DataException {
+    @DisplayName("Tests the successful update of a director resource,, loans to directors resource absent")
+    void updateDirectorNoLoansToDirectorsSuccess() throws DataException {
 
         when(request.getRequestURI()).thenReturn(URI);
 
@@ -169,6 +251,8 @@ class DirectorServiceTest {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_ABSENT, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
 
         ResponseObject<Director> response =
                 directorService.update(director, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -178,6 +262,33 @@ class DirectorServiceTest {
         assertRepositoryUpdateCalled();
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertEquals(director, response.getData());
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(false);
+    }
+
+    @Test
+    @DisplayName("Tests the successful update of a director resource,, loans to directors resource exists, LTD additional info exists")
+    void updateDirectorWithLoansToDirectorsAndAdditionalInfoSuccess() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+
+        when(transformer.transform(director)).thenReturn(directorEntity);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_EXISTS, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_EXISTS);
+
+        ResponseObject<Director> response =
+                directorService.update(director, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryUpdateCalled();
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertEquals(director, response.getData());
+        assertWhetherAllLoansDeleted(true);
+        assertWhetherLoansToDirectorsDeleted(false);
     }
 
     @Test
@@ -297,12 +408,14 @@ class DirectorServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful deletion of a director resource")
-    void deleteDirectorSuccess() throws DataException {
+    @DisplayName("Tests the successful deletion of a director resource, loans to directors resource absent")
+    void deleteDirectorNoLoansToDirectorsSuccess() throws DataException {
 
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.existsById(DIRECTOR_ID)).thenReturn(true);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_ABSENT, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
 
         ResponseObject<Director> response =
                 directorService.delete(COMPANY_ACCOUNTS_ID, request);
@@ -311,8 +424,34 @@ class DirectorServiceTest {
         assertWhetherDirectorsReportServiceCalledToRemoveDirector(true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertNull(response.getData());
+
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(false);
     }
 
+    @Test
+    @DisplayName("Tests the successful deletion of a director resource, loans to directors resource exists, LTD additional info absent")
+    void deleteDirectorWithLoansToDirectorsSuccess() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+
+        when(repository.existsById(DIRECTOR_ID)).thenReturn(true);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_EXISTS, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
+
+        ResponseObject<Director> response =
+                directorService.delete(COMPANY_ACCOUNTS_ID, request);
+
+        assertRepositoryDeleteByIdCalled();
+        assertWhetherDirectorsReportServiceCalledToRemoveDirector(true);
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertNull(response.getData());
+
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(true);
+    }
+
+    
     @Test
     @DisplayName("Tests the deletion of a director resource where the repository throws a Mongo exception")
     void deleteDirectorMongoException() throws DataException {
@@ -347,11 +486,13 @@ class DirectorServiceTest {
     }
 
     @Test
-    @DisplayName("Tests the successful deletion of all directors")
-    void deleteAllDirectorsSuccess() throws DataException {
+    @DisplayName("Tests the successful deletion of all directors, loans to directors resource absent")
+    void deleteAllDirectorsNoLoansToDirectorsSuccess() throws DataException {
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_ABSENT, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
 
         ResponseObject<Director> response = directorService.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -359,6 +500,29 @@ class DirectorServiceTest {
         assertNull(response.getDataForMultipleResources());
 
         verify(repository, times(1)).deleteAllDirectors(DIRECTORS_LINK);
+
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(false);
+    }
+
+    @Test
+    @DisplayName("Tests the successful deletion of all directors, loans to directors resource exists, LTD additional info absent")
+    void deleteAllDirectorsWithLoansToDirectorsSuccess() throws DataException {
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
+
+        expectDirectorsResourceChanged(LOANS_TO_DIRECTORS_EXISTS, LOANS_TO_DIRECTORS_ADDITIONAL_INFO_ABSENT);
+
+        ResponseObject<Director> response = directorService.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertNull(response.getDataForMultipleResources());
+
+        verify(repository, times(1)).deleteAllDirectors(DIRECTORS_LINK);
+
+        assertWhetherAllLoansDeleted(false);
+        assertWhetherLoansToDirectorsDeleted(true);
     }
 
     @Test
@@ -414,4 +578,36 @@ class DirectorServiceTest {
                 .removeDirector(COMPANY_ACCOUNTS_ID, DIRECTOR_ID, request);
     }
 
+    private void expectDirectorsResourceChanged(boolean loansToDirectorsExists,
+                    boolean loansToDirectorsAdditionalInfoExists) throws DataException {
+        if (loansToDirectorsExists) {
+            when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(
+                            new ResponseObject<>(ResponseStatus.FOUND, loansToDirectors));
+            when(loansToDirectors.getLinks()).thenReturn(loansToDirectorLinks);
+            if (loansToDirectorsAdditionalInfoExists) {
+                when(loansToDirectorLinks.get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()))
+                                .thenReturn(LOANS_TO_DIRECTORS_ADDITIONAL_INFO_LINK);
+                when(loanService.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request))
+                                .thenReturn(new ResponseObject<>(ResponseStatus.UPDATED));
+            } else {
+                when(loansToDirectorLinks.get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()))
+                                .thenReturn(null);
+                when(loansToDirectorsService.delete(COMPANY_ACCOUNTS_ID, request))
+                                .thenReturn(new ResponseObject<>(ResponseStatus.UPDATED));
+            }
+        } else {
+            when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request))
+                            .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        }
+    }
+
+    private void assertWhetherAllLoansDeleted(boolean isExpected) throws DataException {
+        VerificationMode timesExpected = isExpected ? times(1) : never();
+        verify(loanService, timesExpected).deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+    }
+
+    private void assertWhetherLoansToDirectorsDeleted(boolean isExpected) throws DataException {
+        VerificationMode timesExpected = isExpected ? times(1) : never();
+        verify(loansToDirectorsService, timesExpected).delete(COMPANY_ACCOUNTS_ID, request);
+    }
 }
