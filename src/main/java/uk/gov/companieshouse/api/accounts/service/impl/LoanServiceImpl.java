@@ -31,31 +31,25 @@ import java.util.regex.Pattern;
 @Service
 public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
-    private LoanTransformer transformer;
-
-    private LoanRepository repository;
-
-    private LoansToDirectorsService loansToDirectorsService;
-
-    private KeyIdGenerator keyIdGenerator;
-    
-    private LoanValidator loanValidator;
-
     private static final Pattern LOAN_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/loans-to-directors/loans/(.*)$");
 
     private static final String LOANS_LINK = "loans";
 
+    @Autowired
+    private LoanTransformer transformer;
 
     @Autowired
-    public LoanServiceImpl(LoanTransformer transformer, LoanRepository repository, LoansToDirectorsService loansToDirectorsService,
-    		KeyIdGenerator keyIdGenerator, LoanValidator loanValidator) {
+    private LoanRepository repository;
 
-        this.transformer = transformer;
-        this.repository = repository;
-        this.loansToDirectorsService = loansToDirectorsService;
-        this.keyIdGenerator = keyIdGenerator;
-        this.loanValidator = loanValidator;
-    }
+    @Autowired
+    private LoansToDirectorsService loansToDirectorsService;
+
+    @Autowired
+    private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
+    private LoanValidator loanValidator;
+
 
     @Override
     public ResponseObject<Loan> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
