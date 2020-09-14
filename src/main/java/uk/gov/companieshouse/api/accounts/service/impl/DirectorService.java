@@ -32,36 +32,28 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Service
 public class DirectorService implements MultipleResourceService<Director> {
 
-    private DirectorTransformer transformer;
-
-    private DirectorRepository repository;
-
-    private DirectorsReportService directorsReportService;
-
-    private KeyIdGenerator keyIdGenerator;
-
-    private LoanServiceImpl loanService;
-    private LoansToDirectorsServiceImpl loansToDirectorsService;
-
-    @Autowired
-    public DirectorService(DirectorTransformer transformer, DirectorRepository repository,
-                           DirectorsReportService directorsReportService,
-                           LoanServiceImpl loanService,
-                           LoansToDirectorsServiceImpl loansToDirectorsService,
-                           KeyIdGenerator keyIdGenerator) {
-
-        this.transformer = transformer;
-        this.repository = repository;
-        this.directorsReportService = directorsReportService;
-        this.loanService = loanService;
-        this.loansToDirectorsService = loansToDirectorsService;
-        this.keyIdGenerator = keyIdGenerator;
-    }
-
     private static final Pattern DIRECTOR_ID_REGEX =
-            Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
+                    Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
 
     private static final String DIRECTORS_LINK = "directors";
+
+    @Autowired
+    private DirectorTransformer transformer;
+
+    @Autowired
+    private DirectorRepository repository;
+
+    @Autowired
+    private DirectorsReportService directorsReportService;
+
+    @Autowired
+    private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
+    private LoanServiceImpl loanService;
+
+    @Autowired
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Override
     public ResponseObject<Director> create(Director rest, Transaction transaction,
