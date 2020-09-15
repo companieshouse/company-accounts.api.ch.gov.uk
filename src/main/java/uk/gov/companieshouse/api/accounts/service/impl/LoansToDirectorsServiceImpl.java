@@ -202,7 +202,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     }
 
-    public void removeAllLoans(String companyAccountsId, HttpServletRequest request)
+    public void removeAllLoans(String companyAccountsId)
             throws DataException {
 
         String resourceId = generateID(companyAccountsId);

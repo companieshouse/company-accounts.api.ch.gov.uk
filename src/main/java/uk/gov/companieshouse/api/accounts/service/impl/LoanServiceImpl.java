@@ -76,7 +76,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
         try {
             repository.deleteAllLoans(generateLoansLink(transaction, companyAccountId));
 
-            loansToDirectorsService.removeAllLoans(companyAccountId, request);
+            loansToDirectorsService.removeAllLoans(companyAccountId);
 
         } catch (MongoException e) {
 
