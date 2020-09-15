@@ -491,6 +491,54 @@ public class LoansToDirectorsServiceImplTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Tests successful removal of all loans")
+    void removeAllLoansSuccess() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(loansToDirectorsEntity));
+
+        when(loansToDirectorsEntity.getData()).thenReturn(loansToDirectorsDataEntity);
+
+        assertAll(() -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
+
+        verify(repository).save(loansToDirectorsEntity);
+    }
+
+    @Test
+    @DisplayName("Tests removal of all loans when the repository throws a Mongo exception")
+    void removeAllLoansDataException() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(loansToDirectorsEntity));
+
+        when(loansToDirectorsEntity.getData()).thenReturn(loansToDirectorsDataEntity);
+
+        when(repository.save(loansToDirectorsEntity)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class,
+                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Tests removal of all loans when the resource is not found")
+    void removeAllLoansResourceNotFound() {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
+                .thenReturn(GENERATED_ID);
+
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
+
+        assertThrows(DataException.class,
+                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
+
+        verify(repository, never()).save(any());
+    }
+
     private void assertIdGeneratedForDatabaseEntity() {
         verify(loansToDirectorsEntity).setId(GENERATED_ID);
     }

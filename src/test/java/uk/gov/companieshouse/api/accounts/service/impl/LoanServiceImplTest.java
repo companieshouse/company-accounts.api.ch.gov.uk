@@ -57,7 +57,7 @@ class LoanServiceImplTest {
     private LoanRepository repository;
 
     @Mock
-    private LoansToDirectorsService loansToDirectorsService;
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Mock
     private KeyIdGenerator keyIdGenerator;
