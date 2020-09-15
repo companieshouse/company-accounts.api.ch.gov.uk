@@ -202,6 +202,25 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     }
 
+    public void removeAllLoans(String companyAccountsId)
+            throws DataException {
+
+        String resourceId = generateID(companyAccountsId);
+        LoansToDirectorsEntity entity = repository.findById(resourceId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to find loans to directors entity from which to remove loan"));
+
+        entity.getData().setLoans(null);
+
+        try {
+            repository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+    }
+
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"

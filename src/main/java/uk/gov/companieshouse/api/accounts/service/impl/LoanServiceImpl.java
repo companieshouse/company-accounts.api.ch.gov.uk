@@ -13,7 +13,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodi
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoanRepository;
-import uk.gov.companieshouse.api.accounts.service.LoansToDirectorsService;
 import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -42,7 +41,7 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     private LoanRepository repository;
 
     @Autowired
-    private LoansToDirectorsService loansToDirectorsService;
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Autowired
     private KeyIdGenerator keyIdGenerator;
@@ -76,6 +75,8 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
         try {
             repository.deleteAllLoans(generateLoansLink(transaction, companyAccountId));
+
+            loansToDirectorsService.removeAllLoans(companyAccountId);
 
         } catch (MongoException e) {
 

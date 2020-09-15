@@ -37,7 +37,6 @@ import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodi
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoanRepository;
-import uk.gov.companieshouse.api.accounts.service.LoansToDirectorsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.LoanTransformer;
@@ -57,7 +56,7 @@ class LoanServiceImplTest {
     private LoanRepository repository;
 
     @Mock
-    private LoansToDirectorsService loansToDirectorsService;
+    private LoansToDirectorsServiceImpl loansToDirectorsService;
 
     @Mock
     private KeyIdGenerator keyIdGenerator;
