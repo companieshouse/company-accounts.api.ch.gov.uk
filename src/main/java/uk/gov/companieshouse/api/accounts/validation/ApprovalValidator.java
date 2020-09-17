@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class ApprovalValidator extends BaseValidator {
 
-	private static final String APPROVAL_PATH = "$.approval";
+    private static final String APPROVAL_PATH = "$.approval";
     private static final String DATE_PATH = APPROVAL_PATH + ".date";
 
     private static final String NAME_PATH = APPROVAL_PATH + ".name";
