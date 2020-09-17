@@ -7,14 +7,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -39,24 +41,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TangibleAssetsValidatorTest {
 
-    @Mock
-    private Transaction transaction;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private CompanyService companyService;
-
-    @Mock
-    private CurrentPeriodService currentPeriodService;
-
-    @Mock
-    private PreviousPeriodService previousPeriodService;
-
-    @InjectMocks
-    private TangibleAssetsValidator validator;
-
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
@@ -74,6 +58,28 @@ public class TangibleAssetsValidatorTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
+    @Mock
+    private Transaction transaction;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private CompanyService companyService;
+
+    @Mock
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
+
+    private TangibleAssetsValidator validator;
+
+    @BeforeEach
+    private void setUp() {
+        validator = new TangibleAssetsValidator(companyService, currentPeriodService, previousPeriodService);
+    }
+    
     @Test
     @DisplayName("First year filer - provides only additional info in note")
     void firstYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {

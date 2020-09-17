@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -16,8 +17,13 @@ import java.util.Optional;
 @Component
 public class DirectorValidator extends BaseValidator {
 
+    private final DirectorService directorService;
+
     @Autowired
-    private DirectorService directorService;
+    public DirectorValidator(CompanyService companyService, DirectorService directorService) {
+        super(companyService);
+        this.directorService = directorService;
+    }
 
     public List<String> getValidDirectorNames(Transaction transaction,
                                               String companyAccountId, HttpServletRequest request) throws DataException {

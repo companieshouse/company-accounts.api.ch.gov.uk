@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -7,70 +11,90 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
 @Component
 public class LoanValidator extends BaseValidator {
 
+    private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = "$.loan.breakdown.balance_at_period_start";
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
-	private static final String LOANS_DIRECTOR_NAME = "$.loan.director_name";
+    private static final String LOANS_DIRECTOR_NAME = "$.loan.director_name";
 
-	@Autowired
-	private DirectorService directorService;
+    private final DirectorValidator directorValidator;
 
-	@Autowired
-	private DirectorValidator directorValidator;
+    private final DirectorsReportServiceImpl directorsReportService;
 
-	@Autowired
-	private DirectorsReportServiceImpl directorsReportService;
+    @Autowired
+    public LoanValidator(CompanyService companyService,
+            DirectorValidator directorValidator,
+            DirectorsReportServiceImpl directorsReportService) {
+        super(companyService);
+        this.directorValidator = directorValidator;
+        this.directorsReportService = directorsReportService;
+    }
 
-	public Errors validateLoan(Loan loan, Transaction transaction,
-							   String companyAccountId, HttpServletRequest request) throws DataException {
+    public Errors validateLoan(Loan loan, Transaction transaction, String companyAccountId,
+            HttpServletRequest request) throws DataException {
 
-		Errors errors = new Errors();
+        Errors errors = new Errors();
 
-		validateLoanCalculation(loan.getBreakdown(), errors);
-		crossValidateDirectorNameDR(loan, transaction, companyAccountId, request, errors);
-		
-		return errors;
-	}
-	
-	private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, Errors errors) {
+        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
-		Long advancesCreditsMade = 0L;
-		Long advancesCreditsRepaid = 0L;
-		
-		if (loanBreakdown.getAdvancesCreditsMade() != null) {
-			advancesCreditsMade = loanBreakdown.getAdvancesCreditsMade();
-		}
-		
-		if (loanBreakdown.getAdvancesCreditsRepaid() != null) {
-			advancesCreditsRepaid = loanBreakdown.getAdvancesCreditsRepaid();
-		}
-		
-		if (loanBreakdown.getBalanceAtPeriodStart() + advancesCreditsMade - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
-            addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
-		}
-	}
+        if (!isMultipleYearFiler && loan.getBreakdown().getBalanceAtPeriodStart() != null) {
+            addError(errors, unexpectedData, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+            return errors;
+        } else if (isMultipleYearFiler && loan.getBreakdown().getBalanceAtPeriodStart() == null) {
+            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+            return errors;
+        }
 
-	private void crossValidateDirectorNameDR(Loan loan, Transaction transaction, String companyAccountId, HttpServletRequest request, Errors errors)
-			throws DataException {
+        validateLoanCalculation(loan.getBreakdown(), isMultipleYearFiler, errors);
+        crossValidateDirectorNameDR(loan, transaction, companyAccountId, request, errors);
 
-		if (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND) {
-			String directorName = loan.getDirectorName();
+        return errors;
+    }
 
-			List<String> allNames = directorValidator.getValidDirectorNames(transaction, companyAccountId, request);
+    private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, boolean isMultipleYearFiler, Errors errors) {
 
-			if (!allNames.isEmpty() && !allNames.contains(directorName)) {
+        Long advancesCreditsMade = 0L;
+        Long advancesCreditsRepaid = 0L;
 
-				addError(errors, mustMatchDirector, LOANS_DIRECTOR_NAME);
-			}
-		}
-	}
+        if (loanBreakdown.getAdvancesCreditsMade() != null) {
+            advancesCreditsMade = loanBreakdown.getAdvancesCreditsMade();
+        }
+
+        if (loanBreakdown.getAdvancesCreditsRepaid() != null) {
+            advancesCreditsRepaid = loanBreakdown.getAdvancesCreditsRepaid();
+        }
+
+        if (isMultipleYearFiler) {
+            if (loanBreakdown.getBalanceAtPeriodStart() + advancesCreditsMade
+                    - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
+                addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+            }
+        } else {
+            if (advancesCreditsMade - advancesCreditsRepaid != loanBreakdown
+                    .getBalanceAtPeriodEnd()) {
+                addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+            }
+        }
+    }
+
+    private void crossValidateDirectorNameDR(Loan loan, Transaction transaction, String companyAccountId, HttpServletRequest request, Errors errors)
+            throws DataException {
+
+        if (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND) {
+            String directorName = loan.getDirectorName();
+
+            List<String> allNames = directorValidator.getValidDirectorNames(transaction, companyAccountId, request);
+
+            if (!allNames.isEmpty() && !allNames.contains(directorName)) {
+
+                addError(errors, mustMatchDirector, LOANS_DIRECTOR_NAME);
+            }
+        }
+    }
 }

@@ -1,32 +1,40 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DirectorValidatorTest {
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";
+
+    private static final String NAME = "directorName";
+    private static final LocalDate RESIGNATION_DATE = LocalDate.of(2019, 1, 1);
+    private static final LocalDate APPOINTMENT_DATE_AFTER_RES = RESIGNATION_DATE.plusDays(1);
 
     @Mock
     private DirectorService directorService;
@@ -37,16 +45,16 @@ public class DirectorValidatorTest {
     @Mock
     private HttpServletRequest request;
 
-    @InjectMocks
-    private
-    DirectorValidator directorValidator;
+    @Mock
+    private CompanyService companyService;
 
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";
+    private DirectorValidator directorValidator;
 
-    private static final String NAME = "directorName";
-    private static final LocalDate RESIGNATION_DATE = LocalDate.of(2019, 1, 1);
-    private static final LocalDate APPOINTMENT_DATE_AFTER_RES = RESIGNATION_DATE.plusDays(1);
-
+    @BeforeEach
+    private void setUp() {
+        directorValidator = new DirectorValidator(companyService, directorService);
+    }
+    
     @Test
     @DisplayName("get valid directors - found")
     void getValidDirectorsFound() throws DataException {

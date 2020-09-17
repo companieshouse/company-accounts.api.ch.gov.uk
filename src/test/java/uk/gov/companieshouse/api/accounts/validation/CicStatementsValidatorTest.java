@@ -12,10 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.model.rest.CicStatements;
 import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -27,7 +29,10 @@ public class CicStatementsValidatorTest {
     @Mock
     private ReportStatements reportStatements;
 
-    private CicStatementsValidator validator = new CicStatementsValidator();
+    @Mock
+    private CompanyService mockCompanyService;
+
+    private CicStatementsValidator validator = new CicStatementsValidator(mockCompanyService);
 
     private static final String CONSULTATION_WITH_STAKEHOLDERS = "consultationWithStakeholders";
     private static final String DIRECTORS_REMUNERATION = "directorsRemuneration";

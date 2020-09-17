@@ -1,8 +1,13 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.springframework.beans.factory.annotation.Value;
+
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 
 public class BaseValidator {
@@ -40,6 +45,12 @@ public class BaseValidator {
     @Value("${invalid.value}")
     protected String invalidValue;
 
+    private CompanyService companyService;
+
+    public BaseValidator(CompanyService companyService) {
+    	this.companyService = companyService;
+    }
+    
     /**
      * Validate the given total is correctly aggregated
      *
@@ -81,6 +92,22 @@ public class BaseValidator {
         addError(errors, emptyResource, location);
 
         return errors;
+    }
+
+    protected boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
+        try {
+            return companyService.isMultipleYearFiler(transaction);
+        } catch (ServiceException e) {
+            throw new DataException(e.getMessage(), e);
+        }
+    }
+
+    public CompanyService getCompanyService() {
+        return companyService;
+    }
+
+    public void setCompanyService(CompanyService companyService) {
+        this.companyService = companyService;
     }
 }
 

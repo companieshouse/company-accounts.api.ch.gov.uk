@@ -24,9 +24,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class CicApprovalValidator extends BaseValidator {
 
-    private CompanyService companyService;
-
-    private AccountTypeFactory accountTypeFactory;
+	private AccountTypeFactory accountTypeFactory;
 
     private ParentResourceFactory parentResourceFactory;
 
@@ -35,9 +33,9 @@ public class CicApprovalValidator extends BaseValidator {
 
     @Autowired
     public CicApprovalValidator(CompanyService companyService, AccountTypeFactory accountTypeFactory, ParentResourceFactory parentResourceFactory) {
-    	this.companyService = companyService;
-    	this.accountTypeFactory = accountTypeFactory;
-    	this.parentResourceFactory = parentResourceFactory;
+        super(companyService);
+        this.accountTypeFactory = accountTypeFactory;
+        this.parentResourceFactory = parentResourceFactory;
     }
     
     public Errors validateCicReportApproval(CicApproval cicApproval, String companyAccountsId, HttpServletRequest request) throws DataException {
@@ -52,7 +50,7 @@ public class CicApprovalValidator extends BaseValidator {
 
         try {
             CompanyProfileApi companyProfile =
-                    companyService.getCompanyProfile(transaction.getCompanyNumber());
+                    getCompanyService().getCompanyProfile(transaction.getCompanyNumber());
 
             // Take period end date from the company profile
             LocalDate periodEndDate = companyProfile.getAccounts().getNextAccounts().getPeriodEndOn();

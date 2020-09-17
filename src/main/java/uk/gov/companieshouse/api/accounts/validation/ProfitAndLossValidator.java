@@ -1,17 +1,21 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
-import org.springframework.stereotype.Component;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
-import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
-import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 
 import javax.validation.Valid;
-import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.GrossProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.OperatingProfitOrLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
+import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 
 @Component
 public class ProfitAndLossValidator extends BaseValidator {
@@ -25,6 +29,11 @@ public class ProfitAndLossValidator extends BaseValidator {
     private static final String TOTAL_PROFIT_OR_LOSS_BEFORE_TAX = PROFIT_OR_LOSS_BEFORE_TAX + ".total_profit_or_loss_before_tax";
     private static final String PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR = PROFIT_AND_LOSS + ".profit_or_loss_for_financial_year";
     private static final String TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR = PROFIT_OR_LOSS_FOR_FINANCIAL_YEAR + ".total_profit_or_loss_for_financial_year";
+
+    @Autowired
+    public ProfitAndLossValidator(CompanyService companyService) {
+        super(companyService);
+    }
 
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss) {
 

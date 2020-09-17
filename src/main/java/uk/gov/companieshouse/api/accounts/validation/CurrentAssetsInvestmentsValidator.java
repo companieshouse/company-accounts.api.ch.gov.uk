@@ -1,31 +1,35 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestments;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class CurrentAssetsInvestmentsValidator extends BaseValidator implements NoteValidator<CurrentAssetsInvestments> {
 
     private static final String CURRENT_ASSETS_DETAILS_PATH = "$.current_assets_investments.details";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public CurrentAssetsInvestmentsValidator(CurrentPeriodService currentPeriodService,
-        PreviousPeriodService previousPeriodService) {
+    public CurrentAssetsInvestmentsValidator(CompanyService companyService,
+            CurrentPeriodService currentPeriodService,
+            PreviousPeriodService previousPeriodService) {
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

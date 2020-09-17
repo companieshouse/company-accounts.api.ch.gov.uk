@@ -29,19 +29,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class TangibleAssetsValidator extends BaseValidator implements NoteValidator<TangibleAssets> {
 
-    private CompanyService companyService;
-
-    private CurrentPeriodService currentPeriodService;
-
-    private PreviousPeriodService previousPeriodService;
-
-    @Autowired
-    public TangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
-        this.companyService = companyService;
-        this.currentPeriodService = currentPeriodService;
-        this.previousPeriodService = previousPeriodService;
-    }
-
     private static final String TANGIBLE_NOTE = "$.tangible_assets";
     private static final String COST_AT_PERIOD_START = ".cost.at_period_start";
     private static final String ADDITIONS = ".cost.additions";
@@ -57,6 +44,17 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
 
+    private final CurrentPeriodService currentPeriodService;
+
+    private final PreviousPeriodService previousPeriodService;
+
+    @Autowired
+    public TangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
+        super(companyService);
+        this.currentPeriodService = currentPeriodService;
+        this.previousPeriodService = previousPeriodService;
+    }
+
     @Override
     public Errors validateSubmission(TangibleAssets tangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {
@@ -64,7 +62,7 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
         Errors errors = new Errors();
 
         try {
-            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+            boolean isMultipleYearFiler = getCompanyService().isMultipleYearFiler(transaction);
 
             List<TangibleSubResource> invalidSubResources = new ArrayList<>();
 

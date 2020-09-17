@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
@@ -21,6 +23,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassetsinvestments.FixedAssetsInvestments;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -51,6 +54,9 @@ public class FixedAssetsInvestmentsValidatorTest {
 
     @Mock
     private Transaction transaction;
+    
+    @Mock
+    private CompanyService mockCompanyService;
 
     private FixedAssetsInvestments fixedAssetsInvestments;
     private Errors errors;
@@ -61,7 +67,7 @@ public class FixedAssetsInvestmentsValidatorTest {
     void setup() {
         fixedAssetsInvestments = new FixedAssetsInvestments();
         errors = new Errors();
-        validator = new FixedAssetsInvestmentsValidator(mockCurrentPeriodService,
+        validator = new FixedAssetsInvestmentsValidator(mockCompanyService, mockCurrentPeriodService,
                 mockPreviousPeriodService);
     }
 

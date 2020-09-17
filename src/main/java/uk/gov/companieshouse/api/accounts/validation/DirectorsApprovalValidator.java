@@ -1,34 +1,39 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Secretary;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.SecretaryService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
-
 @Component
 public class DirectorsApprovalValidator extends BaseValidator{
 
-    private static final String APPROVAL_PATH = "$.directors_approval";
+	private static final String APPROVAL_PATH = "$.directors_approval";
     private static final String APPROVAL_NAME = APPROVAL_PATH + ".name";
 
-    @Autowired
     private SecretaryService secretaryService;
 
-    @Autowired
-    private DirectorService directorService;
+    private DirectorValidator directorValidator;
 
     @Autowired
-    private DirectorValidator directorValidator;
+    public DirectorsApprovalValidator(CompanyService companyService,
+            SecretaryService secretaryService, DirectorValidator directorValidator) {
+        super(companyService);
+        this.secretaryService = secretaryService;
+        this.directorValidator = directorValidator;
+    }
 
     public Errors validateApproval(DirectorsApproval directorsApproval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {

@@ -313,8 +313,6 @@ public class DebtorsValidatorTest {
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
 
-        Errors errors = new Errors();
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -396,16 +394,6 @@ public class DebtorsValidatorTest {
 
     private void mockValidBalanceSheetPreviousPeriod() throws DataException {
         doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).find(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-    }
-
-    private void mockBalanceSheetCurrentPeriodWithoutNoteValue() throws DataException {
-        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).find(
-            COMPANY_ACCOUNTS_ID, mockRequest);
-    }
-
-    private void mockBalanceSheetPreviousPeriodWithoutNoteValue() throws DataException {
-        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).find(
             COMPANY_ACCOUNTS_ID, mockRequest);
     }
 
