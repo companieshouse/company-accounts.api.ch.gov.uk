@@ -28,7 +28,7 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator implements No
     @Autowired
     public FixedAssetsInvestmentsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
-    	super(companyService);
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

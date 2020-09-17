@@ -33,9 +33,9 @@ public class CicApprovalValidator extends BaseValidator {
 
     @Autowired
     public CicApprovalValidator(CompanyService companyService, AccountTypeFactory accountTypeFactory, ParentResourceFactory parentResourceFactory) {
-    	super(companyService);
-    	this.accountTypeFactory = accountTypeFactory;
-    	this.parentResourceFactory = parentResourceFactory;
+        super(companyService);
+        this.accountTypeFactory = accountTypeFactory;
+        this.parentResourceFactory = parentResourceFactory;
     }
     
     public Errors validateCicReportApproval(CicApproval cicApproval, String companyAccountsId, HttpServletRequest request) throws DataException {

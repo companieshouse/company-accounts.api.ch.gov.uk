@@ -29,12 +29,11 @@ public class DirectorsApprovalValidator extends BaseValidator{
 
     @Autowired
     public DirectorsApprovalValidator(CompanyService companyService,
-    		SecretaryService secretaryService,
-    		DirectorValidator directorValidator) {
-		super(companyService);
-		this.secretaryService = secretaryService;
-		this.directorValidator = directorValidator;
-	}
+            SecretaryService secretaryService, DirectorValidator directorValidator) {
+        super(companyService);
+        this.secretaryService = secretaryService;
+        this.directorValidator = directorValidator;
+    }
 
     public Errors validateApproval(DirectorsApproval directorsApproval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {

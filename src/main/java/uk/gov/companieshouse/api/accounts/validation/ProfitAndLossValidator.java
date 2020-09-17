@@ -20,7 +20,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @Component
 public class ProfitAndLossValidator extends BaseValidator {
 
-	private static final String PROFIT_AND_LOSS = "$.profit_and_loss";
+    private static final String PROFIT_AND_LOSS = "$.profit_and_loss";
     private static final String GROSS_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".gross_profit_or_loss";
     private static final String GROSS_TOTAL = GROSS_PROFIT_OR_LOSS + ".gross_total";
     private static final String OPERATING_PROFIT_OR_LOSS = PROFIT_AND_LOSS + ".operating_profit_or_loss";
@@ -32,8 +32,8 @@ public class ProfitAndLossValidator extends BaseValidator {
 
     @Autowired
     public ProfitAndLossValidator(CompanyService companyService) {
-		super(companyService);
-	}
+        super(companyService);
+    }
 
     public Errors validateProfitLoss(@Valid ProfitAndLoss profitAndLoss) {
 

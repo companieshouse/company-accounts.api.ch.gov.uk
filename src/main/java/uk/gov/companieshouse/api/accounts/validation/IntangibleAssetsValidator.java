@@ -31,9 +31,9 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class IntangibleAssetsValidator extends BaseValidator implements NoteValidator<IntangibleAssets>{
 
-    private CurrentPeriodService currentPeriodService;
+    private final CurrentPeriodService currentPeriodService;
 
-    private PreviousPeriodService previousPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public IntangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {

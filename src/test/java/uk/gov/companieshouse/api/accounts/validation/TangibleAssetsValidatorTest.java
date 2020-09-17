@@ -77,7 +77,7 @@ public class TangibleAssetsValidatorTest {
 
     @BeforeEach
     private void setUp() {
-    	validator = new TangibleAssetsValidator(companyService, currentPeriodService, previousPeriodService);
+        validator = new TangibleAssetsValidator(companyService, currentPeriodService, previousPeriodService);
     }
     
     @Test

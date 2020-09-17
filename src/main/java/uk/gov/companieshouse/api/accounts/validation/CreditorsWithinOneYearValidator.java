@@ -34,13 +34,13 @@ public class CreditorsWithinOneYearValidator extends BaseValidator implements No
     private static final String CREDITORS_WITHIN_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_WITHIN_PREVIOUS_PERIOD_PATH + ".total";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public CreditorsWithinOneYearValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
-    	super(companyService);
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

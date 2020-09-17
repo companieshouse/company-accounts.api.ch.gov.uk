@@ -52,7 +52,7 @@ public class DirectorValidatorTest {
 
     @BeforeEach
     private void setUp() {
-    	directorValidator = new DirectorValidator(companyService, directorService);
+        directorValidator = new DirectorValidator(companyService, directorService);
     }
     
     @Test

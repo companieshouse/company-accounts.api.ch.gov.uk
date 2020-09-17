@@ -35,9 +35,9 @@ public class ApprovalValidator extends BaseValidator {
 
     @Autowired
     public ApprovalValidator(CompanyService companyService, DirectorService directorService) {
-		super(companyService);
-		this.directorService = directorService;
-	}
+        super(companyService);
+        this.directorService = directorService;
+    }
 
     public Errors validateApproval(Approval approval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {

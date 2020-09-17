@@ -86,9 +86,9 @@ class LoanValidatorTest {
     @DisplayName("Loan validation with valid loan and breakdown for multi year filer, with balance at period start")
     void testSuccessfulLoanCalculationValidationForMultiYearFiler() throws DataException, ServiceException {
 
-    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
-    	loan.setDescription(LOAN_DESCRIPTION);
-    	
+        loan.setDirectorName(LOAN_DIRECTOR_NAME);
+        loan.setDescription(LOAN_DESCRIPTION);
+
         createValidMultiYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
@@ -103,9 +103,9 @@ class LoanValidatorTest {
     @DisplayName("Loan validation with valid loan and breakdown for single year filer, no balance at period start")
     void testSuccessfulLoanCalculationValidationForSingleYearFiler() throws DataException, ServiceException {
 
-    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
-    	loan.setDescription(LOAN_DESCRIPTION);
-    	
+        loan.setDirectorName(LOAN_DIRECTOR_NAME);
+        loan.setDescription(LOAN_DESCRIPTION);
+
         createValidSingleYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
@@ -120,8 +120,8 @@ class LoanValidatorTest {
     @DisplayName("Loan validation with missing advances_credits_made")
     void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade() throws DataException, ServiceException {
 
-    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
-    	loan.setDescription(LOAN_DESCRIPTION);
+        loan.setDirectorName(LOAN_DIRECTOR_NAME);
+        loan.setDescription(LOAN_DESCRIPTION);
 
         LoanBreakdownResource loanBreakdown = new LoanBreakdownResource();
         loanBreakdown.setBalanceAtPeriodStart(2000L);
@@ -143,8 +143,8 @@ class LoanValidatorTest {
     @DisplayName("Loan validation with missing advances_credits_repaid")
     void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid() throws DataException, ServiceException {
 
-    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
-    	loan.setDescription(LOAN_DESCRIPTION);
+        loan.setDirectorName(LOAN_DIRECTOR_NAME);
+        loan.setDescription(LOAN_DESCRIPTION);
 
         LoanBreakdownResource loanBreakdown = new LoanBreakdownResource();
         loanBreakdown.setBalanceAtPeriodStart(2000L);
@@ -169,7 +169,7 @@ class LoanValidatorTest {
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME,
                 INCORRECT_TOTAL_VALUE);
 
-    	loan.setDescription(LOAN_DESCRIPTION);
+        loan.setDescription(LOAN_DESCRIPTION);
 
         createValidMultiYearFilerLoanBreakdown();
 
@@ -181,7 +181,7 @@ class LoanValidatorTest {
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-        		LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END)));
+                LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END)));
 
         assertEquals(1, errors.getErrorCount());
     }

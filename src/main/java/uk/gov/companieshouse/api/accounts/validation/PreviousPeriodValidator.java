@@ -12,15 +12,15 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class PreviousPeriodValidator extends BaseValidator {
 
-	private BalanceSheetValidator balanceSheetValidator;
+    private final BalanceSheetValidator balanceSheetValidator;
 
     private static final String PREVIOUS_PERIOD_PATH = "$.previous_period";
 
     @Autowired
     public PreviousPeriodValidator(CompanyService companyService, BalanceSheetValidator balanceSheetValidator) {
-		super(companyService);
-		this.balanceSheetValidator = balanceSheetValidator;
-	}
+        super(companyService);
+        this.balanceSheetValidator = balanceSheetValidator;
+    }
 
     public Errors validatePreviousPeriod(PreviousPeriod previousPeriod, Transaction transaction) throws DataException {
 

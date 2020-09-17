@@ -40,8 +40,8 @@ public class BalanceSheetValidator extends BaseValidator {
 
     @Autowired
     public BalanceSheetValidator(CompanyService companyService) {
-		super(companyService);
-	}
+        super(companyService);
+    }
 
     public void validateBalanceSheet(BalanceSheet balanceSheet, Transaction transaction, String periodPath, Errors errors) throws DataException {
 

@@ -22,14 +22,14 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator implements 
 
     private static final String CURRENT_ASSETS_DETAILS_PATH = "$.current_assets_investments.details";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public CurrentAssetsInvestmentsValidator(CompanyService companyService,
-    		CurrentPeriodService currentPeriodService,
-        PreviousPeriodService previousPeriodService) {
-    	super(companyService);
+            CurrentPeriodService currentPeriodService,
+            PreviousPeriodService previousPeriodService) {
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

@@ -34,8 +34,8 @@ public class CreditorsAfterMoreThanOneYearValidator extends BaseValidator implem
     private static final String CREDITORS_AFTER_PREVIOUS_PERIOD_TOTAL_PATH =
             CREDITORS_AFTER_PREVIOUS_PERIOD_PATH + ".total";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public CreditorsAfterMoreThanOneYearValidator(CompanyService companyService,

@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @Component
 public class CicStatementsValidator extends BaseValidator {
 
-	private static final String CIC_STATEMENTS_BASE_PATH = "$.cic_statements.report_statements.";
+    private static final String CIC_STATEMENTS_BASE_PATH = "$.cic_statements.report_statements.";
 
     private static final String CONSULTATION_WITH_STAKEHOLDERS_PATH
                                     = CIC_STATEMENTS_BASE_PATH + "consultation_with_stakeholders";
@@ -24,8 +24,8 @@ public class CicStatementsValidator extends BaseValidator {
 
     @Autowired
     public CicStatementsValidator(CompanyService companyService) {
-		super(companyService);
-	}
+        super(companyService);
+    }
 
     public Errors validateCicStatementsUpdate(CicStatements cicStatements) {
 

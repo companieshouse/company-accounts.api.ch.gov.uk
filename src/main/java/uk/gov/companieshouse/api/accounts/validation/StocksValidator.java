@@ -35,13 +35,13 @@ public class StocksValidator extends BaseValidator implements NoteValidator<Stoc
     private static final String STOCKS_PREVIOUS_PERIOD_TOTAL_PATH =
         STOCKS_PREVIOUS_PERIOD_PATH + ".total";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public StocksValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
                            PreviousPeriodService previousPeriodService) {
-    	super(companyService);
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

@@ -44,9 +44,9 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     private static final String NET_BOOK_VALUE_CURRENT_PERIOD = ".net_book_value_at_end_of_current_period";
     private static final String NET_BOOK_VALUE_PREVIOUS_PERIOD = ".net_book_value_at_end_of_previous_period";
 
-    private CurrentPeriodService currentPeriodService;
+    private final CurrentPeriodService currentPeriodService;
 
-    private PreviousPeriodService previousPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public TangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {

@@ -63,7 +63,7 @@ public class ApprovalValidatorTest {
     @BeforeEach
     void setup() {
 
-    	validator = new ApprovalValidator(companyService, directorService);
+        validator = new ApprovalValidator(companyService, directorService);
         validator.dateInvalid = "date.invalid";
         approval = new Approval();
         when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createSmallFullAccount());

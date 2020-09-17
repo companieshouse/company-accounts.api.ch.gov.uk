@@ -17,13 +17,13 @@ import java.util.Optional;
 @Component
 public class DirectorValidator extends BaseValidator {
 
-    private DirectorService directorService;
+    private final DirectorService directorService;
 
-	@Autowired
+    @Autowired
     public DirectorValidator(CompanyService companyService, DirectorService directorService) {
-		super(companyService);
-		this.directorService = directorService;
-	}
+        super(companyService);
+        this.directorService = directorService;
+    }
 
     public List<String> getValidDirectorNames(Transaction transaction,
                                               String companyAccountId, HttpServletRequest request) throws DataException {

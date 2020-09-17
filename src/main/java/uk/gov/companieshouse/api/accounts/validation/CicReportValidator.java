@@ -16,8 +16,8 @@ public class CicReportValidator extends BaseValidator {
 
     @Autowired
     public CicReportValidator(CompanyService companyService) {
-		super(companyService);
-	}
+        super(companyService);
+    }
 
     public Errors validateCicReportCreation(Transaction transaction) throws DataException {
 

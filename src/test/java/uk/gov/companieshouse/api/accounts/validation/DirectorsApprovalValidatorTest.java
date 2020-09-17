@@ -60,7 +60,7 @@ class DirectorsApprovalValidatorTest {
 
     @BeforeEach
     private void setUp() {
-    	validator = new DirectorsApprovalValidator(companyService, secretaryService, directorValidator);
+        validator = new DirectorsApprovalValidator(companyService, secretaryService, directorValidator);
     }
     @Test
     @DisplayName("Validate with a valid approval name ")

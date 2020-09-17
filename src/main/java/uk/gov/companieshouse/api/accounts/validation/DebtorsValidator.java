@@ -38,7 +38,7 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
     public DebtorsValidator(CompanyService companyService,
             CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
-    	super(companyService);
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }

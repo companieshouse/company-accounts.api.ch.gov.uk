@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
@@ -21,59 +19,60 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseValidatorTest {
 
-	@Mock
-	private CompanyService mockCompanyService;
-	
+    @Mock
+    private CompanyService mockCompanyService;
+
     private BaseValidator validator;
 
     private Errors errors;
+
     @BeforeEach
     void setup() {
         validator = new BaseValidator(mockCompanyService);
         validator.incorrectTotal = "incorrect.total";
-        validator.emptyResource  = "empty.resource";
+        validator.emptyResource = "empty.resource";
         errors = new Errors();
     }
 
     @Test
     @DisplayName("Test validate the aggregate totals are equal")
-    void testValidateAggregateTotalEqual(){
-        validator.validateAggregateTotal(1L,1L,"location",errors);
+    void testValidateAggregateTotalEqual() {
+        validator.validateAggregateTotal(1L, 1L, "location", errors);
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test validate the aggregate totals not equal")
-    void testValidateAggregateTotalNotEqual(){
-        validator.validateAggregateTotal(1L,2L,"location",errors);
+    void testValidateAggregateTotalNotEqual() {
+        validator.validateAggregateTotal(1L, 2L, "location", errors);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError( validator.incorrectTotal, "location")));
+        assertTrue(errors.containsError(createError(validator.incorrectTotal, "location")));
     }
 
     @Test
     @DisplayName("Test validate the aggregate totals not equal as expected total is null")
-    void testValidateAggregateTotalExpectedTotalNull(){
-        validator.validateAggregateTotal(1L,null,"location",errors);
+    void testValidateAggregateTotalExpectedTotalNull() {
+        validator.validateAggregateTotal(1L, null, "location", errors);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError( validator.incorrectTotal, "location")));
+        assertTrue(errors.containsError(createError(validator.incorrectTotal, "location")));
     }
 
     @Test
     @DisplayName("Test validate the aggregate totals equal with null and 0")
-    void testValidateAggregateTotalComparingToNull(){
-        validator.validateAggregateTotal(0L,null,"location",errors);
+    void testValidateAggregateTotalComparingToNull() {
+        validator.validateAggregateTotal(0L, null, "location", errors);
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Test ad empty resource error")
-    void testAddEmptyResourceError(){
-        errors = validator.addEmptyResourceError(errors,"location");
+    void testAddEmptyResourceError() {
+        errors = validator.addEmptyResourceError(errors, "location");
         assertNotNull(errors);
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(validator.emptyResource,"location")));
+        assertTrue(errors.containsError(createError(validator.emptyResource, "location")));
     }
 
     private Error createError(String error, String path) {

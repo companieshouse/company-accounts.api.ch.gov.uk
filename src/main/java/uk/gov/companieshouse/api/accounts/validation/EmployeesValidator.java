@@ -25,8 +25,8 @@ public class EmployeesValidator extends BaseValidator implements NoteValidator<E
 
     @Autowired
     public EmployeesValidator(CompanyService companyService) {
-		super(companyService);
-	}
+        super(companyService);
+    }
 
     @Override
     public Errors validateSubmission(Employees employees, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {

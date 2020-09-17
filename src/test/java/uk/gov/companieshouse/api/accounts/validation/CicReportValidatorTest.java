@@ -41,7 +41,7 @@ public class CicReportValidatorTest {
 
     @BeforeEach
     private void setUp() {
-    	validator = new CicReportValidator(companyService);
+        validator = new CicReportValidator(companyService);
     }
     
     @Test
