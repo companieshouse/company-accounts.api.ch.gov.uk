@@ -19,9 +19,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class BalanceSheetValidator extends BaseValidator {
 
-    @Autowired
-    private CompanyService companyService;
-
     @Value("${shareholders.mismatch}")
     private String shareholderFundsMismatch;
 
@@ -40,6 +37,11 @@ public class BalanceSheetValidator extends BaseValidator {
     private static final String OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".net_current_assets";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_assets_less_current_liabilities";
     private static final String OTHER_LIABILITIES_OR_ASSETS_TOTAL_NET_ASSETS_PATH = OTHER_LIABILITIES_OR_ASSETS_PATH + ".total_net_assets";
+
+    @Autowired
+    public BalanceSheetValidator(CompanyService companyService) {
+		super(companyService);
+	}
 
     public void validateBalanceSheet(BalanceSheet balanceSheet, Transaction transaction, String periodPath, Errors errors) throws DataException {
 
@@ -260,7 +262,7 @@ public class BalanceSheetValidator extends BaseValidator {
     private boolean getIsLBGCompanyFiling(Transaction transaction) throws DataException {
 
         try {
-            return companyService.isLBG(transaction);
+            return getCompanyService().isLBG(transaction);
         } catch (ServiceException e) {
             throw new DataException(e.getMessage(), e);
         }

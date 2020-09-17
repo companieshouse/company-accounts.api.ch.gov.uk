@@ -5,30 +5,32 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -67,7 +69,9 @@ class LoanValidatorTest {
     @Mock
     private DirectorValidator directorValidator;
 
-    @InjectMocks
+    @Mock
+    private CompanyService companyService;
+    
     private LoanValidator validator;
 
     private Loan loan;
@@ -75,18 +79,37 @@ class LoanValidatorTest {
     @BeforeEach
     void setup() {
         loan = new Loan();
+        validator = new LoanValidator(companyService, directorValidator, directorsReportService);
     }
 
     @Test
-    @DisplayName("Loan validation with valid loan and breakdown")
-    void testSuccessfulLoanCalculationValidation() throws DataException {
+    @DisplayName("Loan validation with valid loan and breakdown for multi year filer, with balance at period start")
+    void testSuccessfulLoanCalculationValidationForMultiYearFiler() throws DataException, ServiceException {
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
     	
-        createValidLoanBreakdown();
+        createValidMultiYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
+        errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Loan validation with valid loan and breakdown for single year filer, no balance at period start")
+    void testSuccessfulLoanCalculationValidationForSingleYearFiler() throws DataException, ServiceException {
+
+    	loan.setDirectorName(LOAN_DIRECTOR_NAME);
+    	loan.setDescription(LOAN_DESCRIPTION);
+    	
+        createValidSingleYearFilerLoanBreakdown();
+
+        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -95,7 +118,7 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Loan validation with missing advances_credits_made")
-    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade() throws DataException {
+    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade() throws DataException, ServiceException {
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
@@ -109,6 +132,8 @@ class LoanValidatorTest {
         loan.setBreakdown(loanBreakdown);
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
@@ -116,7 +141,7 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Loan validation with missing advances_credits_repaid")
-    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid() throws DataException {
+    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid() throws DataException, ServiceException {
 
     	loan.setDirectorName(LOAN_DIRECTOR_NAME);
     	loan.setDescription(LOAN_DESCRIPTION);
@@ -130,6 +155,8 @@ class LoanValidatorTest {
         loan.setBreakdown(loanBreakdown);
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(errors.hasErrors());
@@ -137,18 +164,20 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Loan validation with incorrect loan calculation")
-    void testIncorrectLoanCalculation() throws DataException {
+    void testIncorrectLoanCalculation() throws DataException, ServiceException {
 
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME,
                 INCORRECT_TOTAL_VALUE);
 
     	loan.setDescription(LOAN_DESCRIPTION);
 
-        createValidLoanBreakdown();
+        createValidMultiYearFilerLoanBreakdown();
 
         loan.getBreakdown().setBalanceAtPeriodEnd(3000L);
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
@@ -159,17 +188,18 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Create valid loan with DR cross validation")
-    void validLoanWithCrossValidationDR() throws DataException {
+    void validLoanWithCrossValidationDR() throws DataException, ServiceException {
 
         List<String> validNames = new ArrayList<>();
         validNames.add(LOAN_DIRECTOR_NAME);
 
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
-        createValidLoanBreakdown();
+        createValidMultiYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(true));
         when(directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(validNames);
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -178,7 +208,7 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Create invalid loan with DR cross validation")
-    void invalidLoanWithCrossValidationDR() throws DataException {
+    void invalidLoanWithCrossValidationDR() throws DataException, ServiceException {
 
         ReflectionTestUtils.setField(validator, INVALID_DR_NAME,
                 INVALID_DR_VALUE);
@@ -188,22 +218,32 @@ class LoanValidatorTest {
 
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
-        createValidLoanBreakdown();
+        createValidMultiYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(true));
         when(directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(validNames);
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(errors.hasErrors());
     }
 
-    private void createValidLoanBreakdown() {
+    private void createValidMultiYearFilerLoanBreakdown() {
         LoanBreakdownResource loanBreakdown = new LoanBreakdownResource();
         loanBreakdown.setBalanceAtPeriodStart(1000L);
         loanBreakdown.setAdvancesCreditsMade(3000L);
         loanBreakdown.setAdvancesCreditsRepaid(2000L);
         loanBreakdown.setBalanceAtPeriodEnd(2000L);
+
+        loan.setBreakdown(loanBreakdown);
+    }
+
+    private void createValidSingleYearFilerLoanBreakdown() {
+        LoanBreakdownResource loanBreakdown = new LoanBreakdownResource();
+        loanBreakdown.setAdvancesCreditsMade(3000L);
+        loanBreakdown.setAdvancesCreditsRepaid(2000L);
+        loanBreakdown.setBalanceAtPeriodEnd(1000L);
 
         loan.setBreakdown(loanBreakdown);
     }

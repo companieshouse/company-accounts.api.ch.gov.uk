@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
@@ -449,16 +451,6 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
 
     private void mockValidBalanceSheetPreviousPeriod() throws DataException {
         doReturn(generateValidPreviousPeriodResponseObject(true)).when(mockPreviousPeriodService).find(
-                COMPANY_ACCOUNTS_ID, mockRequest);
-    }
-
-    private void mockBalanceSheetCurrentPeriodWithoutNoteValue() throws DataException {
-        doReturn(generateValidCurrentPeriodResponseObject(false)).when(mockCurrentPeriodService).find(
-                COMPANY_ACCOUNTS_ID, mockRequest);
-    }
-
-    private void mockBalanceSheetPreviousPeriodWithoutNoteValue() throws DataException {
-        doReturn(generateValidPreviousPeriodResponseObject(false)).when(mockPreviousPeriodService).find(
                 COMPANY_ACCOUNTS_ID, mockRequest);
     }
 }

@@ -1,5 +1,9 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -7,41 +11,53 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
 @Component
 public class LoanValidator extends BaseValidator {
 
+	private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = "$.loan.breakdown.balance_at_period_start";
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
 	private static final String LOANS_DIRECTOR_NAME = "$.loan.director_name";
 
-	@Autowired
-	private DirectorService directorService;
-
-	@Autowired
 	private DirectorValidator directorValidator;
 
-	@Autowired
 	private DirectorsReportServiceImpl directorsReportService;
+
+	@Autowired
+    public LoanValidator(CompanyService companyService,
+    		DirectorValidator directorValidator,
+    		DirectorsReportServiceImpl directorsReportService) {
+		super(companyService);
+		this.directorValidator = directorValidator;
+		this.directorsReportService = directorsReportService;
+	}
 
 	public Errors validateLoan(Loan loan, Transaction transaction,
 							   String companyAccountId, HttpServletRequest request) throws DataException {
 
 		Errors errors = new Errors();
+		
+		boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
-		validateLoanCalculation(loan.getBreakdown(), errors);
+		if (!isMultipleYearFiler && loan.getBreakdown().getBalanceAtPeriodStart() != null) {
+            addError(errors, unexpectedData, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+            return errors;
+        } else if (isMultipleYearFiler && loan.getBreakdown().getBalanceAtPeriodStart() == null) {
+            addError(errors, mandatoryElementMissing, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+            return errors;
+        }
+		
+		validateLoanCalculation(loan.getBreakdown(), isMultipleYearFiler, errors);
 		crossValidateDirectorNameDR(loan, transaction, companyAccountId, request, errors);
 		
 		return errors;
 	}
 	
-	private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, Errors errors) {
+	private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, boolean isMultipleYearFiler, Errors errors) {
 
 		Long advancesCreditsMade = 0L;
 		Long advancesCreditsRepaid = 0L;
@@ -54,8 +70,14 @@ public class LoanValidator extends BaseValidator {
 			advancesCreditsRepaid = loanBreakdown.getAdvancesCreditsRepaid();
 		}
 		
-		if (loanBreakdown.getBalanceAtPeriodStart() + advancesCreditsMade - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
-            addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+		if(isMultipleYearFiler) {
+			if (loanBreakdown.getBalanceAtPeriodStart() + advancesCreditsMade - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
+	            addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+			}
+		} else {
+			if (advancesCreditsMade - advancesCreditsRepaid != loanBreakdown.getBalanceAtPeriodEnd()) {
+	            addError(errors, incorrectTotal, LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END);
+			}
 		}
 	}
 

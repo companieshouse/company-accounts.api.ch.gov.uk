@@ -1,29 +1,35 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseValidatorTest {
 
+	@Mock
+	private CompanyService mockCompanyService;
+	
     private BaseValidator validator;
 
     private Errors errors;
     @BeforeEach
     void setup() {
-        validator = new BaseValidator();
+        validator = new BaseValidator(mockCompanyService);
         validator.incorrectTotal = "incorrect.total";
         validator.emptyResource  = "empty.resource";
         errors = new Errors();

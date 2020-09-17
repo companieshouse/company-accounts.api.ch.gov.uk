@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -25,13 +26,18 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class ApprovalValidator extends BaseValidator {
 
-    private static final String APPROVAL_PATH = "$.approval";
+	private static final String APPROVAL_PATH = "$.approval";
     private static final String DATE_PATH = APPROVAL_PATH + ".date";
 
     private static final String NAME_PATH = APPROVAL_PATH + ".name";
 
-    @Autowired
     private DirectorService directorService;
+
+    @Autowired
+    public ApprovalValidator(CompanyService companyService, DirectorService directorService) {
+		super(companyService);
+		this.directorService = directorService;
+	}
 
     public Errors validateApproval(Approval approval, Transaction transaction,
                                    String companyAccountId, HttpServletRequest request) throws DataException {

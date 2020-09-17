@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,6 +27,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
@@ -55,12 +55,15 @@ public class ApprovalValidatorTest {
     @Mock
     private HttpServletRequest httpServletRequestMock;
 
-    @InjectMocks
+    @Mock
+    private CompanyService companyService;
+
     private ApprovalValidator validator;
 
     @BeforeEach
     void setup() {
 
+    	validator = new ApprovalValidator(companyService, directorService);
         validator.dateInvalid = "date.invalid";
         approval = new Approval();
         when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createSmallFullAccount());

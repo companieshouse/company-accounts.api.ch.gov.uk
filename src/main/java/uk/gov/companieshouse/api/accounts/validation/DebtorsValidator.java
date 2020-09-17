@@ -1,10 +1,15 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors.CurrentPeriod;
@@ -17,10 +22,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Optional;
-
 @Component
 public class DebtorsValidator extends BaseValidator implements NoteValidator<Debtors> {
 
@@ -30,7 +31,6 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
     private static final String CURRENT_TOTAL_PATH = DEBTORS_PATH_CURRENT + ".total";
     private static final String PREVIOUS_TOTAL_PATH = DEBTORS_PATH_PREVIOUS + ".total";
 
-    private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
     private PreviousPeriodService previousPeriodService;
 
@@ -38,7 +38,7 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
     public DebtorsValidator(CompanyService companyService,
             CurrentPeriodService currentPeriodService,
             PreviousPeriodService previousPeriodService) {
-        this.companyService = companyService;
+    	super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
@@ -198,14 +198,6 @@ public class DebtorsValidator extends BaseValidator implements NoteValidator<Deb
             return previousPeriodResponseObject.getData().getBalanceSheet();
         } else {
             return null;
-        }
-    }
-
-    private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
-        try {
-            return companyService.isMultipleYearFiler(transaction);
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
         }
     }
 

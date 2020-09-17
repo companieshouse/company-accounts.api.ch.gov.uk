@@ -20,7 +20,6 @@ public class LoanBreakdownResource {
     @JsonProperty("advances_credits_repaid")
     private Long advancesCreditsRepaid;
 
-    @NotNull
     @Range(min=MIN_RANGE,max=MAX_RANGE, message = "value.outside.range")
     @JsonProperty("balance_at_period_start")
     private Long balanceAtPeriodStart;

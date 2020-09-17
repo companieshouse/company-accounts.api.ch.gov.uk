@@ -6,14 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -31,7 +32,6 @@ public class CicReportValidatorTest {
     @Mock
     private CompanyService companyService;
 
-    @InjectMocks
     private CicReportValidator validator;
 
     private static final String CIC_REPORT_PATH = "$.cic_report";
@@ -39,6 +39,11 @@ public class CicReportValidatorTest {
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
+    @BeforeEach
+    private void setUp() {
+    	validator = new CicReportValidator(companyService);
+    }
+    
     @Test
     @DisplayName("Validate cic report creation - CIC company")
     void validateCicReportCreationForCICCompany() throws ServiceException, DataException {

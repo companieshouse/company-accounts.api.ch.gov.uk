@@ -1,18 +1,26 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
@@ -20,17 +28,8 @@ import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 @Component
 public class IntangibleAssetsValidator extends BaseValidator implements NoteValidator<IntangibleAssets>{
-
-    private CompanyService companyService;
 
     private CurrentPeriodService currentPeriodService;
 
@@ -39,7 +38,7 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     @Autowired
     public IntangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
 
-        this.companyService = companyService;
+        super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
 
@@ -65,24 +64,19 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     throws DataException {
         Errors errors = new Errors();
 
-        try {
-            boolean isMultipleYearFiler = companyService.isMultipleYearFiler(transaction);
+        boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
-            List<IntangibleSubResource> invalidSubResources = new ArrayList<>();
+        List<IntangibleSubResource> invalidSubResources = new ArrayList<>();
 
-            verifySubResourcesAreValid(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
-            verifyNoteNotEmpty(intangibleAssets, errors, isMultipleYearFiler);
-            validateSubResourceTotals(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
-            if (errors.hasErrors()) {
-                return errors;
-            }
-            validateTotalFieldsMatch(errors, intangibleAssets, isMultipleYearFiler);
-            crossValidate(intangibleAssets, request, companyAccountsId, errors);
-
-        } catch (ServiceException se) {
-
-            throw new DataException(se.getMessage(), se);
+        verifySubResourcesAreValid(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+        verifyNoteNotEmpty(intangibleAssets, errors, isMultipleYearFiler);
+        validateSubResourceTotals(intangibleAssets, errors, isMultipleYearFiler, invalidSubResources);
+        if (errors.hasErrors()) {
+            return errors;
         }
+        validateTotalFieldsMatch(errors, intangibleAssets, isMultipleYearFiler);
+        crossValidate(intangibleAssets, request, companyAccountsId, errors);
+
         return errors;
     }
 

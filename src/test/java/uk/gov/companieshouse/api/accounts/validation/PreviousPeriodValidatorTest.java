@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
@@ -37,7 +39,6 @@ public class PreviousPeriodValidatorTest {
     @Mock
     private BalanceSheetValidator balanceSheetValidator;
 
-    @InjectMocks
     private PreviousPeriodValidator validator;
 
     @Mock
@@ -54,6 +55,11 @@ public class PreviousPeriodValidatorTest {
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
+    @BeforeEach
+    private void setUp() {
+    	validator = new PreviousPeriodValidator(companyService, balanceSheetValidator);
+    }
+    
     @Test
     @DisplayName("Validate previous period - multi year filer")
     void validatePreviousPeriodForMultiYearFiler() throws DataException, ServiceException {

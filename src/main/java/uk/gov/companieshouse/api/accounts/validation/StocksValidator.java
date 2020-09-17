@@ -1,10 +1,15 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.CurrentPeriod;
@@ -16,10 +21,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Optional;
 
 @Component
 public class StocksValidator extends BaseValidator implements NoteValidator<Stocks> {
@@ -34,14 +35,13 @@ public class StocksValidator extends BaseValidator implements NoteValidator<Stoc
     private static final String STOCKS_PREVIOUS_PERIOD_TOTAL_PATH =
         STOCKS_PREVIOUS_PERIOD_PATH + ".total";
 
-    private CompanyService companyService;
     private CurrentPeriodService currentPeriodService;
     private PreviousPeriodService previousPeriodService;
 
     @Autowired
     public StocksValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
                            PreviousPeriodService previousPeriodService) {
-        this.companyService = companyService;
+    	super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
@@ -119,14 +119,6 @@ public class StocksValidator extends BaseValidator implements NoteValidator<Stoc
 
         if (previousPeriod != null) {
             addError(errors, unexpectedData, STOCKS_PREVIOUS_PERIOD_PATH);
-        }
-    }
-
-    private boolean getIsMultipleYearFiler(Transaction transaction) throws DataException {
-        try {
-            return companyService.isMultipleYearFiler(transaction);
-        } catch (ServiceException e) {
-            throw new DataException(e.getMessage(), e);
         }
     }
 
