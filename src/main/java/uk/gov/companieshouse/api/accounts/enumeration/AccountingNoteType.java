@@ -75,7 +75,8 @@ public enum AccountingNoteType {
             SmallFullLinkType.CREDITORS_WITHIN_ONE_YEAR_NOTE,
             "small-full-accounts-note#creditors-within-one-year",
             true),
-    SMALL_FULL_FINANCIAL_COMMITMENTS( AccountType.SMALL_FULL,
+    SMALL_FULL_FINANCIAL_COMMITMENTS(
+            AccountType.SMALL_FULL,
             NoteType.FINANCIAL_COMMITMENTS,
             Parent.SMALL_FULL,
             SmallFullLinkType.FINANCIAL_COMMITMENTS_NOTE,

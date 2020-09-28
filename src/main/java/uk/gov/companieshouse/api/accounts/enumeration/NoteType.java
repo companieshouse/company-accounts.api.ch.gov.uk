@@ -13,7 +13,7 @@ public enum NoteType {
     CREDITORS_AFTER("creditors-after-more-than-one-year"),
     CREDITORS_WITHIN("creditors-within-one-year"),
     OFF_BALANCE_SHEET_ARRANGEMENTS("off-balance-sheet-arrangements"),
-    FINANCIAL_COMMITMENTS("financial_commitments");
+    FINANCIAL_COMMITMENTS("financial-commitments");
 
     NoteType(String type) {
         this.type = type;
