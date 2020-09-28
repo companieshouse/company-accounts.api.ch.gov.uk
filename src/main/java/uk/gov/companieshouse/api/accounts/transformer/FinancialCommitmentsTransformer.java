@@ -26,7 +26,6 @@ public class FinancialCommitmentsTransformer implements NoteTransformer<Financia
         financialCommitmentsEntity.setData(financialCommitmentsDataEntity);
 
         return financialCommitmentsEntity;
-
     }
 
     @Override
@@ -43,6 +42,5 @@ public class FinancialCommitmentsTransformer implements NoteTransformer<Financia
         BeanUtils.copyProperties(financialCommitmentsDataEntity, financialCommitments);
 
         return financialCommitments;
-
     }
 }
