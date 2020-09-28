@@ -78,15 +78,15 @@ public enum AccountingNoteType {
     SMALL_FULL_FINANCIAL_COMMITMENTS( AccountType.SMALL_FULL,
             NoteType.FINANCIAL_COMMITMENTS,
             Parent.SMALL_FULL,
-            SmallFullLinkType.OFF_BALANCE_SHEET_ARRANGEMENTS_NOTE,
-            "small-full-accounts-note#off-balance-sheet-arrangements",
+            SmallFullLinkType.FIXED_ASSETS_INVESTMENTS_NOTE,
+            "small-full-accounts-note#financial-commitments",
             false),
     SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS(
             AccountType.SMALL_FULL,
             NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS,
             Parent.SMALL_FULL,
-            SmallFullLinkType.FINANCIAL_COMMITMENTS_NOTE,
-            "small-full-accounts-note#financial-commitments",
+            SmallFullLinkType.OFF_BALANCE_SHEET_ARRANGEMENTS_NOTE,
+            "small-full-accounts-note#off-balance-sheet-arrangements",
             false);
 
     private AccountType accountType;
