@@ -18,6 +18,9 @@ public class BaseValidator {
     @Value("${date.invalid}")
     protected String dateInvalid;
 
+    @Value("${date.outside.range}")
+    protected String dateOutsideRange;
+
     @Value("${unexpected.data}")
     protected String unexpectedData;
 

@@ -20,8 +20,10 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -46,6 +48,9 @@ public class CompanyAccountController {
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
 
+    @Autowired
+    private CompanyAccountValidator validator;
+
     @PostMapping
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
         HttpServletRequest request) {
@@ -54,12 +59,19 @@ public class CompanyAccountController {
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
+            Errors errors = validator.validateCompanyAccount(transaction);
+            if(errors.hasErrors()) {
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
+
             ResponseObject<CompanyAccount> responseObject = companyAccountService
                 .create(companyAccount, transaction, request);
-            return apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
+
+            return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
+
         } catch (PatchException | DataException ex) {
+
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
             LOGGER.errorRequest(request, ex, debugMap);

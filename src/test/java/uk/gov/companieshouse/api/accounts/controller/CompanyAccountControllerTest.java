@@ -26,9 +26,11 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -58,6 +60,9 @@ public class CompanyAccountControllerTest {
     @Mock
     private ApiResponseMapper apiResponseMapper;
 
+    @Mock
+    private CompanyAccountValidator validator;
+
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
@@ -68,7 +73,11 @@ public class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of an company account resource and patching transaction resource")
-    void canCreateAccountSuccesfully() throws DataException, PatchException {
+    void canCreateAccountSuccessfully() throws DataException, PatchException {
+
+        Errors errors = new Errors(); //Empty.
+        when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
+
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED,
             companyAccount);
@@ -94,6 +103,10 @@ public class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key error")
     void canCreateAccountWithDuplicateKeyError() throws DataException, PatchException {
+
+        Errors errors = new Errors(); //Empty.
+        when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
+
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
             companyAccount);
@@ -116,6 +129,10 @@ public class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to an internal error (MongoException")
     void canCreateAccountWithInternalError() throws DataException, PatchException {
+
+        Errors errors = new Errors(); //Empty.
+        when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
+
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         doThrow(mock(DataException.class)).when(companyAccountServiceMock)
                 .create(companyAccount, transactionMock, httpServletRequestMock);
