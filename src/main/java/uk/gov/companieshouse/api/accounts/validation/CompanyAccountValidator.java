@@ -36,7 +36,7 @@ public class CompanyAccountValidator extends BaseValidator {
         super(companyService);
     }
 
-    public Errors validateCompanyAccount(CompanyAccount companyAccount, Transaction transaction) {
+    public Errors validateCompanyAccount(Transaction transaction) throws DataException {
 
         Errors errors = new Errors();
 
@@ -54,7 +54,7 @@ public class CompanyAccountValidator extends BaseValidator {
 
         } catch (ServiceException e) {
 
-            throw new UncheckedDataException("Error fetching company profile", e);
+            throw new DataException("Error fetching company profile", e);
         }
 
         return errors;

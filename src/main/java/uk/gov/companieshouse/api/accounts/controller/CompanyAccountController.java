@@ -58,18 +58,20 @@ public class CompanyAccountController {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        Errors errors = validator.validateCompanyAccount(companyAccount, transaction);
-        if(errors.hasErrors()) {
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-
         try {
+            Errors errors = validator.validateCompanyAccount(transaction);
+            if(errors.hasErrors()) {
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
+
             ResponseObject<CompanyAccount> responseObject = companyAccountService
                 .create(companyAccount, transaction, request);
-            return apiResponseMapper
-                .map(responseObject.getStatus(), responseObject.getData(),
+
+            return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
+
         } catch (PatchException | DataException ex) {
+
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
             LOGGER.errorRequest(request, ex, debugMap);
