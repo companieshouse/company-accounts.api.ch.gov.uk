@@ -50,15 +50,6 @@ public class CompanyAccountValidatorTest {
     private Transaction transaction;
 
     @Mock
-    private BaseValidator baseValidator;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private CompanyAccount companyAccount;
-
-    @Mock
     private CompanyService companyService;
 
     @Mock
