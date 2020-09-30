@@ -20,8 +20,10 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -46,12 +48,20 @@ public class CompanyAccountController {
     @Autowired
     private CompanyAccountTransformer companyAccountTransformer;
 
+    @Autowired
+    private CompanyAccountValidator validator;
+
     @PostMapping
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
         HttpServletRequest request) {
 
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        Errors errors = validator.validateCompanyAccount(companyAccount, transaction);
+        if(errors.hasErrors()) {
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         try {
             ResponseObject<CompanyAccount> responseObject = companyAccountService
