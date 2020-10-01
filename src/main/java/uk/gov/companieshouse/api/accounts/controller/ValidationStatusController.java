@@ -29,7 +29,7 @@ public class ValidationStatusController {
         try {
             Errors errors = validationStatusService.getValidationErrors(companyAccountId, request);
 
-            ValidationStatus validationStatus = new ValidationStatus(errors.hasErrors(), errors.getErrors());
+            ValidationStatus validationStatus = new ValidationStatus(!errors.hasErrors(), errors.getErrors());
 
             return ResponseEntity.ok(validationStatus);
         } catch (DataException e) {

@@ -17,11 +17,11 @@ public class ValidationStatus {
     @JsonProperty("errors")
     private Set<Error> errors;
 
-    public boolean isValid() {
+    public boolean getIsValid() {
         return isValid;
     }
 
-    public void setValid(boolean valid) {
+    public void setIsValid(boolean valid) {
         isValid = valid;
     }
 
