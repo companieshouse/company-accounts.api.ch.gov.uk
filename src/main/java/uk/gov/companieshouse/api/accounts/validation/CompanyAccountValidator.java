@@ -29,7 +29,7 @@ import java.util.Optional;
 public class CompanyAccountValidator extends BaseValidator {
 
     private static final String ERROR_PATH = "$.company_account";
-    private static final int NUMBER_OF_DAYS = 7;
+    private static final int NUMBER_OF_DAYS = 8; // 7 days including the current date.
 
     @Autowired
     public CompanyAccountValidator(CompanyService companyService) {
