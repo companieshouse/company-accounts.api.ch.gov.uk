@@ -191,6 +191,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
         Map<String, String> links = new HashMap<>();
         links.put(TransactionLinkType.RESOURCE.getLink(), selfLink);
+        links.put(TransactionLinkType.VALIDATION_STATUS.getLink(), selfLink + "/validate");
 
         if (isPayableTransaction) {
             links.put(TransactionLinkType.COSTS.getLink(), selfLink + "/costs");

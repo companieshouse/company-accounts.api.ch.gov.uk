@@ -39,6 +39,15 @@ public class Errors {
     }
 
     /**
+     * Get errors set
+     *
+     * @return Set of errors
+     */
+    public Set<Error> getErrors() {
+        return this.errors;
+    }
+
+    /**
      * Determine whether the given {@link Error} is contained
      *
      * @return True or false

@@ -5,6 +5,7 @@ public enum TransactionLinkType implements LinkType {
     SELF("self"),
     PAYMENTS("payments"),
     RESOURCE("resource"),
+    VALIDATION_STATUS("validation_status"),
     COSTS("costs");
 
     private String link;
