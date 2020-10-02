@@ -40,7 +40,7 @@ class AccountsValidatorTest {
 
     private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
 
-    private static final String CURRENT_PERIOD_PATH = "$.current_period";
+    private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
 
     @Test
     @DisplayName("Validate Submission - successful, no errors")
@@ -60,8 +60,8 @@ class AccountsValidatorTest {
     @DisplayName("Validate Submission - failed, errors")
     void validateSubmissionErrorsFound() throws DataException {
 
-        Errors errors = new Errors(); // Empty
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, CURRENT_PERIOD_PATH));
+        Errors errors = new Errors();
+        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH));
 
         when(currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
