@@ -4456,6 +4456,40 @@
       {{end}}
       <!-- CREDITORS AFTER MORE THAN ONE YEAR NOTE END -->
 
+        <!-- FINANCIAL COMMITMENTS START -->
+
+        {{if $financialCommitments := $balanceSheetNotes.financial_commitments}}
+        {{incValue "notes-page-count" }}
+        {{setValue "financial-commitments-id" (getValue "notes-page-count") }}
+
+        <div class="page">
+            <div class="header">
+                <h1 class="text--center">
+                    <ix:nonNumeric contextRef="CY" name="uk-bus:EntityCurrentLegalOrRegisteredName">{{$companyName}}</ix:nonNumeric>
+                </h1>
+            </div>
+
+            <h2 class="text--center">Notes to the Financial Statements</h2>
+            <p class="text--center">
+                <strong>for the Period Ended {{$period.current_period_end_on_formatted}}</strong>
+            </p>
+
+            <h2>{{getValue "notes-page-count"}}. Financial Commitments</h2>
+
+            {{if $financialCommitments.details}}
+            <div class="text-area-display" id="financial-commitments-free-text-note">
+
+                <p class="text-area-display">
+                    <ix:nonNumeric contextRef="CY" name="core:DescriptionCapitalCommitments">{{$financialCommitments.details}}</ix:nonNumeric>
+                </p>
+            </div>
+            {{end}}
+
+        </div>
+
+        {{end}}
+        <!-- FINANCIAL COMMITMENTS END -->
+
       <!-- LOANS TO DIRECTORS START -->
       {{if $loansToDirectors := $balanceSheetNotes.loans_to_directors}}
       {{incValue "notes-page-count" }}
