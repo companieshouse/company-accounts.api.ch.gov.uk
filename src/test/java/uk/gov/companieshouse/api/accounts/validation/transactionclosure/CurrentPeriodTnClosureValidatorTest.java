@@ -12,7 +12,6 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -23,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CurrentPeriodTnClosureValidatorTest {
+class CurrentPeriodTnClosureValidatorTest {
 
     @Mock
     private CompanyAccountService companyAccountService;
@@ -55,25 +53,16 @@ public class CurrentPeriodTnClosureValidatorTest {
     private HttpServletRequest request;
 
     @Mock
-    private Transaction transaction;
-
-    @Mock
     private ResponseObject<CompanyAccount> companyAccountResponseObject;
 
     @Mock
     private ResponseObject<SmallFull> smallFullResponseObject;
 
     @Mock
-    private ResponseObject<CurrentPeriod> currentPeriodResponseObject;
-
-    @Mock
     private CompanyAccount companyAccount;
 
     @Mock
     private SmallFull smallFull;
-
-    @Mock
-    private CurrentPeriod currentPeriod;
 
     private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
 
@@ -107,7 +96,7 @@ public class CurrentPeriodTnClosureValidatorTest {
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -127,7 +116,7 @@ public class CurrentPeriodTnClosureValidatorTest {
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
 
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, CURRENT_PERIOD_PATH)));

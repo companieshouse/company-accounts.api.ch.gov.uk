@@ -13,7 +13,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class CurrentPeriodTnClosureValidator extends BaseValidator {
         this.currentPeriodService = currentPeriodService;
     }
 
-    public Errors isValid(Transaction transaction, String companyAccountsId, HttpServletRequest request) throws DataException {
+    public Errors isValid(String companyAccountsId, HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 

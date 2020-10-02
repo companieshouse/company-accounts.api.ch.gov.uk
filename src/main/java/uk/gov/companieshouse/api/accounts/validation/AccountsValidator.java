@@ -21,7 +21,7 @@ public class AccountsValidator {
         Errors errors;
 
         // Current period validation.
-        errors = currentPeriodTnClosureValidator.isValid(transaction, companyAccountsId, request);
+        errors = currentPeriodTnClosureValidator.isValid(companyAccountsId, request);
 
         return errors;
     }

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AccountsValidatorTest {
+class AccountsValidatorTest {
 
     @Mock
     private Transaction transaction;
@@ -48,7 +48,7 @@ public class AccountsValidatorTest {
 
         Errors errors = new Errors(); // Empty
 
-        when(currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
+        when(currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -63,7 +63,7 @@ public class AccountsValidatorTest {
         Errors errors = new Errors(); // Empty
         errors.addError(createError(MANDATORY_ELEMENT_MISSING, CURRENT_PERIOD_PATH));
 
-        when(currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
+        when(currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
 
