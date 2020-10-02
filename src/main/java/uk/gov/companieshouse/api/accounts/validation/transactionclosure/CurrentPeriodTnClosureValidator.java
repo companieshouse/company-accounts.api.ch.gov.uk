@@ -61,8 +61,7 @@ public class CurrentPeriodTnClosureValidator extends BaseValidator {
             if (!smallFullLinks.isEmpty() && smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink()) != null) {
                 ResponseObject<CurrentPeriod> currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
                 if (currentPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
-                    errors.addError(new Error(mandatoryElementMissing, CURRENT_PERIOD_PATH, LocationType.JSON_PATH.getValue(),
-                            ErrorType.VALIDATION.getType()));
+                    addError(errors, mandatoryElementMissing, CURRENT_PERIOD_PATH);
                 }
             }
         }
