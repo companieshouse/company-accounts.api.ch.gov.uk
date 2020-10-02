@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AccountsValidator {
 
     @Autowired
-    CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
+    private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
 
     public Errors validationSubmission(Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {

@@ -6,18 +6,13 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
-import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
-import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
-import uk.gov.companieshouse.api.accounts.validation.ErrorType;
-import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,13 +53,10 @@ public class CurrentPeriodTnClosureValidator extends BaseValidator {
         if (companyAccountLinks.get(CompanyAccountLinkType.SMALL_FULL.getLink()) != null) {
             smallFullLinks = smallFullService.find(companyAccountsId, request).getData().getLinks();
 
-            if (!smallFullLinks.isEmpty() && smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink()) != null) {
-                ResponseObject<CurrentPeriod> currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
-                if (currentPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
+            if (smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink()) == null) {
                     addError(errors, mandatoryElementMissing, CURRENT_PERIOD_PATH);
                 }
             }
-        }
 
         return errors;
     }

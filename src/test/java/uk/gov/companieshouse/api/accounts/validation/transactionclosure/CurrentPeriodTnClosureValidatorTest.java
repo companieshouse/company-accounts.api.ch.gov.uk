@@ -21,7 +21,6 @@ import uk.gov.companieshouse.api.accounts.service.impl.CompanyServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -108,9 +107,6 @@ public class CurrentPeriodTnClosureValidatorTest {
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
-        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
-        when(currentPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
-
         Errors responseErrors = currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(responseErrors.hasErrors());
@@ -129,10 +125,7 @@ public class CurrentPeriodTnClosureValidatorTest {
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
-        when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
-
-        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
-        when(currentPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
+        when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
 
         Errors responseErrors = currentPeriodTnClosureValidator.isValid(transaction, COMPANY_ACCOUNTS_ID, request);
 
