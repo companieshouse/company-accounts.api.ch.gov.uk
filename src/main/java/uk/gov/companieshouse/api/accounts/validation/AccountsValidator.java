@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class AccountsValidator extends BaseValidator {
 
-    private static final String SMALL_FULL_PATH = "$company_accounts.small_full";
+    private static final String SMALL_FULL_PATH = "$.company_accounts.small_full";
 
     private final CompanyAccountService companyAccountService;
 
