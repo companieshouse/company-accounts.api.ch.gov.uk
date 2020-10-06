@@ -21,13 +21,13 @@ public class AccountsValidator extends BaseValidator {
 
     private static final String SMALL_FULL_PATH = "$company_accounts.small_full";
 
-    private CompanyAccountService companyAccountService;
+    private final CompanyAccountService companyAccountService;
 
-    private SmallFullService smallFullService;
+    private final SmallFullService smallFullService;
 
-    private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
+    private final CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
 
-    private PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
+    private final PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
 
     @Autowired
     public AccountsValidator(CompanyService companyService, CompanyAccountService companyAccountService,
