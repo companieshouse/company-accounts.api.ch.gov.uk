@@ -22,6 +22,6 @@ public class ValidationStatusServiceImpl implements ValidationStatusService {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        return accountsValidator.validationSubmission(transaction, companyAccountsId, request);
+        return accountsValidator.validate(transaction, companyAccountsId, request);
     }
 }

@@ -1,5 +1,12 @@
 package uk.gov.companieshouse.api.accounts.validation.transactionclosure;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,10 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
-import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -26,19 +31,19 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CurrentPeriodTnClosureValidatorTest {
+class CurrentPeriodTxnClosureValidatorTest {
+
+    private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
+    private static final String SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_CURRENT_PERIOD_PATH + ".balance_sheet";
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+
+    private static final String CURRENT_PERIOD_LINK = "currentPeriodLink";
+
+    private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
 
     @Mock
     private CompanyAccountService companyAccountService;
@@ -56,16 +61,7 @@ class CurrentPeriodTnClosureValidatorTest {
     private HttpServletRequest request;
 
     @Mock
-    private ResponseObject<CompanyAccount> companyAccountResponseObject;
-
-    @Mock
-    private ResponseObject<SmallFull> smallFullResponseObject;
-
-    @Mock
     private ResponseObject<CurrentPeriod> currentPeriodResponseObject;
-
-    @Mock
-    private CompanyAccount companyAccount;
 
     @Mock
     private SmallFull smallFull;
@@ -76,24 +72,11 @@ class CurrentPeriodTnClosureValidatorTest {
     @Mock
     private CurrentPeriod currentPeriod;
 
-    private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
-
-
-    private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
-    private static final String SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_CURRENT_PERIOD_PATH + ".balance_sheet";
-
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-
-    private static final String SMALL_FULL_LINK = "smallFullLink";
-
-    private static final String CURRENT_PERIOD_LINK = "currentPeriodLink";
-
-    private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
+    private CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
 
     @BeforeEach
     void setup() {
-        this.currentPeriodTnClosureValidator = new CurrentPeriodTnClosureValidator(companyService, companyAccountService, smallFullService, currentPeriodService);
+        this.currentPeriodTnClosureValidator = new CurrentPeriodTxnClosureValidator(companyService, currentPeriodService);
     }
 
     @Test
@@ -101,13 +84,6 @@ class CurrentPeriodTnClosureValidatorTest {
     void isValidNoErrors() throws DataException {
 
         Errors errors = new Errors(); // Empty.
-
-        when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
-        when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
-
-        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
-        when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
@@ -115,7 +91,7 @@ class CurrentPeriodTnClosureValidatorTest {
         when(currentPeriodResponseObject.getData()).thenReturn(currentPeriod);
         when(currentPeriod.getBalanceSheet()).thenReturn(balanceSheet);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -127,18 +103,12 @@ class CurrentPeriodTnClosureValidatorTest {
 
         ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
-        when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
-        when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
-
-        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
-        when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
         when(currentPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH)));
@@ -149,13 +119,6 @@ class CurrentPeriodTnClosureValidatorTest {
     void isValidReturnsErrorsNoBalanceSheet() throws DataException {
 
         ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
-
-        when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
-        when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
-
-        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
-        when(smallFullResponseObject.getData()).thenReturn(smallFull);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
@@ -163,7 +126,7 @@ class CurrentPeriodTnClosureValidatorTest {
         when(currentPeriodResponseObject.getData()).thenReturn(currentPeriod);
         when(currentPeriod.getBalanceSheet()).thenReturn(null);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH)));
@@ -175,28 +138,10 @@ class CurrentPeriodTnClosureValidatorTest {
 
         ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
-        when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
-        when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
-        when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
-
-        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
-        when(smallFullResponseObject.getData()).thenReturn(smallFull);
-        when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
-
-        Errors responseErrors = currentPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH)));
-    }
-
-    private Map<String, String> createCompanyAccountLinks(boolean includeSmallFull) {
-        Map<String, String> links = new HashMap<>();
-
-        if (includeSmallFull) {
-            links.put(CompanyAccountLinkType.SMALL_FULL.getLink(), SMALL_FULL_LINK);
-        }
-
-        return links;
     }
 
     private Map<String, String> createSmallFullLinks(boolean includeCurrentPeriodLink) {
