@@ -41,7 +41,7 @@ class AccountsValidatorTest {
     private static final String SMALL_FULL_LINK = "smallFullLink";
     private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
-    private static final String SMALL_FULL_PATH = "$company_accounts.small_full";
+    private static final String SMALL_FULL_PATH = "$.company_accounts.small_full";
     private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
     private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
 
