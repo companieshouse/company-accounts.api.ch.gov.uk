@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
+import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTnClosureValidator;
@@ -16,19 +17,28 @@ import uk.gov.companieshouse.api.accounts.validation.transactionclosure.Previous
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class AccountsValidator {
+public class AccountsValidator extends BaseValidator {
 
-    @Autowired
+    private static final String SMALL_FULL_PATH = "$.small_full";
+
     private CompanyAccountService companyAccountService;
 
-    @Autowired
     private SmallFullService smallFullService;
 
-    @Autowired
     private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
 
-    @Autowired
     private PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
+
+    @Autowired
+    public AccountsValidator(CompanyService companyService, CompanyAccountService companyAccountService,
+            SmallFullService smallFullService, CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator,
+            PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator) {
+        super(companyService);
+        this.companyAccountService = companyAccountService;
+        this.smallFullService = smallFullService;
+        this.currentPeriodTnClosureValidator = currentPeriodTnClosureValidator;
+        this.previousPeriodTnClosureValidator = previousPeriodTnClosureValidator;
+    }
     
     public Errors validationSubmission(Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {
@@ -47,6 +57,8 @@ public class AccountsValidator {
 
             // Previous period validation.
             errors = previousPeriodTnClosureValidator.isValid(companyAccountsId, smallFull, transaction, request, errors);
+        } else {
+            addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);
         }
 
         return errors;
