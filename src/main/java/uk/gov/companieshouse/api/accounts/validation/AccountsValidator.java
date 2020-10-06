@@ -12,8 +12,8 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTnClosureValidator;
-import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
@@ -25,14 +25,14 @@ public class AccountsValidator extends BaseValidator {
 
     private final SmallFullService smallFullService;
 
-    private final CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
+    private final CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
 
-    private final PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
+    private final PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
     @Autowired
     public AccountsValidator(CompanyService companyService, CompanyAccountService companyAccountService,
-            SmallFullService smallFullService, CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator,
-            PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator) {
+            SmallFullService smallFullService, CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
+            PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator) {
         super(companyService);
         this.companyAccountService = companyAccountService;
         this.smallFullService = smallFullService;
@@ -40,7 +40,7 @@ public class AccountsValidator extends BaseValidator {
         this.previousPeriodTnClosureValidator = previousPeriodTnClosureValidator;
     }
     
-    public Errors validationSubmission(Transaction transaction, String companyAccountsId, HttpServletRequest request)
+    public Errors validate(Transaction transaction, String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
         Errors errors = new Errors();

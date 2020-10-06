@@ -52,7 +52,7 @@ class ValidationStatusServiceImplTest {
         Errors errors = new Errors(); // Empty.
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
+        when(validator.validate(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         Errors responseErrors = service.getValidationErrors(COMPANY_ACCOUNTS_ID, request);
 
@@ -67,7 +67,7 @@ class ValidationStatusServiceImplTest {
         errors.addError(createError(MANDATORY_ELEMENT_MISSING, CURRENT_PERIOD_PATH));
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-        when(validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
+        when(validator.validate(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         Errors responseErrors = service.getValidationErrors(COMPANY_ACCOUNTS_ID, request);
 

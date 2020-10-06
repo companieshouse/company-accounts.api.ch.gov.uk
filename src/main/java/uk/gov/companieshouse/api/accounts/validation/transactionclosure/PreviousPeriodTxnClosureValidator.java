@@ -16,7 +16,7 @@ import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class PreviousPeriodTnClosureValidator extends BaseValidator {
+public class PreviousPeriodTxnClosureValidator extends BaseValidator {
 
     private final PreviousPeriodService previousPeriodService;
 
@@ -24,7 +24,7 @@ public class PreviousPeriodTnClosureValidator extends BaseValidator {
     private static final String SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_PREVIOUS_PERIOD_PATH + ".balance_sheet";
 
     @Autowired
-    public PreviousPeriodTnClosureValidator(CompanyService companyService,
+    public PreviousPeriodTxnClosureValidator(CompanyService companyService,
                                            PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.previousPeriodService = previousPeriodService;

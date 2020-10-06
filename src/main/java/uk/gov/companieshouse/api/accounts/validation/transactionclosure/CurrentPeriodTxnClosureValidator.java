@@ -15,7 +15,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 
 @Component
-public class CurrentPeriodTnClosureValidator extends BaseValidator {
+public class CurrentPeriodTxnClosureValidator extends BaseValidator {
 
     private final CurrentPeriodService currentPeriodService;
 
@@ -23,7 +23,7 @@ public class CurrentPeriodTnClosureValidator extends BaseValidator {
     private static final String SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_CURRENT_PERIOD_PATH + ".balance_sheet";
 
     @Autowired
-    public CurrentPeriodTnClosureValidator(CompanyService companyService,
+    public CurrentPeriodTxnClosureValidator(CompanyService companyService,
                                            CurrentPeriodService currentPeriodService) {
         super(companyService);
         this.currentPeriodService = currentPeriodService;

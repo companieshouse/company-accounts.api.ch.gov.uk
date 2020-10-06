@@ -29,8 +29,8 @@ import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTnClosureValidator;
-import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,10 +77,10 @@ class AccountsValidatorTest {
     private SmallFull smallFull;
 
     @Mock
-    private CurrentPeriodTnClosureValidator currentPeriodTnClosureValidator;
+    private CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
 
     @Mock
-    private PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
+    private PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
     @InjectMocks
     private AccountsValidator validator;
@@ -114,7 +114,7 @@ class AccountsValidatorTest {
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
-        Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -129,7 +129,7 @@ class AccountsValidatorTest {
 
         when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(false));
 
-        Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -155,7 +155,7 @@ class AccountsValidatorTest {
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
-        Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -177,7 +177,7 @@ class AccountsValidatorTest {
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
-        Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -200,7 +200,7 @@ class AccountsValidatorTest {
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
-        Errors responseErrors = validator.validationSubmission(transaction, COMPANY_ACCOUNTS_ID, request);
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());

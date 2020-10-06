@@ -69,7 +69,7 @@ class PerviousPeriodTnClosureValidatorTest {
     @Mock
     private PreviousPeriod previousPeriod;
 
-    private PreviousPeriodTnClosureValidator previousPeriodTnClosureValidator;
+    private PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
 
     private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
@@ -84,7 +84,7 @@ class PerviousPeriodTnClosureValidatorTest {
 
     @BeforeEach
     void setup() {
-        this.previousPeriodTnClosureValidator = new PreviousPeriodTnClosureValidator(companyService, previousPeriodService);
+        this.previousPeriodTnClosureValidator = new PreviousPeriodTxnClosureValidator(companyService, previousPeriodService);
     }
 
     @Test
