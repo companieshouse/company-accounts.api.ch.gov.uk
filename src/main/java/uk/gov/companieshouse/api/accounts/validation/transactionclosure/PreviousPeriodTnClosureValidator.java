@@ -33,19 +33,20 @@ public class PreviousPeriodTnClosureValidator extends BaseValidator {
     public Errors isValid(String companyAccountsId, SmallFull smallFull,
             Transaction transaction, HttpServletRequest request, Errors errors) throws DataException {
 
-        if (getIsMultipleYearFiler(transaction)
-                && smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink()) != null) {
-            ResponseObject<PreviousPeriod> previousPeriodResponseObject =
-                    previousPeriodService.find(companyAccountsId, request);
-
-            if (previousPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
+        if (getIsMultipleYearFiler(transaction)) {
+            if(smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink()) != null) {
+                ResponseObject<PreviousPeriod> previousPeriodResponseObject =
+                        previousPeriodService.find(companyAccountsId, request);
+    
+                if (previousPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
+                    addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_PERIOD_PATH);
+                } else if (previousPeriodResponseObject.getData().getBalanceSheet() == null) {
+                    addError(errors, mandatoryElementMissing,
+                            SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH);
+                }
+            } else {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_PERIOD_PATH);
-            } else if (previousPeriodResponseObject.getData().getBalanceSheet() == null) {
-                addError(errors, mandatoryElementMissing,
-                        SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH);
             }
-        } else {
-            addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_PERIOD_PATH);
         }
 
         return errors;
