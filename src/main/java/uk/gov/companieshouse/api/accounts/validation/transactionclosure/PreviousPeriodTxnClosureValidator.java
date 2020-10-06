@@ -18,10 +18,10 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class PreviousPeriodTxnClosureValidator extends BaseValidator {
 
-    private final PreviousPeriodService previousPeriodService;
-
     private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
     private static final String SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_PREVIOUS_PERIOD_PATH + ".balance_sheet";
+
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
     public PreviousPeriodTxnClosureValidator(CompanyService companyService,
@@ -30,7 +30,7 @@ public class PreviousPeriodTxnClosureValidator extends BaseValidator {
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors isValid(String companyAccountsId, SmallFull smallFull,
+    public Errors validate(String companyAccountsId, SmallFull smallFull,
             Transaction transaction, HttpServletRequest request, Errors errors) throws DataException {
 
         if (getIsMultipleYearFiler(transaction)) {

@@ -17,10 +17,10 @@ import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 @Component
 public class CurrentPeriodTxnClosureValidator extends BaseValidator {
 
-    private final CurrentPeriodService currentPeriodService;
-
     private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
     private static final String SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_CURRENT_PERIOD_PATH + ".balance_sheet";
+
+    private final CurrentPeriodService currentPeriodService;
 
     @Autowired
     public CurrentPeriodTxnClosureValidator(CompanyService companyService,
@@ -29,7 +29,7 @@ public class CurrentPeriodTxnClosureValidator extends BaseValidator {
         this.currentPeriodService = currentPeriodService;
     }
 
-    public Errors isValid(String companyAccountsId, SmallFull smallFull, HttpServletRequest request,
+    public Errors validate(String companyAccountsId, SmallFull smallFull, HttpServletRequest request,
             Errors errors) throws DataException {
 
         if (smallFull.getLinks().get(SmallFullLinkType.CURRENT_PERIOD.getLink()) != null) {

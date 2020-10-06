@@ -37,7 +37,17 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PerviousPeriodTnClosureValidatorTest {
+class PerviousPeriodTxnClosureValidatorTest {
+
+    private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
+    private static final String SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_PREVIOUS_PERIOD_PATH + ".balance_sheet";
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+
+    private static final String PREVIOUS_PERIOD_LINK = "previousPeriodLink";
+
+    private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
 
     @Mock
     private Transaction transaction;
@@ -71,17 +81,6 @@ class PerviousPeriodTnClosureValidatorTest {
 
     private PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
-
-    private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
-    private static final String SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH = SMALL_FULL_PREVIOUS_PERIOD_PATH + ".balance_sheet";
-
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-
-    private static final String PREVIOUS_PERIOD_LINK = "previousPeriodLink";
-
-    private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
-
     @BeforeEach
     void setup() {
         this.previousPeriodTnClosureValidator = new PreviousPeriodTxnClosureValidator(companyService, previousPeriodService);
@@ -100,7 +99,7 @@ class PerviousPeriodTnClosureValidatorTest {
         when(previousPeriodResponseObject.getData()).thenReturn(previousPeriod);
         when(previousPeriod.getBalanceSheet()).thenReturn(balanceSheet);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
+        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -114,7 +113,7 @@ class PerviousPeriodTnClosureValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
+        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -133,7 +132,7 @@ class PerviousPeriodTnClosureValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(previousPeriodResponseObject);
         when(previousPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH)));
@@ -152,7 +151,7 @@ class PerviousPeriodTnClosureValidatorTest {
         when(previousPeriodResponseObject.getData()).thenReturn(previousPeriod);
         when(previousPeriod.getBalanceSheet()).thenReturn(null);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH)));
@@ -166,7 +165,7 @@ class PerviousPeriodTnClosureValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.isValid(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH)));

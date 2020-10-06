@@ -38,7 +38,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 class AccountsValidatorTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-
     private static final String SMALL_FULL_LINK = "smallFullLink";
     private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
@@ -108,9 +107,9 @@ class AccountsValidatorTest {
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
-        when(currentPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
-        when(previousPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
@@ -133,9 +132,9 @@ class AccountsValidatorTest {
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
-        verify(currentPeriodTnClosureValidator, never()).isValid(any(String.class), any(SmallFull.class),
+        verify(currentPeriodTnClosureValidator, never()).validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class));
-        verify(previousPeriodTnClosureValidator, never()).isValid(any(String.class), any(SmallFull.class),
+        verify(previousPeriodTnClosureValidator, never()).validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class));
     }
 
@@ -149,9 +148,9 @@ class AccountsValidatorTest {
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
-        when(currentPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
-        when(previousPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
@@ -171,9 +170,9 @@ class AccountsValidatorTest {
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
-        when(currentPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
-        when(previousPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 
@@ -194,9 +193,9 @@ class AccountsValidatorTest {
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
-        when(currentPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
-        when(previousPeriodTnClosureValidator.isValid(any(String.class), any(SmallFull.class),
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
 

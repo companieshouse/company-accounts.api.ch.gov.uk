@@ -53,10 +53,10 @@ public class AccountsValidator extends BaseValidator {
             SmallFull smallFull = smallFullService.find(companyAccountsId, request).getData();
             
             // Current period validation.
-            errors = currentPeriodTnClosureValidator.isValid(companyAccountsId, smallFull, request, errors);
+            errors = currentPeriodTnClosureValidator.validate(companyAccountsId, smallFull, request, errors);
 
             // Previous period validation.
-            errors = previousPeriodTnClosureValidator.isValid(companyAccountsId, smallFull, transaction, request, errors);
+            errors = previousPeriodTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
         } else {
             addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);
         }
