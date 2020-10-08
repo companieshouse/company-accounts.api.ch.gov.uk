@@ -13,6 +13,7 @@ public enum AccountsType {
 
     private static final String ASSET_ID = "accounts";
 
+    private String fooDoNotMergeTestingForPr;
     private String accountType;
     private String templateName;
     private String kind;
