@@ -282,7 +282,7 @@
       {{$currentPeriod := .small_full_accounts.period.current_period_start_on}}
       {{$previousPeriod := .small_full_accounts.period.previous_period_start_on}}
 
-      {{if $balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
+      {{$balanceSheetNotes := .small_full_accounts.balance_sheet_notes}}
 
       <ix:header>
         <ix:hidden>
@@ -1378,7 +1378,6 @@
           {{ end }} <!-- close range over loans -->
           {{ end }} <!-- close if loans exist -->
           {{ end }} <!-- close if loans to directors exist -->
-          {{ end }} <!-- close if balance sheet notes exist -->
         </ix:resources>
       </ix:header>
     </div>
