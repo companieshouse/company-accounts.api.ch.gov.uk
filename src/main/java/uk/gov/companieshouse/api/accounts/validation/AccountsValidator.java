@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
@@ -32,12 +35,18 @@ public class AccountsValidator extends BaseValidator {
 
     private final StocksTxnClosureValidator stocksTnClosureValidator;
 
+    private final CurrentPeriodService currentPeriodService;
+
+    private final PreviousPeriodService previousPeriodService;
+
     @Autowired
     public AccountsValidator(CompanyService companyService,
                              CompanyAccountService companyAccountService,
                              SmallFullService smallFullService,
                              CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
                              PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator,
+                             CurrentPeriodService currentPeriodService,
+                             PreviousPeriodService previousPeriodService,
                              StocksTxnClosureValidator stocksTnClosureValidator) {
         super(companyService);
         this.companyAccountService = companyAccountService;
@@ -45,6 +54,8 @@ public class AccountsValidator extends BaseValidator {
         this.currentPeriodTnClosureValidator = currentPeriodTnClosureValidator;
         this.previousPeriodTnClosureValidator = previousPeriodTnClosureValidator;
         this.stocksTnClosureValidator = stocksTnClosureValidator;
+        this.currentPeriodService = currentPeriodService;
+        this.previousPeriodService = previousPeriodService;
     }
     
     public Errors validate(Transaction transaction, String companyAccountsId, HttpServletRequest request)
@@ -67,8 +78,12 @@ public class AccountsValidator extends BaseValidator {
                 return errors;
             }
 
+            BalanceSheet currentPeriodBalanceSheet = currentPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
+            BalanceSheet previousPeriodBalanceSheet = previousPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
+
             // Note validation.
-            errors = stocksTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
+            errors = stocksTnClosureValidator
+                    .validate(companyAccountsId, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet);
 
         } else {
             addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);

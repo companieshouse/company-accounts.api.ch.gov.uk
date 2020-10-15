@@ -27,6 +27,8 @@ import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
+import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
+import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
@@ -54,6 +56,12 @@ class AccountsValidatorTest {
 
     @Mock
     private HttpServletRequest request;
+
+    @Mock
+    private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private PreviousPeriodService previousPeriodService;
 
     @Mock
     private CompanyAccountService companyAccountService;
@@ -96,8 +104,14 @@ class AccountsValidatorTest {
         when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
         
         this.validator =
-                new AccountsValidator(companyService, companyAccountService, smallFullService,
-                        currentPeriodTnClosureValidator, previousPeriodTnClosureValidator, stocksTnClosureValidator);
+                new AccountsValidator(companyService,
+                        companyAccountService,
+                        smallFullService,
+                        currentPeriodTnClosureValidator,
+                        previousPeriodTnClosureValidator,
+                        currentPeriodService,
+                        previousPeriodService,
+                        stocksTnClosureValidator);
 
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
     }
