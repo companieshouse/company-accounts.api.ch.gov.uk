@@ -14,6 +14,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTxnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.StocksTxnClosureValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
@@ -29,15 +30,18 @@ public class AccountsValidator extends BaseValidator {
 
     private final PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
+    private final StocksTxnClosureValidator stocksTnClosureValidator;
+
     @Autowired
     public AccountsValidator(CompanyService companyService, CompanyAccountService companyAccountService,
-            SmallFullService smallFullService, CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
-            PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator) {
+                             SmallFullService smallFullService, CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
+                             PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator, StocksTxnClosureValidator stocksTnClosureValidator) {
         super(companyService);
         this.companyAccountService = companyAccountService;
         this.smallFullService = smallFullService;
         this.currentPeriodTnClosureValidator = currentPeriodTnClosureValidator;
         this.previousPeriodTnClosureValidator = previousPeriodTnClosureValidator;
+        this.stocksTnClosureValidator = stocksTnClosureValidator;
     }
     
     public Errors validate(Transaction transaction, String companyAccountsId, HttpServletRequest request)
@@ -57,6 +61,15 @@ public class AccountsValidator extends BaseValidator {
 
             // Previous period validation.
             errors = previousPeriodTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
+
+            // If errors are found return now too avoid extensive validation.
+            if (errors.hasErrors()) {
+                return errors;
+            }
+
+            // Stocks validation.
+            errors = stocksTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
+
         } else {
             addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);
         }

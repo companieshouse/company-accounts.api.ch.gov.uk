@@ -31,6 +31,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTxnClosureValidator;
+import uk.gov.companieshouse.api.accounts.validation.transactionclosure.StocksTxnClosureValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,6 +82,9 @@ class AccountsValidatorTest {
     @Mock
     private PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
 
+    @Mock
+    private StocksTxnClosureValidator stocksTnClosureValidator;
+
     @InjectMocks
     private AccountsValidator validator;
 
@@ -93,7 +97,7 @@ class AccountsValidatorTest {
         
         this.validator =
                 new AccountsValidator(companyService, companyAccountService, smallFullService,
-                        currentPeriodTnClosureValidator, previousPeriodTnClosureValidator);
+                        currentPeriodTnClosureValidator, previousPeriodTnClosureValidator, stocksTnClosureValidator);
 
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
     }
