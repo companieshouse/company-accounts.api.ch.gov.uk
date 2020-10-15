@@ -33,9 +33,12 @@ public class AccountsValidator extends BaseValidator {
     private final StocksTxnClosureValidator stocksTnClosureValidator;
 
     @Autowired
-    public AccountsValidator(CompanyService companyService, CompanyAccountService companyAccountService,
-                             SmallFullService smallFullService, CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
-                             PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator, StocksTxnClosureValidator stocksTnClosureValidator) {
+    public AccountsValidator(CompanyService companyService,
+                             CompanyAccountService companyAccountService,
+                             SmallFullService smallFullService,
+                             CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
+                             PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator,
+                             StocksTxnClosureValidator stocksTnClosureValidator) {
         super(companyService);
         this.companyAccountService = companyAccountService;
         this.smallFullService = smallFullService;
@@ -55,19 +58,16 @@ public class AccountsValidator extends BaseValidator {
         
         if(companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink()) != null) {
             SmallFull smallFull = smallFullService.find(companyAccountsId, request).getData();
-            
-            // Current period validation.
-            errors = currentPeriodTnClosureValidator.validate(companyAccountsId, smallFull, request, errors);
 
-            // Previous period validation.
+            // Period validation.
+            errors = currentPeriodTnClosureValidator.validate(companyAccountsId, smallFull, request, errors);
             errors = previousPeriodTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
 
-            // If errors are found return now too avoid extensive validation.
             if (errors.hasErrors()) {
                 return errors;
             }
 
-            // Stocks validation.
+            // Note validation.
             errors = stocksTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
 
         } else {
