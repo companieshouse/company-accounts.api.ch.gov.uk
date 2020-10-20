@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StocksTxnClosureValidatorTest {
+class StocksTxnClosureValidatorTest {
 
     private static final String STOCKS_LINK = "stocksLink";
 
@@ -52,7 +52,7 @@ public class StocksTxnClosureValidatorTest {
     private static final String SMALL_FULL_PREVIOUS_STOCKS_PATH = "$.company_accounts.small_full.previous_period.notes.stocks";
 
     @Mock
-    SmallFull smallFull;
+    private SmallFull smallFull;
 
     @Mock
     private CompanyService companyService;

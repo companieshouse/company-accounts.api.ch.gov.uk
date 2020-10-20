@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -88,9 +89,6 @@ class AccountsValidatorTest {
 
     @Mock
     private CompanyAccount companyAccount;
-
-    @Mock
-    private Errors errors;
     
     @Mock
     private SmallFull smallFull;
@@ -120,7 +118,7 @@ class AccountsValidatorTest {
     private AccountsValidator validator;
 
     @BeforeEach
-    private void setUp() throws DataException {
+    void setUp() throws DataException {
 
         when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
         when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
