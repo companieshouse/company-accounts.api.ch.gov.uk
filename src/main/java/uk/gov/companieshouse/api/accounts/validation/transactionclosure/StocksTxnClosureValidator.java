@@ -59,10 +59,8 @@ public class StocksTxnClosureValidator extends BaseValidator {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_STOCKS);
             }
 
-            if (getIsMultipleYearFiler(transaction)) {
-                if (previousPeriodBalanceSheet.getCurrentAssets().getStocks() != null) {
-                    addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_STOCKS);
-                }
+            if (getIsMultipleYearFiler(transaction) && previousPeriodBalanceSheet.getCurrentAssets().getStocks() != null) {
+                addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_STOCKS);
             }
         }
 
