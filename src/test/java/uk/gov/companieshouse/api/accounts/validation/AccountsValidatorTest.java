@@ -21,7 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
+import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -31,6 +34,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.PreviousPeriodService;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.CurrentPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.PreviousPeriodTxnClosureValidator;
 import uk.gov.companieshouse.api.accounts.validation.transactionclosure.StocksTxnClosureValidator;
@@ -47,6 +51,7 @@ class AccountsValidatorTest {
     private static final String SMALL_FULL_PATH = "$.company_accounts.small_full";
     private static final String SMALL_FULL_CURRENT_PERIOD_PATH = "$.small_full.current_period";
     private static final String SMALL_FULL_PREVIOUS_PERIOD_PATH = "$.small_full.previous_period";
+    private static final String SMALL_FULL_CURRENT_STOCKS = SMALL_FULL_CURRENT_PERIOD_PATH + ".notes.stocks";
 
     @Mock
     private CompanyService companyService;
@@ -59,6 +64,12 @@ class AccountsValidatorTest {
 
     @Mock
     private CurrentPeriodService currentPeriodService;
+
+    @Mock
+    private CurrentPeriod currentPeriod;
+
+    @Mock
+    private PreviousPeriod previousPeriod;
 
     @Mock
     private PreviousPeriodService previousPeriodService;
@@ -83,6 +94,18 @@ class AccountsValidatorTest {
     
     @Mock
     private SmallFull smallFull;
+
+    @Mock
+    private BalanceSheet currentPeriodBalanceSheet;
+
+    @Mock
+    private BalanceSheet previousPeriodBalanceSheet;
+
+    @Mock
+    private ResponseObject<CurrentPeriod> cpResponseObj;
+
+    @Mock
+    private ResponseObject<PreviousPeriod> ppResponseObj;
 
     @Mock
     private CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
@@ -120,7 +143,7 @@ class AccountsValidatorTest {
     @DisplayName("Validate Submission - successful, no errors")
     void validateSubmissionNoErrorsFound() throws DataException {
 
-        Errors errors = new Errors();
+        Errors errors = new Errors(); //Empty.
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
@@ -130,6 +153,18 @@ class AccountsValidatorTest {
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
                         .thenReturn(errors);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
+        when(cpResponseObj.getData()).thenReturn(currentPeriod);
+        when(currentPeriod.getBalanceSheet()).thenReturn(currentPeriodBalanceSheet);
+
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(ppResponseObj);
+        when(ppResponseObj.getData()).thenReturn(previousPeriod);
+        when(previousPeriod.getBalanceSheet()).thenReturn(previousPeriodBalanceSheet);
+
+        when(stocksTnClosureValidator
+                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
+                .thenReturn(errors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -221,6 +256,42 @@ class AccountsValidatorTest {
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
+    }
+
+    @Test
+    @DisplayName("Validate Submission - stocks tn closure validator returns errors")
+    void validateSubmissionStocksReturnsErrors() throws DataException {
+        Errors errors = new Errors(); //Empty to skip initial period validation
+
+        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
+        when(smallFullResponseObject.getData()).thenReturn(smallFull);
+
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
+                any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
+                .thenReturn(errors);
+
+        ResponseObject<CurrentPeriod> cpResponseObj = new ResponseObject<>(ResponseStatus.FOUND);
+        cpResponseObj.setData(currentPeriod);
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
+        when(currentPeriod.getBalanceSheet()).thenReturn(currentPeriodBalanceSheet);
+
+        ResponseObject<PreviousPeriod> ppResponseObj = new ResponseObject<>(ResponseStatus.FOUND);
+        ppResponseObj.setData(previousPeriod);
+        when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(ppResponseObj);
+        when(previousPeriod.getBalanceSheet()).thenReturn(previousPeriodBalanceSheet);
+
+        Errors stocksErrors = new Errors();
+        stocksErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_STOCKS));
+        when(stocksTnClosureValidator
+                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
+                .thenReturn(stocksErrors);
+
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertTrue(responseErrors.hasErrors());
+        assertEquals(stocksErrors.getErrors(), responseErrors.getErrors());
     }
     
     private Map<String, String> createCompanyAccountLinks(boolean includeSmallFull) {

@@ -46,10 +46,13 @@ public class StocksTxnClosureValidator extends BaseValidator {
                            BalanceSheet currentPeriodBalanceSheet,
                            BalanceSheet previousPeriodBalanceSheet) throws DataException {
 
-        ResponseObject<Note> stocksNote = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
-
         if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) {
-            errors = validatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS).validateSubmission(stocksNote.getData(), transaction, companyAccountsId, request);
+            ResponseObject<Note> stocksNote = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
+
+            Errors noteValidationErrors = validatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS).validateSubmission(stocksNote.getData(), transaction, companyAccountsId, request);
+            if (noteValidationErrors.hasErrors()) {
+                errors.getErrors().addAll(noteValidationErrors.getErrors());
+            }
         } else {
 
             if (currentPeriodBalanceSheet.getCurrentAssets().getStocks() != null) {
