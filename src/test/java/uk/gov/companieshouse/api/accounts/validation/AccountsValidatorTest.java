@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -114,7 +113,6 @@ class AccountsValidatorTest {
     @Mock
     private StocksTxnClosureValidator stocksTnClosureValidator;
 
-    @InjectMocks
     private AccountsValidator validator;
 
     @BeforeEach
@@ -141,16 +139,16 @@ class AccountsValidatorTest {
     @DisplayName("Validate Submission - successful, no errors")
     void validateSubmissionNoErrorsFound() throws DataException {
 
-        Errors errors = new Errors(); //Empty.
+        Errors emptyErrors = new Errors();
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
+                any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                        .thenReturn(errors);
+                        .thenReturn(emptyErrors);
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
         when(cpResponseObj.getData()).thenReturn(currentPeriod);
@@ -161,13 +159,13 @@ class AccountsValidatorTest {
         when(previousPeriod.getBalanceSheet()).thenReturn(previousPeriodBalanceSheet);
 
         when(stocksTnClosureValidator
-                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
-                .thenReturn(errors);
+                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
+                .thenReturn(emptyErrors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(responseErrors.hasErrors());
-        assertEquals(errors.getErrors(), responseErrors.getErrors());
+        assertEquals(emptyErrors.getErrors(), responseErrors.getErrors());
     }
 
     @Test
@@ -259,16 +257,16 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - stocks tn closure validator returns errors")
     void validateSubmissionStocksReturnsErrors() throws DataException {
-        Errors errors = new Errors(); //Empty to skip initial period validation
+        Errors emptyErrors = new Errors(); //Empty to skip initial period validation
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
 
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
+                any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                .thenReturn(errors);
+                .thenReturn(emptyErrors);
 
         ResponseObject<CurrentPeriod> cpResponseObj = new ResponseObject<>(ResponseStatus.FOUND);
         cpResponseObj.setData(currentPeriod);
@@ -283,7 +281,7 @@ class AccountsValidatorTest {
         Errors stocksErrors = new Errors();
         stocksErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_STOCKS));
         when(stocksTnClosureValidator
-                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
+                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
                 .thenReturn(stocksErrors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);

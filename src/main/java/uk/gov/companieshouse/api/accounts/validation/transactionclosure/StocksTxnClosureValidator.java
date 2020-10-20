@@ -6,6 +6,7 @@ import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -13,10 +14,12 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.NoteService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
+import uk.gov.companieshouse.api.accounts.validation.NoteValidator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidatorFactory;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Component
 public class StocksTxnClosureValidator extends BaseValidator {
@@ -47,19 +50,32 @@ public class StocksTxnClosureValidator extends BaseValidator {
                            BalanceSheet previousPeriodBalanceSheet) throws DataException {
 
         if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) {
-            ResponseObject<Note> stocksNote = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
+            ResponseObject<Note> stocksResponseObj = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
 
-            Errors noteValidationErrors = validatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS).validateSubmission(stocksNote.getData(), transaction, companyAccountsId, request);
-            if (noteValidationErrors.hasErrors()) {
-                errors.getErrors().addAll(noteValidationErrors.getErrors());
+            Note stocksData = stocksResponseObj.getData();
+            if(stocksData != null) {
+                NoteValidator<Note> noteValidator = validatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS);
+                Errors noteValidationErrors = noteValidator.validateSubmission(stocksData, transaction, companyAccountsId, request);
+                if (noteValidationErrors.hasErrors()) {
+                    errors.getErrors().addAll(noteValidationErrors.getErrors());
+                }
             }
         } else {
 
-            if (currentPeriodBalanceSheet.getCurrentAssets().getStocks() != null) {
+            if (Optional.of(currentPeriodBalanceSheet)
+                    .map(BalanceSheet::getCurrentAssets)
+                    .map(CurrentAssets::getStocks)
+                    .isPresent()) {
+
+
                 addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_STOCKS);
             }
 
-            if (getIsMultipleYearFiler(transaction) && previousPeriodBalanceSheet.getCurrentAssets().getStocks() != null) {
+            if (getIsMultipleYearFiler(transaction) &&
+                    Optional.of(previousPeriodBalanceSheet)
+                            .map(BalanceSheet::getCurrentAssets)
+                            .map(CurrentAssets::getStocks)
+                            .isPresent()) {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_STOCKS);
             }
         }

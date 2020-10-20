@@ -79,11 +79,11 @@ class PerviousPeriodTxnClosureValidatorTest {
     @Mock
     private PreviousPeriod previousPeriod;
 
-    private PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
+    private PreviousPeriodTxnClosureValidator previousPeriodTxnClosureValidator;
 
     @BeforeEach
     void setup() {
-        this.previousPeriodTnClosureValidator = new PreviousPeriodTxnClosureValidator(companyService, previousPeriodService);
+        this.previousPeriodTxnClosureValidator = new PreviousPeriodTxnClosureValidator(companyService, previousPeriodService);
     }
 
     @Test
@@ -99,7 +99,7 @@ class PerviousPeriodTxnClosureValidatorTest {
         when(previousPeriodResponseObject.getData()).thenReturn(previousPeriod);
         when(previousPeriod.getBalanceSheet()).thenReturn(balanceSheet);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
+        Errors responseErrors = previousPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -113,7 +113,7 @@ class PerviousPeriodTxnClosureValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
+        Errors responseErrors = previousPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -124,7 +124,7 @@ class PerviousPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (previous period) failed")
     void isValidReturnsErrors() throws DataException, ServiceException {
 
-        ReflectionTestUtils.setField(previousPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(previousPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
@@ -132,7 +132,7 @@ class PerviousPeriodTxnClosureValidatorTest {
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(previousPeriodResponseObject);
         when(previousPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH)));
@@ -142,7 +142,7 @@ class PerviousPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (balance sheet) failed")
     void isValidReturnsErrorsNoBalanceSheet() throws DataException, ServiceException {
 
-        ReflectionTestUtils.setField(previousPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(previousPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
@@ -151,7 +151,7 @@ class PerviousPeriodTxnClosureValidatorTest {
         when(previousPeriodResponseObject.getData()).thenReturn(previousPeriod);
         when(previousPeriod.getBalanceSheet()).thenReturn(null);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH)));
@@ -161,11 +161,11 @@ class PerviousPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (no previous period link) failed")
     void isValidReturnsErrorsNoPreviousPeriodLink() throws DataException, ServiceException {
 
-        ReflectionTestUtils.setField(previousPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(previousPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        Errors responseErrors = previousPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
+        Errors responseErrors = previousPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH)));

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
+import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
@@ -13,6 +15,8 @@ import uk.gov.companieshouse.api.accounts.service.impl.CurrentPeriodService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
+
+import java.util.Optional;
 
 @Component
 public class CurrentPeriodTxnClosureValidator extends BaseValidator {
@@ -38,7 +42,12 @@ public class CurrentPeriodTxnClosureValidator extends BaseValidator {
 
             if (currentPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_PERIOD_PATH);
-            } else if (currentPeriodResponseObject.getData().getBalanceSheet() == null) {
+
+            } else if (!Optional.of(currentPeriodResponseObject)
+                    .map(ResponseObject::getData)
+                    .map(CurrentPeriod::getBalanceSheet)
+                    .isPresent()) {
+
                 addError(errors, mandatoryElementMissing,
                         SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH);
             }

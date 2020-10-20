@@ -29,11 +29,11 @@ public class AccountsValidator extends BaseValidator {
 
     private final SmallFullService smallFullService;
 
-    private final CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
+    private final CurrentPeriodTxnClosureValidator currentPeriodTxnClosureValidator;
 
-    private final PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator;
+    private final PreviousPeriodTxnClosureValidator previousPeriodTxnClosureValidator;
 
-    private final StocksTxnClosureValidator stocksTnClosureValidator;
+    private final StocksTxnClosureValidator stocksTxnClosureValidator;
 
     private final CurrentPeriodService currentPeriodService;
 
@@ -43,17 +43,17 @@ public class AccountsValidator extends BaseValidator {
     public AccountsValidator(CompanyService companyService,
                              CompanyAccountService companyAccountService,
                              SmallFullService smallFullService,
-                             CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator,
-                             PreviousPeriodTxnClosureValidator previousPeriodTnClosureValidator,
+                             CurrentPeriodTxnClosureValidator currentPeriodTxnClosureValidator,
+                             PreviousPeriodTxnClosureValidator previousPeriodTxnClosureValidator,
                              CurrentPeriodService currentPeriodService,
                              PreviousPeriodService previousPeriodService,
-                             StocksTxnClosureValidator stocksTnClosureValidator) {
+                             StocksTxnClosureValidator stocksTxnClosureValidator) {
         super(companyService);
         this.companyAccountService = companyAccountService;
         this.smallFullService = smallFullService;
-        this.currentPeriodTnClosureValidator = currentPeriodTnClosureValidator;
-        this.previousPeriodTnClosureValidator = previousPeriodTnClosureValidator;
-        this.stocksTnClosureValidator = stocksTnClosureValidator;
+        this.currentPeriodTxnClosureValidator = currentPeriodTxnClosureValidator;
+        this.previousPeriodTxnClosureValidator = previousPeriodTxnClosureValidator;
+        this.stocksTxnClosureValidator = stocksTxnClosureValidator;
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
@@ -71,8 +71,8 @@ public class AccountsValidator extends BaseValidator {
             SmallFull smallFull = smallFullService.find(companyAccountsId, request).getData();
 
             // Period validation.
-            errors = currentPeriodTnClosureValidator.validate(companyAccountsId, smallFull, request, errors);
-            errors = previousPeriodTnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
+            errors = currentPeriodTxnClosureValidator.validate(companyAccountsId, smallFull, request, errors);
+            errors = previousPeriodTxnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors);
 
             if (errors.hasErrors()) {
                 return errors;
@@ -82,7 +82,7 @@ public class AccountsValidator extends BaseValidator {
             BalanceSheet previousPeriodBalanceSheet = previousPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
 
             // Note validation.
-            errors = stocksTnClosureValidator
+            errors = stocksTxnClosureValidator
                     .validate(companyAccountsId, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet);
 
         } else {
