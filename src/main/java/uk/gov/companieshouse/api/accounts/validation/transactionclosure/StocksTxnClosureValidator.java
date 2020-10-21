@@ -28,7 +28,6 @@ public class StocksTxnClosureValidator extends BaseValidator {
 
     private final NoteValidatorFactory<Note> validatorFactory;
 
-
     private static final String SMALL_FULL_CURRENT_STOCKS = "$.company_accounts.small_full.current_period.notes.stocks";
     private static final String SMALL_FULL_PREVIOUS_STOCKS = "$.company_accounts.small_full.previous_period.notes.stocks";
 
@@ -49,7 +48,7 @@ public class StocksTxnClosureValidator extends BaseValidator {
                            BalanceSheet currentPeriodBalanceSheet,
                            BalanceSheet previousPeriodBalanceSheet) throws DataException {
 
-        if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) {
+        if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) { // Do they have a note? If yes we need to validate it's data.
             ResponseObject<Note> stocksResponseObj = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
 
             Note stocksData = stocksResponseObj.getData();
@@ -60,14 +59,11 @@ public class StocksTxnClosureValidator extends BaseValidator {
                     errors.getErrors().addAll(noteValidationErrors.getErrors());
                 }
             }
-        } else {
-
+        } else { // No Note? If not then values should not be present on balance sheet.
             if (Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
                     .isPresent()) {
-
-
                 addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_STOCKS);
             }
 
