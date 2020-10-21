@@ -72,11 +72,11 @@ class CurrentPeriodTxnClosureValidatorTest {
     @Mock
     private CurrentPeriod currentPeriod;
 
-    private CurrentPeriodTxnClosureValidator currentPeriodTnClosureValidator;
+    private CurrentPeriodTxnClosureValidator currentPeriodTxnClosureValidator;
 
     @BeforeEach
     void setup() {
-        this.currentPeriodTnClosureValidator = new CurrentPeriodTxnClosureValidator(companyService, currentPeriodService);
+        this.currentPeriodTxnClosureValidator = new CurrentPeriodTxnClosureValidator(companyService, currentPeriodService);
     }
 
     @Test
@@ -91,7 +91,7 @@ class CurrentPeriodTxnClosureValidatorTest {
         when(currentPeriodResponseObject.getData()).thenReturn(currentPeriod);
         when(currentPeriod.getBalanceSheet()).thenReturn(balanceSheet);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, errors);
+        Errors responseErrors = currentPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, errors);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(errors.getErrors(), responseErrors.getErrors());
@@ -101,14 +101,14 @@ class CurrentPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (current period) failed")
     void isValidReturnsErrors() throws DataException {
 
-        ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(currentPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
         when(currentPeriodResponseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
+        Errors responseErrors = currentPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH)));
@@ -118,7 +118,7 @@ class CurrentPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (balance sheet) failed")
     void isValidReturnsErrorsNoBalanceSheet() throws DataException {
 
-        ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(currentPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(currentPeriodResponseObject);
@@ -126,7 +126,7 @@ class CurrentPeriodTxnClosureValidatorTest {
         when(currentPeriodResponseObject.getData()).thenReturn(currentPeriod);
         when(currentPeriod.getBalanceSheet()).thenReturn(null);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
+        Errors responseErrors = currentPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH)));
@@ -136,9 +136,9 @@ class CurrentPeriodTxnClosureValidatorTest {
     @DisplayName("isValid method returns errors - (no current period link) failed")
     void isValidReturnsErrorsNoCurrentPeriodLink() throws DataException {
 
-        ReflectionTestUtils.setField(currentPeriodTnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(currentPeriodTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
-        Errors responseErrors = currentPeriodTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
+        Errors responseErrors = currentPeriodTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, request, new Errors());
 
         assertTrue(responseErrors.hasErrors());
         assertTrue(responseErrors.containsError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH)));

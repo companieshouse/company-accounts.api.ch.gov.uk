@@ -14,6 +14,8 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.validation.BaseValidator;
 
+import java.util.Optional;
+
 @Component
 public class CurrentPeriodTxnClosureValidator extends BaseValidator {
 
@@ -38,7 +40,12 @@ public class CurrentPeriodTxnClosureValidator extends BaseValidator {
 
             if (currentPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_PERIOD_PATH);
-            } else if (currentPeriodResponseObject.getData().getBalanceSheet() == null) {
+
+            } else if (!Optional.of(currentPeriodResponseObject)
+                    .map(ResponseObject::getData)
+                    .map(CurrentPeriod::getBalanceSheet)
+                    .isPresent()) {
+
                 addError(errors, mandatoryElementMissing,
                         SMALL_FULL_CURRENT_PERIOD_BALANCE_SHEET_PATH);
             }
