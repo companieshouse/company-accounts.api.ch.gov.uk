@@ -24,11 +24,11 @@ import java.util.Optional;
 @Component
 public class StocksTxnClosureValidator extends BaseValidator {
 
+    private static final String SMALL_FULL_STOCKS_LOCATION = "$.company_accounts.small_full.notes.stocks";
+
     private final NoteService stocksNoteService;
 
     private final NoteValidatorFactory<Note> validatorFactory;
-
-    private static final String SMALL_FULL_STOCKS_LOCATION = "$.company_accounts.small_full.notes.stocks";
 
     @Autowired
     public StocksTxnClosureValidator(CompanyService companyService,
@@ -47,7 +47,7 @@ public class StocksTxnClosureValidator extends BaseValidator {
                            BalanceSheet currentPeriodBalanceSheet,
                            BalanceSheet previousPeriodBalanceSheet) throws DataException {
 
-        if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) { // Do they have a note? If yes we need to validate it's data.
+        if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) { // Do they have a note? If yes we need to validate its data.
             ResponseObject<Note> stocksResponseObj = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
 
             Note stocksData = stocksResponseObj.getData();
@@ -58,7 +58,7 @@ public class StocksTxnClosureValidator extends BaseValidator {
                     errors.getErrors().addAll(noteValidationErrors.getErrors());
                 }
             }
-        } else { // No Note? If not then values should not be present on balance sheet.
+        } else { // if there's no stock note, then there should be no stock values on the balance sheet.
             if (Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
