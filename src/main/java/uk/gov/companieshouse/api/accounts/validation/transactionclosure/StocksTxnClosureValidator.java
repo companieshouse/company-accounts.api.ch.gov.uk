@@ -28,8 +28,7 @@ public class StocksTxnClosureValidator extends BaseValidator {
 
     private final NoteValidatorFactory<Note> validatorFactory;
 
-    private static final String SMALL_FULL_CURRENT_STOCKS = "$.company_accounts.small_full.current_period.notes.stocks";
-    private static final String SMALL_FULL_PREVIOUS_STOCKS = "$.company_accounts.small_full.previous_period.notes.stocks";
+    private static final String SMALL_FULL_STOCKS_LOCATION = "$.company_accounts.small_full.notes.stocks";
 
     @Autowired
     public StocksTxnClosureValidator(CompanyService companyService,
@@ -63,16 +62,13 @@ public class StocksTxnClosureValidator extends BaseValidator {
             if (Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
-                    .isPresent()) {
-                addError(errors, mandatoryElementMissing, SMALL_FULL_CURRENT_STOCKS);
-            }
-
-            if (getIsMultipleYearFiler(transaction) &&
+                    .isPresent() ||
+                    (getIsMultipleYearFiler(transaction) &&
                     Optional.of(previousPeriodBalanceSheet)
                             .map(BalanceSheet::getCurrentAssets)
                             .map(CurrentAssets::getStocks)
-                            .isPresent()) {
-                addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_STOCKS);
+                            .isPresent())) {
+                addError(errors, mandatoryElementMissing, SMALL_FULL_STOCKS_LOCATION);
             }
         }
 

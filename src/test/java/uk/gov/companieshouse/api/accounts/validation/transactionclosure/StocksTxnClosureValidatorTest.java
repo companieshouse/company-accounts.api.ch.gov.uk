@@ -48,8 +48,7 @@ class StocksTxnClosureValidatorTest {
     private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
     private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
 
-    private static final String SMALL_FULL_CURRENT_STOCKS_PATH = "$.company_accounts.small_full.current_period.notes.stocks";
-    private static final String SMALL_FULL_PREVIOUS_STOCKS_PATH = "$.company_accounts.small_full.previous_period.notes.stocks";
+    private static final String SMALL_FULL_STOCKS_PATH = "$.company_accounts.small_full.notes.stocks";
 
     @Mock
     private SmallFull smallFull;
@@ -118,7 +117,7 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - has stocks note - errors found")
     void validateStocksTnClosureHasErrors() throws DataException {
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_STOCKS_PATH));
+        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
 
         ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
@@ -159,15 +158,15 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data - SF")
     void validateStocksTnClosureNoNoteErrorsSF() throws ServiceException, DataException {
         Errors emptyErrors = new Errors();
-        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_STOCKS_PATH));
+        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
 
         ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
 
-        when(currentPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
-        when(currentAssets.getStocks()).thenReturn(1L);
+        currentAssets.setStocks(1L);
+        currentPeriodBs.setCurrentAssets(currentAssets);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
@@ -201,14 +200,11 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data - MF")
     void validateStocksTnClosureNoNoteErrorsMF() throws ServiceException, DataException {
         Errors emptyErrors = new Errors();
-        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_STOCKS_PATH));
+        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
 
         ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
-
-        when(currentPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
-        when(currentAssets.getStocks()).thenReturn(null);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
         when(previousPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
