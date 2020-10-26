@@ -1,12 +1,8 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoanBreakdownResource;
@@ -15,6 +11,9 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Component
 public class LoanValidator extends BaseValidator {
@@ -29,15 +28,15 @@ public class LoanValidator extends BaseValidator {
 
     @Autowired
     public LoanValidator(CompanyService companyService,
-            DirectorValidator directorValidator,
-            DirectorsReportServiceImpl directorsReportService) {
+                         DirectorValidator directorValidator,
+                         DirectorsReportServiceImpl directorsReportService) {
         super(companyService);
         this.directorValidator = directorValidator;
         this.directorsReportService = directorsReportService;
     }
 
     public Errors validateLoan(Loan loan, Transaction transaction, String companyAccountId,
-            HttpServletRequest request) throws DataException {
+                               HttpServletRequest request) throws DataException {
 
         Errors errors = new Errors();
 
@@ -86,7 +85,8 @@ public class LoanValidator extends BaseValidator {
     private void crossValidateDirectorNameDR(Loan loan, Transaction transaction, String companyAccountId, HttpServletRequest request, Errors errors)
             throws DataException {
 
-        if (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND) {
+        if (StringUtils.isNotBlank(loan.getDirectorName()) &&
+                (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND)) {
             String directorName = loan.getDirectorName();
 
             List<String> allNames = directorValidator.getValidDirectorNames(transaction, companyAccountId, request);
@@ -94,6 +94,7 @@ public class LoanValidator extends BaseValidator {
             if (!allNames.isEmpty() && !allNames.contains(directorName)) {
 
                 addError(errors, mustMatchDirector, LOANS_DIRECTOR_NAME);
+
             }
         }
     }

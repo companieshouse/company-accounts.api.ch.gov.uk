@@ -1,15 +1,5 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsReport;
@@ -31,6 +20,15 @@ import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImp
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -92,6 +90,21 @@ class LoanValidatorTest {
         createValidMultiYearFilerLoanBreakdown();
 
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
+        errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertFalse(errors.hasErrors());
+    }
+
+    @Test
+    @DisplayName("Loan validation with valid loan and breakdown and no name provided")
+    void testSuccessfulLoanCalculationValidationNoDirectorName() throws DataException, ServiceException {
+
+        loan.setDescription(LOAN_DESCRIPTION);
+
+        createValidMultiYearFilerLoanBreakdown();
+
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -175,7 +188,6 @@ class LoanValidatorTest {
 
         loan.getBreakdown().setBalanceAtPeriodEnd(3000L);
 
-        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
