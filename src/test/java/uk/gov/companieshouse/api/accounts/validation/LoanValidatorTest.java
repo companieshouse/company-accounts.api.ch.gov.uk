@@ -188,7 +188,6 @@ class LoanValidatorTest {
 
         loan.getBreakdown().setBalanceAtPeriodEnd(3000L);
 
-//        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
