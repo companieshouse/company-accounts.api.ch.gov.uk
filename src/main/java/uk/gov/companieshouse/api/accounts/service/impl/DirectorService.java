@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -10,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import com.mongodb.MongoException;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -18,7 +18,9 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
+import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.DirectorsApproval;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
 import uk.gov.companieshouse.api.accounts.repository.DirectorRepository;
 import uk.gov.companieshouse.api.accounts.service.DirectorsReportService;
@@ -55,6 +57,12 @@ public class DirectorService implements MultipleResourceService<Director> {
     @Autowired
     private LoansToDirectorsServiceImpl loansToDirectorsService;
 
+    @Autowired
+    private DirectorsApprovalService directorsApprovalService;
+
+    @Autowired
+    private ApprovalService approvalService;
+
     @Override
     public ResponseObject<Director> create(Director rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
@@ -80,7 +88,9 @@ public class DirectorService implements MultipleResourceService<Director> {
 
         directorsReportService.addDirector(companyAccountId, directorId, getSelfLink(rest), request);
 
+        removeAssociatedApprovals(companyAccountId, request);
         removeAssociatedLoans(transaction, companyAccountId, request);
+
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -103,6 +113,7 @@ public class DirectorService implements MultipleResourceService<Director> {
             throw new DataException(e);
         }
 
+        removeAssociatedApprovals(companyAccountId, request);
         removeAssociatedLoans(transaction, companyAccountId, request);
 
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -166,6 +177,8 @@ public class DirectorService implements MultipleResourceService<Director> {
 
                 Transaction transaction = (Transaction) request
                                 .getAttribute(AttributeName.TRANSACTION.getValue());
+
+                removeAssociatedApprovals(companyAccountsId, request);
                 removeAssociatedLoans(transaction, companyAccountsId, request);
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
@@ -192,7 +205,9 @@ public class DirectorService implements MultipleResourceService<Director> {
             throw new DataException(e);
         }
 
+        removeAssociatedApprovals(companyAccountId, request);
         removeAssociatedLoans(transaction, companyAccountId, request);
+
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
@@ -262,6 +277,23 @@ public class DirectorService implements MultipleResourceService<Director> {
             } else {
                 loansToDirectorsService.delete(companyAccountsId, request);
             }
+        }
+    }
+
+    private void removeAssociatedApprovals(String companyAccountsId, HttpServletRequest request)
+            throws DataException {
+        
+        ResponseObject<DirectorsApproval> directorsApproval = directorsApprovalService.find(companyAccountsId, request);
+
+        if(directorsApproval.getStatus() == ResponseStatus.FOUND) {
+            directorsApprovalService.delete(companyAccountsId, request);
+        }
+
+        ResponseObject<Approval> approvalResponse =
+                        approvalService.find(companyAccountsId, request);
+
+        if (approvalResponse.getStatus() == ResponseStatus.FOUND) {
+            approvalService.delete(companyAccountsId, request);
         }
     }
 }
