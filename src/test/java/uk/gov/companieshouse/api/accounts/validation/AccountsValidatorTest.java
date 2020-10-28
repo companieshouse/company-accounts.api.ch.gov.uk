@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
@@ -137,7 +138,7 @@ class AccountsValidatorTest {
 
     @Test
     @DisplayName("Validate Submission - successful, no errors")
-    void validateSubmissionNoErrorsFound() throws DataException {
+    void validateSubmissionNoErrorsFound() throws DataException, ServiceException {
 
         Errors emptyErrors = new Errors();
 
@@ -153,6 +154,8 @@ class AccountsValidatorTest {
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
         when(cpResponseObj.getData()).thenReturn(currentPeriod);
         when(currentPeriod.getBalanceSheet()).thenReturn(currentPeriodBalanceSheet);
+
+        when (companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         when(previousPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(ppResponseObj);
         when(ppResponseObj.getData()).thenReturn(previousPeriod);
@@ -256,7 +259,7 @@ class AccountsValidatorTest {
 
     @Test
     @DisplayName("Validate Submission - stocks tn closure validator returns errors")
-    void validateSubmissionStocksReturnsErrors() throws DataException {
+    void validateSubmissionStocksReturnsErrors() throws DataException, ServiceException {
         Errors emptyErrors = new Errors(); //Empty to skip initial period validation
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
@@ -272,6 +275,8 @@ class AccountsValidatorTest {
         cpResponseObj.setData(currentPeriod);
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
         when(currentPeriod.getBalanceSheet()).thenReturn(currentPeriodBalanceSheet);
+
+        when (companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         ResponseObject<PreviousPeriod> ppResponseObj = new ResponseObject<>(ResponseStatus.FOUND);
         ppResponseObj.setData(previousPeriod);
