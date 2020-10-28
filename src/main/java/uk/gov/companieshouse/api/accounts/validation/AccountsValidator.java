@@ -79,7 +79,10 @@ public class AccountsValidator extends BaseValidator {
             }
 
             BalanceSheet currentPeriodBalanceSheet = currentPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
-            BalanceSheet previousPeriodBalanceSheet = previousPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
+            BalanceSheet previousPeriodBalanceSheet = new BalanceSheet();
+            if (getIsMultipleYearFiler(transaction)) {
+                previousPeriodBalanceSheet = previousPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
+            }
 
             // Note validation.
             errors = stocksTxnClosureValidator
