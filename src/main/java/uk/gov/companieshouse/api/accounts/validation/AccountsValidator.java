@@ -79,7 +79,7 @@ public class AccountsValidator extends BaseValidator {
             }
 
             BalanceSheet currentPeriodBalanceSheet = currentPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
-            BalanceSheet previousPeriodBalanceSheet = new BalanceSheet();
+            BalanceSheet previousPeriodBalanceSheet = null;
             if (getIsMultipleYearFiler(transaction)) {
                 previousPeriodBalanceSheet = previousPeriodService.find(companyAccountsId, request).getData().getBalanceSheet();
             }

@@ -137,6 +137,38 @@ class AccountsValidatorTest {
     }
 
     @Test
+    @DisplayName("Validate Submission - single year filer, successful, no errors")
+    void validateSubmissionSYFNoErrorsFound() throws DataException, ServiceException {
+
+        Errors emptyErrors = new Errors();
+
+        when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
+        when(smallFullResponseObject.getData()).thenReturn(smallFull);
+
+        when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
+                any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
+        when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
+                .thenReturn(emptyErrors);
+
+        when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
+        when(cpResponseObj.getData()).thenReturn(currentPeriod);
+        when(currentPeriod.getBalanceSheet()).thenReturn(currentPeriodBalanceSheet);
+
+        when (companyService.isMultipleYearFiler(transaction)).thenReturn(false);
+
+        when(stocksTnClosureValidator
+                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, null))
+                .thenReturn(emptyErrors);
+
+        Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertFalse(responseErrors.hasErrors());
+        assertEquals(emptyErrors.getErrors(), responseErrors.getErrors());
+    }
+
+
+    @Test
     @DisplayName("Validate Submission - successful, no errors")
     void validateSubmissionNoErrorsFound() throws DataException, ServiceException {
 
