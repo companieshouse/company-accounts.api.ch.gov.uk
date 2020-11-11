@@ -30,7 +30,6 @@
     <company-accounts-library.version>1.2.7</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
-    <api-security-java.version>0.2.16</api-security-java.version>
     <commons-io.version>2.4</commons-io.version>
 
     <spring-boot-dependencies.version>2.1.10.RELEASE</spring-boot-dependencies.version>
@@ -103,12 +102,6 @@
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>company-accounts-library</artifactId>
       <version>${company-accounts-library.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.gov.companieshouse</groupId>
-      <artifactId>api-security-java</artifactId>
-      <version>${api-security-java.version}</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
