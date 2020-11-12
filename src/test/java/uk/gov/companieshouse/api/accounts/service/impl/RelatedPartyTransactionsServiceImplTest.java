@@ -202,9 +202,7 @@ class RelatedPartyTransactionsServiceImplTest {
     @Test
     @DisplayName("Tests the successful deletion of a related party transactions resource")
     void deleteRelatedPartyTransactionsSuccess() throws DataException {
-
-        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
-
+        
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
                 .thenReturn(GENERATED_ID);
 
