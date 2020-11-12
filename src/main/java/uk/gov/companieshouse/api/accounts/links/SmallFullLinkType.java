@@ -21,7 +21,9 @@ public enum SmallFullLinkType implements LinkType {
     DIRECTORS_REPORT("directors_report"),
     OFF_BALANCE_SHEET_ARRANGEMENTS_NOTE("off_balance_sheet_arrangements_note"),
     FINANCIAL_COMMITMENTS_NOTE("financial_commitments_note"),
-    LOANS_TO_DIRECTORS("loans_to_directors");
+    LOANS_TO_DIRECTORS("loans_to_directors"),
+    RELATED_PARTY_TRANSACTIONS("related_party_transactions");
+
 
     private String link;
 

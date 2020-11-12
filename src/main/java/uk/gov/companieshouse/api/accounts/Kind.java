@@ -30,7 +30,8 @@ public enum Kind {
     DIRECTORS_REPORT_APPROVAL("small-full-accounts-directors-report#approval"),
     LOANS_TO_DIRECTORS("small-full-accounts-note#loans-to-directors"),
     LOANS_TO_DIRECTORS_LOANS("small-full-accounts-loans-to-directors#loans"),
-    LOANS_TO_DIRECTORS_ADDITIONAL_INFO("small-full-accounts-loans-to-directors#additional-information");
+    LOANS_TO_DIRECTORS_ADDITIONAL_INFO("small-full-accounts-loans-to-directors#additional-information"),
+    RELATED_PARTY_TRANSACTIONS("small-full-accounts-note#related-party-transactions");
 
     private String value;
 
