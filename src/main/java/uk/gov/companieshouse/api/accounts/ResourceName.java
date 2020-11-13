@@ -28,6 +28,7 @@ public enum ResourceName {
     LOANS_TO_DIRECTORS("loans-to-directors"),
     LOANS("loans"),
     RELATED_PARTY_TRANSACTIONS("related-party-transactions"),
+    RPT_TRANSACTIONS("related-party-transactions-transactions"),
     ADDITIONAL_INFO("additional-information");
 
     private String name;
