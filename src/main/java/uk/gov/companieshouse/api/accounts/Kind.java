@@ -31,7 +31,8 @@ public enum Kind {
     LOANS_TO_DIRECTORS("small-full-accounts-note#loans-to-directors"),
     LOANS_TO_DIRECTORS_LOANS("small-full-accounts-loans-to-directors#loans"),
     LOANS_TO_DIRECTORS_ADDITIONAL_INFO("small-full-accounts-loans-to-directors#additional-information"),
-    RELATED_PARTY_TRANSACTIONS("small-full-accounts-note#related-party-transactions");
+    RELATED_PARTY_TRANSACTIONS("small-full-accounts-note#related-party-transactions"),
+    RPT_TRANSACTION("small-full-accounts-note#related-party-transactions-transaction");
 
     private String value;
 
