@@ -402,8 +402,36 @@ class RelatedPartyTransactionsServiceImplTest {
     }
 
     @Test
-    @DisplayName("Tests successful removal of a RPT transaction to a related party transactions resource")
+    @DisplayName("Tests successful removal of all RPT transactions from a related party transactions resource")
     void removeRptTransactionFromRelatedPartyTransactionResourceSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+
+        assertAll(() -> service.removeRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, request));
+
+        assertRepositorySaveCalled();
+    }
+
+    @Test
+    @DisplayName("Tests removal of all RPT transactions from a related party transactions resource where entity is not found")
+    void removeRptTransactionToRelatedPartyTransactionEntityNotFound() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
+
+        assertThrows(DataException.class,
+                () -> service.removeRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, request));
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Tests successful removal of all RPT transactions from a related party transactions resource")
+    void removeAllRptTransactionsFromRelatedPartyTransactionResourceSuccess() throws DataException {
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -416,15 +444,15 @@ class RelatedPartyTransactionsServiceImplTest {
     }
 
     @Test
-    @DisplayName("Tests removal of a RPT transaction to a related party transactions resource where entity is not found")
-    void removeRptTransactionToRelatedPartyTransactionEntityNotFound() throws DataException {
+    @DisplayName("Tests removal of all RPT transactions from a related party transactions resource where entity is not found")
+    void removeAllRptTransactionsToRelatedPartyTransactionEntityNotFound() throws DataException {
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
         assertThrows(DataException.class,
-                () -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+                () -> service.removeAllRptTransactions(COMPANY_ACCOUNTS_ID));
 
         verify(repository, never()).save(any());
     }

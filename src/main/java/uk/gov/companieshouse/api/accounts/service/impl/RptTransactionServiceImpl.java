@@ -65,23 +65,6 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     }
 
     @Override
-    public ResponseObject<RptTransaction> deleteAll(Transaction transaction,
-            String companyAccountId, HttpServletRequest request) throws DataException {
-
-        try {
-            repository.deleteAllTransactions(generateRptTransactionLink(transaction, companyAccountId));
-
-            relatedPartyTransactionsService.removeAllRptTransactions(companyAccountId);
-
-        } catch (MongoException e) {
-
-            throw new DataException(e);
-        }
-
-        return new ResponseObject<>(ResponseStatus.UPDATED);
-    }
-
-    @Override
     public ResponseObject<RptTransaction> create(RptTransaction rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
@@ -161,6 +144,8 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
                 repository.deleteById(rptTransactionId);
 
+                relatedPartyTransactionsService.removeRptTransaction(companyAccountsId, rptTransactionId, request);
+
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -170,6 +155,23 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
             throw new DataException(e);
         }
+    }
+
+    @Override
+    public ResponseObject<RptTransaction> deleteAll(Transaction transaction,
+            String companyAccountId, HttpServletRequest request) throws DataException {
+
+        try {
+            repository.deleteAllTransactions(generateRptTransactionLink(transaction, companyAccountId));
+
+            relatedPartyTransactionsService.removeAllRptTransactions(companyAccountId);
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+        return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
     private String getRptTransactionId(HttpServletRequest request) {

@@ -164,6 +164,27 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         }
     }
 
+    @Override
+    public void removeRptTransaction(String companyAccountsId, String rptTransactionId, HttpServletRequest request)
+            throws DataException {
+
+        String resourceId = generateID(companyAccountsId);
+        RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to find loans to directors entity from which to remove loan"));
+
+        entity.getData().getTransactions().remove(rptTransactionId);
+
+        try {
+
+            repository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+    }
+
     public void removeAllRptTransactions(String companyAccountsId)
             throws DataException {
 

@@ -5,7 +5,10 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 
 public interface RelatedPartyTransactionsService {
 
-    void addRptTransaction(String companyAccountsId, String rptTransactionId, String link,
+    public void addRptTransaction(String companyAccountsId, String rptTransactionId, String link,
+            HttpServletRequest request) throws DataException;
+
+    public void removeRptTransaction(String companyAccountsId, String rptTransactionId,
             HttpServletRequest request) throws DataException;
 
     public void removeAllRptTransactions(String companyAccountsId)
