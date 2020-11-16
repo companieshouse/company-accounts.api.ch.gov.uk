@@ -96,12 +96,12 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     public ResponseObject<RptTransaction> update(RptTransaction rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
-        String loanId = getRptTransactionId(request);
+        String rptTransactionId = getRptTransactionId(request);
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, loanId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId, rptTransactionId);
 
         RptTransactionEntity entity = transformer.transform(rest);
-        entity.setId(loanId);
+        entity.setId(rptTransactionId);
 
         try {
 

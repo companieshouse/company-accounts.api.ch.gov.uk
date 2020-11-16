@@ -181,6 +181,81 @@ class RptTransactionServiceImplTest {
     }
 
     @Test
+    @DisplayName("Tests the successful retrieval of all transactions for a related party transactions resource")
+    void getAllRptTransactionsSuccess() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(rptTransactionEntity));
+        when(transformer.transform(rptTransactionEntity)).thenReturn(rptTransactions);
+
+        ResponseObject<RptTransaction> response =
+                service.findAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.FOUND, response.getStatus());
+        assertEquals(rptTransactions, response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of non-existent transactions for a related party transactions resource")
+    void getAllRptTransactionsNotFound() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
+
+        ResponseObject<RptTransaction> response =
+                service.findAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the retrieval of all transactions for a related party transactions resource where the repository throws a MongoException")
+    void getAllRptTransactionsThrowsMongoException() {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
+
+        assertThrows(DataException.class, () ->
+                service.findAll(transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Tests successful update of a related party transactions transaction resource")
+    void updateRptTransactionSuccess() throws DataException {
+
+        when(transformer.transform(rptTransactions)).thenReturn(rptTransactionEntity);
+        when(request.getRequestURI()).thenReturn(URI);
+
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        ResponseObject<RptTransaction> response =
+                service.update(rptTransactions, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertEquals(rptTransactions, response.getData());
+
+        assertMetaDataSetOnRestObject();
+        assertIdGeneratedForDatabaseEntity();
+        assertRepositoryUpdateCalled();
+    }
+
+    @Test
+    @DisplayName("Tests the update of a related party transactions transaction resource where the repository throws a mongo exception")
+    void updateRptTransactionMongoException() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(transformer.transform(rptTransactions)).thenReturn(rptTransactionEntity);
+        when(repository.save(rptTransactionEntity)).thenThrow(MongoException.class);
+        when(transaction.getLinks()).thenReturn(transactionLinks);
+        when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+
+        assertThrows(DataException.class, () ->
+                service.update(rptTransactions, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
     @DisplayName("Tests the successful deletion of a related party transactions transaction resource")
     void deleteRptTransactionSuccess() throws DataException {
         
@@ -223,6 +298,49 @@ class RptTransactionServiceImplTest {
                 service.delete(COMPANY_ACCOUNTS_ID, request));
     }
 
+    @Test
+    @DisplayName("Tests the successful deletion of all transactions for a related party transactions resource")
+    void deleteAllRptTransactionsSuccess() throws DataException {
+        
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+
+        ResponseObject<RptTransaction> response =
+                service.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertRepositoryDeleteByIdCalled();
+        assertEquals(ResponseStatus.UPDATED, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of all non existent transactions for a related party transactions resource")
+    void deleteAllRptTransactionsNotFound() throws DataException {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.existsById(GENERATED_ID)).thenReturn(false);
+
+        ResponseObject<RptTransaction> response =
+                service.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+
+        verify(repository, never()).deleteById(GENERATED_ID);
+        assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
+        assertNull(response.getData());
+    }
+
+    @Test
+    @DisplayName("Tests the deletion of all transactions for a related party transactions resource where the repository throws a MongoException")
+    void deleteAllRptTransactionsThrowsMongoException() {
+
+        when(request.getRequestURI()).thenReturn(URI);
+        when(repository.existsById(GENERATED_ID)).thenReturn(true);
+        
+        doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
+
+        assertThrows(DataException.class, () ->
+                service.deleteAll(transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
     private void assertIdGeneratedForDatabaseEntity() {
         verify(rptTransactionEntity).setId(GENERATED_ID);
     }
@@ -235,6 +353,10 @@ class RptTransactionServiceImplTest {
 
     private void assertRepositoryInsertCalled() {
         verify(repository).insert(rptTransactionEntity);
+    }
+
+    private void assertRepositoryUpdateCalled() {
+        verify(repository).save(rptTransactionEntity);
     }
 
     private void assertRepositoryDeleteByIdCalled() {
