@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 import com.mongodb.MongoException;
-import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RptTransactionDataEntity;
@@ -38,6 +38,13 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RptTransactionServiceImplTest {
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "selfLink";
+    private static final String URI = "/transactions/transactionId/company-accounts/" +
+            COMPANY_ACCOUNTS_ID + "/small-full/notes/related-part-transactions/transactions/" +
+            GENERATED_ID;
 
     @Mock
     private RptTransactionTransformer transformer;
@@ -72,26 +79,25 @@ class RptTransactionServiceImplTest {
     @Mock
     private TransactionLinks transactionLinks;
 
+    @Mock
+    private RelatedPartyTransactionsServiceImpl relatedPartyTransactionImpl;
+
     @InjectMocks
     private RptTransactionServiceImpl service;
-
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String GENERATED_ID = "generatedId";
-    private static final String SELF_LINK = "selfLink";
 
     @Test
     @DisplayName("Tests successful creation of a related party transactions transaction resource")
     void createRptTransactionSuccess() throws DataException {
 
         when(transformer.transform(rptTransactions)).thenReturn(rptTransactionEntity);
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
+        when(keyIdGenerator.generateRandom()).thenReturn(GENERATED_ID);
 
         when(rptTransactions.getLinks()).thenReturn(links);
         when(links.get(BasicLinkType.SELF.getLink())).thenReturn(SELF_LINK);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
+        doNothing().when(relatedPartyTransactionImpl).addRptTransaction(COMPANY_ACCOUNTS_ID, GENERATED_ID, SELF_LINK, request);
 
         ResponseObject<RptTransaction> response =
                 service.create(rptTransactions, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -109,8 +115,6 @@ class RptTransactionServiceImplTest {
     void createRptTransactionDuplicateKeyException() throws DataException {
 
         when(transformer.transform(rptTransactions)).thenReturn(rptTransactionEntity);
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-//                .thenReturn(GENERATED_ID);
         when(repository.insert(rptTransactionEntity)).thenThrow(DuplicateKeyException.class);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -128,8 +132,6 @@ class RptTransactionServiceImplTest {
     void createRptTransactionMongoException() throws DataException {
 
         when(transformer.transform(rptTransactions)).thenReturn(rptTransactionEntity);
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
         when(repository.insert(rptTransactionEntity)).thenThrow(MongoException.class);
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -142,9 +144,7 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the successful retrieval of a related party transactions transaction resource")
     void getRptTransactionSuccess() throws DataException {
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(rptTransactionEntity));
         when(transformer.transform(rptTransactionEntity)).thenReturn(rptTransactions);
 
@@ -159,9 +159,7 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the retrieval of a non-existent related party transactions transaction resource")
     void getRptTransactionNotFound() throws DataException {
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
         ResponseObject<RptTransaction> response =
@@ -175,9 +173,7 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the retrieval of a related party transactions transaction resource where the repository throws a MongoException")
     void getRptTransactionThrowsMongoException() {
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
@@ -188,9 +184,7 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the successful deletion of a related party transactions transaction resource")
     void deleteRptTransactionSuccess() throws DataException {
         
-//        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-//                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<RptTransaction> response =
@@ -205,9 +199,7 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the deletion of a non existent related party transactions transaction resource")
     void deleteRptTransactionNotFound() throws DataException {
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject<RptTransaction> response =
@@ -222,11 +214,9 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the deletion of a related party transactions transaction resource where the repository throws a MongoException")
     void deleteRptTransactionThrowsMongoException() {
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RPT_TRANSACTIONS.getName()))
-                .thenReturn(GENERATED_ID);
-
+        when(request.getRequestURI()).thenReturn(URI);
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
-
+        
         doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
         assertThrows(DataException.class, () ->
