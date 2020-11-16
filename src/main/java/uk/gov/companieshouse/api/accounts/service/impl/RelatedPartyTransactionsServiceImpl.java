@@ -1,9 +1,12 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import com.mongodb.MongoException;
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
@@ -20,10 +23,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.RelatedPartyTransactionsTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class RelatedPartyTransactionsServiceImpl implements ParentService<RelatedPartyTransactions, RelatedPartyTransactionsLinkType>,
@@ -142,6 +141,48 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         }
     }
 
+
+    @Override
+    public void addRptTransaction(String companyAccountsId, String rptTransactionId, String link,
+            HttpServletRequest request) throws DataException {
+
+        String resourceId = generateID(companyAccountsId);
+        RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to find related party transactions entity to which to add transaction"));
+        if (entity.getData().getTransactions() == null) {
+            entity.getData().setTransactions(new HashMap<>());
+        }
+        entity.getData().getTransactions().put(rptTransactionId, link);
+
+        try {
+
+            repository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+    }
+
+    public void removeAllRptTransactions(String companyAccountsId)
+            throws DataException {
+
+        String resourceId = generateID(companyAccountsId);
+        RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to find related party transactions entity from which to remove transactions"));
+
+        entity.getData().setTransactions(null);
+
+        try {
+            repository.save(entity);
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+
+    }
+    
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
 
         return transaction.getLinks().getSelf() + "/"

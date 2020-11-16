@@ -1,36 +1,5 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import com.mongodb.MongoException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.verification.VerificationMode;
-import org.springframework.dao.DuplicateKeyException;
-import uk.gov.companieshouse.api.accounts.AttributeName;
-import uk.gov.companieshouse.api.accounts.ResourceName;
-import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
-import uk.gov.companieshouse.api.accounts.links.RelatedPartyTransactionsLinkType;
-import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
-import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RelatedPartyTransactionsDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RelatedPartyTransactionsEntity;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
-import uk.gov.companieshouse.api.accounts.repository.smallfull.RelatedPartyTransactionsRepository;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
-import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.RelatedPartyTransactionsTransformer;
-import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -43,10 +12,46 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
+import org.springframework.dao.DuplicateKeyException;
+import com.mongodb.MongoException;
+import uk.gov.companieshouse.api.accounts.ResourceName;
+import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.RelatedPartyTransactionsLinkType;
+import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RelatedPartyTransactionsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RelatedPartyTransactionsEntity;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
+import uk.gov.companieshouse.api.accounts.repository.smallfull.RelatedPartyTransactionsRepository;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
+import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
+import uk.gov.companieshouse.api.accounts.transformer.RelatedPartyTransactionsTransformer;
+import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RelatedPartyTransactionsServiceImplTest {
+
+    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
+    private static final String GENERATED_ID = "generatedId";
+    private static final String SELF_LINK = "selfLink";
+    private static final String RPT_TRANSACTION_ID = "rptTransactionId";
+    private static final String RPT_TRANSACTION_SELF_LINK = "rptTransaction/selfLink";
 
     @Mock
     private RelatedPartyTransactionsTransformer transformer;
@@ -81,12 +86,11 @@ class RelatedPartyTransactionsServiceImplTest {
     @Mock
     private TransactionLinks transactionLinks;
 
+    @Mock
+    private RptTransaction rptTransaction;
+
     @InjectMocks
     private RelatedPartyTransactionsServiceImpl service;
-
-    private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String GENERATED_ID = "generatedId";
-    private static final String SELF_LINK = "selfLink";
 
     @Test
     @DisplayName("Tests successful creation of a related party transactions resource")
@@ -368,6 +372,63 @@ class RelatedPartyTransactionsServiceImplTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Tests successful additon of a RPT transaction to a related party transactions resource")
+    void addRptTransactionToRelatedPartyTransactionResourceSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+        when(relatedPartyTransactionsDataEntity.getTransactions()).thenReturn(new HashMap<>());
+
+        assertAll(() -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+
+        assertRepositorySaveCalled();
+    }
+
+    @Test
+    @DisplayName("Tests additon of a RPT transaction to a related party transactions resource where entity is not found")
+    void addRptTransactionToRelatedPartyTransactionEntityNotFound() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
+
+        assertThrows(DataException.class,
+                () -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Tests successful removal of a RPT transaction to a related party transactions resource")
+    void removeRptTransactionFromRelatedPartyTransactionResourceSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+
+        assertAll(() -> service.removeAllRptTransactions(COMPANY_ACCOUNTS_ID));
+
+        assertRepositorySaveCalled();
+    }
+
+    @Test
+    @DisplayName("Tests removal of a RPT transaction to a related party transactions resource where entity is not found")
+    void removeRptTransactionToRelatedPartyTransactionEntityNotFound() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
+
+        assertThrows(DataException.class,
+                () -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+
+        verify(repository, never()).save(any());
+    }
+
     private void assertIdGeneratedForDatabaseEntity() {
         verify(relatedPartyTransactionsEntity).setId(GENERATED_ID);
     }
@@ -380,6 +441,10 @@ class RelatedPartyTransactionsServiceImplTest {
 
     private void assertRepositoryInsertCalled() {
         verify(repository).insert(relatedPartyTransactionsEntity);
+    }
+
+    private void assertRepositorySaveCalled() {
+        verify(repository).save(relatedPartyTransactionsEntity);
     }
 
     private void assertRepositoryDeleteByIdCalled() {

@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpa
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.RptTransactionRepository;
 import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
+import uk.gov.companieshouse.api.accounts.service.RelatedPartyTransactionsService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.RptTransactionTransformer;
@@ -29,7 +30,7 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
     private static final Pattern RPT_TRANSACTION_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/related-part-transactions/transactions/(.*)$");
 
-    private static final String RPT_TRANSACTION_LINK = "loans";
+    private static final String RPT_TRANSACTION_LINK = "transactions";
 
     @Autowired
     private RptTransactionTransformer transformer;
@@ -38,10 +39,10 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     private RptTransactionRepository repository;
 
     @Autowired
-    private LoansToDirectorsServiceImpl loansToDirectorsService;
+    private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    private KeyIdGenerator keyIdGenerator;
+    private RelatedPartyTransactionsService relatedPartyTransactionsService;
 
     @Override
     public ResponseObject<RptTransaction> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
@@ -70,6 +71,8 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
         try {
             repository.deleteAllTransactions(generateRptTransactionLink(transaction, companyAccountId));
 
+            relatedPartyTransactionsService.removeAllRptTransactions(companyAccountId);
+
         } catch (MongoException e) {
 
             throw new DataException(e);
@@ -82,13 +85,13 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     public ResponseObject<RptTransaction> create(RptTransaction rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
-        String loanId = keyIdGenerator.generateRandom();
+        String rptTransactionId = keyIdGenerator.generateRandom();
 
-        setMetadataOnRestObject(rest, transaction, companyAccountId, loanId);
+        setMetadataOnRestObject(rest, transaction, companyAccountId, rptTransactionId);
 
         RptTransactionEntity entity = transformer.transform(rest);
 
-        entity.setId(loanId);
+        entity.setId(rptTransactionId);
         try {
 
             repository.insert(entity);
@@ -99,6 +102,9 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
             throw new DataException(e);
         }
+
+        relatedPartyTransactionsService.addRptTransaction(companyAccountId, rptTransactionId,
+                getSelfLink(rest), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
@@ -155,8 +161,6 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
                 repository.deleteById(rptTransactionId);
 
-                loansToDirectorsService
-                        .removeLoan(companyAccountsId, rptTransactionId, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
 
@@ -170,27 +174,27 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
     private String getRptTransactionId(HttpServletRequest request) {
 
-        String loanId = "";
+        String rptTransactionId = "";
 
         Matcher matcher = RPT_TRANSACTION_ID_REGEX.matcher(request.getRequestURI());
         if (matcher.find()) {
-            loanId = matcher.group(1);
+            rptTransactionId = matcher.group(1);
         }
 
-        return loanId;
+        return rptTransactionId;
     }
 
-    private void setMetadataOnRestObject(RptTransaction rest, Transaction transaction, String companyAccountsId, String loanId) {
+    private void setMetadataOnRestObject(RptTransaction rest, Transaction transaction, String companyAccountsId, String rptTransactionId) {
 
-        rest.setLinks(createLinks(transaction, companyAccountsId, loanId));
+        rest.setLinks(createLinks(transaction, companyAccountsId, rptTransactionId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.RPT_TRANSACTION.getValue());
+        rest.setKind(Kind.RPT_TRANSACTIONS.getValue());
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String loanId) {
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String rptTransactionId) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, loanId));
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, rptTransactionId));
         map.put(RPT_TRANSACTION_LINK, generateRptTransactionLink(transaction, companyAccountsId));
         return map;
     }
@@ -204,13 +208,18 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
                 + ResourceName.RPT_TRANSACTIONS.getName();
     }
 
-    private String generateSelfLink(Transaction transaction, String companyAccountId, String loanId) {
+    private String getSelfLink(RptTransaction rptTransaction) {
+
+        return rptTransaction.getLinks().get(BasicLinkType.SELF.getLink());
+    }
+
+    private String generateSelfLink(Transaction transaction, String companyAccountId, String rptTransactionId) {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
                 + ResourceName.RELATED_PARTY_TRANSACTIONS.getName() + "/"
                 + ResourceName.RPT_TRANSACTIONS.getName() + "/"
-                + loanId;
+                + rptTransactionId;
     }
 }
