@@ -171,7 +171,7 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         String resourceId = generateID(companyAccountsId);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
-                        "Failed to find loans to directors entity from which to remove loan"));
+                        "Failed to find related party transactions entity from which to remove transaction"));
 
         entity.getData().getTransactions().remove(rptTransactionId);
 
