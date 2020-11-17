@@ -9,7 +9,8 @@ public enum AttributeName {
     PREVIOUS_PERIOD("previous-period"),
     CIC_REPORT("cic-report"),
     DIRECTORS_REPORT("directors-report"),
-    LOANS_TO_DIRECTORS("loans-to-directors");
+    LOANS_TO_DIRECTORS("loans-to-directors"),
+    RELATED_PARTY_TRANSACTIONS("related-party-transactions");
 
     private String value;
 
