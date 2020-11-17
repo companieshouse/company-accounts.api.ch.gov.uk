@@ -373,14 +373,28 @@ class RelatedPartyTransactionsServiceImplTest {
     }
 
     @Test
-    @DisplayName("Tests successful additon of a RPT transaction to a related party transactions resource")
+    @DisplayName("Tests successful addition of first RPT transaction to a related party transactions resource")
+    void addFirstRptTransactionToRelatedPartyTransactionResourceSuccess() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+        when(relatedPartyTransactionsDataEntity.getTransactions()).thenReturn(null).thenReturn(new HashMap<>());
+
+        assertAll(() -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+
+        assertRepositorySaveCalled();
+    }
+
+    @Test
+    @DisplayName("Tests successful addition of a RPT transaction to a related party transactions resource")
     void addRptTransactionToRelatedPartyTransactionResourceSuccess() throws DataException {
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
                 .thenReturn(GENERATED_ID);
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
         when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
-        when(relatedPartyTransactionsDataEntity.getTransactions()).thenReturn(new HashMap<>());
 
         assertAll(() -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
 
@@ -399,6 +413,22 @@ class RelatedPartyTransactionsServiceImplTest {
                 () -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Tests additon of a RPT transaction to a related party transactions resource where MongoException is thrown")
+    void addRptTransactionToRelatedPartyTransactionResourceThrowsMongoException() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+        when(relatedPartyTransactionsDataEntity.getTransactions()).thenReturn(new HashMap<>());
+        doThrow(MongoException.class).when(repository).save(relatedPartyTransactionsEntity);
+        
+        assertThrows(DataException.class, () -> service.addRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, RPT_TRANSACTION_SELF_LINK, request));
+
+        assertRepositorySaveCalled();
     }
 
     @Test
@@ -430,6 +460,21 @@ class RelatedPartyTransactionsServiceImplTest {
     }
 
     @Test
+    @DisplayName("Tests removal of an RPT transaction from a related party transactions resource where MongoException is thrown")
+    void removeRptTransactionFromRelatedPartyTransactionResourceThrowsMongoException() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+        doThrow(MongoException.class).when(repository).save(relatedPartyTransactionsEntity);
+
+        assertThrows(DataException.class, () -> service.removeRptTransaction(COMPANY_ACCOUNTS_ID, RPT_TRANSACTION_ID, request));
+
+        assertRepositorySaveCalled();
+    }
+
+    @Test
     @DisplayName("Tests successful removal of all RPT transactions from a related party transactions resource")
     void removeAllRptTransactionsFromRelatedPartyTransactionResourceSuccess() throws DataException {
 
@@ -455,6 +500,21 @@ class RelatedPartyTransactionsServiceImplTest {
                 () -> service.removeAllRptTransactions(COMPANY_ACCOUNTS_ID));
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Tests successful removal of all RPT transactions from a related party transactions resource where MongoException is thrown")
+    void removeAllRptTransactionsFromRelatedPartyTransactionResourceThrowsMongoException() throws DataException {
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
+                .thenReturn(GENERATED_ID);
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(relatedPartyTransactionsEntity));
+        when(relatedPartyTransactionsEntity.getData()).thenReturn(relatedPartyTransactionsDataEntity);
+        doThrow(MongoException.class).when(repository).save(relatedPartyTransactionsEntity);
+
+        assertThrows(DataException.class, () -> service.removeAllRptTransactions(COMPANY_ACCOUNTS_ID));
+
+        assertRepositorySaveCalled();
     }
 
     private void assertIdGeneratedForDatabaseEntity() {

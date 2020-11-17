@@ -49,30 +49,60 @@ class RptTransactionTransformerTest {
     }
 
     @Test
+    @DisplayName("Transform rest object to entity")
+    void restToEntityNoBreakdown() {
+
+        RptTransaction rptTransaction = new RptTransaction();
+        rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
+        rptTransaction.setRelationship(RELATIONSHIP);
+        rptTransaction.setTransactionType(TRANSACTION_TYPE);
+        rptTransaction.setDescription(DESCRIPTION);
+
+        RptTransactionEntity rptTransactionEntity = transformer.transform(rptTransaction);
+
+        assertNotNull(rptTransactionEntity);
+        assertNotNull(rptTransactionEntity.getData());
+        assertNotNull(rptTransactionEntity.getData().getNameOfRelatedParty());
+        assertNotNull(rptTransactionEntity.getData().getRelationship());
+        assertNotNull(rptTransactionEntity.getData().getTransactionType());
+        assertNotNull(rptTransactionEntity.getData().getDescription());
+    }
+
+    @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
 
-        RptTransaction rptTransaction = transformer.transform(getRptTransactionEntity());
+        RptTransaction rptTransaction = transformer.transform(getRptTransactionEntity(true));
 
         assertNotNull(rptTransaction);
-        assertRestFieldsSet(rptTransaction);
+        assertRestFieldsSet(rptTransaction, true);
+    }
+
+    @Test
+    @DisplayName("Transform entity to rest object")
+    void entityToRestNoBreakdown() {
+
+        RptTransaction rptTransaction = transformer.transform(getRptTransactionEntity(false));
+
+        assertNotNull(rptTransaction);
+        assertRestFieldsSet(rptTransaction, false);
     }
 
     @Test
     @DisplayName("Transform entity array to rest object array")
     void entityArrayToRestArray() {
 
-        RptTransactionEntity[] entities = new RptTransactionEntity[]{getRptTransactionEntity(), getRptTransactionEntity()};
+        RptTransactionEntity[] entities = new RptTransactionEntity[]{getRptTransactionEntity(true), getRptTransactionEntity(true)};
 
         RptTransaction[] rptTransactions = transformer.transform(entities);
 
         assertNotNull(rptTransactions);
         assertEquals(2, rptTransactions.length);
-        assertRestFieldsSet(rptTransactions[0]);
-        assertRestFieldsSet(rptTransactions[1]);
+        assertRestFieldsSet(rptTransactions[0], true);
+        assertRestFieldsSet(rptTransactions[1], true);
     }
 
-    private RptTransactionEntity getRptTransactionEntity() {
+    private RptTransactionEntity getRptTransactionEntity(boolean withBreakdown) {
 
         RptTransactionBreakdownEntity rptTransactionBreakdownEntity = new RptTransactionBreakdownEntity();
         rptTransactionBreakdownEntity.setBalanceAtPeriodEnd(1L);
@@ -83,7 +113,9 @@ class RptTransactionTransformerTest {
         rptTransactionDataEntity.setDescription(DESCRIPTION);
         rptTransactionDataEntity.setRelationship(RELATIONSHIP);
         rptTransactionDataEntity.setTransactionType(TRANSACTION_TYPE);
-        rptTransactionDataEntity.setBreakdown(rptTransactionBreakdownEntity);
+        if(withBreakdown) {
+            rptTransactionDataEntity.setBreakdown(rptTransactionBreakdownEntity);
+        }
 
         RptTransactionEntity rptTransactionEntity = new RptTransactionEntity();
         rptTransactionEntity.setData(rptTransactionDataEntity);
@@ -91,7 +123,7 @@ class RptTransactionTransformerTest {
         return rptTransactionEntity;
     }
 
-    private void assertRestFieldsSet(RptTransaction rptTransaction) {
+    private void assertRestFieldsSet(RptTransaction rptTransaction, boolean withBreakdown) {
         rptTransactionBreakdownResource.setBalanceAtPeriodStart(1L);
         rptTransactionBreakdownResource.setBalanceAtPeriodEnd(1L);
 
@@ -100,7 +132,9 @@ class RptTransactionTransformerTest {
         assertEquals(RELATIONSHIP, rptTransaction.getRelationship());
         assertEquals(TRANSACTION_TYPE, rptTransaction.getTransactionType());
 
-        assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodEnd(), rptTransaction.getBreakdown().getBalanceAtPeriodEnd());
-        assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodStart(), rptTransaction.getBreakdown().getBalanceAtPeriodStart());
+        if(withBreakdown) {
+            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodEnd(), rptTransaction.getBreakdown().getBalanceAtPeriodEnd());
+            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodStart(), rptTransaction.getBreakdown().getBalanceAtPeriodStart());
+        }
     }
 }

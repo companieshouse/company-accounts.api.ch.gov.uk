@@ -61,25 +61,15 @@ public class RptTransactionTransformer implements GenericTransformerForMultipleR
 
         RptTransactionBreakdownEntity entityResource = new RptTransactionBreakdownEntity();
 
-        if (restResource != null) {
-
-            BeanUtils.copyProperties(restResource, entityResource);
-            return entityResource;
-        }
-
-        return null;
+        BeanUtils.copyProperties(restResource, entityResource);
+        return entityResource;
     }
 
     private RptTransactionBreakdown mapEntityResourceToRestResource(RptTransactionBreakdownEntity entityResource) {
 
         RptTransactionBreakdown restResource = new RptTransactionBreakdown();
 
-        if (entityResource != null) {
-
-            BeanUtils.copyProperties(entityResource, restResource);
-            return restResource;
-        }
-
-        return null;
+        BeanUtils.copyProperties(entityResource, restResource);
+        return restResource;
     }
 }
