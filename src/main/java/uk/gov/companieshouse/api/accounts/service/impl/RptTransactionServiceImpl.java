@@ -28,7 +28,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Service
 public class RptTransactionServiceImpl implements MultipleResourceService<RptTransaction> {
 
-    private static final Pattern RPT_TRANSACTION_ID_REGEX = Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/related-part-transactions/transactions/(.*)$");
+    private static final Pattern RPT_TRANSACTION_ID_REGEX = Pattern.compile(Pattern.quote("^/transactions/.+?/company-accounts/.+?/small-full/notes/related-part-transactions/transactions/(.*)$"));
 
     private static final String RPT_TRANSACTION_LINK = "transactions";
 
