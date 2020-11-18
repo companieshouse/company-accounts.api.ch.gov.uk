@@ -3,12 +3,15 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpar
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RptTransactionBreakdown {
 
     @JsonProperty("balance_at_period_start")
     private Long balanceAtPeriodStart;
 
+    @NotNull
     @JsonProperty("balance_at_period_end")
     private Long balanceAtPeriodEnd;
 
