@@ -43,7 +43,7 @@ class RptTransactionServiceImplTest {
     private static final String GENERATED_ID = "generatedId";
     private static final String SELF_LINK = "selfLink";
     private static final String URI = "/transactions/transactionId/company-accounts/" +
-            COMPANY_ACCOUNTS_ID + "/small-full/notes/related-part-transactions/transactions/" +
+            COMPANY_ACCOUNTS_ID + "/small-full/notes/related-party-transactions/transactions/" +
             GENERATED_ID;
     private static final String RPT_TRANSACTION_LINK = SELF_LINK + "/company-accounts/" +
             COMPANY_ACCOUNTS_ID + "/small-full/notes/related-party-transactions/transactions";
