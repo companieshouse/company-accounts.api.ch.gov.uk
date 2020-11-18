@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.ServiceException;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.Loan;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransactionBreakdown;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
@@ -36,6 +35,9 @@ class TransactionValidatorTest {
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
+
+    private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
+    private static final String MANDATORY_ELEMENT_MISSING = "mandatory.element.missing";
 
     @Mock
     private Transaction transaction;
@@ -80,7 +82,7 @@ class TransactionValidatorTest {
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setDescription(RPT_DESCRIPTION);
 
-        createValidMultiYearFilerRptTransactionBreakdown();
+        createMultiYearFilerRptTransactionBreakdown(true);
 
         ReflectionTestUtils.setField(transactionValidator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
@@ -92,10 +94,50 @@ class TransactionValidatorTest {
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
     }
 
-    private void createValidMultiYearFilerRptTransactionBreakdown() {
+    @Test
+    @DisplayName("RptTransaction validation - multi year filer with no period start")
+    void testRptTransactionValidationForMultiYearFilerValidationError() throws DataException, ServiceException {
+
+        rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
+        rptTransaction.setDescription(RPT_DESCRIPTION);
+
+        createMultiYearFilerRptTransactionBreakdown(false);
+
+        ReflectionTestUtils.setField(transactionValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
+        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+
+        assertEquals(1, errors.getErrorCount());
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
+    }
+
+
+    @Test
+    @DisplayName("RptTransaction validation - multi year filer with period start")
+    void testRptTransactionValidationForMultiYearFilerValid() throws DataException, ServiceException {
+
+        rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
+        rptTransaction.setDescription(RPT_DESCRIPTION);
+
+        createMultiYearFilerRptTransactionBreakdown(true);
+
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+
+        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+
+        assertEquals(0, errors.getErrorCount());
+    }
+
+    private void createMultiYearFilerRptTransactionBreakdown(boolean includePeriodStart) {
         RptTransactionBreakdown rptTransactionBreakdown = new RptTransactionBreakdown();
-        rptTransactionBreakdown.setBalanceAtPeriodStart(10L);
         rptTransactionBreakdown.setBalanceAtPeriodEnd(20L);
+
+        if (includePeriodStart) {
+            rptTransactionBreakdown.setBalanceAtPeriodStart(10L);
+
+        }
 
         rptTransaction.setBreakdown(rptTransactionBreakdown);
     }
