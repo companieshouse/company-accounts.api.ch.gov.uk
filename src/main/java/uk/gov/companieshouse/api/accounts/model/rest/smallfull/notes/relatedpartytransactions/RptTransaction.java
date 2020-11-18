@@ -17,7 +17,7 @@ public class RptTransaction extends RestObject {
 
     @NotNull
     @JsonProperty("description_of_transaction")
-    private String description;
+    private String descriptionOfTransaction;
 
     @NotNull
     @JsonProperty("transaction_type")
@@ -43,12 +43,12 @@ public class RptTransaction extends RestObject {
         this.relationship = relationship;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescriptionOfTransaction() {
+        return descriptionOfTransaction;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescriptionOfTransaction(String descriptionOfTransaction) {
+        this.descriptionOfTransaction = descriptionOfTransaction;
     }
 
     public String getTransactionType() {

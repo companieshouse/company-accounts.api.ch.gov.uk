@@ -34,7 +34,7 @@ class RptTransactionTransformerTest {
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setRelationship(RELATIONSHIP);
         rptTransaction.setTransactionType(TRANSACTION_TYPE);
-        rptTransaction.setDescription(DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(DESCRIPTION);
         rptTransaction.setBreakdown(rptTransactionBreakdownResource);
 
         RptTransactionEntity rptTransactionEntity = transformer.transform(rptTransaction);
@@ -56,7 +56,7 @@ class RptTransactionTransformerTest {
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setRelationship(RELATIONSHIP);
         rptTransaction.setTransactionType(TRANSACTION_TYPE);
-        rptTransaction.setDescription(DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(DESCRIPTION);
 
         RptTransactionEntity rptTransactionEntity = transformer.transform(rptTransaction);
 
@@ -128,7 +128,7 @@ class RptTransactionTransformerTest {
         rptTransactionBreakdownResource.setBalanceAtPeriodEnd(1L);
 
         assertEquals(RELATED_PARTY_NAME, rptTransaction.getNameOfRelatedParty());
-        assertEquals(DESCRIPTION, rptTransaction.getDescription());
+        assertEquals(DESCRIPTION, rptTransaction.getDescriptionOfTransaction());
         assertEquals(RELATIONSHIP, rptTransaction.getRelationship());
         assertEquals(TRANSACTION_TYPE, rptTransaction.getTransactionType());
 

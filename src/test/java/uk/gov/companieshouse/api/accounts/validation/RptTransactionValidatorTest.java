@@ -63,7 +63,7 @@ class RptTransactionValidatorTest {
     void testSuccessRptTransactionValidationForSingleYearFiler() throws DataException, ServiceException {
 
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
-        rptTransaction.setDescription(RPT_DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
 
         createValidSingleYearFilerRptTransactionBreakdown();
@@ -80,7 +80,7 @@ class RptTransactionValidatorTest {
     void testRptTransactionValidationForSingleYearFilerValidationError() throws DataException, ServiceException {
 
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
-        rptTransaction.setDescription(RPT_DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
         createMultiYearFilerRptTransactionBreakdown(true);
 
@@ -99,7 +99,7 @@ class RptTransactionValidatorTest {
     void testRptTransactionValidationForMultiYearFilerValidationError() throws DataException, ServiceException {
 
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
-        rptTransaction.setDescription(RPT_DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
         createMultiYearFilerRptTransactionBreakdown(false);
 
@@ -119,7 +119,7 @@ class RptTransactionValidatorTest {
     void testRptTransactionValidationForMultiYearFilerValid() throws DataException, ServiceException {
 
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
-        rptTransaction.setDescription(RPT_DESCRIPTION);
+        rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
         createMultiYearFilerRptTransactionBreakdown(true);
 
