@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -27,11 +28,13 @@ import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RptTransactionDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RptTransactionEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.RptTransactionRepository;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.RptTransactionTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.RptTransactionValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
@@ -85,12 +88,21 @@ class RptTransactionServiceImplTest {
     @Mock
     private RelatedPartyTransactionsServiceImpl relatedPartyTransactionImpl;
 
+    @Mock
+    private RptTransactionValidator rptTransactionValidator;
+
+    @Mock
+    private Errors errors;
+
     @InjectMocks
     private RptTransactionServiceImpl service;
 
     @Test
     @DisplayName("Tests successful creation of a related party transactions transaction resource")
     void createRptTransactionSuccess() throws DataException {
+
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
 
         when(transformer.transform(rptTransaction)).thenReturn(rptTransactionEntity);
         when(keyIdGenerator.generateRandom()).thenReturn(GENERATED_ID);
@@ -117,6 +129,9 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the creation of a related party transactions transaction resource where the repository throws a duplicate key exception")
     void createRptTransactionDuplicateKeyException() throws DataException {
 
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(rptTransaction)).thenReturn(rptTransactionEntity);
         when(repository.insert(rptTransactionEntity)).thenThrow(DuplicateKeyException.class);
 
@@ -134,6 +149,9 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the creation of a related party transactions transaction resource where the repository throws a mongo exception")
     void createRptTransactionMongoException() throws DataException {
 
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(rptTransaction)).thenReturn(rptTransactionEntity);
         when(repository.insert(rptTransactionEntity)).thenThrow(MongoException.class);
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -141,6 +159,21 @@ class RptTransactionServiceImplTest {
 
         assertThrows(DataException.class, () ->
                 service.create(rptTransaction, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Tests the creation of a RptTransaction resource where the validator returns errors")
+    void createRptTransactionWithValidationErrors() throws DataException {
+
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<RptTransaction> response =
+                service.create(rptTransaction, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        assertNull(response.getData());
+        assertNotNull(response.getErrors());
     }
 
     @Test
@@ -234,6 +267,9 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests successful update of a related party transactions transaction resource")
     void updateRptTransactionSuccess() throws DataException {
 
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(transformer.transform(rptTransaction)).thenReturn(rptTransactionEntity);
         when(request.getRequestURI()).thenReturn(URI);
 
@@ -255,6 +291,9 @@ class RptTransactionServiceImplTest {
     @DisplayName("Tests the update of a related party transactions transaction resource where the repository throws a mongo exception")
     void updateRptTransactionMongoException() throws DataException {
 
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(false);
+
         when(request.getRequestURI()).thenReturn(URI);
         when(transformer.transform(rptTransaction)).thenReturn(rptTransactionEntity);
         when(repository.save(rptTransactionEntity)).thenThrow(MongoException.class);
@@ -263,6 +302,21 @@ class RptTransactionServiceImplTest {
 
         assertThrows(DataException.class, () ->
                 service.update(rptTransaction, transaction, COMPANY_ACCOUNTS_ID, request));
+    }
+
+    @Test
+    @DisplayName("Tests the update of a RptTransaction resource where the validator returns errors")
+    void updateLoanWithValidationErrors() throws DataException {
+
+        when(rptTransactionValidator.validateRptTransaction(rptTransaction, transaction)).thenReturn(errors);
+        when(errors.hasErrors()).thenReturn(true);
+
+        ResponseObject<RptTransaction> response =
+                service.update(rptTransaction, transaction, COMPANY_ACCOUNTS_ID, request);
+
+        assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
+        assertNull(response.getData());
+        assertNotNull(response.getErrors());
     }
 
     @Test

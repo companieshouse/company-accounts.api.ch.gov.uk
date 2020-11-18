@@ -16,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RptTransactionEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.RptTransactionRepository;
 import uk.gov.companieshouse.api.accounts.service.MultipleResourceService;
 import uk.gov.companieshouse.api.accounts.service.RelatedPartyTransactionsService;
@@ -23,6 +24,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.transformer.RptTransactionTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
+import uk.gov.companieshouse.api.accounts.validation.RptTransactionValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
@@ -40,6 +42,9 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
 
     @Autowired
     private KeyIdGenerator keyIdGenerator;
+
+    @Autowired
+    private RptTransactionValidator rptTransactionValidator;
 
     @Autowired
     private RelatedPartyTransactionsService relatedPartyTransactionsService;
@@ -68,6 +73,11 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     public ResponseObject<RptTransaction> create(RptTransaction rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
 
+        Errors errors = rptTransactionValidator.validateRptTransaction(rest, transaction);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
+
         String rptTransactionId = keyIdGenerator.generateRandom();
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, rptTransactionId);
@@ -95,6 +105,11 @@ public class RptTransactionServiceImpl implements MultipleResourceService<RptTra
     @Override
     public ResponseObject<RptTransaction> update(RptTransaction rest, Transaction transaction,
             String companyAccountId, HttpServletRequest request) throws DataException {
+
+        Errors errors = rptTransactionValidator.validateRptTransaction(rest, transaction);
+        if (errors.hasErrors()) {
+            return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
+        }
 
         String rptTransactionId = getRptTransactionId(request);
 

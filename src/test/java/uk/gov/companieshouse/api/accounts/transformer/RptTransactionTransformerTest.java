@@ -44,7 +44,7 @@ class RptTransactionTransformerTest {
         assertNotNull(rptTransactionEntity.getData().getNameOfRelatedParty());
         assertNotNull(rptTransactionEntity.getData().getRelationship());
         assertNotNull(rptTransactionEntity.getData().getTransactionType());
-        assertNotNull(rptTransactionEntity.getData().getDescription());
+        assertNotNull(rptTransactionEntity.getData().getDescriptionOfTransaction());
         assertNotNull(rptTransactionEntity.getData().getBreakdown());
     }
 
@@ -65,7 +65,7 @@ class RptTransactionTransformerTest {
         assertNotNull(rptTransactionEntity.getData().getNameOfRelatedParty());
         assertNotNull(rptTransactionEntity.getData().getRelationship());
         assertNotNull(rptTransactionEntity.getData().getTransactionType());
-        assertNotNull(rptTransactionEntity.getData().getDescription());
+        assertNotNull(rptTransactionEntity.getData().getDescriptionOfTransaction());
     }
 
     @Test
@@ -110,7 +110,7 @@ class RptTransactionTransformerTest {
 
         RptTransactionDataEntity rptTransactionDataEntity = new RptTransactionDataEntity();
         rptTransactionDataEntity.setNameOfRelatedParty(RELATED_PARTY_NAME);
-        rptTransactionDataEntity.setDescription(DESCRIPTION);
+        rptTransactionDataEntity.setDescriptionOfTransaction(DESCRIPTION);
         rptTransactionDataEntity.setRelationship(RELATIONSHIP);
         rptTransactionDataEntity.setTransactionType(TRANSACTION_TYPE);
         if(withBreakdown) {

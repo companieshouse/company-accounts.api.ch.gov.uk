@@ -12,7 +12,7 @@ public class RptTransactionDataEntity extends BaseDataEntity {
     private String relationship;
 
     @Field("description_of_transaction")
-    private String description;
+    private String descriptionOfTransaction;
 
     @Field("transaction_type")
     private String transactionType;
@@ -36,12 +36,12 @@ public class RptTransactionDataEntity extends BaseDataEntity {
         this.relationship = relationship;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescriptionOfTransaction() {
+        return descriptionOfTransaction;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescriptionOfTransaction(String descriptionOfTransaction) {
+        this.descriptionOfTransaction = descriptionOfTransaction;
     }
 
     public String getTransactionType() {
@@ -65,7 +65,7 @@ public class RptTransactionDataEntity extends BaseDataEntity {
         return "RptTransactionDataEntity{" +
                 "nameOfRelatedParty='" + nameOfRelatedParty + '\'' +
                 ", relationship='" + relationship + '\'' + 
-                ", description='" + description + '\'' + 
+                ", description='" + descriptionOfTransaction + '\'' +
                 ", transactionType='" + transactionType + '\'' +
                 ", breakdown=" + breakdown +
                 "}";
