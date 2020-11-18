@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
@@ -41,6 +42,9 @@ class RptTransactionsControllerTest {
 
     @Mock
     private RptTransactionServiceImpl rptTransactionService;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -77,6 +81,7 @@ class RptTransactionsControllerTest {
     @DisplayName("Tests the successful creation of a RptTransaction")
     void createRptTransactionSuccess() throws DataException {
 
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, rptTransaction);
@@ -88,7 +93,7 @@ class RptTransactionsControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.create(rptTransaction, RPT_TRANSACTIONS_ID, request);
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -99,6 +104,21 @@ class RptTransactionsControllerTest {
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
 
+    }
+
+    @Test
+    @DisplayName("Tests the creation of an RptTransaction where the controller returns a bad request binding error for invalid length")
+    void createRptTransactionReturnBadRequestForBindingErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @Test
@@ -114,7 +134,7 @@ class RptTransactionsControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.create(rptTransaction, RPT_TRANSACTIONS_ID, request);
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -220,6 +240,7 @@ class RptTransactionsControllerTest {
     @DisplayName("Tests the successful update of an RptTransaction resource")
     void updateRptTransactionSuccess() throws DataException {
 
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
 
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
@@ -235,7 +256,7 @@ class RptTransactionsControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -247,8 +268,24 @@ class RptTransactionsControllerTest {
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
 
+
     @Test
-    @DisplayName("Tests the update of an RptTransaction when the Loan ID doesn't exist")
+    @DisplayName("Tests the updating of an RptTransaction where the controller returns a bad request binding error for invalid length")
+    void updateRptTransactionReturnBadRequestForBindingErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Tests the update of an RptTransaction when the RptTransaction ID doesn't exist")
     void updateRptTransactionResourceWhenIdIsNull() throws DataException {
 
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
@@ -257,7 +294,7 @@ class RptTransactionsControllerTest {
         when(rptTransactions.get(RPT_TRANSACTIONS_ID)).thenReturn(null);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -280,7 +317,7 @@ class RptTransactionsControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction,bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

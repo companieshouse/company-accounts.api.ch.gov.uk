@@ -3,6 +3,7 @@ package uk.gov.companieshouse.api.accounts.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RptTransaction;
+import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.impl.RptTransactionServiceImpl;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
@@ -23,6 +25,7 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/related-party-transactions/transactions")
@@ -38,8 +41,13 @@ public class RptTransactionsController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody RptTransaction rptTransaction, @PathVariable("companyAccountId") String companyAccountId,
+    public ResponseEntity create(@Valid @RequestBody RptTransaction rptTransaction, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -101,8 +109,13 @@ public class RptTransactionsController {
     }
 
     @PutMapping("/{rptTransactionId}")
-    public ResponseEntity update(@RequestBody RptTransaction rptTransaction, @PathVariable("companyAccountId") String companyAccountId,
+    public ResponseEntity update(@Valid @RequestBody RptTransaction rptTransaction, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
                                  @PathVariable String rptTransactionId, HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
 
         RelatedPartyTransactions relatedPartyTransactions = (RelatedPartyTransactions) request.getAttribute(AttributeName.RELATED_PARTY_TRANSACTIONS.getValue());
         if (relatedPartyTransactions.getTransactions().get(rptTransactionId) == null) {
