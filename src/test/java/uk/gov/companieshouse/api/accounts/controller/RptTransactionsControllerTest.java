@@ -81,6 +81,7 @@ class RptTransactionsControllerTest {
     @DisplayName("Tests the successful creation of a RptTransaction")
     void createRptTransactionSuccess() throws DataException {
 
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, rptTransaction);
@@ -103,6 +104,21 @@ class RptTransactionsControllerTest {
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
 
+    }
+
+    @Test
+    @DisplayName("Tests the creation of an RptTransaction where the controller returns a bad request binding error for invalid length")
+    void createRptTransactionReturnBadRequestForBindingErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @Test
@@ -224,6 +240,7 @@ class RptTransactionsControllerTest {
     @DisplayName("Tests the successful update of an RptTransaction resource")
     void updateRptTransactionSuccess() throws DataException {
 
+        when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
 
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
@@ -249,6 +266,22 @@ class RptTransactionsControllerTest {
                 .update(rptTransaction, transaction, COMPANY_ACCOUNT_ID, request);
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
+    }
+
+
+    @Test
+    @DisplayName("Tests the updating of an RptTransaction where the controller returns a bad request binding error for invalid length")
+    void updateRptTransactionReturnBadRequestForBindingErrors() throws DataException {
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
+
+        ResponseEntity response =
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @Test
