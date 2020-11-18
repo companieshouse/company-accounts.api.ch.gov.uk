@@ -88,6 +88,10 @@ public class AccountsValidator extends BaseValidator {
             errors = stocksTxnClosureValidator
                     .validate(companyAccountsId, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet);
 
+            // Debtors
+
+            // .......
+
         } else {
             addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);
         }

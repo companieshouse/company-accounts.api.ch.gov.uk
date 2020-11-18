@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
@@ -41,6 +42,9 @@ class RptTransactionsControllerTest {
 
     @Mock
     private RptTransactionServiceImpl rptTransactionService;
+
+    @Mock
+    private BindingResult bindingResult;
 
     @Mock
     private ApiResponseMapper apiResponseMapper;
@@ -88,7 +92,7 @@ class RptTransactionsControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.create(rptTransaction, RPT_TRANSACTIONS_ID, request);
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -114,7 +118,7 @@ class RptTransactionsControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.create(rptTransaction, RPT_TRANSACTIONS_ID, request);
+                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -235,7 +239,7 @@ class RptTransactionsControllerTest {
                 .thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -257,7 +261,7 @@ class RptTransactionsControllerTest {
         when(rptTransactions.get(RPT_TRANSACTIONS_ID)).thenReturn(null);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -280,7 +284,7 @@ class RptTransactionsControllerTest {
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
         ResponseEntity response =
-                controller.update(rptTransaction, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+                controller.update(rptTransaction,bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
