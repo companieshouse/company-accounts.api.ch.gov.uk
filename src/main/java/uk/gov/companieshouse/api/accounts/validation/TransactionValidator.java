@@ -27,6 +27,9 @@ public class TransactionValidator extends BaseValidator {
         if(!isMultipleYearFiler && rptTransaction.getBreakdown().getBalanceAtPeriodStart() != null ) {
             addError(errors, unexpectedData, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
             return errors;
+        } else if (isMultipleYearFiler && rptTransaction.getBreakdown().getBalanceAtPeriodStart() == null) {
+            addError(errors, mandatoryElementMissing, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START);
+            return errors;
         }
 
         return errors;
