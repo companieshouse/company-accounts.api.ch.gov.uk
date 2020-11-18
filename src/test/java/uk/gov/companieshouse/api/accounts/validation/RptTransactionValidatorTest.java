@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TransactionValidatorTest {
+class RptTransactionValidatorTest {
 
     private static final String TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = "$.transaction.breakdown.balance_at_period_start";
 
@@ -50,12 +50,12 @@ class TransactionValidatorTest {
 
     private RptTransaction rptTransaction;
 
-    private TransactionValidator transactionValidator;
+    private RptTransactionValidator rptTransactionValidator;
 
     @BeforeEach
     void setup() {
         rptTransaction = new RptTransaction();
-        transactionValidator = new TransactionValidator(companyService);
+        rptTransactionValidator = new RptTransactionValidator(companyService);
     }
 
     @Test
@@ -70,7 +70,7 @@ class TransactionValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+        errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertFalse(errors.hasErrors());
     }
@@ -84,11 +84,11 @@ class TransactionValidatorTest {
 
         createMultiYearFilerRptTransactionBreakdown(true);
 
-        ReflectionTestUtils.setField(transactionValidator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
+        ReflectionTestUtils.setField(rptTransactionValidator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+        errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(UNEXPECTED_DATA, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
@@ -103,11 +103,11 @@ class TransactionValidatorTest {
 
         createMultiYearFilerRptTransactionBreakdown(false);
 
-        ReflectionTestUtils.setField(transactionValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(rptTransactionValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+        errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
@@ -125,7 +125,7 @@ class TransactionValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        errors = transactionValidator.validateRptTransaction(rptTransaction, transaction);
+        errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertEquals(0, errors.getErrorCount());
     }

@@ -9,12 +9,12 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class TransactionValidator extends BaseValidator {
+public class RptTransactionValidator extends BaseValidator {
 
     private static final String TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = "$.transaction.breakdown.balance_at_period_start";
 
     @Autowired
-    public TransactionValidator(CompanyService companyService) {
+    public RptTransactionValidator(CompanyService companyService) {
         super(companyService);
     }
 
