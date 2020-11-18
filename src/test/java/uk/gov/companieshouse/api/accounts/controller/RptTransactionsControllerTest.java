@@ -285,7 +285,7 @@ class RptTransactionsControllerTest {
     }
 
     @Test
-    @DisplayName("Tests the update of an RptTransaction when the Loan ID doesn't exist")
+    @DisplayName("Tests the update of an RptTransaction when the RptTransaction ID doesn't exist")
     void updateRptTransactionResourceWhenIdIsNull() throws DataException {
 
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
