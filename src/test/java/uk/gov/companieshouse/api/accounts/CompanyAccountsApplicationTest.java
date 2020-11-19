@@ -21,6 +21,7 @@ import uk.gov.companieshouse.api.accounts.interceptor.LoansToDirectorsIntercepto
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.RelatedPartyTransactionsInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
@@ -68,10 +69,13 @@ public class CompanyAccountsApplicationTest {
     private LoansToDirectorsInterceptor loansToDirectorsInterceptor;
 
     @Mock
+    private RelatedPartyTransactionsInterceptor relatedPartyTransactionsInterceptor;
+
+    @Mock
     private LoggingInterceptor loggingInterceptor;
 
     @Mock
-    private TokenPermissionsInterceptor tokenPermissiosInterceptor;
+    private TokenPermissionsInterceptor tokenPermissionsInterceptor;
 
     @Mock
     private AuthenticationInterceptor authenticationInterceptor;
@@ -86,7 +90,7 @@ public class CompanyAccountsApplicationTest {
     @DisplayName("Test if interceptors are added correctly")
     void testAddInterceptors() {
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(loggingInterceptor);
-        doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(tokenPermissiosInterceptor);
+        doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(tokenPermissionsInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(authenticationInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(transactionInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(openTransactionInterceptor);
@@ -98,13 +102,14 @@ public class CompanyAccountsApplicationTest {
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(cicReportInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(directorsReportInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(loansToDirectorsInterceptor);
+        doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(relatedPartyTransactionsInterceptor);
         when(interceptorRegistration.addPathPatterns(Mockito.<String>any())).thenReturn(interceptorRegistration);
         when(interceptorRegistration.excludePathPatterns(anyString())).thenReturn(interceptorRegistration);
 
         companyAccountsApplication.addInterceptors(interceptorRegistry);
 
         InOrder inOrder = Mockito.inOrder(interceptorRegistry);
-        inOrder.verify(interceptorRegistry).addInterceptor(tokenPermissiosInterceptor);
+        inOrder.verify(interceptorRegistry).addInterceptor(tokenPermissionsInterceptor);
         inOrder.verify(interceptorRegistry).addInterceptor(authenticationInterceptor);
 
         verifyNoMoreInteractions(interceptorRegistry);

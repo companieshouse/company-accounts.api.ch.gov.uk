@@ -16,6 +16,7 @@ import uk.gov.companieshouse.api.accounts.interceptor.LoansToDirectorsIntercepto
 import uk.gov.companieshouse.api.accounts.interceptor.LoggingInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.PreviousPeriodInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.RelatedPartyTransactionsInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.SmallFullInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.utility.AccountsNotesPathsYamlReader;
@@ -67,6 +68,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     
     @Autowired
     private LoansToDirectorsInterceptor loansToDirectorsInterceptor;
+
+    @Autowired
+    private RelatedPartyTransactionsInterceptor relatedPartyTransactionsInterceptor;
 
     public static void main(String[] args) {
 
@@ -155,5 +159,11 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors/**")
                 .excludePathPatterns(
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors");
+
+        registry.addInterceptor(relatedPartyTransactionsInterceptor)
+                .addPathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/related-party-transactions/**")
+                .excludePathPatterns(
+                        "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/related-party-transactions");
     }
 }
