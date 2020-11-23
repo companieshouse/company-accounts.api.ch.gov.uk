@@ -6,14 +6,14 @@ import java.util.Map;
 public class Costs {
 
     @JsonProperty("costs")
-    private Map<String, Cost> costs;
+    private Map<String, Cost> costsList;
 
-    public Map<String, Cost> getCosts() {
-        return costs;
+    public Map<String, Cost> getCostsList() {
+        return costsList;
     }
 
-    public void setCosts(
+    public void setCostsList(
             Map<String, Cost> costs) {
-        this.costs = costs;
+        this.costsList = costs;
     }
 }

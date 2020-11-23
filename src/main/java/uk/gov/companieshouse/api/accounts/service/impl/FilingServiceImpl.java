@@ -159,7 +159,7 @@ public class FilingServiceImpl implements FilingService {
     private boolean isValidIxbrl(String fileLocation) {
 
         boolean isIxbrlValid = false;
-        if (!environmentReader.getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR)) {
+        if (!environmentReader.getOptionalBoolean(DISABLE_IXBRL_VALIDATION_ENV_VAR).booleanValue()) {
             String ixbrlData = downloadIxbrlFromLocation(fileLocation);
 
             if (ixbrlData != null) {
