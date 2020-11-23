@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
+import uk.gov.companieshouse.api.accounts.links.RelatedPartyTransactionsLinkType;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.ResourceService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -30,7 +32,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors/additional-information",
+@RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/{resourceName:related\\-party\\-transactions|loans\\-to\\-directors}/additional-information",
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class LoansToDirectorsAdditionalInformationController {
 
@@ -78,9 +80,16 @@ public class LoansToDirectorsAdditionalInformationController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
-        if(loansToDirectors.getLinks().get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(request.getRequestURI().contains("related-party")) {
+            RelatedPartyTransactions relatedPartyTransactions = (RelatedPartyTransactions) request.getAttribute(AttributeName.RELATED_PARTY_TRANSACTIONS.getValue());
+            if(relatedPartyTransactions.getLinks().get(RelatedPartyTransactionsLinkType.ADDITIONAL_INFO.getLink()) == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
+            if (loansToDirectors.getLinks().get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()) == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }
 
         if (bindingResult.hasErrors()) {

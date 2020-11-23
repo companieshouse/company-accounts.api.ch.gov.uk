@@ -12,7 +12,9 @@ import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
+import uk.gov.companieshouse.api.accounts.links.RelatedPartyTransactionsLinkType;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.AdditionalInformationEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.AdditionalInformation;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoansToDirectorsAdditionalInformationRepository;
@@ -25,6 +27,8 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
 public class LoansToDirectorsAdditionalInformationService implements ResourceService<AdditionalInformation> {
+
+    private static final String RELATED_PARTY = "related-party";
 
     @Autowired
     private LoansToDirectorsAdditionalInformationTransformer transformer;
@@ -43,10 +47,10 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
             Transaction transaction, String companyAccountId, HttpServletRequest request)
             throws DataException {
 
-        setMetadataOnRest(rest, transaction, companyAccountId);
+        setMetadataOnRest(rest, transaction, companyAccountId, request);
 
         AdditionalInformationEntity entity = transformer.transform(rest);
-        entity.setId(generateID(companyAccountId));
+        entity.setId(generateID(companyAccountId, request));
 
         try {
             repository.insert(entity);
@@ -58,9 +62,15 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
             throw new DataException(e);
         }
 
-        loansToDirectorsService.addLink(companyAccountId, LoansToDirectorsLinkType.ADDITIONAL_INFO,
-                getSelfLinkFromRestEntity(rest), request);
+        if(request.getRequestURI().contains(RELATED_PARTY)) {
 
+            loansToDirectorsService.addLink(companyAccountId, RelatedPartyTransactionsLinkType.ADDITIONAL_INFO,
+                    getSelfLinkFromRestEntity(rest), request);
+        } else {
+
+            loansToDirectorsService.addLink(companyAccountId, LoansToDirectorsLinkType.ADDITIONAL_INFO,
+                    getSelfLinkFromRestEntity(rest), request);
+        }
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
@@ -69,10 +79,10 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
             Transaction transaction, String companyAccountId, HttpServletRequest request)
             throws DataException {
 
-        setMetadataOnRest(rest, transaction, companyAccountId);
+        setMetadataOnRest(rest, transaction, companyAccountId, request);
 
         AdditionalInformationEntity entity = transformer.transform(rest);
-        entity.setId(generateID(companyAccountId));
+        entity.setId(generateID(companyAccountId, request));
 
         try {
             repository.save(entity);
@@ -90,7 +100,7 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
         AdditionalInformationEntity entity;
 
         try {
-            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId, request)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -105,7 +115,7 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
     public ResponseObject<AdditionalInformation> delete(String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        String id = generateID(companyAccountsId);
+        String id = generateID(companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
@@ -125,32 +135,38 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
         }
     }
 
-    private String generateSelfLink(Transaction transaction, String companyAccountId) {
+    private String generateSelfLink(Transaction transaction, String companyAccountId, HttpServletRequest request) {
 
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
-                + ResourceName.LOANS_TO_DIRECTORS.getName() + "/"
+                + (request.getRequestURI().contains(RELATED_PARTY) ? ResourceName.RELATED_PARTY_TRANSACTIONS.getName() : ResourceName.LOANS_TO_DIRECTORS.getName()) + "/"
                 + ResourceName.ADDITIONAL_INFO.getName();
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
+    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, HttpServletRequest request) {
 
         Map<String, String> map = new HashMap<>();
-        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
+        map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, request));
         return map;
     }
 
-    private void setMetadataOnRest(AdditionalInformation rest, Transaction transaction, String companyAccountsId) {
+    private void setMetadataOnRest(AdditionalInformation rest, Transaction transaction,
+                                   String companyAccountsId, HttpServletRequest request) {
 
-        rest.setLinks(createLinks(transaction, companyAccountsId));
+        rest.setLinks(createLinks(transaction, companyAccountsId, request));
         rest.setEtag(GenerateEtagUtil.generateEtag());
-        rest.setKind(Kind.LOANS_TO_DIRECTORS_ADDITIONAL_INFO.getValue());
+        if (request.getRequestURI().contains(RELATED_PARTY)) {
+            rest.setKind(Kind.RELATED_PARTY_TRANSACTIONS_ADDITIONAL_INFO.getValue());
+        } else {
+            rest.setKind(Kind.LOANS_TO_DIRECTORS_ADDITIONAL_INFO.getValue());
+        }
     }
 
-    private String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId, HttpServletRequest request) {
 
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.LOANS_TO_DIRECTORS.getName() +
+        return request.getRequestURI().contains(RELATED_PARTY) ? keyIdGenerator.generate(companyAccountId + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName() +
+                "-" + ResourceName.ADDITIONAL_INFO.getName()) : keyIdGenerator.generate(companyAccountId + "-" + ResourceName.LOANS_TO_DIRECTORS.getName() +
                 "-" + ResourceName.ADDITIONAL_INFO.getName());
     }
 

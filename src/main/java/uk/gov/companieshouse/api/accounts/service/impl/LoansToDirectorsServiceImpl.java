@@ -9,11 +9,17 @@ import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
+import uk.gov.companieshouse.api.accounts.links.LinkType;
 import uk.gov.companieshouse.api.accounts.links.LoansToDirectorsLinkType;
+import uk.gov.companieshouse.api.accounts.links.RelatedPartyTransactionsLinkType;
 import uk.gov.companieshouse.api.accounts.links.SmallFullLinkType;
+import uk.gov.companieshouse.api.accounts.model.entity.BaseEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.loanstodirectors.LoansToDirectorsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.relatedpartytransactions.RelatedPartyTransactionsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors.LoansToDirectors;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpartytransactions.RelatedPartyTransactions;
 import uk.gov.companieshouse.api.accounts.repository.smallfull.LoansToDirectorsRepository;
+import uk.gov.companieshouse.api.accounts.repository.smallfull.RelatedPartyTransactionsRepository;
 import uk.gov.companieshouse.api.accounts.service.LoansToDirectorsService;
 import uk.gov.companieshouse.api.accounts.service.ParentService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -27,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirectors, LoansToDirectorsLinkType>,
+public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirectors, LinkType>,
         LoansToDirectorsService {
 
     @Autowired
@@ -35,6 +41,9 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     @Autowired
     private LoansToDirectorsRepository repository;
+
+    @Autowired
+    private RelatedPartyTransactionsRepository relatedPartyTransactionsRepository;
 
     @Autowired
     private KeyIdGenerator keyIdGenerator;
@@ -55,7 +64,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
         LoansToDirectorsEntity entity = transformer.transform(rest);
-        entity.setId(generateID(companyAccountsId));
+        entity.setId(generateID(companyAccountsId, request));
 
         try {
             repository.insert(entity);
@@ -80,7 +89,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         LoansToDirectorsEntity entity;
 
         try {
-            entity = repository.findById(generateID(companyAccountsId)).orElse(null);
+            entity = repository.findById(generateID(companyAccountsId, request)).orElse(null);
         } catch (MongoException e) {
             throw new DataException(e);
         }
@@ -95,7 +104,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     public ResponseObject<LoansToDirectors> delete(String companyAccountsId,
             HttpServletRequest request) throws DataException {
 
-        String id = generateID(companyAccountsId);
+        String id = generateID(companyAccountsId, request);
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
@@ -120,6 +129,53 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         }
     }
 
+    @Override
+    public void addLink(String id, LinkType linkType, String link, HttpServletRequest request) throws DataException {
+
+        String resourceId = generateID(id, request);
+
+        try {
+        if(request.getRequestURI().contains("related-party")) {
+            RelatedPartyTransactionsEntity entity =  relatedPartyTransactionsRepository.findById(resourceId)
+                    .orElseThrow(() -> new DataException(
+                            "Failed to find loans to directors entity to which to add link"));
+            entity.getData().getLinks().put(linkType.getLink(), link);
+            relatedPartyTransactionsRepository.save(entity);
+        } else {
+            LoansToDirectorsEntity entity = repository.findById(resourceId)
+                    .orElseThrow(() -> new DataException(
+                            "Failed to find loans to directors entity to which to add link"));
+            entity.getData().getLinks().put(linkType.getLink(), link);
+
+            repository.save(entity);
+        }
+
+
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+    }
+
+    @Override
+    public void removeLink(String id, LinkType linkType, HttpServletRequest request) throws DataException {
+
+        String resourceId = generateID(id, request);
+        LoansToDirectorsEntity entity = repository.findById(resourceId)
+                .orElseThrow(() -> new DataException(
+                        "Failed to find loans to directors entity from which to remove link"));
+        entity.getData().getLinks().remove(linkType.getLink());
+
+        try {
+            repository.save(entity);
+
+        } catch (MongoException e) {
+
+            throw new DataException(e);
+        }
+    }
+/*
     @Override
     public void addLink(String id, LoansToDirectorsLinkType linkType, String link,
             HttpServletRequest request) throws DataException {
@@ -157,12 +213,12 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
             throw new DataException(e);
         }
     }
-
+*/
     @Override
     public void addLoan(String companyAccountsId, String loanId, String link,
             HttpServletRequest request) throws DataException {
 
-        String resourceId = generateID(companyAccountsId);
+        String resourceId = generateID(companyAccountsId, request);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
                         "Failed to find loans to directors entity to which to add loan"));
@@ -185,7 +241,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     public void removeLoan(String companyAccountsId, String loanId, HttpServletRequest request)
             throws DataException {
 
-        String resourceId = generateID(companyAccountsId);
+        String resourceId = generateID(companyAccountsId, request);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
                         "Failed to find loans to directors entity from which to remove loan"));
@@ -202,10 +258,10 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     }
 
-    public void removeAllLoans(String companyAccountsId)
+    public void removeAllLoans(String companyAccountsId, HttpServletRequest request)
             throws DataException {
 
-        String resourceId = generateID(companyAccountsId);
+        String resourceId = generateID(companyAccountsId, request);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
                         "Failed to find loans to directors entity from which to remove loan"));
@@ -244,9 +300,11 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         rest.setLoans(null);
     }
 
-    private String generateID(String companyAccountId) {
+    private String generateID(String companyAccountId, HttpServletRequest request) {
 
-        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.LOANS_TO_DIRECTORS.getName());
+        return keyIdGenerator.generate(companyAccountId + "-" +
+                (request.getRequestURI().contains("related-party") ?
+                ResourceName.RELATED_PARTY_TRANSACTIONS.getName() : ResourceName.LOANS_TO_DIRECTORS.getName()));
     }
 
     private String getSelfLinkFromRestEntity(LoansToDirectors rest) {

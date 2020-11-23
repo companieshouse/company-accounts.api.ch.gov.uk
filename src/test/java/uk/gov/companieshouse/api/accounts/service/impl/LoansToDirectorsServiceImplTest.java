@@ -502,7 +502,7 @@ public class LoansToDirectorsServiceImplTest {
 
         when(loansToDirectorsEntity.getData()).thenReturn(loansToDirectorsDataEntity);
 
-        assertAll(() -> service.removeAllLoans(COMPANY_ACCOUNTS_ID));
+        assertAll(() -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
 
         verify(repository).save(loansToDirectorsEntity);
     }
@@ -521,7 +521,7 @@ public class LoansToDirectorsServiceImplTest {
         when(repository.save(loansToDirectorsEntity)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class,
-                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID));
+                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -534,7 +534,7 @@ public class LoansToDirectorsServiceImplTest {
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
         assertThrows(DataException.class,
-                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID));
+                () -> service.removeAllLoans(COMPANY_ACCOUNTS_ID, request));
 
         verify(repository, never()).save(any());
     }
