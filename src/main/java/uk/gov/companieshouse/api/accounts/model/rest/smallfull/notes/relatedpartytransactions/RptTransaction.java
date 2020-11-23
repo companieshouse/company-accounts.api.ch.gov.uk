@@ -35,6 +35,7 @@ public class RptTransaction extends RestObject {
     private String descriptionOfTransaction;
 
     @NotNull
+    @CharSetValid(CharSet.CHARACTER_SET_2)
     @JsonProperty("transaction_type")
     private String transactionType;
 
