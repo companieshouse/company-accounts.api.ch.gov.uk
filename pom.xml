@@ -27,7 +27,7 @@
     <api-helper-java.version>1.4.3</api-helper-java.version>
     <structured-logging.version>1.4.0-rc2</structured-logging.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
-    <company-accounts-library.version>1.2.8</company-accounts-library.version>
+    <company-accounts-library.version>1.2.9</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
     <commons-io.version>2.4</commons-io.version>
@@ -57,6 +57,10 @@
 
   <dependencies>
     <!-- Compile -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
     <dependency>
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>api-helper-java</artifactId>
