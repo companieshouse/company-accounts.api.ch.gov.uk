@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 class SecretaryControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String SECRETARY_ID = "secretaryId";
     private static final String SECRETARY_LINK = "secretaryLink";
 
     @Mock
@@ -81,7 +80,7 @@ class SecretaryControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
                 secretary);
         when(secretaryService.create(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
@@ -185,7 +184,7 @@ class SecretaryControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 secretary);
         when(secretaryService.update(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
@@ -234,7 +233,7 @@ class SecretaryControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
                 secretary);
         when(secretaryService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
@@ -279,7 +278,7 @@ class SecretaryControllerTest {
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 secretary);
 
         when(secretaryService.delete(COMPANY_ACCOUNTS_ID, request))

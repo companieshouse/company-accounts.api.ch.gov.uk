@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswi
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CreditorsWithinOneYearTransformerTest {
+class CreditorsWithinOneYearTransformerTest {
 
     private static final Long ACCRUALS_AND_DEFERRED_INCOME = 1L;
     private static final Long BANK_LOANS_AND_OVERDRAFTS = 2L;
@@ -40,7 +40,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = creditorsWithinOneYearTransformer
             .transform(new CreditorsWithinOneYear());
@@ -60,7 +60,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
-    public void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
+    void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
 
         CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
 
@@ -83,7 +83,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
 
@@ -102,7 +102,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
+    void testTransformerWithEmptyEntityObject() {
 
         CreditorsWithinOneYear creditorsWithinOneYear = creditorsWithinOneYearTransformer
             .transform(new CreditorsWithinOneYearEntity());
@@ -114,7 +114,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty previous period Entity Object")
-    public void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
+    void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
 
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = new CreditorsWithinOneYearEntity();
         CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = new CreditorsWithinOneYearDataEntity();
@@ -138,7 +138,7 @@ public class CreditorsWithinOneYearTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = new CreditorsWithinOneYearEntity();
         CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = new CreditorsWithinOneYearDataEntity();

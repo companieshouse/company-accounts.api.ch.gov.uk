@@ -29,7 +29,7 @@ import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WithinCurrentPeriodImplTest {
+class WithinCurrentPeriodImplTest {
 
     @Mock
     private HttpServletRequest request;

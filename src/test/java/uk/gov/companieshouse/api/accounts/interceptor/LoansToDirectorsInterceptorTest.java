@@ -37,7 +37,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class LoansToDirectorsInterceptorTest {
+class LoansToDirectorsInterceptorTest {
 
     @Mock
     private LoansToDirectorsServiceImpl loansToDirectorsService;

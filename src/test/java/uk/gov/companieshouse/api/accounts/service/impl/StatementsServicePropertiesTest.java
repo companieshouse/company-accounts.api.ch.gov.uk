@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StatementsServicePropertiesTest {
+class StatementsServicePropertiesTest {
 
     @InjectMocks
     private StatementsServiceProperties statementsServiceProperties;

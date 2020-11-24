@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class NoteControllerTest {
+class NoteControllerTest {
 
     @Mock
     private BindingResult bindingResult;

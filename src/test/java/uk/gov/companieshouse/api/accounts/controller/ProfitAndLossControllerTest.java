@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ProfitAndLossControllerTest {
+class ProfitAndLossControllerTest {
 
     @Mock
     private ProfitAndLossService profitAndLossService;
@@ -91,7 +91,7 @@ public class ProfitAndLossControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, profitAndLoss);
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.CREATED, profitAndLoss);
         when(profitAndLossService.create(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period))
         .thenReturn(responseObject);
 
@@ -160,7 +160,7 @@ public class ProfitAndLossControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, profitAndLoss);
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND, profitAndLoss);
         when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, period))
                 .thenReturn(responseObject);
 
@@ -210,7 +210,7 @@ public class ProfitAndLossControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, profitAndLoss);
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, profitAndLoss);
         when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, period))
                 .thenReturn(responseObject);
 
@@ -242,7 +242,7 @@ public class ProfitAndLossControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, profitAndLoss);
+        ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, profitAndLoss);
         when(profitAndLossService.update(profitAndLoss, transaction, COMPANY_ACCOUNTS_ID, request, accountingPeriod))
                 .thenReturn(responseObject);
 
@@ -425,6 +425,4 @@ public class ProfitAndLossControllerTest {
         assertNotNull(binder);
         assertEquals(accountingPeriod.toString(), converter.getAsText());
     }
-
-
 }

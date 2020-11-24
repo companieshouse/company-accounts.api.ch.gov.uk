@@ -28,7 +28,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PreviousPeriodValidatorTest {
+class PreviousPeriodValidatorTest {
 
     @Mock
     private CompanyService companyService;

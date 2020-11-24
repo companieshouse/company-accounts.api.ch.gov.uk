@@ -41,7 +41,7 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicApprovalServiceTest {
+class CicApprovalServiceTest {
 
     @Mock
     private HttpServletRequest request;
@@ -169,7 +169,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful update of an CicApproval resource")
-    public void canUpdateAnCicReportApproval() throws DataException {
+    void canUpdateAnCicReportApproval() throws DataException {
         when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
                 cicReportApprovalEntity);
         doReturn(new Errors()).when(cicApprovalValidator)
@@ -219,7 +219,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful find of an CicApproval resource")
-    public void findCicReportApproval() throws DataException {
+    void findCicReportApproval() throws DataException {
         when(cicReportApprovalRepository.findById(RESOURCE_ID))
             .thenReturn(Optional.ofNullable(cicReportApprovalEntity));
         when(cicApprovalTransformer.transform(cicReportApprovalEntity))
@@ -232,7 +232,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the unsuccessful find of an CicApproval resource")
-    public void findCicReportApprovalUnsuccessful() throws DataException {
+    void findCicReportApprovalUnsuccessful() throws DataException {
         when(cicReportApprovalRepository.findById(RESOURCE_ID))
                 .thenReturn(Optional.ofNullable(null));
         ResponseObject<CicApproval> result = cicApprovalService
@@ -243,7 +243,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of an CicApproval resource")
-    public void findCicReportApprovalMongoException() {
+    void findCicReportApprovalMongoException() {
         when(cicReportApprovalRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
         assertThrows(DataException.class, () -> cicApprovalService
             .find(COMPANY_ACCOUNTS_ID, request));
@@ -251,7 +251,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful delete of an CicApproval resource")
-    public void deleteCicReportApproval() throws DataException {
+    void deleteCicReportApproval() throws DataException {
         when(cicReportApprovalRepository.existsById(RESOURCE_ID)).thenReturn(true);
         ResponseObject<CicApproval> result = cicApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
@@ -260,7 +260,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on delete of an CicApproval resource")
-    public void deleteCicReportApprovalMongoException() {
+    void deleteCicReportApprovalMongoException() {
         when(cicReportApprovalRepository.existsById(RESOURCE_ID)).thenThrow(mongoException);
         assertThrows(DataException.class, () -> cicApprovalService
                 .delete(COMPANY_ACCOUNTS_ID, request));
@@ -268,7 +268,7 @@ public class CicApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the unsuccessful on delete of an CicApproval resource")
-    public void deleteCicReportApprovalUnsuccessful() throws DataException {
+    void deleteCicReportApprovalUnsuccessful() throws DataException {
         when(cicReportApprovalRepository.existsById(RESOURCE_ID)).thenReturn(false);
         ResponseObject<CicApproval> result = cicApprovalService
                 .delete(COMPANY_ACCOUNTS_ID, request);

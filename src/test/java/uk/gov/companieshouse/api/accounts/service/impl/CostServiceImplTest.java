@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CostServiceImplTest {
+class CostServiceImplTest {
 
     @Mock
     private TransactionService transactionService;
@@ -64,7 +64,7 @@ public class CostServiceImplTest {
         when(transactionService.getPayableResources(transaction))
                 .thenReturn(Arrays.asList(PayableResource.CIC));
 
-        when(costs.getCosts()).thenReturn(costMap);
+        when(costs.getCostsMap()).thenReturn(costMap);
 
         when(costMap.get(PayableResource.CIC.getResource())).thenReturn(cost);
 

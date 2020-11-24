@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SmallFullTransformerTest {
+class SmallFullTransformerTest {
     
     private SmallFullTransformer smallFullTransformer = new SmallFullTransformer();
     
@@ -146,4 +146,3 @@ public class SmallFullTransformerTest {
         Assertions.assertEquals(LAST_ACCOUNTS_PERIOD_END_ON, smallFull.getLastAccounts().getPeriodEndOn());
     }
 }
-

@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class DocumentGeneratorResponseValidatorTest {
+class DocumentGeneratorResponseValidatorTest {
 
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String PERIOD_END_ON_KEY = "period_end_on";

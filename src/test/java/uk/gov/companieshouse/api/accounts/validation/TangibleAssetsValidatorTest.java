@@ -39,7 +39,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TangibleAssetsValidatorTest {
+class TangibleAssetsValidatorTest {
 
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
     private static final String UNEXPECTED_DATA = "unexpected.data";

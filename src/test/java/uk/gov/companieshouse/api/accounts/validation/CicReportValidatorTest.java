@@ -24,7 +24,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CicReportValidatorTest {
+class CicReportValidatorTest {
 
     @Mock
     private Transaction transaction;

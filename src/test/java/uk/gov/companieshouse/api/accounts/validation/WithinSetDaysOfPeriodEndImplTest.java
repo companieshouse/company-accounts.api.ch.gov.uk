@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WithinSetDaysOfPeriodEndImplTest {
+class WithinSetDaysOfPeriodEndImplTest {
 
     @Mock
     private HttpServletRequest request;
@@ -235,7 +235,9 @@ public class WithinSetDaysOfPeriodEndImplTest {
 
         when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(ServiceException.class);
 
+        LocalDate periodEndOnMinusFourDays = PERIOD_END_ON.minusDays(4);
+
         assertThrows(UncheckedDataException.class,
-                () -> withinSetDaysOfPeriodEndImpl.isValid(PERIOD_END_ON.minusDays(4), context)); // 4 days before period end
+                () -> withinSetDaysOfPeriodEndImpl.isValid(periodEndOnMinusFourDays, context));
     }
 }

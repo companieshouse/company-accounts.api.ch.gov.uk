@@ -13,7 +13,7 @@ public class Errors {
 
     @JsonProperty("errors")
     @Field("errors")
-    private Set<Error> errors = new HashSet<>();
+    private Set<Error> errorsSet = new HashSet<>();
 
     /**
      * Add the given {@link Error}
@@ -26,7 +26,7 @@ public class Errors {
             throw new IllegalArgumentException("Error cannot be null");
         }
 
-        return errors.add(error);
+        return errorsSet.add(error);
     }
 
     /**
@@ -35,7 +35,7 @@ public class Errors {
      * @return True or false
      */
     public boolean hasErrors() {
-        return !errors.isEmpty();
+        return !errorsSet.isEmpty();
     }
 
     /**
@@ -44,7 +44,7 @@ public class Errors {
      * @return Set of errors
      */
     public Set<Error> getErrors() {
-        return this.errors;
+        return this.errorsSet;
     }
 
     /**
@@ -57,7 +57,7 @@ public class Errors {
             throw new IllegalArgumentException("Error cannot be null");
         }
 
-        return errors.contains(error);
+        return errorsSet.contains(error);
     }
 
     /**
@@ -67,7 +67,7 @@ public class Errors {
      */
     @JsonIgnore
     public int getErrorCount() {
-        return errors.size();
+        return errorsSet.size();
     }
 
 }

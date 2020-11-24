@@ -35,7 +35,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ApprovalValidatorTest {
+class ApprovalValidatorTest {
 
     private static final String NAME = "directorName";
     private static final String COMPANY_ACCOUNTS = "companyAccountsId";

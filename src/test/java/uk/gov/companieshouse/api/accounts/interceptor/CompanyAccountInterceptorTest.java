@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CompanyAccountInterceptorTest {
+class CompanyAccountInterceptorTest {
 
     @Mock
     private CompanyAccountEntity companyAccountEntity;
@@ -68,7 +68,7 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() throws DataException {
+    void testReturnsCorrectlyOnValidConditions() throws DataException {
         setUpPathVariables();
         setUpReourceList("linkToCompanyAccount");
         setUpCompanyAccount();
@@ -85,7 +85,7 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
-    public void testReturnsFalseForATransactionIsNull() {
+    void testReturnsFalseForATransactionIsNull() {
         setUpPathVariables();
         when(httpServletRequest.getAttribute(AttributeName.TRANSACTION.getValue()))
                 .thenReturn(null);
@@ -95,7 +95,7 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CompanyAccountEntity lookup")
-    public void testReturnsFalseForAFailedLookup() throws DataException {
+    void testReturnsFalseForAFailedLookup() throws DataException {
         setUpPathVariables();
         when(companyAccountService.findById("123456", httpServletRequest)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
@@ -106,7 +106,7 @@ public class CompanyAccountInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false when the two links do not match")
-    public void testReturnsFalseForLinksThatDoNotMatch() throws DataException {
+    void testReturnsFalseForLinksThatDoNotMatch() throws DataException {
         setUpPathVariables();
         setUpReourceList("badLink");
         setUpCompanyAccount();
@@ -140,5 +140,4 @@ public class CompanyAccountInterceptorTest {
         when(httpServletRequest.getAttribute(anyString())).thenReturn(transaction)
             .thenReturn(pathVariables);
     }
-
 }

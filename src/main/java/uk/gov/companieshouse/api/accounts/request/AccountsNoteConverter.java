@@ -20,7 +20,7 @@ public class AccountsNoteConverter {
 
             if(ACCOUNTS_NOTE_MAP.get(accountsNote.getAccountType()) == null) {
 
-                ACCOUNTS_NOTE_MAP.put(accountsNote.getAccountType(), new EnumMap<NoteType, AccountingNoteType>(NoteType.class));
+                ACCOUNTS_NOTE_MAP.put(accountsNote.getAccountType(), new EnumMap<>(NoteType.class));
             }
 
             ACCOUNTS_NOTE_MAP.get(accountsNote.getAccountType()).put(accountsNote.getNoteType(), accountsNote);

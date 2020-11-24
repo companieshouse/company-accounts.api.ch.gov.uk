@@ -14,7 +14,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CicStatementsEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicStatements;
 import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
 
-public class CicStatementsTransformerTest {
+class CicStatementsTransformerTest {
 
     private static final Map<String, String> LINKS = new HashMap<>();
     private static final Boolean HAS_COMPLETED_REPORT_STATEMENTS = true;
@@ -29,7 +29,7 @@ public class CicStatementsTransformerTest {
 
     @Test
     @DisplayName("REST to entity transform - fully populated object")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         CicStatements cicStatements = new CicStatements();
         cicStatements.setHasCompletedReportStatements(HAS_COMPLETED_REPORT_STATEMENTS);
@@ -64,7 +64,7 @@ public class CicStatementsTransformerTest {
 
     @Test
     @DisplayName("REST to entity transform - no report statements")
-    public void testRestToEntityTransformerWithoutNestedReportStatements() {
+    void testRestToEntityTransformerWithoutNestedReportStatements() {
 
         CicStatements cicStatements = new CicStatements();
         cicStatements.setHasCompletedReportStatements(HAS_COMPLETED_REPORT_STATEMENTS);
@@ -87,7 +87,7 @@ public class CicStatementsTransformerTest {
 
     @Test
     @DisplayName("Entity to REST transform - fully populated object")
-    public void testEntityToRestTransformerWithFullyPopulatedObject() {
+    void testEntityToRestTransformerWithFullyPopulatedObject() {
 
         CicStatementsDataEntity cicStatementsDataEntity = new CicStatementsDataEntity();
         cicStatementsDataEntity.setEtag(ETAG);
@@ -123,7 +123,7 @@ public class CicStatementsTransformerTest {
 
     @Test
     @DisplayName("Entity to REST transform - no report statements")
-    public void testEntityToRestTransformerWithoutNestedReportStatements() {
+    void testEntityToRestTransformerWithoutNestedReportStatements() {
 
         CicStatementsDataEntity cicStatementsDataEntity = new CicStatementsDataEntity();
         cicStatementsDataEntity.setEtag(ETAG);

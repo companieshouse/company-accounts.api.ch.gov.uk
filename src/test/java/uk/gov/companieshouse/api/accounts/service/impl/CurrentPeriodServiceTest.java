@@ -47,7 +47,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CurrentPeriodServiceTest {
+class CurrentPeriodServiceTest {
 
     @Mock
     private HttpServletRequest request;

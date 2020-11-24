@@ -17,7 +17,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodire
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LoansToDirectorsTransformerTest {
+class LoansToDirectorsTransformerTest {
 
     private static final Map<String, String> LOANS = new HashMap<>();
 

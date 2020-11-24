@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StocksTransformerTest {
+class StocksTransformerTest {
 
     private static final Long PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD = 1L;
     private static final Long STOCKS_CURRENT_PERIOD = 2L;
@@ -39,7 +39,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         StocksEntity stocksEntity = stocksTransformer
                 .transform(new Stocks());
@@ -51,7 +51,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
-    public void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
+    void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
 
         Stocks stocks = new Stocks();
 
@@ -71,7 +71,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         Stocks stocks = new Stocks();
 
@@ -89,7 +89,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
+    void testTransformerWithEmptyEntityObject() {
 
         Stocks stocks = stocksTransformer.transform(new StocksEntity());
 
@@ -100,7 +100,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty previous period Entity Object")
-    public void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
+    void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
 
         StocksEntity stocksEntity = new StocksEntity();
         StocksDataEntity stocksDataEntity = new StocksDataEntity();
@@ -123,7 +123,7 @@ public class StocksTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         StocksEntity stocksEntity = new StocksEntity();
         StocksDataEntity stocksDataEntity = new StocksDataEntity();

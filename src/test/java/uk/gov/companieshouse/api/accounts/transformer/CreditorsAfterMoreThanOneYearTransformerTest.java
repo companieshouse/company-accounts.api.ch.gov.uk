@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaf
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CreditorsAfterMoreThanOneYearTransformerTest {
+class CreditorsAfterMoreThanOneYearTransformerTest {
 
     private static final Long BANK_LOANS_AND_OVERDRAFTS = 2L;
     private static final Long OTHER_CREDITORS = 3L;

@@ -46,7 +46,7 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicReportServiceTest {
+class CicReportServiceTest {
 
     @Mock
     private CicReportRepository repository;

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StocksValidatorTest {
+class StocksValidatorTest {
 
     private static final String STOCKS_PATH = "$.stocks";
     private static final String STOCKS_CURRENT_PERIOD_PATH = STOCKS_PATH +

@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.P
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class EmployeesTransformerTest {
+class EmployeesTransformerTest {
 
     private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT = 11L;
     private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS = 19L;

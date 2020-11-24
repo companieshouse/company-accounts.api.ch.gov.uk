@@ -24,7 +24,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SmallFullParentResourceTest {
+class SmallFullParentResourceTest {
 
     @Mock
     private SmallFullService smallFullService;

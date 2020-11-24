@@ -40,7 +40,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicApprovalControllerTest {
+class CicApprovalControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -80,7 +80,7 @@ public class CicApprovalControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a CicApproval resource")
-    public void canCreateCicReportApproval() throws DataException {
+    void canCreateCicReportApproval() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
                 cicApproval);
@@ -121,7 +121,7 @@ public class CicApprovalControllerTest {
 
     @Test
     @DisplayName("Test the retreval of a CicApproval resource")
-    public void canRetrieveCicReportApproval() throws DataException {
+    void canRetrieveCicReportApproval() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         ResponseObject successFindResponse = new ResponseObject(ResponseStatus.FOUND,
                 cicApproval);

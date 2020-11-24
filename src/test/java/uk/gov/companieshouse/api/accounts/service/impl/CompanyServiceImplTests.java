@@ -31,7 +31,7 @@ import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CompanyServiceImplTests {
+class CompanyServiceImplTests {
 
     @Mock
     private ApiClientService mockApiClientService;

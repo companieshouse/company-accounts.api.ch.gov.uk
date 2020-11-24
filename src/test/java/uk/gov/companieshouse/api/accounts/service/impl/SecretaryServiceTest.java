@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class )
-public class SecretaryServiceTest {
+class SecretaryServiceTest {
 
     @Mock
     private SecretaryTransformer transformer;
@@ -76,14 +76,9 @@ public class SecretaryServiceTest {
     private SecretaryService secretaryService;
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String SECRETARY_ID = "secretaryId";
     private static final String GENERATED_ID = "generatedId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String SECRETARY_SELF_LINK = "secretarySelfLink";
-
-    private static final String URI = "/transactions/transactionId/company-accounts/" +
-            COMPANY_ACCOUNTS_ID + "/small-full/directors-report" +
-            "/secretaries/" + SECRETARY_ID;
 
     @Test
     @DisplayName("Tests the successful creation of a secretary resource")

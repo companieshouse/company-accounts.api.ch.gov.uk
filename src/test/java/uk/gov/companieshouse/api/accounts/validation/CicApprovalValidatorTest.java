@@ -40,7 +40,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CicApprovalValidatorTest {
+class CicApprovalValidatorTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     
@@ -187,4 +187,3 @@ public class CicApprovalValidatorTest {
         return companyAccountsLinks;
     }
 }
-

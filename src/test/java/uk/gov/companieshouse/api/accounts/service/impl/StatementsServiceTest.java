@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class )
-public class StatementsServiceTest {
+class StatementsServiceTest {
 
     @Mock
     private StatementsTransformer transformer;
@@ -79,7 +79,6 @@ public class StatementsServiceTest {
     private static final String GENERATED_ID = "generatedId";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
     private static final String STATEMENTS_SELF_LINK = "statementsSelfLink";
-
 
     @Test
     @DisplayName("Tests the successful creation of a statements resource")

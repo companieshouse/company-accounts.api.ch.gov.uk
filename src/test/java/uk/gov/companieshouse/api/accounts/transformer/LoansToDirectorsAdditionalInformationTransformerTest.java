@@ -14,7 +14,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodire
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LoansToDirectorsAdditionalInformationTransformerTest {
+class LoansToDirectorsAdditionalInformationTransformerTest {
 
     private static final String DETAILS = "details";
 

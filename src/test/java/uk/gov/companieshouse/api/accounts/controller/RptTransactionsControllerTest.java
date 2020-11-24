@@ -1,5 +1,17 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,24 +33,15 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import uk.gov.companieshouse.charset.validation.CharSetValidation;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RptTransactionsControllerTest {
+
+    private static final String RPT_TRANSACTIONS_ID = "rptTransactionsId";
+    private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
+    private static final String RPT_TRANSACTIONS_LINK = "rptTransactionsLink";
 
     @Mock
     private RptTransactionServiceImpl rptTransactionService;
@@ -70,12 +73,11 @@ class RptTransactionsControllerTest {
     @Mock
     private Map<String, String> rptTransactions;
 
+    @Mock
+    private CharSetValidation charSetValidator;
+    
     @InjectMocks
     private RptTransactionsController controller;
-
-    private static final String RPT_TRANSACTIONS_ID = "rptTransactionsId";
-    private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
-    private static final String RPT_TRANSACTIONS_LINK = "rptTransactionsLink";
 
     @Test
     @DisplayName("Tests the successful creation of a RptTransaction")
@@ -84,7 +86,7 @@ class RptTransactionsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, rptTransaction);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<RptTransaction>(ResponseStatus.CREATED, rptTransaction);
         when(rptTransactionService.create(rptTransaction, transaction, RPT_TRANSACTIONS_ID, request))
                 .thenReturn(responseObject);
 
@@ -152,7 +154,7 @@ class RptTransactionsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, rptTransaction);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.FOUND, rptTransaction);
         when(rptTransactionService.find(RPT_TRANSACTIONS_ID, request))
                 .thenReturn(responseObject);
 
@@ -246,8 +248,7 @@ class RptTransactionsControllerTest {
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
         when(rptTransactions.get(RPT_TRANSACTIONS_ID)).thenReturn(RPT_TRANSACTIONS_LINK);
 
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, rptTransaction);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, rptTransaction);
         when(rptTransactionService.update(rptTransaction, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 

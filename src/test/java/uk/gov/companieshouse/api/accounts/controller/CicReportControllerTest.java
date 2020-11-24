@@ -27,7 +27,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicReportControllerTest {
+class CicReportControllerTest {
 
     @Mock
     private CicReportService service;
@@ -55,7 +55,7 @@ public class CicReportControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, cicReport);
+        ResponseObject<CicReport> responseObject = new ResponseObject<>(ResponseStatus.CREATED, cicReport);
         when(service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
@@ -96,7 +96,7 @@ public class CicReportControllerTest {
     @DisplayName("Get cic report - success")
     void getCicReportSuccess() throws DataException {
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, cicReport);
+        ResponseObject<CicReport> responseObject = new ResponseObject<>(ResponseStatus.FOUND, cicReport);
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)

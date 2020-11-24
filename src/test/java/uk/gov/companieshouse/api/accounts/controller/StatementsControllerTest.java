@@ -30,7 +30,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class StatementsControllerTest {
+class StatementsControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "123123";
 
@@ -248,7 +248,6 @@ public class StatementsControllerTest {
                 any(HttpServletRequest.class));
     }
 
-
     /**
      * Verify statementService.update is called 1 time.
      *
@@ -290,6 +289,6 @@ public class StatementsControllerTest {
     }
 
     private ResponseObject<Statement> createResponseObject(ResponseStatus responseStatus) {
-        return new ResponseObject(responseStatus, statementMock);
+        return new ResponseObject<Statement>(responseStatus, statementMock);
     }
 }

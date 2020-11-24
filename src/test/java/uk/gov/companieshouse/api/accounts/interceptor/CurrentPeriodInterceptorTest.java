@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CurrentPeriodInterceptorTest {
+class CurrentPeriodInterceptorTest {
 
     @Mock
     private CurrentPeriod currentPeriod;
@@ -94,7 +94,7 @@ public class CurrentPeriodInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
+    void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
         setUp();
         when(currentPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
@@ -112,7 +112,7 @@ public class CurrentPeriodInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CurrentPeriodEntity lookup")
-    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
+    void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
         setUp();
         doThrow(mock(DataException.class)).when(currentPeriodService).find(anyString(), any(HttpServletRequest.class));
         assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,

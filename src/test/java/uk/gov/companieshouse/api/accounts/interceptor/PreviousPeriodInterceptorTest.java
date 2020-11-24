@@ -37,7 +37,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-  class PreviousPeriodInterceptorTest {
+class PreviousPeriodInterceptorTest {
 
 
     @Mock

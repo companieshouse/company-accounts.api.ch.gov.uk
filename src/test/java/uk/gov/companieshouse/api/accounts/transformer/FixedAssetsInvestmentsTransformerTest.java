@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassets
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class FixedAssetsInvestmentsTransformerTest {
+class FixedAssetsInvestmentsTransformerTest {
 
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
@@ -29,7 +29,7 @@ public class FixedAssetsInvestmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = fixedAssetsInvestmentsTransformer
             .transform(new FixedAssetsInvestments());
@@ -41,7 +41,7 @@ public class FixedAssetsInvestmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         FixedAssetsInvestments fixedAssetsInvestments = new FixedAssetsInvestments();
 
@@ -62,7 +62,7 @@ public class FixedAssetsInvestmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
+    void testTransformerWithEmptyEntityObject() {
 
         FixedAssetsInvestments fixedAssetsInvestments = fixedAssetsInvestmentsTransformer
             .transform(new FixedAssetsInvestmentsEntity());
@@ -74,7 +74,7 @@ public class FixedAssetsInvestmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = new FixedAssetsInvestmentsEntity();
         FixedAssetsInvestmentsDataEntity fixedAssetsInvestmentsDataEntity = new FixedAssetsInvestmentsDataEntity();

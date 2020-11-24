@@ -40,7 +40,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SmallFullControllerTest {
+class SmallFullControllerTest {
 
     @Mock
     private HttpServletRequest request;

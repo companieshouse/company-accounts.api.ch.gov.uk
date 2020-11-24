@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CompanyAccountTransformerTest {
+class CompanyAccountTransformerTest {
 
     private CompanyAccountTransformer companyAccountTransformer = new CompanyAccountTransformer();
 

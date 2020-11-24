@@ -17,7 +17,7 @@ public class Error {
 
     @JsonProperty("error")
     @Field("error")
-    private String error;
+    private String errorMessage;
 
     @JsonProperty("error_values")
     @Field("error_values")
@@ -48,7 +48,7 @@ public class Error {
             throw new IllegalArgumentException("Type cannot be null or empty");
         }
 
-        this.error = error;
+        this.errorMessage = error;
         this.location = location;
         this.locationType = locationType;
         this.type = type;
@@ -63,7 +63,7 @@ public class Error {
             return false;
         }
         Error error1 = (Error) o;
-        return Objects.equals(getError(), error1.getError()) &&
+        return Objects.equals(getErrorMessage(), error1.getErrorMessage()) &&
             Objects.equals(getErrorValues(), error1.getErrorValues()) &&
             Objects.equals(getLocation(), error1.getLocation()) &&
             Objects.equals(getLocationType(), error1.getLocationType()) &&
@@ -73,7 +73,7 @@ public class Error {
     @Override
     public int hashCode() {
         return Objects
-            .hash(getError(), getErrorValues(), getLocation(), getLocationType(), getType());
+            .hash(getErrorMessage(), getErrorValues(), getLocation(), getLocationType(), getType());
     }
 
     /**
@@ -94,8 +94,8 @@ public class Error {
         errorValues.put(argument, value);
     }
 
-    public String getError() {
-        return error;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     public Map<String, String> getErrorValues() {
