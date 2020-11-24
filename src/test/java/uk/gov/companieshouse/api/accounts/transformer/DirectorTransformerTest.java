@@ -15,7 +15,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DirectorTransformerTest {
+class DirectorTransformerTest {
 
     private static final String NAME = "name";
     private static final LocalDate APPOINTMENT_DATE = LocalDate.of(2018, 1, 1);

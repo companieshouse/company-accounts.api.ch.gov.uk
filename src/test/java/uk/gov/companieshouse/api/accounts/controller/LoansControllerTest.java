@@ -41,7 +41,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class LoansControllerTest {
+class LoansControllerTest {
 
     @Mock
     private LoanServiceImpl loanService;
@@ -87,7 +87,7 @@ public class LoansControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, loanRest);
+        ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.CREATED, loanRest);
         when(loanService.create(loanRest, transaction, LOANS_ID, request))
                 .thenReturn(responseObject);
 
@@ -156,7 +156,7 @@ public class LoansControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, loanRest);
+        ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.FOUND, loanRest);
         when(loanService.find(LOANS_ID, request))
                 .thenReturn(responseObject);
 
@@ -250,8 +250,7 @@ public class LoansControllerTest {
         when(loansToDirectors.getLoans()).thenReturn(loans);
         when(loans.get(LOANS_ID)).thenReturn(LOANS_LINK);
 
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, loanRest);
+        ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, loanRest);
         when(loanService.update(loanRest, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 

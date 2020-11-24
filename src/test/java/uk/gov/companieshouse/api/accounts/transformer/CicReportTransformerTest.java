@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.CicReportDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.CicReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
 
-public class CicReportTransformerTest {
+class CicReportTransformerTest {
 
     private static final String ETAG = "etag";
     private static final String KIND = "kind";

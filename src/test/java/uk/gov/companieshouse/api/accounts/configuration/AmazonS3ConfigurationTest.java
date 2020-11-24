@@ -18,7 +18,7 @@ import com.amazonaws.services.s3.AmazonS3;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AmazonS3ConfigurationTest {
+class AmazonS3ConfigurationTest {
 
     @InjectMocks
     private AmazonS3Configuration amazonS3Configuration;
@@ -27,13 +27,13 @@ public class AmazonS3ConfigurationTest {
     private EnvironmentReader environmentReader;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(environmentReader.getMandatoryString("REGION_NAME_FOR_AMAZON_S3")).thenReturn("eu-west-2");
     }
 
     @Test
     @DisplayName("Test get Amazon S3 without Providing Proxy")
-    public void testGetAmazonS3WithoutProxy() {
+    void testGetAmazonS3WithoutProxy() {
         AmazonS3 result = amazonS3Configuration.getAmazonS3();
         assertNotNull(result);
         verifyProxyCheck();
@@ -42,7 +42,7 @@ public class AmazonS3ConfigurationTest {
 
     @Test
     @DisplayName("Test get Amazon S3 by Providing Proxy")
-    public void testGetAmazonS3WithProxy() {
+    void testGetAmazonS3WithProxy() {
         when(environmentReader.getOptionalInteger("HTTP_URL_CONNECTION_PROXY_PORT")).thenReturn(8080);
         when(environmentReader.getOptionalString("IMAGE_CLOUD_PROXY_HOST")).thenReturn("PROXY_HOST");
         AmazonS3 result = amazonS3Configuration.getAmazonS3();

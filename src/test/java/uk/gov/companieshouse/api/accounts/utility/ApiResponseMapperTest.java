@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class ApiResponseMapperTest {
+class ApiResponseMapperTest {
 
     @Mock
     private RestObject restObject;

@@ -11,7 +11,7 @@ import uk.gov.companieshouse.api.accounts.model.entity.ApprovalDataEntity;
 import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 
-public class ApprovalTransformerTest {
+class ApprovalTransformerTest {
 
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
@@ -21,7 +21,7 @@ public class ApprovalTransformerTest {
 
     @Test
     @DisplayName("Tests approval  transformer with empty object which should result in null values")
-    public void testTransformerWithEmptyObject() {
+    void testTransformerWithEmptyObject() {
         ApprovalEntity approvalEntity = approvalTransformer
             .transform(new Approval());
 
@@ -32,7 +32,7 @@ public class ApprovalTransformerTest {
 
     @Test
     @DisplayName("Tests approval transformer with populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    void testRestToEntityTransformerWithPopulatedObject() {
 
         Approval approval = new Approval();
         approval.setEtag(ETAG);
@@ -54,7 +54,7 @@ public class ApprovalTransformerTest {
 
     @Test
     @DisplayName("Tests approval transformer with populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    void testEntityToRestTransformerWithPopulatedObject() {
 
         ApprovalEntity approvalEntity = new ApprovalEntity();
         ApprovalDataEntity approvalDataEntity = new ApprovalDataEntity();
@@ -64,9 +64,7 @@ public class ApprovalTransformerTest {
         approvalDataEntity.setLinks(new HashMap<>());
         approvalEntity.setData(approvalDataEntity);
 
-
         Approval approval = approvalTransformer.transform(approvalEntity);
-
 
         assertNotNull(approval);
         assertEquals(ETAG, approval.getEtag());
@@ -74,6 +72,4 @@ public class ApprovalTransformerTest {
         assertEquals(NAME, approval.getName());
         assertEquals(new HashMap<>(), approval.getLinks());
     }
-
-
 }

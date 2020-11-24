@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DataTest {
+class DataTest {
 
     @InjectMocks
     private Data data;
@@ -47,8 +47,8 @@ public class DataTest {
 
     @Test
     @DisplayName("Test If Get Methods have the appropriate annotation")
-    public void testHasMethodsWithAnnotation() {
-        Class dataClass = Data.class;
+    void testHasMethodsWithAnnotation() {
+        Class<Data> dataClass = Data.class;
         Method[] methods = dataClass.getDeclaredMethods();
         for (Method m : methods) {
             if(m.getName().startsWith("get")) {

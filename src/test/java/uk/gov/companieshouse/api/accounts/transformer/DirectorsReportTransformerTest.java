@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DirectorsReportTransformerTest {
+class DirectorsReportTransformerTest {
 
     private static final Map<String, String> DIRECTORS = new HashMap<>();
 

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SmallFullInterceptorTest {
+class SmallFullInterceptorTest {
 
     @Mock
     private SmallFull smallFull;
@@ -95,7 +95,7 @@ public class SmallFullInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
-    public void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
+    void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
 
         setUp();
         when(smallFullService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
@@ -114,7 +114,7 @@ public class SmallFullInterceptorTest {
 
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
-    public void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
+    void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
 
         setUp();
         doThrow(mock(DataException.class)).when(smallFullService).find(anyString(), any(HttpServletRequest.class));

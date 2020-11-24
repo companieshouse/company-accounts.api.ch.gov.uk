@@ -37,7 +37,7 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PreviousPeriodControllerTest {
+class PreviousPeriodControllerTest {
 
     public static final String COMPANY_ACCOUNT_ID = "12345";
 
@@ -75,7 +75,7 @@ public class PreviousPeriodControllerTest {
     @DisplayName("Tests the successful creation of a previous period resource")
     void canCreatePreviousPeriod() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, previousPeriod);
+        ResponseObject<PreviousPeriod> responseObject = new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
         doReturn(responseObject).when(previousPeriodService)
             .create(any(PreviousPeriod.class), any(Transaction.class), anyString(),
                 any(HttpServletRequest.class));
@@ -117,7 +117,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("Test correct response when binding result has an error")
-    public void badRequestWhenBindingResultHasErrors() {
+    void badRequestWhenBindingResultHasErrors() {
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
@@ -130,7 +130,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("Test the successful retrieval of a previous period resource")
-    public void canRetrievePreviousPeriod() throws DataException {
+    void canRetrievePreviousPeriod() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
@@ -147,10 +147,10 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("PUT - Tests the successful update of a previous period resource")
-    public void canUpdatePreviousPeriod() throws DataException {
+    void canUpdatePreviousPeriod() throws DataException {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, previousPeriod);
+        ResponseObject<PreviousPeriod> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, previousPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),null, responseObject.getErrors()))
                 .thenReturn(responseEntity);
@@ -164,7 +164,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("PUT - Tests the unsuccessful update of a previous period resource due to no link to small full resource")
-    public void canUpdatePreviousPeriodFail() {
+    void canUpdatePreviousPeriodFail() {
         mockSmallFull();
         when(smallFull.getLinks()).thenReturn(new HashMap<>());
         ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
@@ -174,7 +174,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("PUT - Tests the unsuccessful update of a previous period resource due to binding result errors")
-    public void canUpdatePreviousPeriodFailBindingResultErrors() {
+    void canUpdatePreviousPeriodFailBindingResultErrors() {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
         when(bindingResult.hasErrors()).thenReturn(true);
@@ -187,7 +187,7 @@ public class PreviousPeriodControllerTest {
 
     @Test
     @DisplayName("Test the unsuccessful retrieval of a previous period resource")
-    public void canRetrievePreviousPeriodFailed() throws DataException {
+    void canRetrievePreviousPeriodFailed() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

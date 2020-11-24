@@ -41,7 +41,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class DirectorsControllerTest {
+class DirectorsControllerTest {
 
     @Mock
     private DirectorService directorService;
@@ -87,7 +87,7 @@ public class DirectorsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, directorRest);
+        ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.CREATED, directorRest);
         when(directorService.create(directorRest, transaction, DIRECTORS_ID, request))
                 .thenReturn(responseObject);
 
@@ -163,7 +163,7 @@ public class DirectorsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, directorRest);
+        ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.FOUND, directorRest);
         when(directorService.find(DIRECTORS_ID, request))
                 .thenReturn(responseObject);
 
@@ -259,7 +259,7 @@ public class DirectorsControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, directorRest);
+        ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, directorRest);
         when(directorService.update(directorRest, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 

@@ -37,7 +37,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class ApprovalControllerTest {
+class ApprovalControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -82,7 +82,7 @@ public class ApprovalControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, approval);
+        ResponseObject<Approval> responseObject = new ResponseObject<>(ResponseStatus.CREATED, approval);
         when(approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
@@ -142,7 +142,7 @@ public class ApprovalControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, approval);
+        ResponseObject<Approval> responseObject = new ResponseObject<>(ResponseStatus.FOUND, approval);
         when(approvalService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
@@ -186,7 +186,7 @@ public class ApprovalControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, approval);
+        ResponseObject<Approval> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, approval);
         when(approvalService.update(approval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 

@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.model.AccountsNotes;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AccountsNotesPathsYamlReaderTest {
+class AccountsNotesPathsYamlReaderTest {
 
     @Mock
     private YamlResourceMapper yamlResourceMapper;

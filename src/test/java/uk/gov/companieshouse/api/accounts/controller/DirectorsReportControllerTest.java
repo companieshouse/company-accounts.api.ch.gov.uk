@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DirectorsReportControllerTest {
+class DirectorsReportControllerTest {
 
     private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
 
@@ -67,7 +67,7 @@ public class DirectorsReportControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<DirectorsReport> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
                 directorsReport);
         when(directorsReportService.create(directorsReport, transaction,
                 COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
@@ -132,7 +132,7 @@ public class DirectorsReportControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+        ResponseObject<DirectorsReport> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
                 directorsReport);
         when(directorsReportService.find(COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
@@ -177,7 +177,7 @@ public class DirectorsReportControllerTest {
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<DirectorsReport> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 directorsReport);
 
         when(directorsReportService.delete(COMPANY_ACCOUNT_ID, request))

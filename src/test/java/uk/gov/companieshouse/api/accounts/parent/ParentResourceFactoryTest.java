@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.links.LinkType;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ParentResourceFactoryTest {
+class ParentResourceFactoryTest {
 
     @Mock
     private ParentResource<LinkType> parentResource;

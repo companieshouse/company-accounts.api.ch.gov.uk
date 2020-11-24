@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.utility.PackageResolver;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AccountsNoteFilterTest {
+class AccountsNoteFilterTest {
 
     @Mock
     private ServletResponse servletResponse;

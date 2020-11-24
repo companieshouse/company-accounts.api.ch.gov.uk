@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitAndLoss;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBeforeTax;
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 
-public class ProfitAndLossTransformerTest {
+class ProfitAndLossTransformerTest {
 
     private static final Long TURNOVER = 1L;
     private static final Long COST_OF_SALES = 2L;

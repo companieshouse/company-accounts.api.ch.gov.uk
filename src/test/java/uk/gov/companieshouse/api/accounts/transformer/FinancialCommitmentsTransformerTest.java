@@ -27,7 +27,7 @@ class FinancialCommitmentsTransformerTest {
     private FinancialCommitmentsTransformer financialCommitmentsTransformer = new FinancialCommitmentsTransformer();
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-     void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         FinancialCommitmentsEntity financialCommitmentsEntity = financialCommitmentsTransformer
                 .transform(new FinancialCommitments());
@@ -40,7 +40,7 @@ class FinancialCommitmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-     void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         FinancialCommitments financialCommitments = new FinancialCommitments();
 
@@ -61,7 +61,7 @@ class FinancialCommitmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-     void testTransformerWithEmptyEntityObject() {
+    void testTransformerWithEmptyEntityObject() {
 
         FinancialCommitments financialCommitments = financialCommitmentsTransformer
                 .transform(new FinancialCommitmentsEntity());
@@ -73,7 +73,7 @@ class FinancialCommitmentsTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         FinancialCommitmentsEntity financialCommitmentsEntity = new FinancialCommitmentsEntity();
         FinancialCommitmentsDataEntity financialCommitmentsDataEntity = new FinancialCommitmentsDataEntity();

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class OpenTransactionInterceptorTest {
+class OpenTransactionInterceptorTest {
 
     @InjectMocks
     private OpenTransactionInterceptor transactionInterceptor;

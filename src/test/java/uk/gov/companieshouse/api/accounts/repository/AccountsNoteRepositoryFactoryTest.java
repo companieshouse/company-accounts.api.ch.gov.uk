@@ -38,7 +38,7 @@ class AccountsNoteRepositoryFactoryTest {
 
         List<AccountsNoteRepository<NoteEntity>> noteRepositories = new ArrayList<>();
         noteRepositories.add(accountsNoteRepository);
-        repositoryFactory = new AccountsNoteRepositoryFactory(noteRepositories);
+        repositoryFactory = new AccountsNoteRepositoryFactory<>(noteRepositories);
     }
 
     @Test

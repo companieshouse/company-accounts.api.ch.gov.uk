@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class AccountingPoliciesTransformerTest {
+class AccountingPoliciesTransformerTest {
 
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
@@ -28,7 +28,7 @@ public class AccountingPoliciesTransformerTest {
 
     @Test
     @DisplayName("Tests accountingPolicies  transformer with empty object which should result in null values")
-    public void testTransformerWithEmptyObject() {
+    void testTransformerWithEmptyObject() {
         AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer
                 .transform(new AccountingPolicies());
 
@@ -39,7 +39,7 @@ public class AccountingPoliciesTransformerTest {
 
     @Test
     @DisplayName("Tests accountingPolicies transformer with populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    void testRestToEntityTransformerWithPopulatedObject() {
 
         AccountingPolicies accountingPolicies = new AccountingPolicies();
 
@@ -73,7 +73,7 @@ public class AccountingPoliciesTransformerTest {
 
     @Test
     @DisplayName("Tests accountingPolicies transformer with populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    void testEntityToRestTransformerWithPopulatedObject() {
 
         AccountingPoliciesEntity accountingPoliciesEntity = new AccountingPoliciesEntity();
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = new AccountingPoliciesDataEntity();

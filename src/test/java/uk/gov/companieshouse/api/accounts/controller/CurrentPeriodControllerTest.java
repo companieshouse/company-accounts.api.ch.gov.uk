@@ -33,7 +33,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CurrentPeriodControllerTest {
+class CurrentPeriodControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -61,9 +61,9 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
-    public void canCreateCurrentPeriod() throws DataException {
+    void canCreateCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
             currentPeriod);
 
         doReturn(responseObject).when(currentPeriodService)
@@ -85,10 +85,10 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Test the retreval of a current period resource")
-    public void canRetrieveCurrentPeriod() throws DataException {
+    void canRetrieveCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
-        doReturn(new ResponseObject(ResponseStatus.FOUND,
+        doReturn(new ResponseObject<CurrentPeriod>(ResponseStatus.FOUND,
             currentPeriod)).when(currentPeriodService).find("123456", request);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
             request)).thenReturn(responseEntity);
@@ -102,13 +102,13 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the successful update of a currentPeriod resource")
-    public void canUpdateCurrentPeriod() throws DataException {
+    void canUpdateCurrentPeriod() throws DataException {
         doReturn(smallFull).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();
         links.put(SmallFullLinkType.CURRENT_PERIOD.getLink(), "link");
         when(smallFull.getLinks()).thenReturn(links);
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
             currentPeriod);
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),
@@ -128,7 +128,7 @@ public class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful update of a currentPeriod resource")
-    public void canUpdateCurrentPeriodFail() throws DataException {
+    void canUpdateCurrentPeriodFail() throws DataException {
         doReturn(smallFull).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();

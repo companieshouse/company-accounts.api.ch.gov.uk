@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class StatementTransformerTest {
+class StatementTransformerTest {
 
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
@@ -36,7 +36,7 @@ public class StatementTransformerTest {
 
     @Test
     @DisplayName("Tests statement transformer with empty object which should result in null values")
-    public void testTransformerWithEmptyObject() {
+    void testTransformerWithEmptyObject() {
         StatementEntity statementEntity = statementTransformer.transform(new Statement());
 
         assertNotNull(statementEntity);
@@ -47,7 +47,7 @@ public class StatementTransformerTest {
 
     @Test
     @DisplayName("Tests statement transformer with populated object and validates values returned")
-    public void testRestToEntityTransformerWithPopulatedObject() {
+    void testRestToEntityTransformerWithPopulatedObject() {
         Statement statement = new Statement();
         statement.setEtag(ETAG);
         statement.setKind(KIND);
@@ -71,7 +71,7 @@ public class StatementTransformerTest {
 
     @Test
     @DisplayName("Tests statement transformer with populated object and validates values returned")
-    public void testEntityToRestTransformerWithPopulatedObject() {
+    void testEntityToRestTransformerWithPopulatedObject() {
         StatementEntity statementEntity = new StatementEntity();
         StatementDataEntity statementDataEntity = new StatementDataEntity();
         statementDataEntity.setEtag(ETAG);

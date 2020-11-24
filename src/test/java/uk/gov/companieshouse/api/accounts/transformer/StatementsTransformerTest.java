@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StatementsTransformerTest {
+class StatementsTransformerTest {
 
     private static final String ADDITIONAL_INFORMATION = "additionalInfo";
     private static final String COMPANY_POLICY_ON_DISABLED_EMPLOYEES = "companyPolicy";
@@ -69,5 +69,4 @@ public class StatementsTransformerTest {
         assertEquals(POLITICAL_AND_CHARITABLE_DONATIONS, statements.getPoliticalAndCharitableDonations());
         assertEquals(PRINCIPAL_ACTIVITIES, statements.getPrincipalActivities());
     }
-
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 
-public class AccountTypeFactoryTest {
+class AccountTypeFactoryTest {
 
     private AccountTypeFactory accountTypeFactory = new AccountTypeFactory();
 

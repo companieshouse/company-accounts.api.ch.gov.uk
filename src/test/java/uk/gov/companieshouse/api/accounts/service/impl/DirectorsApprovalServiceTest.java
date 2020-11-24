@@ -97,7 +97,7 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful creation of an directors approval resource")
-    public void canCreateADirectorsApproval() throws DataException {
+    void canCreateADirectorsApproval() throws DataException {
 
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
@@ -115,7 +115,7 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the duplicate key when creating a directors approval resource")
-    public void createDirectorsApprovalDuplicateKey() throws DataException {
+    void createDirectorsApprovalDuplicateKey() throws DataException {
 
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
@@ -167,7 +167,7 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests the successful find of an directors approval resource")
-    public void findDirectorsApproval() throws DataException {
+    void findDirectorsApproval() throws DataException {
 
         when(keyIdGenerator
                 .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
@@ -184,7 +184,7 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of an director approval resource")
-    public void findDirectorsApprovalMongoException() {
+    void findDirectorsApprovalMongoException() {
 
         when(keyIdGenerator
                 .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
@@ -196,7 +196,7 @@ class DirectorsApprovalServiceTest {
 
     @Test
     @DisplayName("Tests mongo exception thrown on find of an director approval resource")
-    public void findDirectorsApprovalNotFound() throws DataException {
+    void findDirectorsApprovalNotFound() throws DataException {
 
         when(keyIdGenerator
                 .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))

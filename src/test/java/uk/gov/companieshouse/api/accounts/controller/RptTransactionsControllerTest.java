@@ -248,8 +248,7 @@ class RptTransactionsControllerTest {
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
         when(rptTransactions.get(RPT_TRANSACTIONS_ID)).thenReturn(RPT_TRANSACTIONS_LINK);
 
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, rptTransaction);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, rptTransaction);
         when(rptTransactionService.update(rptTransaction, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 

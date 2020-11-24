@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class IntangibleAssetsTransformerTest {
+class IntangibleAssetsTransformerTest {
 
     private static final Long NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD = 1L;
     private static final Long NET_BOOK_VALUE_AT_END_OF_PREVIOUS_PERIOD = 2L;

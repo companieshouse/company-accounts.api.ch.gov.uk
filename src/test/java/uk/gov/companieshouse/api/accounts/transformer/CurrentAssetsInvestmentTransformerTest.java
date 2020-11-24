@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CurrentAssetsInvestmentTransformerTest {
+class CurrentAssetsInvestmentTransformerTest {
 
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
@@ -28,7 +28,7 @@ public class CurrentAssetsInvestmentTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
-    public void testTransformerWithEmptyRestObject() {
+    void testTransformerWithEmptyRestObject() {
 
         CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = currentAssetsInvestmentsTransformer
             .transform(new CurrentAssetsInvestments());
@@ -40,7 +40,7 @@ public class CurrentAssetsInvestmentTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
-    public void testRestToEntityTransformerWithFullyPopulatedObject() {
+    void testRestToEntityTransformerWithFullyPopulatedObject() {
 
         CurrentAssetsInvestments currentAssetsInvestments = new CurrentAssetsInvestments();
 
@@ -61,7 +61,7 @@ public class CurrentAssetsInvestmentTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
-    public void testTransformerWithEmptyEntityObject() {
+    void testTransformerWithEmptyEntityObject() {
 
         CurrentAssetsInvestments currentAssetsInvestments = currentAssetsInvestmentsTransformer
             .transform(new CurrentAssetsInvestmentsEntity());
@@ -73,7 +73,7 @@ public class CurrentAssetsInvestmentTransformerTest {
 
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
-    public void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
+    void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
 
         CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = new CurrentAssetsInvestmentsEntity();
         CurrentAssetsInvestmentsDataEntity currentAssetsInvestmentsDataEntity = new CurrentAssetsInvestmentsDataEntity();

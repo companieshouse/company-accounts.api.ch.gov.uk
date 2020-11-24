@@ -19,7 +19,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class NoteValidatorFactoryTest {
+class NoteValidatorFactoryTest {
 
     @Mock
     private NoteValidator<Note> noteValidator;

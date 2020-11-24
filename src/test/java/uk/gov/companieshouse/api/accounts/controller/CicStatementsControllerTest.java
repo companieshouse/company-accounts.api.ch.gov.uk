@@ -34,7 +34,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CicStatementsControllerTest {
+class CicStatementsControllerTest {
 
     @Mock
     private HttpServletRequest request;
@@ -79,7 +79,7 @@ public class CicStatementsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED, cicStatements);
+        ResponseObject<CicStatements> responseObject = new ResponseObject<>(ResponseStatus.CREATED, cicStatements);
         when(service.create(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
@@ -138,7 +138,7 @@ public class CicStatementsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, cicStatements);
+        ResponseObject<CicStatements> responseObject = new ResponseObject<>(ResponseStatus.FOUND, cicStatements);
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
@@ -181,7 +181,7 @@ public class CicStatementsControllerTest {
                 .thenReturn(CIC_STATEMENTS_LINK);
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED, cicStatements);
+        ResponseObject<CicStatements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, cicStatements);
         when(service.update(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SecretaryTransformerTest {
+class SecretaryTransformerTest {
 
     private static final String NAME = "name";
 

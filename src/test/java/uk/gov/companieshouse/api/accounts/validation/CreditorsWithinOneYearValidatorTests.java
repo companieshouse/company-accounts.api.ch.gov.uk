@@ -37,7 +37,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CreditorsWithinOneYearValidatorTests {
+class CreditorsWithinOneYearValidatorTests {
 
     private static final String CREDITORS_WITHIN_PATH = "$.creditors_within_one_year";
     private static final String CREDITORS_WITHIN_CURRENT_PERIOD_PATH = CREDITORS_WITHIN_PATH +

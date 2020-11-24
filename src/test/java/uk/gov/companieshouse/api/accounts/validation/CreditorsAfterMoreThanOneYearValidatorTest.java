@@ -37,7 +37,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CreditorsAfterMoreThanOneYearValidatorTest {
+class CreditorsAfterMoreThanOneYearValidatorTest {
 
     private static final String CREDITORS_AFTER_PATH = "$.creditors_after_more_than_one_year";
     private static final String CREDITORS_AFTER_CURRENT_PERIOD_PATH = CREDITORS_AFTER_PATH +
@@ -322,8 +322,6 @@ public class CreditorsAfterMoreThanOneYearValidatorTest {
     @Test
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
-
-        Errors errors = new Errors();
 
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();

@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CicStatementsValidatorTest {
+class CicStatementsValidatorTest {
 
     @Mock
     private CicStatements cicStatements;

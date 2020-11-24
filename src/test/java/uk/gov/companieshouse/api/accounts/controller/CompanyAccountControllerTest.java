@@ -2,15 +2,12 @@ package uk.gov.companieshouse.api.accounts.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -30,14 +27,14 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
+import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CompanyAccountControllerTest {
+class CompanyAccountControllerTest {
 
     @Mock
     private Transaction transactionMock;
@@ -66,11 +63,6 @@ public class CompanyAccountControllerTest {
     @InjectMocks
     private CompanyAccountController companyAccountController;
 
-    @BeforeEach
-    public void setUp() {
-
-    }
-
     @Test
     @DisplayName("Tests the successful creation of an company account resource and patching transaction resource")
     void canCreateAccountSuccessfully() throws DataException, PatchException {
@@ -79,7 +71,7 @@ public class CompanyAccountControllerTest {
         when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
 
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
-        ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED,
+        ResponseObject<CompanyAccount> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
             companyAccount);
         when(companyAccountServiceMock
                 .create(companyAccount, transactionMock, httpServletRequestMock))
@@ -108,7 +100,7 @@ public class CompanyAccountControllerTest {
         when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
 
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
-        ResponseObject responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
+        ResponseObject<CompanyAccount> responseObject = new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR,
             companyAccount);
         when(companyAccountServiceMock
                 .create(companyAccount, transactionMock, httpServletRequestMock))
@@ -149,7 +141,7 @@ public class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the successful get of a company account resource")
-    public void canGetCompanyAccount() throws NoSuchAlgorithmException {
+    void canGetCompanyAccount() throws NoSuchAlgorithmException {
         doReturn(companyAccount).when(httpServletRequestMock)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         ResponseEntity response = companyAccountController
@@ -162,7 +154,7 @@ public class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful get of a company account resource")
-    public void getCompanyAccountFail() throws NoSuchAlgorithmException {
+    void getCompanyAccountFail() throws NoSuchAlgorithmException {
         doReturn(null).when(httpServletRequestMock)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         ResponseEntity response = companyAccountController

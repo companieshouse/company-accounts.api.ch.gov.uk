@@ -40,7 +40,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class )
-public class LoansToDirectorsAdditionalInformationServiceTest {
+class LoansToDirectorsAdditionalInformationServiceTest {
 
     @Mock
     private LoansToDirectorsAdditionalInformationTransformer transformer;

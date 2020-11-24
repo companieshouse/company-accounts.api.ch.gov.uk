@@ -79,10 +79,10 @@ class DirectorsApprovalControllerTest {
 
     @Test
     @DisplayName("Tests the successful creation of a directors approval resource")
-    public void canCreateDirectorsApproval() throws DataException {
+    void canCreateDirectorsApproval() throws DataException {
 
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        ResponseObject successCreateResponse = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<DirectorsApproval> successCreateResponse = new ResponseObject<>(ResponseStatus.CREATED,
                 directorsApproval);
         doReturn(successCreateResponse).when(directorsApprovalService)
                 .create(any(DirectorsApproval.class), any(Transaction.class), anyString(),

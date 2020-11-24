@@ -31,7 +31,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class CurrentPeriodTransformerTest {
+class CurrentPeriodTransformerTest {
 
     private static final String ETAG = "etag";
     private static final String KIND = "kind";

@@ -23,9 +23,6 @@ class LoanTransformerTest {
     private static final String DIRECTOR_NAME = "name";
     private static final String DESCRIPTION = "description";
 
-    private static final String LOAN_ID = "loanId";
-    private static final String LOAN_LINK = "loanLink";
-
     private LoanTransformer transformer = new LoanTransformer();
 
     @Test

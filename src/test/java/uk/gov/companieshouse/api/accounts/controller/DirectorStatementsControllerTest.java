@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 class DirectorStatementsControllerTest {
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
-    private static final String STATEMENTS_ID = "statementsId";
     private static final String STATEMENTS_LINK = "statementsLink";
 
     @Mock
@@ -81,7 +80,7 @@ class DirectorStatementsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.CREATED,
+        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
                 statements);
         when(statementsService.create(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
@@ -185,7 +184,7 @@ class DirectorStatementsControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 statements);
         when(statementsService.update(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
@@ -234,7 +233,7 @@ class DirectorStatementsControllerTest {
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND,
+        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
                 statements);
         when(statementsService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
@@ -279,7 +278,7 @@ class DirectorStatementsControllerTest {
 
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED,
+        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 statements);
 
         when(statementsService.delete(COMPANY_ACCOUNTS_ID, request))
