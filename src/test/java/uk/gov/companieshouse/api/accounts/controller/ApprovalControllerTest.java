@@ -82,7 +82,7 @@ class ApprovalControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject<Approval> responseObject = new ResponseObject<>(ResponseStatus.CREATED, approval);
+        ResponseObject responseObject = new ResponseObject<>(ResponseStatus.CREATED, approval);
         when(approvalService.create(approval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
