@@ -8,11 +8,11 @@ public class Costs {
     @JsonProperty("costs")
     private Map<String, Cost> costsMap;
 
-    public Map<String, Cost> getCostsList() {
+    public Map<String, Cost> getCostsMap() {
         return costsMap;
     }
 
-    public void setCostsList(
+    public void setCostsMap(
             Map<String, Cost> costs) {
         this.costsMap = costs;
     }
