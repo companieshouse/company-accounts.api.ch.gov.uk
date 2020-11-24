@@ -45,7 +45,7 @@ public class CostServiceImpl implements CostService {
 
             for (int i = 0; i < payableResources.size(); i++) {
 
-                costArray[i] = costs.getCostsList().get(payableResources.get(i).getResource());
+                costArray[i] = costs.getCostsMap().get(payableResources.get(i).getResource());
             }
 
             return costArray;

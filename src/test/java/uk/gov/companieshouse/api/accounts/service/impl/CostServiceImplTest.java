@@ -64,7 +64,7 @@ class CostServiceImplTest {
         when(transactionService.getPayableResources(transaction))
                 .thenReturn(Arrays.asList(PayableResource.CIC));
 
-        when(costs.getCostsList()).thenReturn(costMap);
+        when(costs.getCostsMap()).thenReturn(costMap);
 
         when(costMap.get(PayableResource.CIC.getResource())).thenReturn(cost);
 
