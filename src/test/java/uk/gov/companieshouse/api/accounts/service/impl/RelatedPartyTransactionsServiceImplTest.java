@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.verification.VerificationMode;
 import org.springframework.dao.DuplicateKeyException;
 import com.mongodb.MongoException;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -88,6 +89,12 @@ class RelatedPartyTransactionsServiceImplTest {
 
     @Mock
     private RptTransaction rptTransaction;
+
+    @Mock
+    private RptTransactionServiceImpl rptTransactionService;
+
+    @Mock
+    private RelatedPartyTransactionsAdditionalInformationService additionalInformationService;
 
     @InjectMocks
     private RelatedPartyTransactionsServiceImpl service;
@@ -206,7 +213,9 @@ class RelatedPartyTransactionsServiceImplTest {
     @Test
     @DisplayName("Tests the successful deletion of a related party transactions resource")
     void deleteRelatedPartyTransactionsSuccess() throws DataException {
-        
+
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
+
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -219,6 +228,9 @@ class RelatedPartyTransactionsServiceImplTest {
         assertWhetherSmallFullServiceCalledToRemoveLink(true);
         assertEquals(ResponseStatus.UPDATED, response.getStatus());
         assertNull(response.getData());
+
+        verify(rptTransactionService).deleteAll(transaction, COMPANY_ACCOUNTS_ID, request);
+        verify(additionalInformationService).delete(COMPANY_ACCOUNTS_ID, request);
     }
 
     @Test
