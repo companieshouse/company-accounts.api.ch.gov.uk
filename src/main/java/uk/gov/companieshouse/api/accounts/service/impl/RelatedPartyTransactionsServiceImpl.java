@@ -8,6 +8,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import com.mongodb.MongoException;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -39,6 +40,9 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
     @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
+    RptTransactionServiceImpl rptTransactionService;
 
     @Override
     public ResponseObject<RelatedPartyTransactions> create(RelatedPartyTransactions rest, Transaction transaction,
@@ -88,6 +92,11 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
             HttpServletRequest request) throws DataException {
 
         String id = generateID(companyAccountsId);
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        rptTransactionService.deleteAll(transaction, companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
