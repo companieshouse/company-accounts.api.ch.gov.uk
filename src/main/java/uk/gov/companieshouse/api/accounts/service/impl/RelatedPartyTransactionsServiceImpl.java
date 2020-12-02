@@ -1,13 +1,11 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import com.mongodb.MongoException;
 import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.ResourceName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -24,6 +22,10 @@ import uk.gov.companieshouse.api.accounts.transformer.RelatedPartyTransactionsTr
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class RelatedPartyTransactionsServiceImpl implements ParentService<RelatedPartyTransactions, RelatedPartyTransactionsLinkType>,
         RelatedPartyTransactionsService {
@@ -39,6 +41,12 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
     @Autowired
     private SmallFullService smallFullService;
+
+    @Autowired
+    private RptTransactionServiceImpl rptTransactionService;
+
+    @Autowired
+    private RelatedPartyTransactionsAdditionalInformationService rptAdditionalInformationService;
 
     @Override
     public ResponseObject<RelatedPartyTransactions> create(RelatedPartyTransactions rest, Transaction transaction,
@@ -88,6 +96,12 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
             HttpServletRequest request) throws DataException {
 
         String id = generateID(companyAccountsId);
+
+        Transaction transaction = (Transaction) request
+                .getAttribute(AttributeName.TRANSACTION.getValue());
+
+        rptTransactionService.deleteAll(transaction, companyAccountsId, request);
+        rptAdditionalInformationService.delete(companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
