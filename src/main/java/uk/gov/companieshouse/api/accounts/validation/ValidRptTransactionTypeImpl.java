@@ -1,10 +1,12 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+@Component
 public class ValidRptTransactionTypeImpl implements ConstraintValidator<ValidRptTransactionType, String> {
 
     @Override
