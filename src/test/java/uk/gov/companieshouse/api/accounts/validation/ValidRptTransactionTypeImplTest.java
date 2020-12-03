@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidRptTransactionTypeImplTest {
 
-    @Mock
-    private ConstraintValidatorContext context;
-
     private static final String MONEY_GIVEN_TO_RELATED_PARTY = "Money given to a related party by the company";
     private static final String MONEY_GIVEN_BY_RELATED_PARTY = "Money given to the company by a related party";
     private static final String OTHER = "Money given by someone else";
+
+    @Mock
+    private ConstraintValidatorContext context;
 
     private ValidRptTransactionTypeImpl validRptTransactionType;
 
