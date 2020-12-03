@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
+import uk.gov.companieshouse.api.accounts.validation.ValidRptTransactionType;
 import uk.gov.companieshouse.charset.CharSet;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -35,6 +36,7 @@ public class RptTransaction extends RestObject {
     private String descriptionOfTransaction;
 
     @NotNull
+    @ValidRptTransactionType
     @CharSetValid(CharSet.CHARACTER_SET_2)
     @JsonProperty("transaction_type")
     private String transactionType;
