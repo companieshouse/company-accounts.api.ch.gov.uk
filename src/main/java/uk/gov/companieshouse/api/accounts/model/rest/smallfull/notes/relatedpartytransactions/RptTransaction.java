@@ -19,7 +19,7 @@ public class RptTransaction extends RestObject {
 
 
     @CharSetValid(CharSet.CHARACTER_SET_2)
-    @Size(min = MIN_FIELD_LENGTH, max = MAX_FIELD_LENGTH, message = "invalid.input.length")
+    @Size(max = MAX_FIELD_LENGTH, message = "invalid.input.length")
     @JsonProperty("name_of_related_party")
     private String nameOfRelatedParty;
 
