@@ -9,6 +9,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.stocks.Stocks;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.accounts.service.NoteService;
@@ -59,15 +60,22 @@ public class StocksTxnClosureValidator extends BaseValidator {
                 }
             }
         } else { // if there's no stock note, then there should be no stock values on the balance sheet.
-            if (Optional.of(currentPeriodBalanceSheet)
+
+
+            long currentStock = Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
-                    .isPresent() ||
-                    (getIsMultipleYearFiler(transaction) &&
-                    Optional.of(previousPeriodBalanceSheet)
-                            .map(BalanceSheet::getCurrentAssets)
-                            .map(CurrentAssets::getStocks)
-                            .isPresent())) {
+                    .orElse(0L);
+
+            long previousStock = 0L;
+
+            if(getIsMultipleYearFiler(transaction)) {
+                 previousStock = Optional.of(previousPeriodBalanceSheet)
+                        .map(BalanceSheet::getCurrentAssets)
+                        .map(CurrentAssets::getStocks)
+                        .orElse(0L);
+            }
+            if (currentStock != 0 || previousStock != 0) {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_STOCKS_LOCATION);
             }
         }
