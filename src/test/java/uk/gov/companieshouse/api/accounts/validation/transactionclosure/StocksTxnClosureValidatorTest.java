@@ -216,6 +216,40 @@ class StocksTxnClosureValidatorTest {
         assertEquals(emptyErrors, responseErrors);
     }
 
+    @Test
+    @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data contains '0' - MF")
+    void validateStocksTnClosureNoNoteDoesNotErrorMF() throws ServiceException, DataException {
+
+        Errors emptyErrors = new Errors();
+
+        when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
+
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
+        when(previousPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
+        when(currentAssets.getStocks()).thenReturn(0L);
+
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+
+        assertFalse(responseErrors.hasErrors());
+        assertEquals(responseErrors.getErrorCount(), 0);
+    }
+
+    @Test
+    @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data contains '0' - SF")
+    void validateStocksTnClosureNoNoteDoesNotErrorSF() throws ServiceException, DataException {
+
+        Errors emptyErrors = new Errors();
+
+        when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
+
+        when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
+
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+
+        assertFalse(responseErrors.hasErrors());
+        assertEquals(responseErrors.getErrorCount(), 0);
+    }
+
     private Map<String, String> createSmallFullLinks(boolean includeStocksLink) {
         Map<String, String> links = new HashMap<>();
 

@@ -59,15 +59,22 @@ public class StocksTxnClosureValidator extends BaseValidator {
                 }
             }
         } else { // if there's no stock note, then there should be no stock values on the balance sheet.
-            if (Optional.of(currentPeriodBalanceSheet)
+
+
+            long currentStock = Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
-                    .isPresent() ||
-                    (getIsMultipleYearFiler(transaction) &&
-                    Optional.of(previousPeriodBalanceSheet)
-                            .map(BalanceSheet::getCurrentAssets)
-                            .map(CurrentAssets::getStocks)
-                            .isPresent())) {
+                    .orElse(0L);
+
+            long previousStock = 0L;
+
+            if(getIsMultipleYearFiler(transaction)) {
+                 previousStock = Optional.of(previousPeriodBalanceSheet)
+                        .map(BalanceSheet::getCurrentAssets)
+                        .map(CurrentAssets::getStocks)
+                        .orElse(0L);
+            }
+            if (currentStock != 0 || previousStock != 0) {
                 addError(errors, mandatoryElementMissing, SMALL_FULL_STOCKS_LOCATION);
             }
         }
