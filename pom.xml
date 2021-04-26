@@ -30,7 +30,7 @@
     <company-accounts-library.version>1.2.10</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
-    <commons-io.version>2.4</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
 
     <spring-boot-dependencies.version>2.1.10.RELEASE</spring-boot-dependencies.version>
     <spring-boot-maven-plugin.version>2.1.10.RELEASE</spring-boot-maven-plugin.version>
