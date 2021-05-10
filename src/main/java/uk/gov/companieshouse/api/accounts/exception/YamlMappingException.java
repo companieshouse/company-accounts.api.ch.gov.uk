@@ -2,5 +2,9 @@ package uk.gov.companieshouse.api.accounts.exception;
 
 public class YamlMappingException extends RuntimeException {
 
-    public YamlMappingException(Throwable cause) { super(cause); }
+    private static final long serialVersionUID = 1L;
+
+    public YamlMappingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
