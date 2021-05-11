@@ -27,7 +27,7 @@
     <api-helper-java.version>1.4.3</api-helper-java.version>
     <structured-logging.version>1.4.0-rc2</structured-logging.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
-    <company-accounts-library.version>1.2.10</company-accounts-library.version>
+    <company-accounts-library.version>1.2.12</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
     <commons-io.version>2.7</commons-io.version>
