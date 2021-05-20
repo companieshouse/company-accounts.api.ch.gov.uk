@@ -8,7 +8,7 @@
   "specification": "https://github.com/companieshouse/api.ch.gov.uk-specifications",
   "public": "false",
   "users": "internal",
-  "code_analysis_link": " http://code-analysis.platform.aws.chdev.org:9000/",
+  "code_analysis_link": "http://code-analysis.platform.aws.chdev.org:9000/",
   "test_automation_repo": "https://github.com/companieshouse/taf-api-karate",
   "service_area": "Maintain a Company",
   "service_component": "Accounts",
