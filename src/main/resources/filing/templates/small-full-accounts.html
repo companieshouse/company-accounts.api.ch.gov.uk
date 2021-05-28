@@ -1722,11 +1722,11 @@
             {{end}}
           </td>
 
-          <td id="gross-total-prev" class="total">
-            {{if isNotEmpty $grossProfitOrLoss.gross_total.previous_amount}}
+          {{if isNotEmpty $grossProfitOrLoss.gross_total.previous_amount}}
+            <td id="gross-total-prev" class="total">
             {{emitIfNegative $grossProfitOrLoss.gross_total.previous_amount "("}}<ix:nonFraction {{if (lt $grossProfitOrLoss.gross_total.previous_amount 0.0)}} sign="-"{{end}}  contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:GrossProfitLoss" unitRef="GBP">{{getMagnitudeFormatted $grossProfitOrLoss.gross_total.previous_amount}}</ix:nonFraction>{{emitIfNegative $grossProfitOrLoss.gross_total.previous_amount ")"}}
-            {{end}}
-          </td>
+            </td>
+          {{end}}
         </tr>
         {{end}}
         {{end}}
@@ -1801,11 +1801,11 @@
             {{end}}
           </td>
 
-          <td id="operating-total-prev" class="total">
-            {{if isNotEmpty $operatingProfitOrLoss.operating_total.previous_amount}}
-            {{emitIfNegative $operatingProfitOrLoss.operating_total.previous_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.operating_total.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:OperatingProfitLoss" unitRef="GBP">{{getMagnitudeFormatted $operatingProfitOrLoss.operating_total.previous_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.operating_total.previous_amount ")"}}
-            {{end}}
-          </td>
+          {{if isNotEmpty $operatingProfitOrLoss.operating_total.previous_amount}}
+            <td id="operating-total-prev" class="total">
+              {{emitIfNegative $operatingProfitOrLoss.operating_total.previous_amount "("}}<ix:nonFraction {{if (lt $operatingProfitOrLoss.operating_total.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:OperatingProfitLoss" unitRef="GBP">{{getMagnitudeFormatted $operatingProfitOrLoss.operating_total.previous_amount}}</ix:nonFraction>{{emitIfNegative $operatingProfitOrLoss.operating_total.previous_amount ")"}}
+            </td>
+          {{end}}
         </tr>
         {{end}}
         {{end}}
@@ -1860,11 +1860,11 @@
             {{end}}
           </td>
 
-          <td id="total-profit-or-loss-before-tax-prev" class="total">
-            {{if isNotEmpty $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount}}
-            {{emitIfNegative $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount "("}}<ix:nonFraction {{if (lt $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount 0.0)}} sign="-"{{end}}  contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:ProfitLossOnOrdinaryActivitiesBeforeTax" unitRef="GBP">{{getMagnitudeFormatted $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount ")"}}
-            {{end}}
-          </td>
+          {{if isNotEmpty $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount}}
+            <td id="total-profit-or-loss-before-tax-prev" class="total">
+              {{emitIfNegative $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount "("}}<ix:nonFraction {{if (lt $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount 0.0)}} sign="-"{{end}}  contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:ProfitLossOnOrdinaryActivitiesBeforeTax" unitRef="GBP">{{getMagnitudeFormatted $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossBeforeTax.total_profit_or_loss_before_tax.previous_amount ")"}}
+            </td>
+          {{end}}
         </tr>
         {{end}}
         {{end}}
@@ -1902,11 +1902,11 @@
             {{end}}
           </td>
 
-          <td id="total-profit-or-loss-for-financial-year-prev" class="total">
-            {{if isNotEmpty $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount}}
-            {{emitIfNegative $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount "("}}<ix:nonFraction {{if (lt $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:ProfitLossOnOrdinaryActivitiesAfterTax" unitRef="GBP">{{getMagnitudeFormatted $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount ")"}}
-            {{end}}
-          </td>
+          {{if isNotEmpty $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount}}
+            <td id="total-profit-or-loss-for-financial-year-prev" class="total">
+              {{emitIfNegative $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount "("}}<ix:nonFraction {{if (lt $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount 0.0)}} sign="-"{{end}} contextRef="PY" decimals="0" format="ixt2:numdotdecimal" name="core:ProfitLossOnOrdinaryActivitiesAfterTax" unitRef="GBP">{{getMagnitudeFormatted $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount}}</ix:nonFraction>{{emitIfNegative $profitOrLossForFinancialYear.total_profit_or_loss_for_financial_year.previous_amount ")"}}
+            </td>
+          {{end}}
         </tr>
         {{end}}
         {{end}}
