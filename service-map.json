@@ -1,0 +1,21 @@
+{
+  "type": "Service",
+  "name": "company-accounts.api.ch.gov.uk",
+  "description": "The Companies House API for handling company accounts",
+  "owned_by": "Aardvark",
+  "calls_via": "eric",
+  "git_repo": "https://github.com/companieshouse/company-accounts.api.ch.gov.uk",
+  "specification": "https://github.com/companieshouse/api.ch.gov.uk-specifications",
+  "public": "false",
+  "users": "internal",
+  "code_analysis_link": "http://code-analysis.platform.aws.chdev.org:9000/",
+  "test_automation_repo": "https://github.com/companieshouse/taf-api-karate",
+  "service_area": "Maintain a Company",
+  "service_component": "Accounts",
+  "language": "Java",
+  "integration_outgoing": [
+    "transactions_accounts,SENDS_DATA_TO",
+    "transactions_accounts,GETS_DATA_FROM",
+    "document-generator,INTEGRATES_WITH"
+  ]
+}
