@@ -20,7 +20,7 @@ public class CostServiceImpl implements CostService {
 
     private Costs costs;
 
-    private static final String COSTS_YAML_FILE = "/costs/costs.yaml";
+    private static final String COSTS_YAML_FILE = "costs/costs.yaml";
 
     @Autowired
     public CostServiceImpl(TransactionService transactionService, YamlResourceMapper yamlResourceMapper) {

@@ -31,7 +31,7 @@ public class YamlResourceMapper {
 
         } catch (IOException e) {
 
-            throw new YamlMappingException(e);
+            throw new YamlMappingException("Could not fetch yaml resource for path: [" + resourceFilePath + "] and class [" + clazz + "]", e);
         }
     }
 }
