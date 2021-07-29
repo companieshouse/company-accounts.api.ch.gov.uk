@@ -51,7 +51,7 @@ class CostServiceImplTest {
     @BeforeEach
     private void setUp() {
 
-        when(yamlResourceMapper.fetchObjectFromYaml("/costs/costs.yaml", Costs.class))
+        when(yamlResourceMapper.fetchObjectFromYaml("costs/costs.yaml", Costs.class))
                 .thenReturn(costs);
 
         this.costService = new CostServiceImpl(transactionService, yamlResourceMapper);
