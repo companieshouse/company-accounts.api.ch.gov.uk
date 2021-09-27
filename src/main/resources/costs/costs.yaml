@@ -1,7 +1,7 @@
 costs:
   cic-report:
     amount: 15
-    available_payment_methods: [credit-card, account]
+    available_payment_methods: [credit-card]
     class_of_payment: [data-maintenance]
     description: CIC report and accounts
     description_identifier: cic-report
