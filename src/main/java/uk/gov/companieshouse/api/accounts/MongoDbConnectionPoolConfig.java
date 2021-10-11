@@ -11,6 +11,9 @@ public class MongoDbConnectionPoolConfig {
     private Integer minSize;
     private int maxConnectionIdleTimeMS;
     private int maxConnectionLifeTimeMS;
+    private String host;
+    private int port;
+
 
     /**
      * Constructs the config using environment variables for Mongo Connection Pool settings. Sets
@@ -28,6 +31,11 @@ public class MongoDbConnectionPoolConfig {
         this.maxConnectionLifeTimeMS =
                 Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
                         .orElse(0);
+        this.host = Optional.ofNullable(reader.getOptionalString("SPRING_DATA_MONGODB_HOST"))
+                .orElse("localhost");
+        this.port =
+                Optional.ofNullable(reader.getOptionalInteger("SPRING_DATA_MONGODB_PORT"))
+                        .orElse(27017);
     }
 
     public int getMinSize() {
@@ -40,5 +48,13 @@ public class MongoDbConnectionPoolConfig {
 
     public int getMaxConnectionLifeTimeMS() {
         return maxConnectionLifeTimeMS;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
     }
 }
