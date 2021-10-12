@@ -31,10 +31,10 @@ public class MongoDbConnectionPoolConfig {
         this.maxConnectionLifeTimeMS =
                 Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
                         .orElse(0);
-        this.host = Optional.ofNullable(reader.getOptionalString("SPRING_DATA_MONGODB_HOST"))
+        this.host = Optional.ofNullable(reader.getOptionalString("MONGODB_HOST"))
                 .orElse("localhost");
         this.port =
-                Optional.ofNullable(reader.getOptionalInteger("SPRING_DATA_MONGODB_PORT"))
+                Optional.ofNullable(reader.getOptionalInteger("MONGODB_PORT"))
                         .orElse(27017);
     }
 
