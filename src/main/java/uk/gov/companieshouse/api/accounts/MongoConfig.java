@@ -55,7 +55,7 @@ public class MongoConfig {
                         builder.hosts(Collections.singletonList(
                                 new ServerAddress(connectionPoolConfig.getHost(), connectionPoolConfig.getPort()))))
                 .applyToConnectionPoolSettings(builder -> builder.minSize(connectionPoolConfig.getMinSize())
-                        .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS) // maxPoolSize * waitQueueMultiple
+                        .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
                         .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS)).build();
     }
 }
