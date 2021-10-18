@@ -1,21 +1,25 @@
 package uk.gov.companieshouse.api.accounts;
 
-import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.ServerAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Custom configurations for Mongo
  *
  * 1. MappingMongoConverter that doesn't save _class to mongo.
- * 2. MongoClientOptions that externalises the connection pooling options
+ * 2. MongoClientSettings that externalises the connection pooling options
  */
 @Configuration
 public class MongoConfig {
@@ -28,7 +32,7 @@ public class MongoConfig {
      *
      */
     @Bean
-    public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context) {
+    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory, MongoMappingContext context) {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
         MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
 
@@ -39,16 +43,19 @@ public class MongoConfig {
     }
 
     /**
-     * Create a {@link MongoClientOptions} .
+     * Create a {@link MongoClientSettings} .
      *
-     * @return A {@link MongoClientOptions} .
+     * @return A {@link MongoClientSettings} .
      */
     @Bean
-    public MongoClientOptions mongoClientOptions(MongoDbConnectionPoolConfig connectionPoolConfig) {
-        return MongoClientOptions.builder()
-            .minConnectionsPerHost(connectionPoolConfig.getMinSize())
-            .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS())
-            .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS())
-            .build();
+    public MongoClientSettings mongoClientSettings(MongoDbConnectionPoolConfig connectionPoolConfig) {
+
+        return MongoClientSettings.builder()
+                .applyToClusterSettings(builder ->
+                        builder.hosts(Collections.singletonList(
+                                new ServerAddress(connectionPoolConfig.getHost(), connectionPoolConfig.getPort()))))
+                .applyToConnectionPoolSettings(builder -> builder.minSize(connectionPoolConfig.getMinSize())
+                        .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
+                        .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS)).build();
     }
 }
