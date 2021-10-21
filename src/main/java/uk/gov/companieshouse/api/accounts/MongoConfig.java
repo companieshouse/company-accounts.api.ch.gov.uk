@@ -49,8 +49,10 @@ public class MongoConfig {
     @Bean
     public MongoClientSettings mongoClientSettings(MongoDbConnectionPoolConfig connectionPoolConfig) {
 
+        ConnectionString connectionString = new ConnectionString(connectionPoolConfig.getConnectionString());
+
         return MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(connectionPoolConfig.getConnectionString()))
+                .applyConnectionString(connectionString)
                 .applyToConnectionPoolSettings(builder -> builder.minSize(connectionPoolConfig.getMinSize())
                         .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
                         .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS)).build();

@@ -31,7 +31,7 @@ public class MongoDbConnectionPoolConfig {
                 Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
                         .orElse(0);
         this.connectionString = Optional.ofNullable(reader.getOptionalString("TRANSACTIONS_ACCOUNTS_DB_URL"))
-                .orElse("localhost");
+                .orElse("mongodb://mongo:27017");
     }
 
     public int getMinSize() {

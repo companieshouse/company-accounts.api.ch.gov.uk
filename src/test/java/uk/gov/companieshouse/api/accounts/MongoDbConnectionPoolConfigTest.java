@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoDbConnectionPoolConfigTest {
 
-    private final String DEFAULT_URL = "localhost";
+    private final String DEFAULT_URL = "mongodb://mongo:27017";
     private final int DEFAULT_MIN_SIZE = 1;
     private final int DEFAULT_MAX_CONNECTION_IDLE_TIME = 0;
     private final int DEFAULT_MAX_CONNECTION_LIFE_TIME = 0;
