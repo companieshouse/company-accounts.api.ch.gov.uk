@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -30,6 +31,8 @@ class MongoConfigTest {
 
     private MongoConfig mongoConfig;
 
+    private static final String CONNECTION_STRING_TEST = "mongodb://test";
+
     @BeforeEach
     void setup() {
         mongoConfig = new MongoConfig();
@@ -45,6 +48,9 @@ class MongoConfigTest {
     @Test
     @DisplayName("Get the bean for mongo client settings")
     void getBeanForMongoClientSettings() {
+
+        when(mongoDbConnectionPoolConfig.getConnectionString()).thenReturn(CONNECTION_STRING_TEST);
+
         MongoClientSettings bean = mongoConfig.mongoClientSettings(mongoDbConnectionPoolConfig);
         assertNotNull(bean);
     }
