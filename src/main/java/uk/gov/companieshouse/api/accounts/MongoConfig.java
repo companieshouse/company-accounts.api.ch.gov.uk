@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 
@@ -51,9 +50,7 @@ public class MongoConfig {
     public MongoClientSettings mongoClientSettings(MongoDbConnectionPoolConfig connectionPoolConfig) {
 
         return MongoClientSettings.builder()
-                .applyToClusterSettings(builder ->
-                        builder.hosts(Collections.singletonList(
-                                new ServerAddress(connectionPoolConfig.getHost(), connectionPoolConfig.getPort()))))
+                .applyConnectionString(new ConnectionString(connectionPoolConfig.getConnectionString()))
                 .applyToConnectionPoolSettings(builder -> builder.minSize(connectionPoolConfig.getMinSize())
                         .maxConnectionIdleTime(connectionPoolConfig.getMaxConnectionIdleTimeMS(), TimeUnit.MILLISECONDS)
                         .maxConnectionLifeTime(connectionPoolConfig.getMaxConnectionLifeTimeMS(), TimeUnit.MILLISECONDS)).build();

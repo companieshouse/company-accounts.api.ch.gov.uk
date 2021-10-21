@@ -11,8 +11,7 @@ public class MongoDbConnectionPoolConfig {
     private Integer minSize;
     private int maxConnectionIdleTimeMS;
     private int maxConnectionLifeTimeMS;
-    private String host;
-    private int port;
+    private String connectionString;
 
 
     /**
@@ -31,11 +30,8 @@ public class MongoDbConnectionPoolConfig {
         this.maxConnectionLifeTimeMS =
                 Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
                         .orElse(0);
-        this.host = Optional.ofNullable(reader.getOptionalString("MONGODB_HOST"))
+        this.connectionString = Optional.ofNullable(reader.getOptionalString("TRANSACTIONS_ACCOUNTS_DB_URL"))
                 .orElse("localhost");
-        this.port =
-                Optional.ofNullable(reader.getOptionalInteger("MONGODB_PORT"))
-                        .orElse(27017);
     }
 
     public int getMinSize() {
@@ -50,11 +46,7 @@ public class MongoDbConnectionPoolConfig {
         return maxConnectionLifeTimeMS;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
+    public String getConnectionString() {
+        return connectionString;
     }
 }
