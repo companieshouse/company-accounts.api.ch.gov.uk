@@ -26,6 +26,7 @@
     <!-- Dependency Versions -->
     <api-helper-java.version>1.4.3</api-helper-java.version>
     <structured-logging.version>1.9.11</structured-logging.version>
+    <log4j2.version>2.16.0</log4j2.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
     <company-accounts-library.version>1.2.12</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
@@ -45,6 +46,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
