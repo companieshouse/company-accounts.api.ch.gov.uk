@@ -63,7 +63,6 @@ public class FilingController {
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
-        debugMap.put("message", FILING_CONTROLLER_ERROR + errorMessage);
-        LOGGER.errorRequest(request, null, debugMap);
+        LOGGER.errorRequest(request, FILING_CONTROLLER_ERROR + errorMessage, debugMap);
     }
 }

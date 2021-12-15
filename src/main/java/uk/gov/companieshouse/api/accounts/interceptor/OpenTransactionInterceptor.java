@@ -36,9 +36,8 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
                 .equalsIgnoreCase(transaction.getStatus().getStatus()))) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
-            debugMap.put("message", "OpenTransactionInterceptor error: no open transaction available");
 
-            LOGGER.errorRequest(request, null, debugMap);
+            LOGGER.errorRequest(request, "OpenTransactionInterceptor error: no open transaction available", debugMap);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }

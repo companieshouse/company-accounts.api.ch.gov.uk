@@ -53,9 +53,7 @@ public class CurrentPeriodInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
-            debugMap.put("message",
-                    "CurrentPeriodInterceptor error: No transaction in request session");
-            LOGGER.errorRequest(request, null, debugMap);
+             LOGGER.errorRequest(request, "CurrentPeriodInterceptor error: No transaction in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
@@ -72,9 +70,7 @@ public class CurrentPeriodInterceptor extends HandlerInterceptorAdapter {
                 .getAttribute(AttributeName.SMALLFULL.getValue());
 
         if (smallFull == null) {
-            debugMap.put("message",
-                    "CurrentPeriodInterceptor error: No company account in request session");
-            LOGGER.errorRequest(request, null, debugMap);
+              LOGGER.errorRequest(request, "CurrentPeriodInterceptor error: No company account in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }

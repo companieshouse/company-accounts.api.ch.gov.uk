@@ -71,9 +71,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
-            debugMap.put("message",
-                "SmallFullInterceptor error: No transaction in request session");
-            LOGGER.errorRequest(request, null, debugMap);
+             LOGGER.errorRequest(request, "SmallFullInterceptor error: No transaction in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
@@ -90,9 +88,8 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         if (companyAccount == null) {
-            debugMap.put("message",
-                "SmallFullInterceptor error: No company account in request session");
-            LOGGER.errorRequest(request, null, debugMap);
+
+            LOGGER.errorRequest(request, "SmallFullInterceptor error: No company account in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
