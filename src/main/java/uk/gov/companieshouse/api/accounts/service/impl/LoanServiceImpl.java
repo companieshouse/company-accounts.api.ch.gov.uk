@@ -31,9 +31,7 @@ import java.util.regex.Pattern;
 public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
     private static final Pattern LOAN_ID_REGEX = 
-    //Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/loans-to-directors/loans/(.*)$");
     Pattern.compile("^/transactions/[^/]+/company-accounts/[^/]+/small-full/notes/loans-to-directors/loans/(.*)$");
-    //Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/notes/loans-to-directors/loans/(.*)$");
 
     private static final String LOANS_LINK = "loans";
 

@@ -35,9 +35,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public class DirectorService implements MultipleResourceService<Director> {
 
     private static final Pattern DIRECTOR_ID_REGEX =
-                   // Pattern.compile("^/transactions/[0-9-]+/company-accounts/[A-Za-z0-9-_]/small-full/directors-report/directors/(.*)$");
-                    //Pattern.compile("^/transactions/[0-9]{6}-[0-9]{6}-[0-9]{6}/company-accounts/[A-Za-z0-9-_]{27}=/small-full/notes/related-party-transactions/transactions/([A-Za-z0-9-_]{27}=)$");
-                    //Pattern.compile("^/transactions/.+?/company-accounts/.+?/small-full/directors-report/directors/(.*)$");
                     Pattern.compile("^/transactions/[^/]+/company-accounts/[^/]+/small-full/directors-report/directors/(.*)$");
 
     private static final String DIRECTORS_LINK = "directors";
