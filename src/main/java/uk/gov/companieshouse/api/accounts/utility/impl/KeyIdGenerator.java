@@ -15,6 +15,7 @@ import uk.gov.companieshouse.api.accounts.utility.IdGenerator;
 @RequestScope
 public class KeyIdGenerator implements IdGenerator {
 
+    private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder();
     private static final String MESSAGE_DIGEST_ALGORITHM = MessageDigestAlgorithms.SHA_256;
     private final MessageDigest messageDigest;
 
@@ -29,15 +30,14 @@ public class KeyIdGenerator implements IdGenerator {
     @Override
     public String generate(String key) {
         byte[] id = messageDigest.digest(key.getBytes(StandardCharsets.UTF_8));
-        return Base64.getUrlEncoder().encodeToString(id);
+        return BASE64_ENCODER.encodeToString(id);
     }
 
     @Override
     public String generateRandom() {
-
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);
-        return Base64.getUrlEncoder().encodeToString(bytes);
+        return BASE64_ENCODER.encodeToString(bytes);
     }
 }
