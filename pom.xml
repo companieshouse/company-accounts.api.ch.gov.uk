@@ -25,7 +25,7 @@
 
     <!-- Dependency Versions -->
     <api-helper-java.version>1.4.3</api-helper-java.version>
-    <structured-logging.version>1.9.14</structured-logging.version>
+    <structured-logging.version>1.9.15</structured-logging.version>
     <log4j2.version>2.17.1</log4j2.version>
     <aws-java-sdk.version>1.11.486</aws-java-sdk.version>
     <company-accounts-library.version>1.2.12</company-accounts-library.version>
