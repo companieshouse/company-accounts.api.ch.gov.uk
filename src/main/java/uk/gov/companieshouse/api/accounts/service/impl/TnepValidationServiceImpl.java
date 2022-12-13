@@ -55,18 +55,18 @@ public class TnepValidationServiceImpl implements TnepValidationService {
             Results results = validatIxbrlAgainstTnep(ixbrl, location);
 
             if (hasPassedTnepValidation(results)) {
-                addToLog(false, null, results, location,
+                addToLog(false, null, location,
                         "Ixbrl is valid. It has passed the TNEP validation");
 
                 isIxbrlValid = true;
 
             } else {
-                addToLog(true, null, results, location,
+                addToLog(true, null, location,
                         "Ixbrl is invalid. It has failed the TNEP validation");
             }
 
         } catch (Exception e) {
-            addToLog(true, e, null, location,
+            addToLog(true, e, location,
                     "Exception has been thrown when calling TNEP validator. Unable to validate Ixbrl");
         }
 
@@ -109,16 +109,11 @@ public class TnepValidationServiceImpl implements TnepValidationService {
                 .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
     }
 
-    private void addToLog(boolean hasValidationFailed, Exception e, Results results,
-                          String location, String message) {
+    private void addToLog(boolean hasValidationFailed, Exception e, String location, String message) {
 
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("message", message);
         logMap.put("location", location);
-
-        if (results != null) {
-            logMap.put("results", results);
-        }
 
         if (hasValidationFailed) {
             LOGGER.error("TnepValidationServiceImpl: validation has failed", e, logMap);
