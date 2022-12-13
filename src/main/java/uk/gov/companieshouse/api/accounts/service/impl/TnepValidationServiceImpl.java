@@ -109,7 +109,8 @@ public class TnepValidationServiceImpl implements TnepValidationService {
                 .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
     }
 
-    private void addToLog(boolean hasValidationFailed, Exception e, String location, String message) {
+    private void addToLog(boolean hasValidationFailed, Exception e,
+                          String location, String message) {
 
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("message", message);
