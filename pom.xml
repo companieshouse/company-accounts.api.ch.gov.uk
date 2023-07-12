@@ -18,10 +18,10 @@
 
   <properties>
     <!-- JDK Version -->
-    <jdk.version>11</jdk.version>
+    <jdk.version>1.8</jdk.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>11</java.version>
+    <java.version>1.8</java.version>
 
     <!-- Dependency Versions -->
     <api-helper-java.version>1.4.3</api-helper-java.version>
@@ -84,14 +84,6 @@
       <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>5.3.28</version>
-    </dependency>
-    <!--
-      javax library is not available in java 11, hence added this dependency.
-    -->
-    <dependency>
-     <groupId>jakarta.xml.bind</groupId>
-     <artifactId>jakarta.xml.bind-api</artifactId>
-     <version>2.3.3</version>
     </dependency>
     <dependency>
     <groupId>junit</groupId>
