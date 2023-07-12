@@ -18,17 +18,17 @@
 
   <properties>
     <!-- JDK Version -->
-    <jdk.version>1.8</jdk.version>
+    <jdk.version>11</jdk.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
 
     <!-- Dependency Versions -->
     <api-helper-java.version>1.4.3</api-helper-java.version>
     <structured-logging.version>1.9.15</structured-logging.version>
     <log4j2.version>2.17.1</log4j2.version>
     <aws-java-sdk.version>1.12.343</aws-java-sdk.version>
-    <company-accounts-library.version>1.2.12</company-accounts-library.version>
+    <company-accounts-library.version>1.2.17</company-accounts-library.version>
     <private-api-sdk-java.version>2.0.64</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>1.0.4</api-sdk-manager-java-library.version>
     <commons-io.version>2.7</commons-io.version>
@@ -75,6 +75,23 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!--
+      spring-core is a transitive dependency of spring security web. The version used by spring-security-web had a critical
+      vulnerability this version overrides that to a non-vulnerable version
+    -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>5.3.28</version>
+    </dependency>
+    <!--
+      javax library is not available in java 11, hence added this dependency.
+    -->
+    <dependency>
+     <groupId>jakarta.xml.bind</groupId>
+     <artifactId>jakarta.xml.bind-api</artifactId>
+     <version>2.3.3</version>
     </dependency>
     <dependency>
     <groupId>junit</groupId>
