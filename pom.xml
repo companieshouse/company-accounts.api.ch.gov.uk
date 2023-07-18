@@ -61,6 +61,12 @@
                 <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>snakeyaml</artifactId>
+                        <groupId>org.yaml</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -70,11 +76,17 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20211205</version>
+      <version>20230227</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>snakeyaml</artifactId>
+                <groupId>org.yaml</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <!--
       spring-core is a transitive dependency of spring security web. The version used by spring-security-web had a critical
@@ -143,6 +155,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>snakeyaml</artifactId>
+                <groupId>org.yaml</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -166,6 +184,10 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>jakarta.xml.bind</groupId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
