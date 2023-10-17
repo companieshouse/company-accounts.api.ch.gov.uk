@@ -1,6 +1,6 @@
 {{"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" | unescaped}}
 
-<html xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31" xmlns="http://www.w3.org/1999/xhtml" xmlns:core="http://xbrl.frc.org.uk/fr/2019-01-01/core" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:curr="http://xbrl.frc.org.uk/cd/2019-01-01/currencies" xmlns:countries="http://xbrl.frc.org.uk/cd/2019-01-01/countries" xmlns:uk-bus="http://xbrl.frc.org.uk/cd/2019-01-01/business" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:direp="http://xbrl.frc.org.uk/reports/2019-01-01/direp" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:iso4217="http://www.xbrl.org/2003/iso4217">
+<html xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31" xmlns="http://www.w3.org/1999/xhtml" xmlns:core="http://xbrl.frc.org.uk/fr/2023-01-01/core" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:curr="http://xbrl.frc.org.uk/cd/2023-01-01/currencies" xmlns:countries="http://xbrl.frc.org.uk/cd/2023-01-01/countries" xmlns:uk-bus="http://xbrl.frc.org.uk/cd/2023-01-01/business" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:direp="http://xbrl.frc.org.uk/reports/2023-01-01/direp" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:iso4217="http://www.xbrl.org/2003/iso4217">
 {{$company := .small_full_accounts.company}}
 {{$companyName := $company.company_name}}
 {{$companyNumber := $company.company_number}}
@@ -292,7 +292,7 @@
           <ix:nonNumeric contextRef="LegalFormEntity_CY" name="uk-bus:LegalFormEntity" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="AccountingStandards_CY" name="uk-bus:AccountingStandardsApplied" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="AccountsStatus_CY" name="uk-bus:AccountsStatusAuditedOrUnaudited" format="ixt2:nocontent"></ix:nonNumeric>
-          <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsTypeFullOrAbbreviated" format="ixt2:nocontent"></ix:nonNumeric>
+          <ix:nonNumeric contextRef="AccountsType_CY" name="uk-bus:AccountsType" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric contextRef="Director1_CY" name="core:DirectorSigningFinancialStatements" format="ixt2:nocontent"></ix:nonNumeric>
           <ix:nonNumeric name="uk-bus:EndDateForPeriodCoveredByReport" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
             <ix:nonNumeric name="uk-bus:BalanceSheetDate" contextRef="CY_END">{{$current_period_end_on}}</ix:nonNumeric>
@@ -306,7 +306,7 @@
 
         </ix:hidden>
         <ix:references>
-          <link:schemaRef xlink:href="https://xbrl.frc.org.uk/FRS-102/2019-01-01/FRS-102-2019-01-01.xsd" xlink:type="simple" />
+          <link:schemaRef xlink:href="https://xbrl.frc.org.uk/FRS-102/2023-01-01/FRS-102-2023-01-01.xsd" xlink:type="simple" />
         </ix:references>
         <ix:resources>
           <xbrli:unit id="GBP">
