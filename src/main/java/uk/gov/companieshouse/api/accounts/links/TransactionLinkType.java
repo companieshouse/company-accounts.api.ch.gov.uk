@@ -8,7 +8,7 @@ public enum TransactionLinkType implements LinkType {
     VALIDATION_STATUS("validation_status"),
     COSTS("costs");
 
-    private String link;
+    private final String link;
 
     TransactionLinkType(String link) {
         this.link = link;

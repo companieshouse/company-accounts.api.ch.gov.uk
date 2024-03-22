@@ -3,7 +3,6 @@ package uk.gov.companieshouse.api.accounts.exception.handler;
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,9 +23,9 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 
@@ -85,7 +84,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(entity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,entity.getStatusCode());
         Errors errors = (Errors) entity.getBody();
-        Assert.assertEquals(1, errors.getErrorCount());
+        assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("InvalidValue", "JSON parse exception")));
     }
 
@@ -99,7 +98,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(entity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,entity.getStatusCode());
         Errors errors = (Errors) entity.getBody();
-        Assert.assertEquals(1, errors.getErrorCount());
+        assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("InvalidValue", "JSON parse exception:Can not deserialize value of value at line 1 column 1")));
     }
 
@@ -112,7 +111,7 @@ class GlobalExceptionHandlerTest {
         assertNotNull(entity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR,entity.getStatusCode());
         Errors errors = (Errors) entity.getBody();
-        Assert.assertEquals(1, errors.getErrorCount());
+        assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("InvalidValue", "JSON parse exception at line 1 column 1")));
     }
 

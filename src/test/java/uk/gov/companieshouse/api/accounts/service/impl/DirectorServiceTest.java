@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -815,7 +815,7 @@ class DirectorServiceTest {
         } else {
             when(directorsApprovalService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
         }
-        if(approvalExists) {
+        if (approvalExists) {
             when(approvalService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND));
             when(approvalService.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.UPDATED));
         } else {

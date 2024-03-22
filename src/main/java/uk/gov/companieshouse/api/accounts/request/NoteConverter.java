@@ -15,18 +15,14 @@ public class NoteConverter extends PropertyEditorSupport {
     private static final Map<String, NoteType> NOTES_MAP = new HashMap<>();
 
     NoteConverter() {
-
         Arrays.stream(NoteType.values()).forEach(noteType -> NOTES_MAP.put(noteType.getType(), noteType));
-
     }
 
     @Override
     public void setAsText(final String type) {
-
         NoteType noteType = NOTES_MAP.get(type);
 
-        if(noteType == null) {
-
+        if (noteType == null) {
             throw new InvalidPathParameterException("No resource found for: " + type);
         }
 

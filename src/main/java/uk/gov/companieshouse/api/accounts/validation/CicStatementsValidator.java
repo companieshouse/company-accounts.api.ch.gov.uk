@@ -28,7 +28,6 @@ public class CicStatementsValidator extends BaseValidator {
     }
 
     public Errors validateCicStatementsUpdate(CicStatements cicStatements) {
-
         Errors errors = new Errors();
 
         ReportStatements reportStatements = cicStatements.getReportStatements();

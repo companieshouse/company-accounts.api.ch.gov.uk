@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.Month;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -124,7 +124,7 @@ class ApprovalValidatorTest {
         assertTrue(errors.containsError(createError(INVALID_VALUE, "$.approval.name")));
     }
 
-    private SmallFull createSmallFullAccount(){
+    private SmallFull createSmallFullAccount() {
         SmallFull smallFull = new SmallFull();
         NextAccounts accountingPeriod = new NextAccounts();
         accountingPeriod.setPeriodEndOn(LocalDate.of(2018, Month.NOVEMBER, 1));

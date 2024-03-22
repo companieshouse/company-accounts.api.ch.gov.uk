@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IntangibleAssetsResource {

@@ -16,7 +16,6 @@ public class DebtorsTransformer implements NoteTransformer<Debtors, DebtorsEntit
 
     @Override
     public DebtorsEntity transform(Debtors rest) {
-
         DebtorsDataEntity debtorsDataEntity = new DebtorsDataEntity();
         DebtorsEntity debtorsEntity = new DebtorsEntity();
 
@@ -41,7 +40,6 @@ public class DebtorsTransformer implements NoteTransformer<Debtors, DebtorsEntit
 
     @Override
     public Debtors transform(DebtorsEntity entity) {
-
         Debtors debtors = new Debtors();
         DebtorsDataEntity debtorsDataEntity = entity.getData();
 
@@ -63,7 +61,6 @@ public class DebtorsTransformer implements NoteTransformer<Debtors, DebtorsEntit
 
     @Override
     public AccountingNoteType getAccountingNoteType() {
-
         return AccountingNoteType.SMALL_FULL_DEBTORS;
     }
 }

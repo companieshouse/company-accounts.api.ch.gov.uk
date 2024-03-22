@@ -12,7 +12,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.DirectorsReportServiceImp
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Component
@@ -35,9 +35,10 @@ public class LoanValidator extends BaseValidator {
         this.directorsReportService = directorsReportService;
     }
 
-    public Errors validateLoan(Loan loan, Transaction transaction, String companyAccountId,
+    public Errors validateLoan(Loan loan,
+                               Transaction transaction,
+                               String companyAccountId,
                                HttpServletRequest request) throws DataException {
-
         Errors errors = new Errors();
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
@@ -56,8 +57,9 @@ public class LoanValidator extends BaseValidator {
         return errors;
     }
 
-    private void validateLoanCalculation(LoanBreakdownResource loanBreakdown, boolean isMultipleYearFiler, Errors errors) {
-
+    private void validateLoanCalculation(LoanBreakdownResource loanBreakdown,
+                                         boolean isMultipleYearFiler,
+                                         Errors errors) {
         Long advancesCreditsMade = 0L;
         Long advancesCreditsRepaid = 0L;
 
@@ -82,19 +84,19 @@ public class LoanValidator extends BaseValidator {
         }
     }
 
-    private void crossValidateDirectorNameDR(Loan loan, Transaction transaction, String companyAccountId, HttpServletRequest request, Errors errors)
-            throws DataException {
-
-        if (StringUtils.isNotBlank(loan.getDirectorName()) &&
-                (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND)) {
+    private void crossValidateDirectorNameDR(Loan loan,
+                                             Transaction transaction,
+                                             String companyAccountId,
+                                             HttpServletRequest request,
+                                             Errors errors) throws DataException {
+        if (StringUtils.isNotBlank(loan.getDirectorName())
+                && (directorsReportService.find(companyAccountId, request).getStatus() == ResponseStatus.FOUND)) {
             String directorName = loan.getDirectorName();
 
             List<String> allNames = directorValidator.getValidDirectorNames(transaction, companyAccountId, request);
 
             if (!allNames.isEmpty() && !allNames.contains(directorName)) {
-
                 addError(errors, mustMatchDirector, LOANS_DIRECTOR_NAME);
-
             }
         }
     }

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -31,7 +31,7 @@ class StatementsServicePropertiesTest {
 
     @Test
     @DisplayName("Test annotations on the class")
-    void testAnnotations (){
+    void testAnnotations () {
         assertTrue(this.statementsServiceProperties.getClass().isAnnotationPresent(ConfigurationProperties.class));
         assertTrue(this.statementsServiceProperties.getClass().isAnnotationPresent(Component.class));
         assertTrue(this.statementsServiceProperties.getClass().isAnnotationPresent(PropertySource.class));

@@ -11,7 +11,6 @@ public class CicApprovalTransformer implements GenericTransformer<CicApproval, C
 
     @Override
     public CicReportApprovalEntity transform(CicApproval approval) {
-
         CicReportApprovalDataEntity dataEntity = new CicReportApprovalDataEntity();
         CicReportApprovalEntity entity  = new CicReportApprovalEntity();
         BeanUtils.copyProperties(approval, dataEntity);
@@ -21,7 +20,6 @@ public class CicApprovalTransformer implements GenericTransformer<CicApproval, C
 
     @Override
     public CicApproval transform(CicReportApprovalEntity approval) {
-
         CicApproval cicApproval = new CicApproval();
         BeanUtils.copyProperties(approval.getData(), cicApproval);
         return cicApproval;

@@ -26,8 +26,8 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/secretary", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,9 +44,9 @@ public class SecretaryController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Secretary secretary, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
-        if(bindingResult.hasErrors()) {
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -54,28 +54,28 @@ public class SecretaryController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
-            ResponseObject<Secretary> response = secretaryService.create(secretary, transaction, companyAccountId, request);
+            ResponseObject<Secretary> response = secretaryService
+                    .create(secretary, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to create secretary resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @PutMapping
-    public ResponseEntity update(@Valid @RequestBody Secretary secretary, BindingResult bindingResult,
+    public ResponseEntity update(@Valid @RequestBody Secretary secretary,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
-        if(directorsReport.getLinks().get(DirectorsReportLinkType.SECRETARY.getLink()) == null) {
+        DirectorsReport directorsReport = (DirectorsReport) request
+                .getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
+        if (directorsReport.getLinks().get(DirectorsReportLinkType.SECRETARY.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -83,41 +83,41 @@ public class SecretaryController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
-            ResponseObject<Secretary> response = secretaryService.update(secretary, transaction, companyAccountId, request);
+            ResponseObject<Secretary> response = secretaryService
+                    .update(secretary, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch(DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to update secretary resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to update secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
             ResponseObject<Secretary> response = secretaryService.find(companyAccountId, request);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a secretary resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve a secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Secretary> response = secretaryService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch(DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete secretary resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to delete secretary resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

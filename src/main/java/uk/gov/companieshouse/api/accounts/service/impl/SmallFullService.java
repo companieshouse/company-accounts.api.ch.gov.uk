@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -36,8 +36,7 @@ import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class SmallFullService implements
-    ResourceService<SmallFull>, LinkService<SmallFullLinkType> {
+public class SmallFullService implements ResourceService<SmallFull>, LinkService<SmallFullLinkType> {
 
     @Autowired
     private SmallFullRepository smallFullRepository;
@@ -58,17 +57,16 @@ public class SmallFullService implements
     private StatementService statementService;
 
     @Override
-    public ResponseObject<SmallFull> create(SmallFull smallFull, Transaction transaction,
-        String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
+    public ResponseObject<SmallFull> create(SmallFull smallFull,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
         String selfLink = createSelfLink(transaction, companyAccountId);
         initLinks(smallFull, selfLink);
         smallFull.setEtag(GenerateEtagUtil.generateEtag());
         smallFull.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
         try {
-	        CompanyProfileApi companyProfile =
-	                companyService.getCompanyProfile(transaction.getCompanyNumber());
+	        CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
 	        setAccountingPeriodDatesOnRestObject(smallFull, companyProfile);
 	        SmallFullEntity baseEntity = smallFullTransformer.transform(smallFull);
 	        baseEntity.setId(generateID(companyAccountId));
@@ -80,15 +78,13 @@ public class SmallFullService implements
             throw new DataException(e);
         }
 
-        companyAccountService
-            .addLink(companyAccountId, CompanyAccountLinkType.SMALL_FULL, selfLink);
+        companyAccountService.addLink(companyAccountId, CompanyAccountLinkType.SMALL_FULL, selfLink);
 
         return new ResponseObject<>(ResponseStatus.CREATED, smallFull);
     }
 
     @Override
     public ResponseObject<SmallFull> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         SmallFullEntity smallFullEntity;
         try {
             smallFullEntity = smallFullRepository.findById(generateID(companyAccountsId)).orElse(null);
@@ -105,21 +101,21 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> update(SmallFull smallFull, Transaction transaction,
-        String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
+    public ResponseObject<SmallFull> update(SmallFull smallFull,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
     	String smallFullId = generateID(companyAccountId);
     	
         try {
-        	SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId).orElseThrow(() -> new DataException("Failed to find Small Full Account using Company Account ID: " + companyAccountId));
+        	SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId).orElseThrow(() ->
+                    new DataException("Failed to find Small Full Account using Company Account ID: " + companyAccountId));
         	
         	smallFull.setLinks(smallFullEntity.getData().getLinks());
             smallFull.setEtag(GenerateEtagUtil.generateEtag());
             smallFull.setKind(Kind.SMALL_FULL_ACCOUNT.getValue());
 
-	        CompanyProfileApi companyProfile =
-	                companyService.getCompanyProfile(transaction.getCompanyNumber());
+	        CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
 	        setAccountingPeriodDatesOnRestObject(smallFull, companyProfile);
 	        SmallFullEntity baseEntity = smallFullTransformer.transform(smallFull);
 	        baseEntity.setId(smallFullId);
@@ -135,13 +131,15 @@ public class SmallFullService implements
     }
 
     @Override
-    public ResponseObject<SmallFull> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<SmallFull> delete(String companyAccountsId,HttpServletRequest request) throws DataException {
         return null;
     }
 
     @Override
-    public void addLink(String id, SmallFullLinkType linkType, String link, HttpServletRequest request)
-        throws DataException {
+    public void addLink(String id,
+                        SmallFullLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         String smallFullId = generateID(id);
         SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
             .orElseThrow(() -> new DataException(
@@ -156,9 +154,7 @@ public class SmallFullService implements
     }
 
     @Override
-    public void removeLink(String id, SmallFullLinkType linkType, HttpServletRequest request)
-            throws DataException {
-
+    public void removeLink(String id, SmallFullLinkType linkType, HttpServletRequest request) throws DataException {
         String smallFullId = generateID(id);
         SmallFullEntity smallFullEntity = smallFullRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
@@ -173,37 +169,31 @@ public class SmallFullService implements
     }
 
     private void setAccountingPeriodDatesOnRestObject(SmallFull rest, CompanyProfileApi companyProfile) {
-
         if (companyProfile.getAccounts() != null) {
-
             if (companyProfile.getAccounts().getNextAccounts() != null) {
-
                 NextAccounts nextAccounts;
-            	if(rest.getNextAccounts() != null) {
+            	if (rest.getNextAccounts() != null) {
             		nextAccounts = rest.getNextAccounts();
             	} else {
             		nextAccounts = new NextAccounts();
             		rest.setNextAccounts(nextAccounts);
             	}
                 nextAccounts.setPeriodStartOn(companyProfile.getAccounts().getNextAccounts().getPeriodStartOn());
-                if(rest.getNextAccounts().getPeriodEndOn() == null) {
+                if (rest.getNextAccounts().getPeriodEndOn() == null) {
                 	nextAccounts.setPeriodEndOn(companyProfile.getAccounts().getNextAccounts().getPeriodEndOn());
                 }
             } else {
-
                 throw new MissingAccountingPeriodException("No next accounts found for company: "
                         + companyProfile.getCompanyNumber() + " trying to file their accounts");
             }
 
             if (companyProfile.getAccounts().getLastAccounts() != null) {
-
                 LastAccounts lastAccounts = new LastAccounts();
                 lastAccounts.setPeriodStartOn(companyProfile.getAccounts().getLastAccounts().getPeriodStartOn());
                 lastAccounts.setPeriodEndOn(companyProfile.getAccounts().getLastAccounts().getPeriodEndOn());
                 rest.setLastAccounts(lastAccounts);
             }
         } else {
-
             throw new MissingAccountingPeriodException("No accounts found for company: "
                     + companyProfile.getCompanyNumber() + " trying to file their accounts");
         }

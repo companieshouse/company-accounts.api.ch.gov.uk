@@ -21,13 +21,11 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -267,7 +265,7 @@ class LoanValidatorTest {
 
     private ResponseObject<DirectorsReport> getDirectorsReport(boolean returnFound) {
 
-        if(returnFound) {
+        if (returnFound) {
             return new ResponseObject<>(ResponseStatus.FOUND, directorsReport);
         } else {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);

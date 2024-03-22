@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -65,7 +65,7 @@ class CompanyServiceImplTests {
     private static final String PLC = "plc";
 
     @BeforeEach
-    private void init() {
+    public void init() {
         when(mockApiClientService.getApiClient()).thenReturn(mockApiClient);
         when(mockApiClient.company()).thenReturn(mockCompanyResourceHandler);
         when(mockCompanyResourceHandler.get(COMPANY_URI)).thenReturn(mockCompanyGet);

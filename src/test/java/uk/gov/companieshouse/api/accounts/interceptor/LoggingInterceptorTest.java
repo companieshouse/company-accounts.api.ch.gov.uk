@@ -1,13 +1,13 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,7 +35,7 @@ class LoggingInterceptorTest {
 
     @Test
     @DisplayName("Test the pre-handle")
-    void testPreHandle(){
+    void testPreHandle() {
         when(httpServletRequestMock.getSession()).thenReturn(httpSession);
         boolean value = loggingInterceptor.preHandle(httpServletRequestMock,httpServletResponseMock,new Object());
         assertTrue(value);

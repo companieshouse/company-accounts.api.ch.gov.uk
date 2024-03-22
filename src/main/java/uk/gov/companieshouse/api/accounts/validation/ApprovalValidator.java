@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class ApprovalValidator extends BaseValidator {
 
     private static final String NAME_PATH = APPROVAL_PATH + ".name";
 
-    private DirectorService directorService;
+    private final DirectorService directorService;
 
     @Autowired
     public ApprovalValidator(CompanyService companyService, DirectorService directorService) {
@@ -39,13 +39,13 @@ public class ApprovalValidator extends BaseValidator {
         this.directorService = directorService;
     }
 
-    public Errors validateApproval(Approval approval, Transaction transaction,
-                                   String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public Errors validateApproval(Approval approval,
+                                   Transaction transaction,
+                                   String companyAccountId,
+                                   HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
-        SmallFull smallFull = (SmallFull) request
-            .getAttribute(AttributeName.SMALLFULL.getValue());
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
 
         LocalDate periodEndDate = smallFull.getNextAccounts().getPeriodEndOn();
         LocalDate approvalDate = approval.getDate();
@@ -55,22 +55,24 @@ public class ApprovalValidator extends BaseValidator {
                 ErrorType.VALIDATION.getType()));
         }
 
-        ResponseObject<Director> directorsReportResponseObject = directorService.findAll(transaction, companyAccountId, request);
+        ResponseObject<Director> directorsReportResponseObject = directorService
+                .findAll(transaction, companyAccountId, request);
 
-            Director[] directors = Optional.of(directorsReportResponseObject)
-                    .map(ResponseObject::getDataForMultipleResources)
-                    .orElse(null);
+        Director[] directors = Optional.of(directorsReportResponseObject)
+                .map(ResponseObject::getDataForMultipleResources)
+                .orElse(null);
 
-            List<String> servingDirectors = new ArrayList<>();
+        List<String> servingDirectors = new ArrayList<>();
 
-            if (directors != null) {
+        if (directors != null) {
+            Arrays.stream(directors).filter(d -> d.getResignationDate() == null).forEach(director -> servingDirectors.add(director.getName()));
+        }
 
-                Arrays.stream(directors).filter(d -> d.getResignationDate() == null).forEach(director -> servingDirectors.add(director.getName()));
-            }
-
-            if ( !servingDirectors.isEmpty() && (servingDirectors.stream().noneMatch(d -> d.equalsIgnoreCase(approval.getName())))) {
-                    errors.addError(new Error(invalidValue, NAME_PATH, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
-                }
+        if (!servingDirectors.isEmpty() && (servingDirectors.stream()
+                .noneMatch(d -> d.equalsIgnoreCase(approval.getName())))) {
+                errors.addError(new Error(invalidValue, NAME_PATH,
+                        LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType()));
+        }
 
         return errors;
     }

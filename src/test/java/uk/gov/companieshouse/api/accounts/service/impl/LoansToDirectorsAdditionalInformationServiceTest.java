@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.mongodb.MongoException;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-@ExtendWith(MockitoExtension.class )
+@ExtendWith(MockitoExtension.class)
 class LoansToDirectorsAdditionalInformationServiceTest {
 
     @Mock

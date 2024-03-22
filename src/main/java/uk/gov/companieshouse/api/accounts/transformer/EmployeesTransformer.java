@@ -16,7 +16,6 @@ public class EmployeesTransformer implements NoteTransformer<Employees, Employee
 
     @Override
     public EmployeesEntity transform(Employees rest) {
-
         EmployeesDataEntity employeesDataEntity = new EmployeesDataEntity();
         EmployeesEntity employeesEntity = new EmployeesEntity();
         
@@ -41,7 +40,6 @@ public class EmployeesTransformer implements NoteTransformer<Employees, Employee
 
     @Override
     public Employees transform(EmployeesEntity entity) {
-
         Employees employees = new Employees();
         EmployeesDataEntity employeesDataEntity;
 

@@ -1,10 +1,10 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @RestController
 public class FilingController {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String FILING_CONTROLLER_ERROR = "FilingController error:";
 
@@ -32,18 +31,16 @@ public class FilingController {
 
     @GetMapping("/private/transactions/{transactionId}/company-accounts/{companyAccountId}/filings")
     public ResponseEntity generateFiling(@PathParam("transactionId") String transactionId,
-        @PathParam("companyAccountId") String accountId, HttpServletRequest request) {
-
-        Transaction transaction =
-            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+                                         @PathParam("companyAccountId") String accountId,
+                                         HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         if (transaction == null) {
             logRequestError(request, "no transaction in request session");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        CompanyAccount companyAccount =
-            (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         if (companyAccount == null) {
             logRequestError(request, "no company account in request session");
@@ -52,7 +49,7 @@ public class FilingController {
 
         Filing filing = filingService.generateAccountFiling(transaction, companyAccount);
         if (filing != null) {
-            return new ResponseEntity<>(Arrays.asList(filing), HttpStatus.OK);
+            return new ResponseEntity<>(List.of(filing), HttpStatus.OK);
         }
 
         logRequestError(request, "Failed to generate filing");
@@ -60,7 +57,6 @@ public class FilingController {
     }
 
     private void logRequestError(HttpServletRequest request, String errorMessage) {
-
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
         LOGGER.errorRequest(request, FILING_CONTROLLER_ERROR + errorMessage, debugMap);

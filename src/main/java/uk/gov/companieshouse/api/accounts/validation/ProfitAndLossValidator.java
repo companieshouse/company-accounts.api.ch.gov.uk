@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,39 +53,33 @@ public class ProfitAndLossValidator extends BaseValidator {
     }
 
     private void verifyProfitAndLossNotEmpty(ProfitAndLoss profitAndLoss, Errors errors) {
-
         if (Stream.of(profitAndLoss.getGrossProfitOrLoss(),
-                      profitAndLoss.getOperatingProfitOrLoss(),
-                      profitAndLoss.getProfitOrLossBeforeTax(),
-                      profitAndLoss.getProfitOrLossForFinancialYear()).allMatch(Objects::isNull)) {
-
+                profitAndLoss.getOperatingProfitOrLoss(),
+                profitAndLoss.getProfitOrLossBeforeTax(),
+                profitAndLoss.getProfitOrLossForFinancialYear()).allMatch(Objects::isNull)) {
             addError(errors, valueRequired, TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR);
         }
     }
 
     private Long getTurnover(GrossProfitOrLoss grossProfitOrLoss) {
-
         return Optional.ofNullable(grossProfitOrLoss)
                 .map(GrossProfitOrLoss::getTurnover)
                 .orElse(0L);
     }
 
     private Long getCostOfSales(GrossProfitOrLoss grossProfitOrLoss) {
-
         return Optional.ofNullable(grossProfitOrLoss)
                 .map(GrossProfitOrLoss::getCostOfSales)
                 .orElse(0L);
     }
 
     private Long getGrossTotal(GrossProfitOrLoss grossProfitOrLoss) {
-
         return Optional.ofNullable(grossProfitOrLoss)
                 .map(GrossProfitOrLoss::getGrossTotal)
                 .orElse(0L);
     }
 
     private void validateGrossProfitTotal(GrossProfitOrLoss grossProfitOrLoss, Errors errors) {
-
         Long turnover = getTurnover(grossProfitOrLoss);
         Long costOfSales = getCostOfSales(grossProfitOrLoss);
         Long grossProfitOrLossTotal = getGrossTotal(grossProfitOrLoss);
@@ -98,35 +92,30 @@ public class ProfitAndLossValidator extends BaseValidator {
     }
 
     private Long getOtherOperatingIncome(OperatingProfitOrLoss operatingProfitOrLoss) {
-
         return Optional.ofNullable(operatingProfitOrLoss)
                 .map(OperatingProfitOrLoss::getOtherOperatingIncome)
                 .orElse(0L);
     }
 
     private Long getOperatingTotal(OperatingProfitOrLoss operatingProfitOrLoss) {
-
         return Optional.ofNullable(operatingProfitOrLoss)
                 .map(OperatingProfitOrLoss::getOperatingTotal)
                 .orElse(0L);
     }
 
     private Long getDistributionCosts(OperatingProfitOrLoss operatingProfitOrLoss) {
-
         return Optional.ofNullable(operatingProfitOrLoss)
                 .map(OperatingProfitOrLoss::getDistributionCosts)
                 .orElse(0L);
     }
 
     private Long getAdministrativeExpenses(OperatingProfitOrLoss operatingProfitOrLoss) {
-
         return Optional.ofNullable(operatingProfitOrLoss)
                 .map(OperatingProfitOrLoss::getAdministrativeExpenses)
                 .orElse(0L);
     }
 
     private void validateOperatingTotal(ProfitAndLoss profitAndLoss,  Errors errors) {
-
         Long administrativeExpenses = getAdministrativeExpenses(profitAndLoss.getOperatingProfitOrLoss());
 
         Long distributionCosts = getDistributionCosts(profitAndLoss.getOperatingProfitOrLoss());
@@ -175,10 +164,9 @@ public class ProfitAndLossValidator extends BaseValidator {
     }
 
     private void validateProfitOrLossBeforeTax(ProfitAndLoss profitAndLoss,  Errors errors) {
-
         Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
 
-        Long interestPayableAndSimilarCharges = getInterestPayableAndSimilarCharges(profitAndLoss.getProfitOrLossBeforeTax());
+        long interestPayableAndSimilarCharges = getInterestPayableAndSimilarCharges(profitAndLoss.getProfitOrLossBeforeTax());
 
         Long interestReceivableAndSimilarIncome = getInterestReceivableAndSimilarIncome(profitAndLoss.getProfitOrLossBeforeTax());
 
@@ -189,13 +177,10 @@ public class ProfitAndLossValidator extends BaseValidator {
         if (!total.equals(totalProfitOrLossBeforeTax)) {
             addError(errors, incorrectTotal, TOTAL_PROFIT_OR_LOSS_BEFORE_TAX);
         }
-
     }
 
     private void validateProfitOrLossForFinancialYear(ProfitAndLoss profitAndLoss, Errors errors) {
-
-        Long totalProfitOrLossBeforeTax = getTotalProfitOrLossBeforeTax(
-                profitAndLoss.getProfitOrLossBeforeTax());
+        Long totalProfitOrLossBeforeTax = getTotalProfitOrLossBeforeTax(profitAndLoss.getProfitOrLossBeforeTax());
 
         Long tax = getTax(profitAndLoss.getProfitOrLossForFinancialYear());
 
@@ -207,6 +192,5 @@ public class ProfitAndLossValidator extends BaseValidator {
         if (!total.equals(totalProfitOrLossForFinancialYear)) {
             addError(errors, incorrectTotal, TOTAL_PROFIT_OR_FOR_FINANCIAL_YEAR);
         }
-
     }
 }

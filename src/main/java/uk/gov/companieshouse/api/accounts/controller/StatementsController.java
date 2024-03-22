@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +34,9 @@ public class StatementsController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody Statement statement,
-        @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
-
-        Transaction transaction =
-            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Statement> responseObject =
@@ -46,9 +44,7 @@ public class StatementsController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -57,21 +53,17 @@ public class StatementsController {
 
     @PutMapping
     public ResponseEntity update(@Valid @RequestBody Statement statement,
-        @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
-
-        Transaction transaction =
-            (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Statement> responseObject =
                 statementService.update(statement, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getErrors());
-
+                    responseObject.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -80,19 +72,14 @@ public class StatementsController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
-
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+                              HttpServletRequest request) {
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Statement> responseObject =
-                statementService.find(companyAccountId, request);
+            ResponseObject<Statement> responseObject = statementService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();

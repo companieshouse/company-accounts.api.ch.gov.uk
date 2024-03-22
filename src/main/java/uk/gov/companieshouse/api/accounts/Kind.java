@@ -34,7 +34,7 @@ public enum Kind {
     RELATED_PARTY_TRANSACTIONS("small-full-accounts-note#related-party-transactions"),
     RPT_TRANSACTIONS("small-full-accounts-note-related-party-transactions#transactions");
 
-    private String value;
+    private final String value;
 
     Kind(String value) {
         this.value = value;

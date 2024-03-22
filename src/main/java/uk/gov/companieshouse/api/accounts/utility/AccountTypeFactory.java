@@ -9,19 +9,16 @@ import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 @Component
 public class AccountTypeFactory {
 
-    private Map<String, AccountType> accountTypeMap;
+    private final Map<String, AccountType> accountTypeMap;
 
     AccountTypeFactory() {
-
         this.accountTypeMap = new HashMap<>();
 
         Arrays.stream(AccountType.values()).forEach(accountType ->
-                this.accountTypeMap.put(accountType.getCompanyAccountLinkType().getLink(), accountType)
-        );
+                this.accountTypeMap.put(accountType.getCompanyAccountLinkType().getLink(), accountType));
     }
 
     public AccountType getAccountTypeForCompanyAccountLinkType(String companyAccountLinkType) {
-
         return accountTypeMap.get(companyAccountLinkType);
     }
 }

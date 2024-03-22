@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +59,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @TestInstance(Lifecycle.PER_CLASS)
 @PropertySource("classpath:LegalStatements.properties")
 class StatementServiceTest {
-
 
     private static final String ETAG = "etag";
     private static final String LEGAL_STATEMENT_ID = "abcdef";

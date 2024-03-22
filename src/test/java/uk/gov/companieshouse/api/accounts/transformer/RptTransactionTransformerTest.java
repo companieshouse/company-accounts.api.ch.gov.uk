@@ -113,7 +113,7 @@ class RptTransactionTransformerTest {
         rptTransactionDataEntity.setDescriptionOfTransaction(DESCRIPTION);
         rptTransactionDataEntity.setRelationship(RELATIONSHIP);
         rptTransactionDataEntity.setTransactionType(TRANSACTION_TYPE);
-        if(withBreakdown) {
+        if (withBreakdown) {
             rptTransactionDataEntity.setBreakdown(rptTransactionBreakdownEntity);
         }
 
@@ -132,7 +132,7 @@ class RptTransactionTransformerTest {
         assertEquals(RELATIONSHIP, rptTransaction.getRelationship());
         assertEquals(TRANSACTION_TYPE, rptTransaction.getTransactionType());
 
-        if(withBreakdown) {
+        if (withBreakdown) {
             assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodEnd(), rptTransaction.getBreakdown().getBalanceAtPeriodEnd());
             assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodStart(), rptTransaction.getBreakdown().getBalanceAtPeriodStart());
         }
