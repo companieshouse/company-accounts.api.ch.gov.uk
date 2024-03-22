@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,16 +43,15 @@ public class CicApprovalController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid CicApproval cicApproval,
-        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
-
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<CicApproval> responseObject = cicApprovalService
@@ -60,9 +59,7 @@ public class CicApprovalController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                 "Failed to create cic report approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -72,19 +69,15 @@ public class CicApprovalController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
+                              HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicApproval> response = cicApprovalService
-                .find(companyAccountId, request);
+            ResponseObject<CicApproval> response = cicApprovalService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                 "Failed to retrieve cic report approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -93,10 +86,9 @@ public class CicApprovalController {
 
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid CicApproval cicApproval,
-        BindingResult bindingResult,
-        @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
-
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         CicReport cicReport = (CicReport) request.getAttribute(AttributeName.CIC_REPORT.getValue());
         if (cicReport.getLinks().get(CicReportLinkType.APPROVAL.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -107,18 +99,14 @@ public class CicApprovalController {
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<CicApproval> response = cicApprovalService
                 .update(cicApproval, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                 "Failed to update cic report approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -127,20 +115,15 @@ public class CicApprovalController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
-        HttpServletRequest request) {
+                                 HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicApproval> response = cicApprovalService
-                .delete(companyAccountsId, request);
+            ResponseObject<CicApproval> response = cicApprovalService.delete(companyAccountsId, request);
 
-            return apiResponseMapper
-                .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountsId, transaction,
                 "Failed to delete cic report approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();

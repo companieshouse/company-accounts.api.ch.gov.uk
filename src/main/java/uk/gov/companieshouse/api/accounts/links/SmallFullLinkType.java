@@ -25,7 +25,7 @@ public enum SmallFullLinkType implements LinkType {
     RELATED_PARTY_TRANSACTIONS("related_party_transactions");
 
 
-    private String link;
+    private final String link;
 
     SmallFullLinkType(String link) {
         this.link = link;

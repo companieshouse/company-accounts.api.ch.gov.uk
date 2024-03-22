@@ -13,11 +13,11 @@ public enum AccountsType {
 
     private static final String ASSET_ID = "accounts";
 
-    private String accountType;
-    private String templateName;
-    private String kind;
-    private String resourceKey;
-    private String filingDescriptionKey;
+    private final String accountType;
+    private final String templateName;
+    private final String kind;
+    private final String resourceKey;
+    private final String filingDescriptionKey;
 
     AccountsType(String accountType, String templateName, String kind, String resourceKey,
         String filingDescriptionKey) {

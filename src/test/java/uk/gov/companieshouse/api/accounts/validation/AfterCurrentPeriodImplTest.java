@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

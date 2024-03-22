@@ -17,7 +17,6 @@ public class FinancialCommitmentsTransformer implements NoteTransformer<Financia
 
     @Override
     public FinancialCommitmentsEntity transform(FinancialCommitments rest) {
-
         FinancialCommitmentsDataEntity financialCommitmentsDataEntity = new FinancialCommitmentsDataEntity();
         FinancialCommitmentsEntity financialCommitmentsEntity = new FinancialCommitmentsEntity();
 
@@ -30,7 +29,6 @@ public class FinancialCommitmentsTransformer implements NoteTransformer<Financia
 
     @Override
     public FinancialCommitments transform(FinancialCommitmentsEntity entity) {
-
         FinancialCommitments financialCommitments = new FinancialCommitments();
 
         FinancialCommitmentsDataEntity financialCommitmentsDataEntity;

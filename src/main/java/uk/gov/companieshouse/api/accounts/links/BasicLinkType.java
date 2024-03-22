@@ -4,7 +4,7 @@ public enum BasicLinkType implements LinkType {
 
     SELF("self");
 
-    private String link;
+    private final String link;
 
     BasicLinkType(String link) {
         this.link = link;

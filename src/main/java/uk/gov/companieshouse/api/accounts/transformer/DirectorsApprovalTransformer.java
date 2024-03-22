@@ -11,7 +11,6 @@ public class DirectorsApprovalTransformer implements GenericTransformer<Director
 
     @Override
     public DirectorsApprovalEntity transform(DirectorsApproval entity) {
-
         DirectorsApprovalDataEntity directorsApprovalDataEntity = new DirectorsApprovalDataEntity();
         BeanUtils.copyProperties(entity, directorsApprovalDataEntity);
 
@@ -23,7 +22,6 @@ public class DirectorsApprovalTransformer implements GenericTransformer<Director
 
     @Override
     public DirectorsApproval transform(DirectorsApprovalEntity entity) {
-
         DirectorsApproval directorsApproval = new DirectorsApproval();
         BeanUtils.copyProperties(entity.getData(), directorsApproval);
 

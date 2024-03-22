@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidatorFactory;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,11 +46,14 @@ public class NoteServiceImpl implements NoteService {
     private ParentResourceFactory<LinkType> parentResourceFactory;
 
     @Override
-    public ResponseObject<Note> create(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
-            String companyAccountId, HttpServletRequest request) throws DataException {
-        
+    public ResponseObject<Note> create(Note note,
+                                       AccountingNoteType accountingNoteType,
+                                       Transaction transaction,
+                                       String companyAccountId,
+                                       HttpServletRequest request) throws DataException {
         if (accountingNoteType.isExplicitlyValidated()) {
-            Errors errors = validatorFactory.getValidator(accountingNoteType).validateSubmission(note, transaction, companyAccountId, request);
+            Errors errors = validatorFactory.getValidator(accountingNoteType)
+                    .validateSubmission(note, transaction, companyAccountId, request);
             if (errors.hasErrors()) {
                 return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
             }
@@ -77,9 +80,11 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public ResponseObject<Note> update(Note note, AccountingNoteType accountingNoteType, Transaction transaction,
-            String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Note> update(Note note,
+                                       AccountingNoteType accountingNoteType,
+                                       Transaction transaction,
+                                       String companyAccountId,
+                                       HttpServletRequest request) throws DataException {
         if (accountingNoteType.isExplicitlyValidated()) {
             Errors errors = validatorFactory.getValidator(accountingNoteType).validateSubmission(note, transaction, companyAccountId, request);
             if (errors.hasErrors()) {
@@ -102,9 +107,8 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public ResponseObject<Note> find(AccountingNoteType accountingNoteType, String companyAccountId)
-            throws DataException {
-
+    public ResponseObject<Note> find(AccountingNoteType accountingNoteType,
+                                     String companyAccountId) throws DataException {
         NoteEntity entity;
 
         try {
@@ -125,9 +129,9 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public ResponseObject<Note> delete(AccountingNoteType accountingNoteType, String companyAccountId,
-            HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Note> delete(AccountingNoteType accountingNoteType,
+                                       String companyAccountId,
+                                       HttpServletRequest request) throws DataException {
         String id = generateID(companyAccountId, accountingNoteType.getNoteType());
 
         try {
@@ -145,19 +149,16 @@ public class NoteServiceImpl implements NoteService {
     }
 
     private String generateID(String companyAccountId, NoteType noteType) {
-        
         return keyIdGenerator.generate(companyAccountId + "-" + noteType.getType());
     }
 
     private void setMetadataOnRest(Note note, String selfLink, AccountingNoteType accountingNoteType) {
-
         note.setLinks(createLinks(selfLink));
         note.setEtag(GenerateEtagUtil.generateEtag());
         note.setKind(accountingNoteType.getKind());
     }
 
     private Map<String, String> createLinks(String selfLink) {
-
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), selfLink);
         return map;

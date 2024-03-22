@@ -19,8 +19,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class FileTransferToolImpl implements FileTransferTool {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String S3_BUCKET = "s3://";
     private static final String PATH_DELIMITER = "/";
@@ -34,9 +33,7 @@ public class FileTransferToolImpl implements FileTransferTool {
 
     @Override
     public String downloadFileFromLocation(String fileLocation) {
-
-        LOGGER.info(
-            "FileTransferToolImpl: Start process to download file from location: " + fileLocation);
+        LOGGER.info("FileTransferToolImpl: Start process to download file from location: " + fileLocation);
 
         String downloadedFile = null;
 
@@ -54,17 +51,14 @@ public class FileTransferToolImpl implements FileTransferTool {
     }
 
     private String downloadFileFromS3(String fileLocation) {
-
         try {
             S3Object s3Object = getObjectInS3(fileLocation);
 
             return convertInputStringToString(s3Object.getObjectContent());
-
         } catch (SdkClientException sdkEx) {
             logError(sdkEx,
                 "FileTransferImpl: SdkClientException thrown when downloading file from S3",
                 "Fail to download file as S3 location cannot be accessed: " + fileLocation);
-
         } catch (IOException ex) {
             logError(ex,
                 "FileTransferImpl: IOException thrown when trying to convert file",
@@ -78,11 +72,9 @@ public class FileTransferToolImpl implements FileTransferTool {
      * It will get the S3Object by using the location information: bucket name and the location of the
      * file within the bucket(key).
      *
-     * @param location
-     * @return
+     * @param location - location
      */
     private S3Object getObjectInS3(String location) {
-
         String locationWithoutS3 = location.replace(S3_BUCKET, "");
 
         String bucket = locationWithoutS3.split(PATH_DELIMITER)[0];

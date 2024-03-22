@@ -19,7 +19,7 @@ public class CreditorsAfterMoreThanOneYearEntity extends NoteEntity {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (! (o instanceof CreditorsAfterMoreThanOneYearEntity))
+        if (!(o instanceof CreditorsAfterMoreThanOneYearEntity))
             return false;
         CreditorsAfterMoreThanOneYearEntity that = (CreditorsAfterMoreThanOneYearEntity) o;
         return Objects.equals(getData(), that.getData());

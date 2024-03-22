@@ -16,24 +16,20 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Service
 public class CostServiceImpl implements CostService {
 
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
-    private Costs costs;
+    private final Costs costs;
 
     private static final String COSTS_YAML_FILE = "costs/costs.yaml";
 
     @Autowired
     public CostServiceImpl(TransactionService transactionService, YamlResourceMapper yamlResourceMapper) {
-
         this.transactionService = transactionService;
-        this.costs =
-                yamlResourceMapper
-                        .fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
+        this.costs = yamlResourceMapper.fetchObjectFromYaml(COSTS_YAML_FILE, Costs.class);
     }
 
     @Override
     public Cost[] getCosts(Transaction transaction) throws DataException {
-
         try {
             List<PayableResource> payableResources = transactionService.getPayableResources(transaction);
 
@@ -44,14 +40,11 @@ public class CostServiceImpl implements CostService {
             Cost[] costArray = new Cost[payableResources.size()];
 
             for (int i = 0; i < payableResources.size(); i++) {
-
                 costArray[i] = costs.getCostsMap().get(payableResources.get(i).getResource());
             }
 
             return costArray;
-
         } catch (ServiceException e) {
-
             throw new DataException(e);
         }
     }

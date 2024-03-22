@@ -11,14 +11,11 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodire
 @Component
 public class LoanTransformer implements GenericTransformerForMultipleResources<Loan, LoanEntity> {
 
-
     @Override
     public Loan[] transform(LoanEntity[] entity) {
-
         Loan[] loan = new Loan[entity.length];
 
-        for(int i = 0; i < loan.length; i++) {
-
+        for (int i = 0; i < loan.length; i++) {
             loan[i] = transform(entity[i]);
         }
 
@@ -27,14 +24,11 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
 
     @Override
     public LoanEntity transform(Loan entity) {
-
         LoanDataEntity loanDataEntity = new LoanDataEntity();
         BeanUtils.copyProperties(entity, loanDataEntity);
 
         if (entity.getBreakdown() != null) {
-
-            loanDataEntity.setBreakdown(
-                    mapRestResourceToEntityResource(entity.getBreakdown()));
+            loanDataEntity.setBreakdown(mapRestResourceToEntityResource(entity.getBreakdown()));
         }
 
         LoanEntity loanEntity = new LoanEntity();
@@ -45,7 +39,6 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
 
     @Override
     public Loan transform(LoanEntity entity) {
-
         Loan loan = new Loan();
         LoanDataEntity dataEntity = entity.getData();
 
@@ -53,19 +46,16 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
 
         if (dataEntity.getBreakdown() != null) {
 
-            loan.setBreakdown(
-                    mapEntityResourceToRestResource(dataEntity.getBreakdown()));
+            loan.setBreakdown(mapEntityResourceToRestResource(dataEntity.getBreakdown()));
         }
 
         return loan;
     }
 
     private LoanBreakdownResourceEntity mapRestResourceToEntityResource(LoanBreakdownResource restResource) {
-
         LoanBreakdownResourceEntity entityResource = new LoanBreakdownResourceEntity();
 
         if (restResource != null) {
-
             BeanUtils.copyProperties(restResource, entityResource);
             return entityResource;
         }
@@ -74,11 +64,9 @@ public class LoanTransformer implements GenericTransformerForMultipleResources<L
     }
 
     private LoanBreakdownResource mapEntityResourceToRestResource(LoanBreakdownResourceEntity entityResource) {
-
         LoanBreakdownResource restResource = new LoanBreakdownResource();
 
         if (entityResource != null) {
-
             BeanUtils.copyProperties(entityResource, restResource);
             return restResource;
         }

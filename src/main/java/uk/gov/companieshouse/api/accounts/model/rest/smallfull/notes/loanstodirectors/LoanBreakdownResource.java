@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodirectors;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.validation.NoteValidator;
 import uk.gov.companieshouse.api.accounts.validation.NoteValidatorFactory;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Component
@@ -46,12 +46,11 @@ public class StocksTxnClosureValidator extends BaseValidator {
                            Errors errors,
                            BalanceSheet currentPeriodBalanceSheet,
                            BalanceSheet previousPeriodBalanceSheet) throws DataException {
-
         if (smallFull.getLinks().get(SmallFullLinkType.STOCKS_NOTE.getLink()) != null) { // Do they have a note? If yes we need to validate its data.
             ResponseObject<Note> stocksResponseObj = stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, companyAccountsId);
 
             Note stocksData = stocksResponseObj.getData();
-            if(stocksData != null) {
+            if (stocksData != null) {
                 NoteValidator<Note> noteValidator = validatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS);
                 Errors noteValidationErrors = noteValidator.validateSubmission(stocksData, transaction, companyAccountsId, request);
                 if (noteValidationErrors.hasErrors()) {
@@ -59,8 +58,6 @@ public class StocksTxnClosureValidator extends BaseValidator {
                 }
             }
         } else { // if there's no stock note, then there should be no stock values on the balance sheet.
-
-
             long currentStock = Optional.of(currentPeriodBalanceSheet)
                     .map(BalanceSheet::getCurrentAssets)
                     .map(CurrentAssets::getStocks)
@@ -68,7 +65,7 @@ public class StocksTxnClosureValidator extends BaseValidator {
 
             long previousStock = 0L;
 
-            if(getIsMultipleYearFiler(transaction)) {
+            if (getIsMultipleYearFiler(transaction)) {
                  previousStock = Optional.of(previousPeriodBalanceSheet)
                         .map(BalanceSheet::getCurrentAssets)
                         .map(CurrentAssets::getStocks)

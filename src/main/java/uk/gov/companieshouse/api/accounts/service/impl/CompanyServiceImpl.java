@@ -23,12 +23,10 @@ public class CompanyServiceImpl implements CompanyService {
     private static final List<String> LBG_COMPANY_TYPES =
             Arrays.asList("private-limited-guarant-nsc", "private-limited-guarant-nsc-limited-exemption");
 
-    private static final UriTemplate GET_COMPANY_URI =
-            new UriTemplate("/company/{companyNumber}");
+    private static final UriTemplate GET_COMPANY_URI = new UriTemplate("/company/{companyNumber}");
 
     @Override
     public CompanyProfileApi getCompanyProfile(String companyNumber) throws ServiceException {
-
         ApiClient apiClient = apiClientService.getApiClient();
 
         CompanyProfileApi companyProfileApi;
@@ -37,12 +35,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         try {
             companyProfileApi = apiClient.company().get(uri).execute().getData();
-        } catch (ApiErrorResponseException e) {
-
-            throw new ServiceException("Error retrieving company profile", e);
-        } catch (URIValidationException e) {
-
-            throw new ServiceException("Invalid URI for company resource", e);
+        } catch (ApiErrorResponseException | URIValidationException e) {
+            throw new ServiceException(e);
         }
 
         return companyProfileApi;
@@ -50,7 +44,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public boolean isMultipleYearFiler(Transaction transaction) throws ServiceException {
-
         CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
         return (companyProfile != null && companyProfile.getAccounts() != null &&
                 companyProfile.getAccounts().getLastAccounts() != null &&
@@ -59,14 +52,12 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public boolean isCIC(Transaction transaction) throws ServiceException {
-
         CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
         return companyProfile.isCommunityInterestCompany();
     }
 
     @Override
     public boolean isLBG(Transaction transaction) throws ServiceException {
-
         CompanyProfileApi companyProfile = getCompanyProfile(transaction.getCompanyNumber());
         return LBG_COMPANY_TYPES.contains(companyProfile.getType());
     }

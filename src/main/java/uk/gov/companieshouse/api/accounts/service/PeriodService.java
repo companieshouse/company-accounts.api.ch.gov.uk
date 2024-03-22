@@ -7,7 +7,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface PeriodService<T extends RestObject> {
 

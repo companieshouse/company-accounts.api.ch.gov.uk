@@ -8,10 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.lang.reflect.Method;
-import org.junit.Assert;
+import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.lang.reflect.Method;
+
+import jakarta.xml.bind.annotation.XmlElement;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -51,8 +52,8 @@ class DataTest {
         Class<Data> dataClass = Data.class;
         Method[] methods = dataClass.getDeclaredMethods();
         for (Method m : methods) {
-            if(m.getName().startsWith("get")) {
-            Assert.assertNotNull("Method :"+m.getName() + " does not have annotation XmlElement",m.getAnnotation(XmlElement.class));
+            if (m.getName().startsWith("get")) {
+            assertNotNull("Method :"+m.getName() + " does not have annotation XmlElement",m.getAnnotation(XmlElement.class));
             }
         }
     }

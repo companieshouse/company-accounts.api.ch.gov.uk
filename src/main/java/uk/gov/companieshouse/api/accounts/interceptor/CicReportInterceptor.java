@@ -1,13 +1,14 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.BasicLinkType;
@@ -21,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Component
-public class CicReportInterceptor extends HandlerInterceptorAdapter {
+public class CicReportInterceptor implements HandlerInterceptor {
 
     @Autowired
     private CicReportService cicReportService;
@@ -30,14 +31,13 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response,
-                             Object handler) {
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) {
 
         Transaction transaction = (Transaction) request
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        Map<String, String> pathVariables = (Map) request
-                .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        Map<String, String> pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
         String companyAccountId = pathVariables.get(COMPANY_ACCOUNTS_ID_PATH_VARIABLE);
 
@@ -45,9 +45,7 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
             ResponseObject<CicReport> responseObject = cicReportService.find(companyAccountId, request);
 
             if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
-
-                LoggingHelper.logInfo(
-                        companyAccountId, transaction, "Cic report not found", request);
+                LoggingHelper.logInfo(companyAccountId, transaction, "Cic report not found", request);
 
                 response.setStatus(HttpStatus.NOT_FOUND.value());
                 return false;
@@ -62,9 +60,8 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
             String cicReportSelfLink = cicReport.getLinks().get(BasicLinkType.SELF.getLink());
 
             if (!cicReportSelfLink.equals(companyAccountsCicReportLink)) {
-
-                LoggingHelper.logInfo(
-                        companyAccountId, transaction, "Cic report link not present in company accounts resource", request);
+                LoggingHelper.logInfo(companyAccountId, transaction,
+                        "Cic report link not present in company accounts resource", request);
 
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 return false;
@@ -74,7 +71,6 @@ public class CicReportInterceptor extends HandlerInterceptorAdapter {
             return true;
 
         } catch (DataException e) {
-
             LoggingHelper.logException(
                     companyAccountId, transaction, "Failed to retrieve cic report resource", e, request);
 

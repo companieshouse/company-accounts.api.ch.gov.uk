@@ -13,12 +13,10 @@ public class CicStatementsTransformer implements GenericTransformer<CicStatement
 
     @Override
     public CicStatementsEntity transform(CicStatements entity) {
-
         CicStatementsDataEntity cicStatementsDataEntity = new CicStatementsDataEntity();
         BeanUtils.copyProperties(entity, cicStatementsDataEntity);
 
         if (entity.getReportStatements() != null) {
-
             ReportStatementsEntity reportStatementsEntity = new ReportStatementsEntity();
             BeanUtils.copyProperties(entity.getReportStatements(), reportStatementsEntity);
             cicStatementsDataEntity.setReportStatements(reportStatementsEntity);
@@ -31,12 +29,10 @@ public class CicStatementsTransformer implements GenericTransformer<CicStatement
 
     @Override
     public CicStatements transform(CicStatementsEntity entity) {
-
         CicStatements cicStatements = new CicStatements();
         BeanUtils.copyProperties(entity.getData(), cicStatements);
 
         if (entity.getData().getReportStatements() != null) {
-
             ReportStatements reportStatements = new ReportStatements();
             BeanUtils.copyProperties(entity.getData().getReportStatements(), reportStatements);
             cicStatements.setReportStatements(reportStatements);

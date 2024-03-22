@@ -5,7 +5,6 @@ package uk.gov.companieshouse.api.accounts.utility;
  */
 public interface IdGenerator {
 
-
     /**
      * Generate an id
      *

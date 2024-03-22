@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.entity;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class CicReportApprovalDataEntity extends BaseDataEntity {

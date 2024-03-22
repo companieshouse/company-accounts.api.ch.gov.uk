@@ -12,23 +12,19 @@ import java.util.EnumMap;
 @Component
 public class AccountsNoteConverter {
 
-    private static final EnumMap<AccountType, EnumMap<NoteType, AccountingNoteType>> ACCOUNTS_NOTE_MAP = new EnumMap<>(AccountType.class);
+    private static final EnumMap<AccountType, EnumMap<NoteType, AccountingNoteType>> ACCOUNTS_NOTE_MAP =
+            new EnumMap<>(AccountType.class);
 
     AccountsNoteConverter() {
-
         Arrays.stream(AccountingNoteType.values()).forEach(accountsNote -> {
-
-            if(ACCOUNTS_NOTE_MAP.get(accountsNote.getAccountType()) == null) {
-
+            if (ACCOUNTS_NOTE_MAP.get(accountsNote.getAccountType()) == null) {
                 ACCOUNTS_NOTE_MAP.put(accountsNote.getAccountType(), new EnumMap<>(NoteType.class));
             }
-
             ACCOUNTS_NOTE_MAP.get(accountsNote.getAccountType()).put(accountsNote.getNoteType(), accountsNote);
         });
     }
 
     public AccountingNoteType getAccountsNote(AccountType accountType, NoteType noteType) {
-
         AccountingNoteType accountsNote = ACCOUNTS_NOTE_MAP.get(accountType).get(noteType);
         if (accountsNote == null) {
             throw new InvalidPathParameterException("No AccountsNote found for account type: " + accountType.toString() +

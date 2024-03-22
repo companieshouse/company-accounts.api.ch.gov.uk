@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,8 +42,9 @@ public class LoansController {
     private ErrorMapper errorMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Loan loan, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-    		HttpServletRequest request) {
+    public ResponseEntity create(@Valid @RequestBody Loan loan, BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
@@ -53,16 +54,11 @@ public class LoansController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Loan> response =
-                    loanService.create(loan, transaction, companyAccountId, request);
+            ResponseObject<Loan> response = loanService.create(loan, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to create a Loan resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to create a Loan resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -71,17 +67,13 @@ public class LoansController {
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Loan> response = loanService
-                    .find(companyAccountId, request);
+            ResponseObject<Loan> response = loanService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve a Loan resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -92,17 +84,13 @@ public class LoansController {
     public ResponseEntity getAll(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Loan> response = loanService
-                    .findAll(transaction, companyAccountId, request);
+            ResponseObject<Loan> response = loanService.findAll(transaction, companyAccountId, request);
 
             return apiResponseMapper.mapGetResponseForMultipleResources(response.getDataForMultipleResources(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve Loans", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -110,15 +98,17 @@ public class LoansController {
     }
 
     @PutMapping("/{loanId}")
-    public ResponseEntity update(@Valid @RequestBody Loan loan, BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-    		@PathVariable("loanId") String loanId, HttpServletRequest request) {
-
+    public ResponseEntity update(@Valid @RequestBody Loan loan, BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("loanId") String loanId,
+                                 HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
+        LoansToDirectors loansToDirectors = (LoansToDirectors)
+                request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
         if (loansToDirectors.getLoans().get(loanId) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -126,17 +116,11 @@ public class LoansController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Loan> response =
-                    loanService.
-                            update(loan, transaction, companyAccountId, request);
+            ResponseObject<Loan> response = loanService.update(loan, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to update Loan resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to update Loan resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -145,21 +129,14 @@ public class LoansController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Loan> response =
-                    loanService.delete(companyAccountId, request);
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            ResponseObject<Loan> response = loanService.delete(companyAccountId, request);
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to delete Loan resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete Loan resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
-
 }

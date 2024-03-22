@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -242,25 +240,25 @@ class FilingServiceImplTest {
      * @param filing
      */
     private void verifyFilingData(Filing filing) {
-        Assert.assertNotNull(filing);
+        assertNotNull(filing);
         assertEquals(COMPANY_NUMBER, filing.getCompanyNumber());
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getAccountType(), filing.getDescriptionIdentifier());
         assertEquals(FINAL_ACCOUNT_DESCRIPTION, filing.getDescription());
         assertEquals(AccountsType.SMALL_FULL_ACCOUNTS.getKind(), filing.getKind());
-        Assert.assertNotNull(filing.getDescriptionValues());
-        Assert.assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
+        assertNotNull(filing.getDescriptionValues());
+        assertNotNull(filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
         assertEquals(PERIOD_END_ON_VALUE, filing.getDescriptionValues().get(PERIOD_END_ON_KEY));
 
         Data data = filing.getData();
-        Assert.assertNotNull(data);
-        Assert.assertNotNull(data.getPeriodEndOn());
+        assertNotNull(data);
+        assertNotNull(data.getPeriodEndOn());
 
         List<Link> links = data.getLinks();
-        Assert.assertNotNull(links);
+        assertNotNull(links);
         assertEquals(1, links.size());
 
         Link link = links.get(0);
-        Assert.assertNotNull(link);
+        assertNotNull(link);
         assertEquals(ACCOUNTS_LINKS_RELATIONSHIP, link.getRelationship());
         assertEquals(IXBRL_LOCATION, link.getHref());
     }

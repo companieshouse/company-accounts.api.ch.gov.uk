@@ -15,15 +15,12 @@ public class ParentResourceFactory<L extends LinkType> {
 
     @Autowired
     public ParentResourceFactory(List<ParentResource<L>> parentResourceList) {
-
         for (ParentResource<L> parentResource : parentResourceList) {
-
             parentResourceMap.put(parentResource.getParent(), parentResource);
         }
     }
 
     public ParentResource<L> getParentResource(AccountType accountType) {
-
         ParentResource<L> parentResource = parentResourceMap.get(accountType);
 
         if (parentResource == null) {

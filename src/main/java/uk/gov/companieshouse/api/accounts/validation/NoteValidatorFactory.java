@@ -11,19 +11,14 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 @Component
 public class NoteValidatorFactory<N extends Note> {
 
-    private final EnumMap<AccountingNoteType, NoteValidator<N>> validatorMap =
-            new EnumMap<>(AccountingNoteType.class);
+    private final EnumMap<AccountingNoteType, NoteValidator<N>> validatorMap = new EnumMap<>(AccountingNoteType.class);
 
     @Autowired
     public NoteValidatorFactory(List<NoteValidator<N>> noteValidators) {
-
-        noteValidators.forEach(validator ->
-                validatorMap.put(validator.getAccountingNoteType(),
-                        validator));
+        noteValidators.forEach(validator -> validatorMap.put(validator.getAccountingNoteType(), validator));
     }
 
     public NoteValidator<N> getValidator(AccountingNoteType type) {
-
         NoteValidator<N> validator = validatorMap.get(type);
 
         if (validator == null) {

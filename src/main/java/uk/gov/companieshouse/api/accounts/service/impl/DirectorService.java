@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -64,9 +64,10 @@ public class DirectorService implements MultipleResourceService<Director> {
     private ApprovalService approvalService;
 
     @Override
-    public ResponseObject<Director> create(Director rest, Transaction transaction,
-            String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Director> create(Director rest,
+                                           Transaction transaction,
+                                           String companyAccountId,
+                                           HttpServletRequest request) throws DataException {
         String directorId = keyIdGenerator.generateRandom();
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, directorId);
@@ -76,13 +77,10 @@ public class DirectorService implements MultipleResourceService<Director> {
         entity.setId(directorId);
 
         try {
-
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -95,9 +93,10 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> update(Director rest, Transaction transaction,
-            String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Director> update(Director rest,
+                                           Transaction transaction,
+                                           String companyAccountId,
+                                           HttpServletRequest request) throws DataException {
         String directorId = getDirectorId(request);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId, directorId);
@@ -106,10 +105,8 @@ public class DirectorService implements MultipleResourceService<Director> {
         entity.setId(directorId);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -120,16 +117,13 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> find(String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-
+    public ResponseObject<Director> find(String companyAccountsId,
+                                         HttpServletRequest request) throws DataException {
         DirectorEntity entity;
 
         try {
-
             entity = repository.findById(getDirectorId(request)).orElse(null);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -141,16 +135,14 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
-            throws DataException {
-
+    public ResponseObject<Director> findAll(Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
         DirectorEntity[] entity;
 
         try {
             entity = repository.findAllDirectors(generateDirectorsLink(transaction, companyAccountId));
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -162,46 +154,38 @@ public class DirectorService implements MultipleResourceService<Director> {
     }
 
     @Override
-    public ResponseObject<Director> delete(String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-
+    public ResponseObject<Director> delete(String companyAccountsId,
+                                           HttpServletRequest request) throws DataException {
         String directorId = getDirectorId(request);
 
         try {
             if (repository.existsById(directorId)) {
-
                 repository.deleteById(directorId);
 
-                directorsReportService
-                        .removeDirector(companyAccountsId, directorId, request);
+                directorsReportService.removeDirector(companyAccountsId, directorId, request);
 
-                Transaction transaction = (Transaction) request
-                                .getAttribute(AttributeName.TRANSACTION.getValue());
+                Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
                 removeAssociatedApprovals(companyAccountsId, request);
                 removeAssociatedLoans(transaction, companyAccountsId, request);
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
     }
 
     @Override
-    public ResponseObject<Director> deleteAll(Transaction transaction, String companyAccountId, HttpServletRequest request)
-            throws DataException {
-
+    public ResponseObject<Director> deleteAll(Transaction transaction,
+                                              String companyAccountId,
+                                              HttpServletRequest request) throws DataException {
         try {
             repository.deleteAllDirectors(generateDirectorsLink(transaction, companyAccountId));
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -211,8 +195,9 @@ public class DirectorService implements MultipleResourceService<Director> {
         return new ResponseObject<>(ResponseStatus.UPDATED);
     }
 
-    private String generateSelfLink(Transaction transaction, String companyAccountId, String directorId) {
-
+    private String generateSelfLink(Transaction transaction,
+                                    String companyAccountId,
+                                    String directorId) {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/"
@@ -221,8 +206,8 @@ public class DirectorService implements MultipleResourceService<Director> {
                 + directorId;
     }
 
-    private String generateDirectorsLink(Transaction transaction, String companyAccountId) {
-
+    private String generateDirectorsLink(Transaction transaction,
+                                         String companyAccountId) {
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/"
@@ -230,28 +215,29 @@ public class DirectorService implements MultipleResourceService<Director> {
                 + ResourceName.DIRECTORS.getName();
     }
 
-    private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String directorId) {
-
+    private Map<String, String> createLinks(Transaction transaction,
+                                            String companyAccountsId,
+                                            String directorId) {
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, directorId));
         map.put(DIRECTORS_LINK, generateDirectorsLink(transaction, companyAccountsId));
         return map;
     }
 
-    private void setMetadataOnRestObject(Director rest, Transaction transaction, String companyAccountsId, String directorId) {
-
+    private void setMetadataOnRestObject(Director rest,
+                                         Transaction transaction,
+                                         String companyAccountsId,
+                                         String directorId) {
         rest.setLinks(createLinks(transaction, companyAccountsId, directorId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT_DIRECTOR.getValue());
     }
 
     private String getSelfLink(Director director) {
-
         return director.getLinks().get(BasicLinkType.SELF.getLink());
     }
 
     private String getDirectorId(HttpServletRequest request) {
-
         String directorId = "";
         Matcher matcher = DIRECTOR_ID_REGEX.matcher(request.getRequestURI());
         if (matcher.find()) {
@@ -261,9 +247,9 @@ public class DirectorService implements MultipleResourceService<Director> {
         return directorId;
     }
 
-    private void removeAssociatedLoans(Transaction transaction, String companyAccountsId,
-                    HttpServletRequest request) throws DataException {
-
+    private void removeAssociatedLoans(Transaction transaction,
+                                       String companyAccountsId,
+                                       HttpServletRequest request) throws DataException {
         ResponseObject<LoansToDirectors> loansToDirectorsResponse =
                         loansToDirectorsService.find(companyAccountsId, request);
 
@@ -279,12 +265,11 @@ public class DirectorService implements MultipleResourceService<Director> {
         }
     }
 
-    private void removeAssociatedApprovals(String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-        
+    private void removeAssociatedApprovals(String companyAccountsId,
+                                           HttpServletRequest request) throws DataException {
         ResponseObject<DirectorsApproval> directorsApproval = directorsApprovalService.find(companyAccountsId, request);
 
-        if(directorsApproval.getStatus() == ResponseStatus.FOUND) {
+        if (directorsApproval.getStatus() == ResponseStatus.FOUND) {
             directorsApprovalService.delete(companyAccountsId, request);
         }
 

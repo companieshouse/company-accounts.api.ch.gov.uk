@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.validation.ValidationStatus;
 import uk.gov.companieshouse.api.accounts.service.ValidationStatusService;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/validate", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -24,11 +24,10 @@ public class ValidationStatusController {
 
     @GetMapping
     public ResponseEntity<ValidationStatus> getValidationStatus(@PathVariable("companyAccountId") String companyAccountId,
-                                                                HttpServletRequest request ) {
+                                                                HttpServletRequest request) {
 
         try {
             Errors errors = validationStatusService.getValidationErrors(companyAccountId, request);
-
             ValidationStatus validationStatus = new ValidationStatus(!errors.hasErrors(), errors.getErrors());
 
             return ResponseEntity.ok(validationStatus);

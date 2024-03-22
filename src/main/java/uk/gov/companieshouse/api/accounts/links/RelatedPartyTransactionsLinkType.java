@@ -5,7 +5,7 @@ public enum RelatedPartyTransactionsLinkType implements LinkType {
     SELF("self"),
     ADDITIONAL_INFO("additional_information");
 
-    private String link;
+    private final String link;
 
     RelatedPartyTransactionsLinkType(String link) {
         this.link = link;

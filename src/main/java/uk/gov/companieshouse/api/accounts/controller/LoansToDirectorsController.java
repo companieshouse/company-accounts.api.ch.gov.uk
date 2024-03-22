@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors")
@@ -34,15 +34,14 @@ public class LoansToDirectorsController {
     public ResponseEntity create(@RequestBody LoansToDirectors loansToDirectors,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<LoansToDirectors> response = loansToDirectorsService.create(loansToDirectors, transaction, companyAccountId, request);
+            ResponseObject<LoansToDirectors> response = loansToDirectorsService
+                    .create(loansToDirectors, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
 
         } catch(DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction, "Failed to create loansToDirectors resource",
                     ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -51,7 +50,6 @@ public class LoansToDirectorsController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
@@ -59,24 +57,22 @@ public class LoansToDirectorsController {
             return apiResponseMapper.mapGetResponse(response.getData(), request);
 
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a loansToDirectors resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve a loansToDirectors resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<LoansToDirectors> response = loansToDirectorsService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete loansToDirectors resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete loansToDirectors resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

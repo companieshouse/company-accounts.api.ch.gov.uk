@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.DirectorsApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +50,7 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
 
         Errors errors = directorsApprovalValidator.validateApproval(rest, transaction, companyAccountId, request);
 
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
@@ -83,7 +83,7 @@ public class DirectorsApprovalService implements ResourceService<DirectorsApprov
 
         Errors errors = directorsApprovalValidator.validateApproval(rest, transaction, companyAccountId, request);
 
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
         String directorApprovalID = generateID(companyAccountId);

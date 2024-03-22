@@ -11,7 +11,6 @@ public class CicReportTransformer implements GenericTransformer<CicReport, CicRe
 
     @Override
     public CicReportEntity transform(CicReport entity) {
-
         CicReportDataEntity cicReportDataEntity = new CicReportDataEntity();
         BeanUtils.copyProperties(entity, cicReportDataEntity);
 
@@ -22,7 +21,6 @@ public class CicReportTransformer implements GenericTransformer<CicReport, CicRe
 
     @Override
     public CicReport transform(CicReportEntity entity) {
-
         CicReport cicReport = new CicReport();
         BeanUtils.copyProperties(entity.getData(), cicReport);
 

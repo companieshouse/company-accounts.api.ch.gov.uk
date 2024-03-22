@@ -31,8 +31,8 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/{accountingPeriod:current-period|previous-period}/profit-and-loss", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -54,32 +54,31 @@ public class ProfitAndLossController {
     public ResponseEntity create(@Valid @RequestBody ProfitAndLoss profitAndLoss,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
+                                 HttpServletRequest request,
+                                 @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
             ResponseObject<ProfitAndLoss> response = profitAndLossService.create(profitAndLoss, transaction,
                     companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to create profit and loss resource",
                     ex, request);
             return apiResponseMapper.getErrorResponse();
-
         }
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-                              HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
+                              HttpServletRequest request,
+                              @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -94,26 +93,28 @@ public class ProfitAndLossController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid ProfitAndLoss profitAndLoss, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod, HttpServletRequest request) {
-
+    public ResponseEntity update(@RequestBody @Valid ProfitAndLoss profitAndLoss,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod,
+                                 HttpServletRequest request) {
         if (accountingPeriod.equals(AccountingPeriod.CURRENT_PERIOD)) {
             CurrentPeriod currentPeriod = (CurrentPeriod)
                     request.getAttribute(AttributeName.CURRENT_PERIOD.getValue());
-            if(currentPeriod.getLinks().get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
+            if (currentPeriod.getLinks().get(CurrentPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             PreviousPeriod previousPeriod = (PreviousPeriod)
                     request.getAttribute(AttributeName.PREVIOUS_PERIOD.getValue());
-            if(previousPeriod.getLinks().get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
+            if (previousPeriod.getLinks().get(PreviousPeriodLinkType.PROFIT_AND_LOSS.getLink()) == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
-            return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
@@ -122,7 +123,6 @@ public class ProfitAndLossController {
             ResponseObject<ProfitAndLoss> response =
                     profitAndLossService.update(profitAndLoss, transaction, companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update profit and loss resource", ex, request);
@@ -132,14 +132,14 @@ public class ProfitAndLossController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
-                                 HttpServletRequest request, @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
+                                 HttpServletRequest request,
+                                 @PathVariable("accountingPeriod") AccountingPeriod accountingPeriod) {
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<ProfitAndLoss> response = profitAndLossService.delete(companyAccountId, request, accountingPeriod);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch (DataException ex) {
             LoggingHelper.logException(companyAccountId, transaction, "Failed to delete profit and loss resource",
                     ex, request);
@@ -149,8 +149,6 @@ public class ProfitAndLossController {
 
     @InitBinder
     protected void initBinder(final WebDataBinder webdataBinder) {
-
         webdataBinder.registerCustomEditor(AccountingPeriod.class, periodConverter);
     }
-
 }

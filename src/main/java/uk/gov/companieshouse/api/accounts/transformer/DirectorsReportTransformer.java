@@ -11,7 +11,6 @@ public class DirectorsReportTransformer implements GenericTransformer<DirectorsR
 
     @Override
     public DirectorsReportEntity transform(DirectorsReport rest) {
-
         DirectorsReportDataEntity directorsReportDataEntity = new DirectorsReportDataEntity();
         BeanUtils.copyProperties(rest, directorsReportDataEntity);
 
@@ -22,7 +21,6 @@ public class DirectorsReportTransformer implements GenericTransformer<DirectorsR
 
     @Override
     public DirectorsReport transform(DirectorsReportEntity entity) {
-
         DirectorsReport directorsReport = new DirectorsReport();
 
         DirectorsReportDataEntity directorsReportDataEntity = entity.getData();

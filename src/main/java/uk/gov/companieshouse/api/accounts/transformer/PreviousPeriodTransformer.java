@@ -21,53 +21,46 @@ import uk.gov.companieshouse.api.accounts.model.rest.CapitalAndReserves;
 
 
 @Component
-public class PreviousPeriodTransformer implements
-    GenericTransformer<PreviousPeriod, PreviousPeriodEntity> {
+public class PreviousPeriodTransformer implements GenericTransformer<PreviousPeriod, PreviousPeriodEntity> {
 
     @Override
     public PreviousPeriodEntity transform(PreviousPeriod entity) {
-
         PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
         PreviousPeriodDataEntity previousPeriodDataEntity = new PreviousPeriodDataEntity();
         BeanUtils.copyProperties(entity, previousPeriodDataEntity);
 
         if (entity.getBalanceSheet() != null) {
-
             BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
             BeanUtils.copyProperties(entity.getBalanceSheet(), balanceSheetEntity);
 
             if (entity.getBalanceSheet().getFixedAssets() != null) {
                 FixedAssetsEntity fixedAssetsEntity = new FixedAssetsEntity();
-                BeanUtils
-                    .copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
+                BeanUtils.copyProperties(entity.getBalanceSheet().getFixedAssets(), fixedAssetsEntity);
                 balanceSheetEntity.setFixedAssets(fixedAssetsEntity);
             }
 
             if (entity.getBalanceSheet().getOtherLiabilitiesOrAssets() != null) {
                 OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity = new OtherLiabilitiesOrAssetsEntity();
-                BeanUtils
-                        .copyProperties(entity.getBalanceSheet().getOtherLiabilitiesOrAssets(), otherLiabilitiesOrAssetsEntity);
+                BeanUtils.copyProperties(
+                        entity.getBalanceSheet().getOtherLiabilitiesOrAssets(), otherLiabilitiesOrAssetsEntity);
                 balanceSheetEntity.setOtherLiabilitiesOrAssetsEntity(otherLiabilitiesOrAssetsEntity);
             }
 
             if (entity.getBalanceSheet().getCurrentAssets() != null) {
                 CurrentAssetsEntity currentAssetsEntity = new CurrentAssetsEntity();
-                BeanUtils
-                        .copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
+                BeanUtils.copyProperties(entity.getBalanceSheet().getCurrentAssets(), currentAssetsEntity);
                 balanceSheetEntity.setCurrentAssets(currentAssetsEntity);
             }
 
             if (entity.getBalanceSheet().getCapitalAndReserves() != null) {
                 CapitalAndReservesEntity capitalAndReservesEntity = new CapitalAndReservesEntity();
-                BeanUtils
-                        .copyProperties(entity.getBalanceSheet().getCapitalAndReserves(), capitalAndReservesEntity);
+                BeanUtils.copyProperties(entity.getBalanceSheet().getCapitalAndReserves(), capitalAndReservesEntity);
                 balanceSheetEntity.setCapitalAndReservesEntity(capitalAndReservesEntity);
             }
 
             if (entity.getBalanceSheet().getMembersFunds() != null) {
                 MembersFundsEntity membersFundsEntity = new MembersFundsEntity();
-                BeanUtils
-                        .copyProperties(entity.getBalanceSheet().getMembersFunds(), membersFundsEntity);
+                BeanUtils.copyProperties(entity.getBalanceSheet().getMembersFunds(), membersFundsEntity);
                 balanceSheetEntity.setMembersFundsEntity(membersFundsEntity);
             }
 
@@ -81,13 +74,11 @@ public class PreviousPeriodTransformer implements
 
     @Override
     public PreviousPeriod transform(PreviousPeriodEntity entity) {
-
         PreviousPeriod previousPeriod = new PreviousPeriod();
         PreviousPeriodDataEntity previousPeriodDataEntity = entity.getData();
         BeanUtils.copyProperties(previousPeriodDataEntity, previousPeriod);
 
         if (previousPeriodDataEntity.getBalanceSheetEntity() != null) {
-
             BalanceSheet balanceSheet = new BalanceSheet();
             BeanUtils.copyProperties(previousPeriodDataEntity.getBalanceSheetEntity(), balanceSheet);
 
@@ -101,7 +92,8 @@ public class PreviousPeriodTransformer implements
             if (previousPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity() != null) {
                 OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
                 BeanUtils.copyProperties(
-                        previousPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity(), otherLiabilitiesOrAssets);
+                        previousPeriodDataEntity.getBalanceSheetEntity().getOtherLiabilitiesOrAssetsEntity(),
+                        otherLiabilitiesOrAssets);
                 balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
             }
 
@@ -110,13 +102,12 @@ public class PreviousPeriodTransformer implements
                 BeanUtils.copyProperties(
                         previousPeriodDataEntity.getBalanceSheetEntity().getCurrentAssets(), currentAssets);
                 balanceSheet.setCurrentAssets(currentAssets);
-
             }
 
             if (previousPeriodDataEntity.getBalanceSheetEntity().getCapitalAndReservesEntity() != null) {
                 CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
-                BeanUtils.copyProperties(
-                        previousPeriodDataEntity.getBalanceSheetEntity().getCapitalAndReservesEntity(), capitalAndReserves);
+                BeanUtils.copyProperties(previousPeriodDataEntity.getBalanceSheetEntity().getCapitalAndReservesEntity(),
+                        capitalAndReserves);
                 balanceSheet.setCapitalAndReserves(capitalAndReserves);
             }
 

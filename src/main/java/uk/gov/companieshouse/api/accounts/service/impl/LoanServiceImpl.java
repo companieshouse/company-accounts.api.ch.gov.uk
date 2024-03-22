@@ -21,7 +21,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.LoanValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -52,15 +52,14 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
 
     @Override
-    public ResponseObject<Loan> findAll(Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Loan> findAll(Transaction transaction,
+                                        String companyAccountId,
+                                        HttpServletRequest request) throws DataException {
         LoanEntity[] entity;
 
         try {
             entity = repository.findAllLoans(generateLoansLink(transaction, companyAccountId));
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -72,15 +71,14 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     @Override
-    public ResponseObject<Loan> deleteAll(Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Loan> deleteAll(Transaction transaction,
+                                          String companyAccountId,
+                                          HttpServletRequest request) throws DataException {
         try {
             repository.deleteAllLoans(generateLoansLink(transaction, companyAccountId));
 
             loansToDirectorsService.removeAllLoans(companyAccountId);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -88,8 +86,10 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     @Override
-    public ResponseObject<Loan> create(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Loan> create(Loan rest,
+                                       Transaction transaction,
+                                       String companyAccountId,
+                                       HttpServletRequest request) throws DataException {
         Errors errors = loanValidator.validateLoan(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -103,13 +103,10 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
         entity.setId(loanId);
         try {
-
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -119,8 +116,10 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     @Override
-    public ResponseObject<Loan> update(Loan rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Loan> update(Loan rest,
+                                       Transaction transaction,
+                                       String companyAccountId,
+                                       HttpServletRequest request) throws DataException {
         Errors errors = loanValidator.validateLoan(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -134,25 +133,21 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
         entity.setId(loanId);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
     }
 
     @Override
-    public ResponseObject<Loan> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Loan> find(String companyAccountsId,
+                                     HttpServletRequest request) throws DataException {
         LoanEntity entity;
 
         try {
-
             entity = repository.findById(getLoanId(request)).orElse(null);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -173,21 +168,17 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
 
                 repository.deleteById(loanId);
 
-                loansToDirectorsService
-                        .removeLoan(companyAccountsId, loanId, request);
+                loansToDirectorsService.removeLoan(companyAccountsId, loanId, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     private String getLoanId(HttpServletRequest request) {
-
         String loanId = "";
 
         Matcher matcher = LOAN_ID_REGEX.matcher(request.getRequestURI());
@@ -199,14 +190,12 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     private void setMetadataOnRestObject(Loan rest, Transaction transaction, String companyAccountsId, String loanId) {
-
         rest.setLinks(createLinks(transaction, companyAccountsId, loanId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.LOANS_TO_DIRECTORS_LOANS.getValue());
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId, String loanId) {
-
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId, loanId));
         map.put(LOANS_LINK, generateLoansLink(transaction, companyAccountsId));
@@ -214,7 +203,6 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     private String generateLoansLink(Transaction transaction, String companyAccountsId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountsId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
@@ -223,12 +211,10 @@ public class LoanServiceImpl implements MultipleResourceService<Loan> {
     }
 
     private String getSelfLink(Loan loan) {
-
         return loan.getLinks().get(BasicLinkType.SELF.getLink());
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId, String loanId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"

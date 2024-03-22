@@ -5,16 +5,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,16 +38,17 @@ public class AccountsNoteFilter implements Filter {
     private PackageResolver packageResolver;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         // Default impl
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-                         FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         // Add request wrapper so the body can be read multiple times
-        AccountsResourceRequestWrapper multiReadRequest = new AccountsResourceRequestWrapper((HttpServletRequest) request);
+        AccountsResourceRequestWrapper multiReadRequest =
+                new AccountsResourceRequestWrapper((HttpServletRequest) request);
 
         chain.doFilter(multiReadRequest, response);
     }
@@ -82,7 +83,7 @@ public class AccountsNoteFilter implements Filter {
         }
 
         @Override
-        public ServletInputStream getInputStream() throws IOException {
+        public ServletInputStream getInputStream() {
 
             final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
 
@@ -103,14 +104,14 @@ public class AccountsNoteFilter implements Filter {
                     throw new UnsupportedOperationException();
                 }
 
-                public int read() throws IOException {
+                public int read() {
                     return byteArrayInputStream.read();
                 }
             };
         }
 
         @Override
-        public BufferedReader getReader() throws IOException {
+        public BufferedReader getReader() {
             return new BufferedReader(new InputStreamReader(this.getInputStream()));
         }
     }

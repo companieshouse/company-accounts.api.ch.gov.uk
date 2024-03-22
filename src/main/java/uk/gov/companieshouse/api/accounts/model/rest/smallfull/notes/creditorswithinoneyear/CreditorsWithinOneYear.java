@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

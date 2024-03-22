@@ -90,12 +90,12 @@ public enum AccountingNoteType {
             "small-full-accounts-note#off-balance-sheet-arrangements",
             false);
 
-    private AccountType accountType;
-    private NoteType noteType;
-    private Parent parent;
-    private LinkType linkType;
-    private String kind;
-    private boolean isExplicitlyValidated;
+    private final AccountType accountType;
+    private final NoteType noteType;
+    private final Parent parent;
+    private final LinkType linkType;
+    private final String kind;
+    private final boolean isExplicitlyValidated;
 
     AccountingNoteType(AccountType accountType, NoteType noteType, Parent parent, LinkType linkType, String kind, boolean isExplicitlyValidated) {
         this.accountType = accountType;

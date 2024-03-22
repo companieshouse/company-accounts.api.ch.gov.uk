@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation.transactionclosure;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -27,26 +27,26 @@ public class PreviousPeriodTxnClosureValidator extends BaseValidator {
 
     @Autowired
     public PreviousPeriodTxnClosureValidator(CompanyService companyService,
-                                           PreviousPeriodService previousPeriodService) {
+                                             PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.previousPeriodService = previousPeriodService;
     }
 
-    public Errors validate(String companyAccountsId, SmallFull smallFull,
-            Transaction transaction, HttpServletRequest request, Errors errors) throws DataException {
-
+    public Errors validate(String companyAccountsId,
+                           SmallFull smallFull,
+                           Transaction transaction,
+                           HttpServletRequest request,
+                           Errors errors) throws DataException {
         if (getIsMultipleYearFiler(transaction)) {
-            if(smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink()) != null) {
+            if (smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink()) != null) {
                 ResponseObject<PreviousPeriod> previousPeriodResponseObject =
                         previousPeriodService.find(companyAccountsId, request);
-    
                 if (previousPeriodResponseObject.getStatus().equals(ResponseStatus.NOT_FOUND)) {
                     addError(errors, mandatoryElementMissing, SMALL_FULL_PREVIOUS_PERIOD_PATH);
-                } else if (!Optional.of(previousPeriodResponseObject)
+                } else if (Optional.of(previousPeriodResponseObject)
                         .map(ResponseObject::getData)
                         .map(PreviousPeriod::getBalanceSheet)
-                        .isPresent()) {
-
+                        .isEmpty()) {
                     addError(errors, mandatoryElementMissing,
                             SMALL_FULL_PREVIOUS_PERIOD_BALANCE_SHEET_PATH);
                 }

@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -58,16 +58,16 @@ public class AccountsValidator extends BaseValidator {
         this.previousPeriodService = previousPeriodService;
     }
     
-    public Errors validate(Transaction transaction, String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-
+    public Errors validate(Transaction transaction,
+                           String companyAccountsId,
+                           HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
         ResponseObject<CompanyAccount> companyAccountResponseObject = companyAccountService.findById(companyAccountsId, request);
 
         CompanyAccount companyAccount = companyAccountResponseObject.getData();
         
-        if(companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink()) != null) {
+        if (companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink()) != null) {
             SmallFull smallFull = smallFullService.find(companyAccountsId, request).getData();
 
             // Period validation.
@@ -85,9 +85,8 @@ public class AccountsValidator extends BaseValidator {
             }
 
             // Note validation.
-            errors = stocksTxnClosureValidator
-                    .validate(companyAccountsId, smallFull, transaction, request, errors, currentPeriodBalanceSheet, previousPeriodBalanceSheet);
-
+            errors = stocksTxnClosureValidator.validate(companyAccountsId, smallFull, transaction, request, errors,
+                    currentPeriodBalanceSheet, previousPeriodBalanceSheet);
         } else {
             addError(errors, mandatoryElementMissing, SMALL_FULL_PATH);
         }

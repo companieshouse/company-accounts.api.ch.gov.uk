@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/related-party-transactions")
@@ -34,17 +34,15 @@ public class RelatedPartyTransactionsController {
     public ResponseEntity create(@RequestBody RelatedPartyTransactions relatedPartyTransactions,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService.create(relatedPartyTransactions, transaction, companyAccountId, request);
+            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService
+                    .create(relatedPartyTransactions, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to create related party transactions resource",
-                    ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to create related party transactions resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -55,28 +53,28 @@ public class RelatedPartyTransactionsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService.find(companyAccountId, request);
+            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService
+                    .find(companyAccountId, request);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a related party transactions resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve a related party transactions resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService.delete(companyAccountId, request);
+            ResponseObject<RelatedPartyTransactions> response = relatedPartyTransactionsService
+                    .delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete related party transactions resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to delete related party transactions resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

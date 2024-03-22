@@ -1,9 +1,10 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -18,27 +19,27 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
+public class PreviousPeriodInterceptor implements HandlerInterceptor {
 
-        private static  final Logger LOGGER = LoggerFactory.getLogger(
-                CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+        private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
         @Autowired
         private PreviousPeriodService previousPeriodService;
 
         @Override
         @SuppressWarnings("unchecked")
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response
-                , Object handler) throws NoSuchAlgorithmException {
+        public boolean preHandle(HttpServletRequest request,
+                                 @NonNull HttpServletResponse response,
+                                 @NonNull Object handler) throws NoSuchAlgorithmException {
 
-            if(request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
+            if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI()
                     .endsWith("previous-period")) {
                 return true;
             }
@@ -53,7 +54,8 @@ public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
             Transaction transaction = (Transaction) request
                     .getAttribute(AttributeName.TRANSACTION.getValue());
             if (transaction == null) {
-                LOGGER.errorRequest(request, "PreviousPeriodInterceptor error: No transaction in request session", debugMap);
+                LOGGER.errorRequest(request,
+                        "PreviousPeriodInterceptor error: No transaction in request session", debugMap);
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return false;
             }
@@ -66,11 +68,11 @@ public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
             debugMap.put("transaction_company_number", transaction.getCompanyNumber());
             debugMap.put("path_variables", pathVariables);
 
-            SmallFull smallFull = (SmallFull) request
-                    .getAttribute(AttributeName.SMALLFULL.getValue());
+            SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
 
             if (smallFull == null) {
-                LOGGER.errorRequest(request, "PreviousPeriodInterceptor error: No company account in request session", debugMap);
+                LOGGER.errorRequest(request,
+                        "PreviousPeriodInterceptor error: No company account in request session", debugMap);
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return false;
             }
@@ -86,16 +88,14 @@ public class PreviousPeriodInterceptor extends HandlerInterceptorAdapter {
 
             if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
                 LOGGER.debugRequest(request,
-                        "PreviousPeriodInterceptor error: Failed to retrieve a previous period resource",
-                        debugMap);
+                        "PreviousPeriodInterceptor error: Failed to retrieve a previous period resource", debugMap);
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return false;
             }
 
-            PreviousPeriod previousPeriod= responseObject.getData();
+            PreviousPeriod previousPeriod = responseObject.getData();
 
-            String smallFullLink = smallFull.getLinks()
-                    .get(SmallFullLinkType.PREVIOUS_PERIOD.getLink());
+            String smallFullLink = smallFull.getLinks().get(SmallFullLinkType.PREVIOUS_PERIOD.getLink());
             String previousPeriodSelf = previousPeriod.getLinks().get(BasicLinkType.SELF.getLink());
             if (!smallFullLink.equals(previousPeriodSelf)) {
                 LOGGER.debugRequest(request,

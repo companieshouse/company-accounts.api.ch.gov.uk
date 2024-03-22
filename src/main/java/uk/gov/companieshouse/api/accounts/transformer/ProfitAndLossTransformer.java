@@ -19,7 +19,6 @@ public class ProfitAndLossTransformer implements GenericTransformer<ProfitAndLos
 
     @Override
     public ProfitAndLossEntity transform(ProfitAndLoss rest) {
-
         ProfitAndLossDataEntity profitAndLossDataEntity = new ProfitAndLossDataEntity();
         BeanUtils.copyProperties(rest, profitAndLossDataEntity);
 
@@ -54,7 +53,6 @@ public class ProfitAndLossTransformer implements GenericTransformer<ProfitAndLos
 
     @Override
     public ProfitAndLoss transform(ProfitAndLossEntity entity) {
-
         ProfitAndLoss profitAndLoss = new ProfitAndLoss();
 
         ProfitAndLossDataEntity profitAndLossDataEntity = entity.getData();

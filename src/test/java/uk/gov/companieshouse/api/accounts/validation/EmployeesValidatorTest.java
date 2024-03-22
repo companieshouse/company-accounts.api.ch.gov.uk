@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +20,10 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -151,8 +151,7 @@ class EmployeesValidatorTest {
         errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                EMPLOYEES_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, EMPLOYEES_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test

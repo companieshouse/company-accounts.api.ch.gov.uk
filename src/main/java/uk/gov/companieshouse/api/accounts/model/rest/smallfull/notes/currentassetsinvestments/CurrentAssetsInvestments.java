@@ -7,8 +7,8 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

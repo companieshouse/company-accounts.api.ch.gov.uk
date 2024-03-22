@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.parent;
 
 import java.time.LocalDate;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.links.LinkType;

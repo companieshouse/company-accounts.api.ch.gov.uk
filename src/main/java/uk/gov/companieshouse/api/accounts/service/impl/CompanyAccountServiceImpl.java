@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,22 +59,19 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
      */
     @Override
     public ResponseObject<CompanyAccount> create(CompanyAccount companyAccount,
-            Transaction transaction, HttpServletRequest request)
-            throws PatchException, DataException {
-
+                                                 Transaction transaction,
+                                                 HttpServletRequest request) throws PatchException, DataException {
         try {
             String id = generateID();
             setMetadataOnRestObject(companyAccount, transaction, id);
 
-            CompanyAccountEntity companyAccountEntity =
-                    companyAccountTransformer.transform(companyAccount);
+            CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(companyAccount);
             companyAccountEntity.setId(id);
 
             companyAccountRepository.insert(companyAccountEntity);
 
-            InternalApiClient internalApiClient =
-                    apiClientService.getInternalApiClient(
-                            request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader()));
+            InternalApiClient internalApiClient = apiClientService.getInternalApiClient(
+                    request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader()));
 
             boolean isPayableTransaction = !transactionService.getPayableResources(transaction).isEmpty();
 
@@ -84,15 +81,10 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
                     .patch("/private/transactions/" + transaction.getId(), transaction).execute();
 
         } catch (DuplicateKeyException dke) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-
         } catch (ServiceException | MongoException e) {
-
             throw new DataException(e);
-
         } catch (IOException | URIValidationException e) {
-
             throw new PatchException("Failed to patch transaction", e);
         }
 
@@ -100,8 +92,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     @Override
-    public ResponseObject<CompanyAccount> findById(String id, HttpServletRequest request)
-            throws DataException {
+    public ResponseObject<CompanyAccount> findById(String id, HttpServletRequest request) throws DataException {
 
         CompanyAccountEntity companyAccountEntity;
 
@@ -121,7 +112,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Override
     public void addLink(String id, CompanyAccountLinkType linkType, String link) {
-
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
                 .orElseThrow(() -> new MongoException(
                         "Failed to add link to Company account entity"));
@@ -136,7 +126,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
 
     @Override
     public void removeLink(String id, CompanyAccountLinkType linkType) {
-
         CompanyAccountEntity companyAccountEntity = companyAccountRepository.findById(id)
                 .orElseThrow(() -> new MongoException(
                         "Failed to find company accounts entity with id " + id +
@@ -147,9 +136,8 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private void setMetadataOnRestObject(CompanyAccount rest,
-            Transaction transaction,
-            String companyAccountsId) {
-
+                                         Transaction transaction,
+                                         String companyAccountsId) {
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.COMPANY_ACCOUNTS.getValue());
@@ -183,7 +171,6 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     private Map<String, Resource> createTransactionResourceMap(CompanyAccount companyAccount, boolean isPayableTransaction) {
-
         String selfLink = getSelfLink(companyAccount);
 
         Resource resource = new Resource();

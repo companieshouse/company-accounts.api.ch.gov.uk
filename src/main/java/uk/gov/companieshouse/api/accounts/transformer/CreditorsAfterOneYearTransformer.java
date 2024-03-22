@@ -13,11 +13,11 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaf
 
 
 @Component
-public class CreditorsAfterOneYearTransformer implements NoteTransformer<CreditorsAfterMoreThanOneYear, CreditorsAfterMoreThanOneYearEntity>  {
+public class CreditorsAfterOneYearTransformer implements NoteTransformer<CreditorsAfterMoreThanOneYear,
+        CreditorsAfterMoreThanOneYearEntity>  {
 
     @Override
     public CreditorsAfterMoreThanOneYearEntity transform(CreditorsAfterMoreThanOneYear rest) {
-
         CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity = new CreditorsAfterMoreThanOneYearDataEntity();
         CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity = new CreditorsAfterMoreThanOneYearEntity();
 

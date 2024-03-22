@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -136,7 +136,6 @@ class FixedAssetsInvestmentsValidatorTest {
     @Test
     @DisplayName("Error thrown when empty resource submitted")
     void testValidationEmptyResource() throws DataException, ServiceException {
-
 
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
                 EMPTY_RESOURCE_VALUE);

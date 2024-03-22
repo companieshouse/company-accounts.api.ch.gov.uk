@@ -1,14 +1,13 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +50,7 @@ class DirectorValidatorTest {
     private DirectorValidator directorValidator;
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         directorValidator = new DirectorValidator(companyService, directorService);
     }
     

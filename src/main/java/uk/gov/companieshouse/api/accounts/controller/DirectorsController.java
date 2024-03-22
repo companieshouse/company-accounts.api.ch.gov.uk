@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/directors")
@@ -42,9 +42,10 @@ public class DirectorsController {
 
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Director director, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity create(@Valid @RequestBody Director director,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
@@ -56,11 +57,8 @@ public class DirectorsController {
             ResponseObject<Director> response =
                     directorService.create(director, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create a Director resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -70,18 +68,13 @@ public class DirectorsController {
     @GetMapping("/{directorId}")
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
-
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Director> response = directorService
-                    .find(companyAccountId, request);
+            ResponseObject<Director> response = directorService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve a Director resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -91,20 +84,14 @@ public class DirectorsController {
     @GetMapping
     public ResponseEntity getAll(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Director> response = directorService
-                    .findAll(transaction, companyAccountId, request);
+            ResponseObject<Director> response = directorService.findAll(transaction, companyAccountId, request);
 
             return apiResponseMapper.mapGetResponseForMultipleResources(response.getDataForMultipleResources(), request);
-
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction,
-                    "Failed to retrieve Directors", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve Directors", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
 
@@ -112,10 +99,11 @@ public class DirectorsController {
     }
 
     @PutMapping("/{directorId}")
-    public ResponseEntity update(@Valid @RequestBody Director director, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, @PathVariable("directorId") String directorId,
+    public ResponseEntity update(@Valid @RequestBody Director director,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 @PathVariable("directorId") String directorId,
                                  HttpServletRequest request) {
-
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
         if (directorsReport.getDirectors().get(directorId) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -129,15 +117,11 @@ public class DirectorsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Director> response =
-                    directorService.
-                            update(director, transaction, companyAccountId, request);
+            ResponseObject<Director> response = directorService.
+                    update(director, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update director resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -147,22 +131,15 @@ public class DirectorsController {
     @DeleteMapping("/{directorId}")
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Director> response =
-                    directorService.delete(companyAccountId, request);
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            ResponseObject<Director> response = directorService.delete(companyAccountId, request);
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to delete director resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
-
 }

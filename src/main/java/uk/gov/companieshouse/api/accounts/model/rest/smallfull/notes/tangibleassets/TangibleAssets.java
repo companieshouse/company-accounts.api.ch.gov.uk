@@ -2,8 +2,8 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleas
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;

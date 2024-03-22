@@ -6,7 +6,7 @@ public enum CicReportLinkType implements LinkType {
     STATEMENTS("statements"),
     APPROVAL("approval");
 
-    private String link;
+    private final String link;
 
     CicReportLinkType(String link) {
         this.link = link;

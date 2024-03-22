@@ -8,7 +8,7 @@ public enum PayableResource {
         this.resource = resource;
     }
 
-    private String resource;
+    private final String resource;
 
     public String getResource() {
 

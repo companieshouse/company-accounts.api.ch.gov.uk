@@ -16,8 +16,8 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ class ErrorMapperTest {
         assertTrue(errors.containsError(createError("incorrect.total", "$.object_in_error.field4")));
     }
 
-    private List<ObjectError> getAllErrors(){
+    private List<ObjectError> getAllErrors() {
         Object[] argument = {0,0,9999};
         FieldError fieldError1= new FieldError("object1","field1",null,true,null,argument,"value.outside.range");
         FieldError fieldError2= new FieldError("object2","field2",null,true,null,argument,"invalid.input.length");

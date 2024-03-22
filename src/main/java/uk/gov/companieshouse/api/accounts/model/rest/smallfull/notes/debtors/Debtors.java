@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.debtors;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import uk.gov.companieshouse.api.accounts.model.rest.Note;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

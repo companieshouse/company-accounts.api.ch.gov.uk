@@ -35,7 +35,6 @@ public class PreviousPeriodValidator extends BaseValidator {
                             previousPeriod.getBalanceSheet(), transaction, PREVIOUS_PERIOD_PATH, errors);
                 }
             } else {
-
                 addError(errors, unexpectedData, PREVIOUS_PERIOD_PATH);
             }
 

@@ -31,7 +31,7 @@ public enum ResourceName {
     RPT_TRANSACTIONS("transactions"),
     ADDITIONAL_INFO("additional-information");
 
-    private String name;
+    private final String name;
 
     ResourceName(String name) {
         this.name = name;

@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -61,27 +61,22 @@ public class StatementService implements ResourceService<Statement> {
 
 
     @Override
-    public ResponseObject<Statement> create(Statement rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
+    public ResponseObject<Statement> create(Statement rest,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
+        SmallFull smallFull = ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()));
 
-        SmallFull smallFull =
-            ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()));
-
-        setMetadataOnRestObject(rest, transaction, companyAccountId,
-            getPeriodEndOn(smallFull));
+        setMetadataOnRestObject(rest, transaction, companyAccountId, getPeriodEndOn(smallFull));
 
         StatementEntity statementEntity = transformer.transform(rest);
         statementEntity.setId(generateID(companyAccountId));
 
         try {
             statementRepository.insert(statementEntity);
-
         } catch (DuplicateKeyException ex) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-
         } catch (MongoException ex) {
-
             throw new DataException(ex);
         }
 
@@ -94,23 +89,21 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     @Override
-    public ResponseObject<Statement> update(Statement rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-        
+    public ResponseObject<Statement> update(Statement rest,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
         ResponseObject<SmallFull> smallFullResponse = smallFullService.find(companyAccountId, request);
         SmallFull smallFull = smallFullResponse.getData();
         
-        setMetadataOnRestObject(rest, transaction, companyAccountId,
-            getPeriodEndOn(smallFull));
+        setMetadataOnRestObject(rest, transaction, companyAccountId, getPeriodEndOn(smallFull));
 
         StatementEntity statementEntity = transformer.transform(rest);
         statementEntity.setId(generateID(companyAccountId));
 
         try {
             statementRepository.save(statementEntity);
-
         } catch (MongoException ex) {
-
             throw new DataException(ex);
         }
 
@@ -118,16 +111,12 @@ public class StatementService implements ResourceService<Statement> {
     }
 
     @Override
-    public ResponseObject<Statement> find(String companyAccountsId, HttpServletRequest request)
-        throws DataException {
-
+    public ResponseObject<Statement> find(String companyAccountsId, HttpServletRequest request) throws DataException {
         StatementEntity statementEntity;
 
         try {
             statementEntity = statementRepository.findById(generateID(companyAccountsId)).orElse(null);
-
         } catch (MongoException ex) {
-
             throw new DataException(ex);
         }
 
@@ -146,16 +135,14 @@ public class StatementService implements ResourceService<Statement> {
     /**
      * Find any statements for the company account and set the HasAgreedToLegalStatements to false.
      * 
-     * @param companyAccountId
-     * @param request
+     * @param companyAccountId - companyAccountId
+     * @param request - request
      * 
-     * @throws DataException
+     * @throws DataException - DataException
      */
-    public void invalidateStatementsIfExisting(String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
+    public void invalidateStatementsIfExisting(String companyAccountId,
+                                               HttpServletRequest request) throws DataException {
         if (find(companyAccountId, request).getStatus().equals(ResponseStatus.FOUND)) {
-
             Statement statement = new Statement();
             Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -172,11 +159,10 @@ public class StatementService implements ResourceService<Statement> {
     /**
      * Get the period end on stored in SmallFull
      *
-     * @param smallFull
+     * @param smallFull - smallFull
      * @return period end on formatted.
      */
     private LocalDate getPeriodEndOn(SmallFull smallFull) {
-
         return smallFull.getNextAccounts().getPeriodEndOn();
     }
 
@@ -184,16 +170,15 @@ public class StatementService implements ResourceService<Statement> {
      * Sets the links, the etag, kind and statements(after replacing the placeholder) in the rest
      * object.
      *
-     * @param rest
-     * @param transaction
-     * @param companyAccountId
-     * @param periodEndOn
+     * @param rest - rest
+     * @param transaction - transaction
+     * @param companyAccountId - companyAccountId
+     * @param periodEndOn - periodEndOn
      */
     private void setMetadataOnRestObject(Statement rest,
-        Transaction transaction,
-        String companyAccountId,
-        LocalDate periodEndOn) throws DataException {
-
+                                         Transaction transaction,
+                                         String companyAccountId,
+                                         LocalDate periodEndOn) throws DataException {
         rest.setLinks(createSelfLink(transaction, companyAccountId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.SMALL_FULL_STATEMENT.getValue());
@@ -219,52 +204,41 @@ public class StatementService implements ResourceService<Statement> {
     /**
      * Gets the Legal Statements. Replace period_end_on placeholder in the statements for
      * periodEndOn value
-     *
-     * @return
      */
-    private Map<String, String> getLegalStatements(LocalDate periodEndOn, String companyAccountsId)
-            throws DataException {
+    private Map<String, String> getLegalStatements(LocalDate periodEndOn,
+                                                   String companyAccountsId) throws DataException {
         Map<String, String> legalStatements = getLegalStatementsFromProperties();
 
         if (legalStatements.containsKey(LEGAL_STATEMENT_SECTION_477_KEY)) {
             updateLegalStatementByReplacingPlaceHolder(
                 legalStatements,
-                LEGAL_STATEMENT_SECTION_477_KEY,
-                PERIOD_END_ON_PLACE_HOLDER,
-                convertDateToString(periodEndOn));
+                    convertDateToString(periodEndOn));
         }
 
-            if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
-                legalStatements.remove(NO_PROFIT_AND_LOSS);
-            }
+        if (profitAndLossService.find(companyAccountsId, AccountingPeriod.CURRENT_PERIOD).getStatus().equals(ResponseStatus.FOUND)) {
+            legalStatements.remove(NO_PROFIT_AND_LOSS);
+        }
 
         return legalStatements;
     }
 
     /**
-     * Replace the place holder in the legal statement passed in, with the placeHolderReplacements
+     * Replace the placeholder in the legal statement passed in, with the placeHolderReplacements
      * value.
      *
-     * @param statements
-     * @param legalStatementKey
-     * @param placeHolder
-     * @param placeHolderReplacement
+     * @param statements - statements
+     * @param placeHolderReplacement - placeHolderReplacement
      */
     private void updateLegalStatementByReplacingPlaceHolder(Map<String, String> statements,
-        String legalStatementKey,
-        String placeHolder,
-        String placeHolderReplacement) {
+                                                            String placeHolderReplacement) {
+        String statementUpdated = statements.get(StatementService.LEGAL_STATEMENT_SECTION_477_KEY)
+                .replace(StatementService.PERIOD_END_ON_PLACE_HOLDER, placeHolderReplacement);
 
-        String statementUpdated =
-            statements.get(legalStatementKey).replace(placeHolder, placeHolderReplacement);
-
-        statements.replace(legalStatementKey, statementUpdated);
+        statements.replace(StatementService.LEGAL_STATEMENT_SECTION_477_KEY, statementUpdated);
     }
 
     /**
      * Get the legal statements from LegalStatements.properties file.
-     *
-     * @return
      */
     private Map<String, String> getLegalStatementsFromProperties() {
         return statementsServiceProperties.getCloneOfStatements();
@@ -274,7 +248,6 @@ public class StatementService implements ResourceService<Statement> {
      * Converts the date to format d MMMM yyyy. E.g: 1 January 2018.
      *
      * @param date - date to be formatted
-     * @return
      */
     private String convertDateToString(LocalDate date) {
         return DATE_TIME_FORMATTER.format(date);

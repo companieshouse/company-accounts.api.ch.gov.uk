@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         List<PayableResource> payableResources = new ArrayList<>();
 
-        if(companyService.isCIC(transaction)) {
+        if (companyService.isCIC(transaction)) {
             payableResources.add(PayableResource.CIC);
         }
 

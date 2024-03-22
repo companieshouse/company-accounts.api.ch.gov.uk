@@ -11,7 +11,7 @@ import java.time.Month;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -153,7 +153,7 @@ class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2 ));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
@@ -161,7 +161,7 @@ class CicApprovalValidatorTest {
         assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
     }
     
-    private CompanyProfileApi createCompanyProfile(){
+    private CompanyProfileApi createCompanyProfile() {
     	CompanyProfileApi companyProfileApi = new CompanyProfileApi();
     	CompanyAccountApi companyAccountApi = new CompanyAccountApi();
         NextAccountsApi accountingPeriod = new NextAccountsApi();

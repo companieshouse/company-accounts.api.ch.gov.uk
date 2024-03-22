@@ -9,8 +9,10 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -25,7 +27,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 
 /**
  * GlobalExceptionHandler defines handlers for generic exceptions.
- *
+ * <p>
  * Api Specific Errors are handled in the Controller.
  */
 @ControllerAdvice
@@ -46,26 +48,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
-        HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleNoHandlerFoundException(@NonNull NoHandlerFoundException ex,
+                                                                   @NonNull HttpHeaders headers,
+                                                                   @NonNull HttpStatusCode status,
+                                                                   @NonNull WebRequest request) {
         logClientError(ex);
         return super.handleNoHandlerFoundException(ex, headers, status, request);
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
-        HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status,
-        WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex,
+                                                                  @NonNull HttpHeaders headers,
+                                                                  @NonNull HttpStatusCode status,
+                                                                  @NonNull WebRequest request) {
         logClientError(ex);
 
         StringBuilder message = new StringBuilder("JSON parse exception");
         Throwable cause = ex.getCause();
-        if (cause instanceof InvalidFormatException) {
-            InvalidFormatException ife = (InvalidFormatException) cause;
+        if (cause instanceof InvalidFormatException ife) {
             message.append(":Can not deserialize value of ").append(ife.getValue())
                 .append(getLocationMessage(ife.getLocation()));
-        } else if (cause instanceof JsonProcessingException) {
-          JsonProcessingException jpe = (JsonProcessingException) cause;
+        } else if (cause instanceof JsonProcessingException jpe) {
           message.append(getLocationMessage(jpe.getLocation()));
         }
 

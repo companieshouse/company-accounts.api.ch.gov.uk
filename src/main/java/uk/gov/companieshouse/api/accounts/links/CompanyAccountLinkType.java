@@ -8,7 +8,7 @@ public enum CompanyAccountLinkType implements LinkType {
     TRANSACTION("transaction"),
     CIC_REPORT("cic_report");
 
-    private String link;
+    private final String link;
 
     CompanyAccountLinkType(String link) {
         this.link = link;

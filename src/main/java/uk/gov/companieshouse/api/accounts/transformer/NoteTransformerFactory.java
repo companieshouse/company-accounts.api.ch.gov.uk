@@ -17,14 +17,10 @@ public class NoteTransformerFactory<N extends Note, E extends NoteEntity> {
 
     @Autowired
     public NoteTransformerFactory(List<NoteTransformer<N, E>> noteTransformers) {
-
-        noteTransformers.forEach(transformer ->
-                transformerMap.put(transformer.getAccountingNoteType(),
-                        transformer));
+        noteTransformers.forEach(transformer -> transformerMap.put(transformer.getAccountingNoteType(), transformer));
     }
 
     public NoteTransformer<N, E> getTransformer(AccountingNoteType type) {
-
         NoteTransformer<N, E> transformer = transformerMap.get(type);
 
         if (transformer == null) {

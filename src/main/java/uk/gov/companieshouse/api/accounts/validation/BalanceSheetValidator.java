@@ -43,8 +43,10 @@ public class BalanceSheetValidator extends BaseValidator {
         super(companyService);
     }
 
-    public void validateBalanceSheet(BalanceSheet balanceSheet, Transaction transaction, String periodPath, Errors errors) throws DataException {
-
+    public void validateBalanceSheet(BalanceSheet balanceSheet,
+                                     Transaction transaction,
+                                     String periodPath,
+                                     Errors errors) throws DataException {
         boolean isLBGCompanyFiling = getIsLBGCompanyFiling(transaction);
 
         validateTotalFixedAssets(balanceSheet, periodPath, errors);
@@ -52,23 +54,19 @@ public class BalanceSheetValidator extends BaseValidator {
         validateTotalOtherLiabilitiesOrAssets(balanceSheet, isLBGCompanyFiling, periodPath, errors);
 
         if (isLBGCompanyFiling) {
-
             validateCalledUpShareCapitalNotPaidNotSubmitted(balanceSheet, periodPath, errors);
             validateCapitalAndReservesNotSubmitted(balanceSheet, periodPath, errors);
             validateTotalMembersFunds(balanceSheet, periodPath, errors);
         } else {
-
             validateMembersFundsNotSubmitted(balanceSheet, periodPath, errors);
             validateTotalShareholderFunds(balanceSheet, periodPath, errors);
         }
     }
 
     private void validateTotalFixedAssets(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         FixedAssets fixedAssets = balanceSheet.getFixedAssets();
 
         if (fixedAssets != null) {
-
             Long tangible = Optional.ofNullable(fixedAssets.getTangible()).orElse(0L);
             Long intangible = Optional.ofNullable(fixedAssets.getIntangible()).orElse(0L);
             Long investments = Optional.ofNullable(fixedAssets.getInvestments()).orElse(0L);
@@ -81,11 +79,9 @@ public class BalanceSheetValidator extends BaseValidator {
     }
 
     private void validateTotalCurrentAssets(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         CurrentAssets currentAssets = balanceSheet.getCurrentAssets();
 
         if (currentAssets != null) {
-
             Long stocks = Optional.ofNullable(currentAssets.getStocks()).orElse(0L);
             Long debtors = Optional.ofNullable(currentAssets.getDebtors()).orElse(0L);
             Long cashAtBankAndInHand = Optional.ofNullable(currentAssets.getCashAtBankAndInHand()).orElse(0L);
@@ -98,19 +94,22 @@ public class BalanceSheetValidator extends BaseValidator {
         }
     }
 
-    private void validateTotalOtherLiabilitiesOrAssets(BalanceSheet balanceSheet, boolean isLBGCompanyFiling, String periodPath, Errors errors) {
-
+    private void validateTotalOtherLiabilitiesOrAssets(BalanceSheet balanceSheet,
+                                                       boolean isLBGCompanyFiling,
+                                                       String periodPath,
+                                                       Errors errors) {
         if (balanceSheet.getOtherLiabilitiesOrAssets() != null) {
-
             calculateOtherLiabilitiesOrAssetsNetCurrentAssets(balanceSheet, periodPath, errors);
-            calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(balanceSheet, isLBGCompanyFiling, periodPath, errors);
+            calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(
+                    balanceSheet, isLBGCompanyFiling, periodPath, errors);
             calculateOtherLiabilitiesOrAssetsTotalNetAssets(balanceSheet, periodPath, errors);
             checkOtherLiabilitiesAreMandatory(balanceSheet, periodPath, errors);
         }
     }
 
-    private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
+    private void calculateOtherLiabilitiesOrAssetsNetCurrentAssets(BalanceSheet balanceSheet,
+                                                                   String periodPath,
+                                                                   Errors errors) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = balanceSheet.getOtherLiabilitiesOrAssets();
 
         Long prepaymentsAndAccruedIncome = Optional.ofNullable(otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome()).orElse(0L);
@@ -127,8 +126,10 @@ public class BalanceSheetValidator extends BaseValidator {
         validateAggregateTotal(netCurrentAssets, calculatedTotal, periodPath + OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH, errors);
     }
 
-    private void calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(BalanceSheet balanceSheet, boolean isLBGCompanyFiling, String periodPath, Errors errors) {
-
+    private void calculateOtherLiabilitiesOrAssetsTotalAssetsLessCurrentLiabilities(BalanceSheet balanceSheet,
+                                                                                    boolean isLBGCompanyFiling,
+                                                                                    String periodPath,
+                                                                                    Errors errors) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = balanceSheet.getOtherLiabilitiesOrAssets();
 
         Long netCurrentAssets = Optional.ofNullable(otherLiabilitiesOrAssets.getNetCurrentAssets()).orElse(0L);
@@ -138,19 +139,22 @@ public class BalanceSheetValidator extends BaseValidator {
             fixedAssetsTotal = Optional.ofNullable(balanceSheet.getFixedAssets().getTotal()).orElse(0L);
         }
 
-        Long calculatedTotal = fixedAssetsTotal + netCurrentAssets;
+        long calculatedTotal = fixedAssetsTotal + netCurrentAssets;
 
         if (!isLBGCompanyFiling) {
             Long calledUpShareCapitalNotPaid = Optional.ofNullable(balanceSheet.getCalledUpShareCapitalNotPaid()).orElse(0L);
             calculatedTotal += calledUpShareCapitalNotPaid;
         }
 
-        Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
-        validateAggregateTotal(totalAssetsLessCurrentLiabilities, calculatedTotal, periodPath + OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH, errors);
+        Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(
+                otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
+        validateAggregateTotal(totalAssetsLessCurrentLiabilities, calculatedTotal,
+                periodPath + OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH, errors);
     }
 
-    private void calculateOtherLiabilitiesOrAssetsTotalNetAssets(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
+    private void calculateOtherLiabilitiesOrAssetsTotalNetAssets(BalanceSheet balanceSheet,
+                                                                 String periodPath,
+                                                                 Errors errors) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = balanceSheet.getOtherLiabilitiesOrAssets();
 
         Long totalAssetsLessCurrentLiabilities = Optional.ofNullable(otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities()).orElse(0L);
@@ -165,30 +169,28 @@ public class BalanceSheetValidator extends BaseValidator {
     }
 
     private void checkOtherLiabilitiesAreMandatory(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         CurrentAssets currentAssets = balanceSheet.getCurrentAssets();
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = balanceSheet.getOtherLiabilitiesOrAssets();
 
-        if (currentAssets != null ||
-                otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
+        if (currentAssets != null || otherLiabilitiesOrAssets.getPrepaymentsAndAccruedIncome() != null ||
                 otherLiabilitiesOrAssets.getCreditorsDueWithinOneYear() != null) {
 
             if (otherLiabilitiesOrAssets.getNetCurrentAssets() == null) {
-                addError(errors, mandatoryElementMissing, periodPath + OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
+                addError(errors, mandatoryElementMissing,
+                        periodPath + OTHER_LIABILITIES_OR_ASSETS_NET_CURRENT_ASSETS_PATH);
             }
 
             if (otherLiabilitiesOrAssets.getTotalAssetsLessCurrentLiabilities() == null) {
-                addError(errors, mandatoryElementMissing, periodPath + OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
+                addError(errors, mandatoryElementMissing,
+                        periodPath + OTHER_LIABILITIES_OR_ASSETS_TOTAL_ASSETS_LESS_CURRENT_LIABILITIES_PATH);
             }
         }
     }
 
     private void validateTotalShareholderFunds(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         CapitalAndReserves capitalAndReserves = balanceSheet.getCapitalAndReserves();
 
         if (capitalAndReserves != null) {
-
             Long calledUpShareCapital = Optional.ofNullable(capitalAndReserves.getCalledUpShareCapital()).orElse(0L);
             Long sharePremiumAccount = Optional.ofNullable(capitalAndReserves.getSharePremiumAccount()).orElse(0L);
             Long otherReserves = Optional.ofNullable(capitalAndReserves.getOtherReserves()).orElse(0L);
@@ -213,14 +215,10 @@ public class BalanceSheetValidator extends BaseValidator {
     }
 
     private void validateTotalMembersFunds(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         MembersFunds membersFunds = balanceSheet.getMembersFunds();
 
         if (membersFunds != null) {
-
-            Long profitAndLossAccount = membersFunds.getProfitAndLossAccount();
-
-            Long calculatedTotal = profitAndLossAccount;
+            Long calculatedTotal = membersFunds.getProfitAndLossAccount();
 
             Long totalMembersFunds = membersFunds.getTotalMembersFunds();
             validateAggregateTotal(totalMembersFunds, calculatedTotal, periodPath + TOTAL_MEMBERS_FUNDS_PATH, errors);
@@ -238,29 +236,29 @@ public class BalanceSheetValidator extends BaseValidator {
         }
     }
 
-    private void validateCalledUpShareCapitalNotPaidNotSubmitted(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
+    private void validateCalledUpShareCapitalNotPaidNotSubmitted(BalanceSheet balanceSheet,
+                                                                 String periodPath,
+                                                                 Errors errors) {
         if (balanceSheet.getCalledUpShareCapitalNotPaid() != null) {
             addError(errors, unexpectedData, periodPath + CALLED_UP_SHARE_CAPITAL_NOT_PAID_PATH);
         }
     }
 
-    private void validateCapitalAndReservesNotSubmitted(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
+    private void validateCapitalAndReservesNotSubmitted(BalanceSheet balanceSheet,
+                                                        String periodPath,
+                                                        Errors errors) {
         if (balanceSheet.getCapitalAndReserves() != null) {
             addError(errors, unexpectedData, periodPath + CAPITAL_AND_RESERVES_PATH);
         }
     }
 
     private void validateMembersFundsNotSubmitted(BalanceSheet balanceSheet, String periodPath, Errors errors) {
-
         if (balanceSheet.getMembersFunds() != null) {
             addError(errors, unexpectedData, periodPath + MEMBERS_FUNDS_PATH);
         }
     }
 
     private boolean getIsLBGCompanyFiling(Transaction transaction) throws DataException {
-
         try {
             return getCompanyService().isLBG(transaction);
         } catch (ServiceException e) {

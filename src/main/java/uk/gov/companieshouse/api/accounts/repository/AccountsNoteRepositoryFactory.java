@@ -12,26 +12,24 @@ import java.util.List;
 @Component
 public class AccountsNoteRepositoryFactory<E extends NoteEntity> {
 
-    private final EnumMap<AccountingNoteType, AccountsNoteRepository<E>> repositoryMap = new EnumMap<>(AccountingNoteType.class);
+    private final EnumMap<AccountingNoteType, AccountsNoteRepository<E>> repositoryMap =
+            new EnumMap<>(AccountingNoteType.class);
 
     @Autowired
     public AccountsNoteRepositoryFactory(List<AccountsNoteRepository<E>> repositoryList) {
-
-        for(AccountsNoteRepository<E> repository : repositoryList) {
-
+        for (AccountsNoteRepository<E> repository : repositoryList) {
             if (repository.getAccountsNote() != null) {
-
                 repositoryMap.put(repository.getAccountsNote(), repository);
             }
         }
     }
 
     public AccountsNoteRepository<E> getRepository(AccountingNoteType accountingNoteType) {
-
         AccountsNoteRepository<E> repository = repositoryMap.get(accountingNoteType);
 
         if (repository == null) {
-            throw new MissingInfrastructureException("No repository type for accounts resource: " + accountingNoteType.toString());
+            throw new MissingInfrastructureException(
+                    "No repository type for accounts resource: " + accountingNoteType.toString());
         }
         return repository;
     }

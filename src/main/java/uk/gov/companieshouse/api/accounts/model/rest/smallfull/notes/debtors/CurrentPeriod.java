@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Range;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CurrentPeriod {

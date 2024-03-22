@@ -15,7 +15,7 @@ import com.mongodb.MongoException;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

@@ -8,8 +8,8 @@ import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.api.accounts.validation.ValidRegulatoryStandards;
 import uk.gov.companieshouse.charset.CharSet;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @JsonInclude(Include.NON_NULL)
 public class AccountingPolicies extends Note {

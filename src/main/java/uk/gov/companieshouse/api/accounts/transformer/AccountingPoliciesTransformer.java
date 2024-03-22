@@ -12,7 +12,6 @@ public class AccountingPoliciesTransformer implements NoteTransformer<Accounting
 
     @Override
     public AccountingPoliciesEntity transform(AccountingPolicies rest) {
-
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = new AccountingPoliciesDataEntity();
         AccountingPoliciesEntity accountingPoliciesEntity = new AccountingPoliciesEntity();
 
@@ -24,7 +23,6 @@ public class AccountingPoliciesTransformer implements NoteTransformer<Accounting
 
     @Override
     public AccountingPolicies transform(AccountingPoliciesEntity entity) {
-
         AccountingPolicies accountingPolicies = new AccountingPolicies();
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = entity.getData();
 

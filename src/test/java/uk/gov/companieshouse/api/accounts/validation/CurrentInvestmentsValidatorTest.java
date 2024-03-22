@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod;
@@ -90,8 +89,7 @@ class CurrentInvestmentsValidatorTest {
 
     @Test
     @DisplayName("Error thrown when note submitted with no current assets values in the balance sheet")
-    void testValidationWhenNoteSubmittedNoCurrentAssetsInBalanceSheetValues() throws DataException,
-        ServiceException {
+    void testValidationWhenNoteSubmittedNoCurrentAssetsInBalanceSheetValues() throws DataException {
         mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments();
         currentAssetsInvestments.setDetails("test");
 
@@ -108,8 +106,7 @@ class CurrentInvestmentsValidatorTest {
 
     @Test
     @DisplayName("Valid note submitted when no balance sheet")
-    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException,
-            ServiceException {
+    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException {
 
         currentAssetsInvestments.setDetails("test");
 
@@ -120,7 +117,7 @@ class CurrentInvestmentsValidatorTest {
 
     @Test
     @DisplayName("Error thrown when empty note submitted when balance sheet values")
-    void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException, ServiceException {
+    void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException {
 
         mockValidBalanceSheetCurrentPeriod();
 
@@ -137,9 +134,7 @@ class CurrentInvestmentsValidatorTest {
 
     @Test
     @DisplayName("Error thrown when empty resource submitted")
-    void testValidationEmptyResource() throws DataException, ServiceException {
-
-
+    void testValidationEmptyResource() throws DataException {
         ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
             EMPTY_RESOURCE_VALUE);
 

@@ -20,7 +20,6 @@ public class CicReportValidator extends BaseValidator {
     }
 
     public Errors validateCicReportCreation(Transaction transaction) throws DataException {
-
         Errors errors = new Errors();
 
         try {
