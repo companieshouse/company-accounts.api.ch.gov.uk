@@ -4,10 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -34,7 +31,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CompanyAccountsApplicationTest {
-
     @InjectMocks
     private CompanyAccountsApplication companyAccountsApplication;
 
@@ -103,7 +99,8 @@ class CompanyAccountsApplicationTest {
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(directorsReportInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(loansToDirectorsInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(relatedPartyTransactionsInterceptor);
-        when(interceptorRegistration.addPathPatterns(Mockito.<String>any())).thenReturn(interceptorRegistration);
+        when(interceptorRegistration.addPathPatterns(anyString())).thenReturn(interceptorRegistration);
+        when(interceptorRegistration.addPathPatterns(anyString(), anyString())).thenReturn(interceptorRegistration);
         when(interceptorRegistration.excludePathPatterns(anyString())).thenReturn(interceptorRegistration);
 
         companyAccountsApplication.addInterceptors(interceptorRegistry);

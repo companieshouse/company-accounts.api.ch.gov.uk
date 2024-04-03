@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RelatedPartyTransactionsControllerTest {
-
     private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
 
     @Mock
@@ -53,7 +52,6 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Related party transactions create - successful")
     void createRelatedPartyTransactionsSuccessful() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<RelatedPartyTransactions> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
@@ -69,7 +67,7 @@ class RelatedPartyTransactionsControllerTest {
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 relatedPartyTransactionsController.create(relatedPartyTransactions, COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
@@ -80,7 +78,6 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Related party transactions create - Throws exception")
     void createRelatedPartyTransactionsThrowsException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(relatedPartyTransactionsService.create(relatedPartyTransactions, transaction,
@@ -92,7 +89,7 @@ class RelatedPartyTransactionsControllerTest {
         when(apiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 relatedPartyTransactionsController.create(relatedPartyTransactions, COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
@@ -103,22 +100,18 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Get related party transactions - success")
     void getRelatedPartyTransactionsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<RelatedPartyTransactions> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
                 relatedPartyTransactions);
-        when(relatedPartyTransactionsService.find(COMPANY_ACCOUNT_ID, request))
-                .thenReturn(responseObject);
+        when(relatedPartyTransactionsService.find(COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
 
         ResponseEntity<RelatedPartyTransactions> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
 
-        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
-                .thenReturn(responseEntity);
+        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request)).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                relatedPartyTransactionsController.get(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = relatedPartyTransactionsController.get(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -128,7 +121,6 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Get related party transactions - Throws exception")
     void getRelatedPartyTransactionsThrowsException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
@@ -139,7 +131,7 @@ class RelatedPartyTransactionsControllerTest {
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = relatedPartyTransactionsController.get(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = relatedPartyTransactionsController.get(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -149,7 +141,6 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Delete related party transactions - success")
     void deleteRelatedPartyTransactionsSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         ResponseObject<RelatedPartyTransactions> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
@@ -164,7 +155,7 @@ class RelatedPartyTransactionsControllerTest {
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 relatedPartyTransactionsController.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
@@ -174,7 +165,6 @@ class RelatedPartyTransactionsControllerTest {
     @Test
     @DisplayName("Delete related party transactions - Throws exception")
     void deleteRelatedPartyTransactionsThrowsException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
@@ -186,7 +176,7 @@ class RelatedPartyTransactionsControllerTest {
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = relatedPartyTransactionsController.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = relatedPartyTransactionsController.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

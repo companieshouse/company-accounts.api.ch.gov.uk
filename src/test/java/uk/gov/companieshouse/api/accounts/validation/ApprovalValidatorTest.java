@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApprovalValidatorTest {
-
     private static final String NAME = "directorName";
     private static final String COMPANY_ACCOUNTS = "companyAccountsId";
     private static final String INVALID_VALUE = "invalidValue";
@@ -44,7 +43,7 @@ class ApprovalValidatorTest {
 
     private Errors errors;
 
-    private Approval approval ;
+    private Approval approval;
 
     @Mock
     private DirectorService directorService;
@@ -62,7 +61,6 @@ class ApprovalValidatorTest {
 
     @BeforeEach
     void setup() {
-
         validator = new ApprovalValidator(companyService, directorService);
         validator.dateInvalid = "date.invalid";
         approval = new Approval();
@@ -72,22 +70,22 @@ class ApprovalValidatorTest {
     @Test
     @DisplayName("Validate with a valid approval date ")
     void validateApprovalWithValidDate() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
         approval.setName(NAME);
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
-        errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
+        errors = validator.validateApproval(approval, transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertFalse(errors.hasErrors());
     }
 
     @Test
     @DisplayName("Validate with approval date before period end on date")
     void validateApprovalDateBeforePeriodEnd() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
         approval.setDate(LocalDate.of(2018, Month.OCTOBER, 2));
         approval.setName(NAME);
-        errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
+        errors = validator.validateApproval(approval, transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.approval.date")));
@@ -96,11 +94,11 @@ class ApprovalValidatorTest {
     @Test
     @DisplayName("Validate with approval date equal to period end on date")
     void validateApprovalDateSameAsPeriodEnd() throws DataException {
-
         approval.setName(NAME);
         approval.setDate(LocalDate.of(2018, Month.NOVEMBER, 1));
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
-        errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        errors = validator.validateApproval(approval, transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
         assertTrue(errors.containsError(createError("date.invalid", "$.approval.date")));
@@ -109,15 +107,15 @@ class ApprovalValidatorTest {
     @Test
     @DisplayName("Validate with approval name same as directors report directors")
     void validateApprovalNameSameAsDirectorsReport() throws DataException {
-
         approval.setDate(LocalDate.of(2018, Month.DECEMBER, 1));
         approval.setName(OTHER_NAME);
 
         ReflectionTestUtils.setField(validator, INVALID_VALUE, INVALID_VALUE);
 
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS, httpServletRequestMock))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
 
-        errors = validator.validateApproval(approval,transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
+        errors = validator.validateApproval(approval, transaction, COMPANY_ACCOUNTS, httpServletRequestMock);
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
@@ -138,7 +136,6 @@ class ApprovalValidatorTest {
     }
 
     private Director[] createDirectors() {
-
         Director[] directors = new Director[1];
         directors[0] = new Director();
         directors[0].setName(NAME);

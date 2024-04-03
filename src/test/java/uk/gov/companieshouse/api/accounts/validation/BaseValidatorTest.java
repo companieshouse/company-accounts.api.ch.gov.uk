@@ -19,7 +19,6 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BaseValidatorTest {
-
     @Mock
     private CompanyService mockCompanyService;
 
@@ -48,7 +47,7 @@ class BaseValidatorTest {
         validator.validateAggregateTotal(1L, 2L, "location", errors);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(validator.incorrectTotal, "location")));
+        assertTrue(errors.containsError(createError(validator.incorrectTotal)));
     }
 
     @Test
@@ -57,7 +56,7 @@ class BaseValidatorTest {
         validator.validateAggregateTotal(1L, null, "location", errors);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(validator.incorrectTotal, "location")));
+        assertTrue(errors.containsError(createError(validator.incorrectTotal)));
     }
 
     @Test
@@ -73,11 +72,10 @@ class BaseValidatorTest {
         errors = validator.addEmptyResourceError(errors, "location");
         assertNotNull(errors);
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(validator.emptyResource, "location")));
+        assertTrue(errors.containsError(createError(validator.emptyResource)));
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+    private Error createError(String error) {
+        return new Error(error, "location", LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

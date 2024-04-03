@@ -34,15 +34,13 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CurrentInvestmentsValidatorTest {
-
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
     private static final String CURRENT_ASSETS_DETAILS_PATH = "$.current_assets_investments.details";
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
-        "mandatory_element_missing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE = "mandatory_element_missing";
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -77,7 +75,6 @@ class CurrentInvestmentsValidatorTest {
     @Test
     @DisplayName("Valid note submitted successfully")
     void testValidNote() throws DataException {
-
         mockValidBalanceSheetCurrentPeriod();
 
         currentAssetsInvestments.setDetails("test");
@@ -93,21 +90,18 @@ class CurrentInvestmentsValidatorTest {
         mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments();
         currentAssetsInvestments.setDetails("test");
 
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-            UNEXPECTED_DATA_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-            CURRENT_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE)));
 
     }
 
     @Test
     @DisplayName("Valid note submitted when no balance sheet")
     void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException {
-
         currentAssetsInvestments.setDetails("test");
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
@@ -118,52 +112,45 @@ class CurrentInvestmentsValidatorTest {
     @Test
     @DisplayName("Error thrown when empty note submitted when balance sheet values")
     void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException {
-
         mockValidBalanceSheetCurrentPeriod();
 
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-            MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            CURRENT_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE)));
 
     }
 
     @Test
     @DisplayName("Error thrown when empty resource submitted")
     void testValidationEmptyResource() throws DataException {
-        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
-            EMPTY_RESOURCE_VALUE);
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME, EMPTY_RESOURCE_VALUE);
 
         errors = validator.validateSubmission(currentAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
-            CURRENT_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE)));
 
     }
 
     @Test
     @DisplayName("transformer returns correct note note")
     void testCorrectNoteReturned() {
-
         AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_CURRENT_ASSETS_INVESTMENTS;
 
         assertEquals(noteType, validator.getAccountingNoteType());
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-            ErrorType.VALIDATION.getType());
+    private Error createError(String error) {
+        return new Error(error, CurrentInvestmentsValidatorTest.CURRENT_ASSETS_DETAILS_PATH,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 
     private ResponseObject<CurrentPeriod> generateValidCurrentPeriodResponseObject() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-            new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                ResponseStatus.FOUND);
+                new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
             new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
@@ -184,8 +171,7 @@ class CurrentInvestmentsValidatorTest {
 
     private ResponseObject<CurrentPeriod> generateValidCurrentPeriodResponseObjectWithoutCurrentAssets() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                        ResponseStatus.FOUND);
+                new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
@@ -199,8 +185,7 @@ class CurrentInvestmentsValidatorTest {
     }
 
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find(
-            "", mockRequest);
+        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find("", mockRequest);
     }
 
     private void mockValidBalanceSheetCurrentPeriodWithoutCurrentAssetsInvestments() throws DataException {

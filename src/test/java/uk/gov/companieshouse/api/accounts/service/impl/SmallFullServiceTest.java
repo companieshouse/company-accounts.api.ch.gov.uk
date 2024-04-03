@@ -62,7 +62,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class SmallFullServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -149,15 +148,16 @@ class SmallFullServiceTest {
         assertEquals(smallFull, result.getData());
         assertEquals(ResponseStatus.CREATED, result.getStatus());
 
-        verify(companyAccountService).addLink(eq(COMPANY_ACCOUNTS_ID), eq(CompanyAccountLinkType.SMALL_FULL), anyString());
+        verify(companyAccountService).addLink(eq(COMPANY_ACCOUNTS_ID),
+                eq(CompanyAccountLinkType.SMALL_FULL),
+                anyString());
     }
 
     @Test
     @DisplayName("Tests the duplicate key when creating a smallFull resource")
     void createSmallFullDuplicateKey() throws DataException, ServiceException {
         setUpKeyIdGeneratorStubbing();
-        doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
-                .any(SmallFull.class));
+        doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers.any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(duplicateKeyException);
 
         setUpTransactionStubbing();
@@ -177,8 +177,7 @@ class SmallFullServiceTest {
     @DisplayName("Tests the mongo exception when creating a small full")
     void createSmallFullMongoExceptionFailure() throws ServiceException {
         setUpKeyIdGeneratorStubbing();
-        doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers
-                .any(SmallFull.class));
+        doReturn(smallFullEntity).when(smallFullTransformer).transform(ArgumentMatchers.any(SmallFull.class));
         when(smallFullRepository.insert(smallFullEntity)).thenThrow(mongoException);
 
         setUpTransactionStubbing();
@@ -194,28 +193,24 @@ class SmallFullServiceTest {
     @Test
     @DisplayName("Create small full accounts - no next accounts on company profile")
     void createSmallFullNoNextAccounts() throws ServiceException {
-
         setUpTransactionStubbing();
         setUpCompanyProfileApiNoNextAccountsStubbing();
 
         when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
-        assertThrows(MissingAccountingPeriodException.class,
-                () -> smallFullService
-                        .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(MissingAccountingPeriodException.class, () -> smallFullService
+                .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Create small full accounts - no accounts on company profile")
     void createSmallFullNoAccounts() throws ServiceException {
-
         setUpTransactionStubbing();
 
         when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
 
-        assertThrows(MissingAccountingPeriodException.class,
-                () -> smallFullService
-                        .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(MissingAccountingPeriodException.class, () -> smallFullService
+                .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -223,7 +218,7 @@ class SmallFullServiceTest {
     void findSmallfull() throws DataException {
         setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID))
-                .thenReturn(Optional.ofNullable(smallFullEntity));
+                .thenReturn(Optional.of(smallFullEntity));
         when(smallFullTransformer.transform(smallFullEntity)).thenReturn(smallFull);
         ResponseObject<SmallFull> result = smallFullService
                 .find(COMPANY_ACCOUNTS_ID, request);
@@ -236,9 +231,7 @@ class SmallFullServiceTest {
     void findSmallfullMongoException() {
         setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID)).thenThrow(mongoException);
-        Executable executable = () -> {
-            smallFullService.find(COMPANY_ACCOUNTS_ID, request);
-        };
+        Executable executable = () -> smallFullService.find(COMPANY_ACCOUNTS_ID, request);
         assertThrows(DataException.class, executable);
     }
 
@@ -248,15 +241,14 @@ class SmallFullServiceTest {
         setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID))
-                .thenReturn(Optional.ofNullable(smallFullEntity));
+                .thenReturn(Optional.of(smallFullEntity));
 
         when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
         when(smallFullDataEntity.getLinks()).thenReturn(links);
 
         SmallFullLinkType smallFullLinkType = SmallFullLinkType.TANGIBLE_ASSETS_NOTE;
 
-        assertAll(
-                () -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
+        assertAll(() -> smallFullService.removeLink(COMPANY_ACCOUNTS_ID, smallFullLinkType, request));
 
         verify(links, times(1)).remove(smallFullLinkType.getLink());
     }
@@ -266,7 +258,7 @@ class SmallFullServiceTest {
     void removeLinkMongoException() {
         setUpKeyIdGeneratorStubbing();
         when(smallFullRepository.findById(GENERATED_ID))
-                .thenReturn(Optional.ofNullable(smallFullEntity));
+                .thenReturn(Optional.of(smallFullEntity));
 
         when(smallFullEntity.getData()).thenReturn(smallFullDataEntity);
         when(smallFullDataEntity.getLinks()).thenReturn(links);
@@ -288,7 +280,7 @@ class SmallFullServiceTest {
 
         SmallFullEntity smallFullEntity = null;
         when(smallFullRepository.findById(GENERATED_ID))
-                .thenReturn(Optional.ofNullable(smallFullEntity));
+                .thenReturn(Optional.empty());
 
         SmallFullLinkType smallFullLinkType = SmallFullLinkType.TANGIBLE_ASSETS_NOTE;
 
@@ -301,7 +293,6 @@ class SmallFullServiceTest {
     @Test
     @DisplayName("Update small full - success")
     void updateSmallFullSuccess() throws DataException, ServiceException {
-
         setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.of(smallFullEntity));
@@ -318,7 +309,8 @@ class SmallFullServiceTest {
         when(smallFullTransformer.transform(smallFull)).thenReturn(smallFullEntity);
         doNothing().when(statementService).invalidateStatementsIfExisting(COMPANY_ACCOUNTS_ID, request);
 
-        ResponseObject<SmallFull> responseObject = smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<SmallFull> responseObject = smallFullService
+                .update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseObject);
         assertEquals(ResponseStatus.UPDATED, responseObject.getStatus());
@@ -335,18 +327,17 @@ class SmallFullServiceTest {
     @Test
     @DisplayName("Update small full - not found")
     void updateSmallFullNotFound() {
-
         setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
-        assertThrows(DataException.class, () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class,
+                () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Update small full - company profile service exception")
     void updateSmallFullCompanyProfileServiceException() throws ServiceException {
-
         setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.of(smallFullEntity));
@@ -358,13 +349,13 @@ class SmallFullServiceTest {
         when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(companyService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(ServiceException.class);
 
-        assertThrows(DataException.class, () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class,
+                () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Update small full - MongoException")
     void updateSmallFullMongoException() throws ServiceException {
-
         setUpKeyIdGeneratorStubbing();
 
         when(smallFullRepository.findById(GENERATED_ID)).thenReturn(Optional.of(smallFullEntity));
@@ -382,27 +373,28 @@ class SmallFullServiceTest {
 
         doThrow(MongoException.class).when(smallFullRepository).save(smallFullEntity);
 
-        assertThrows(DataException.class, () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class,
+                () -> smallFullService.update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
-    private void setUpKeyIdGeneratorStubbing() {
+    public void setUpKeyIdGeneratorStubbing() {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.SMALL_FULL.getName()))
                 .thenReturn(GENERATED_ID);
     }
 
-    private void setUpTransactionStubbing() {
+    public void setUpTransactionStubbing() {
         when(transaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
     }
 
-    private void setUpCompanyProfileApiStubbing() {
+    public void setUpCompanyProfileApiStubbing() {
         when(companyProfileApi.getAccounts()).thenReturn(companyAccountApi);
         when(companyProfileApi.getAccounts().getNextAccounts()).thenReturn(nextAccountsApi);
         when(companyProfileApi.getAccounts().getLastAccounts()).thenReturn(lastAccountsApi);
     }
 
-    private void setUpCompanyProfileApiNoNextAccountsStubbing() {
+    public void setUpCompanyProfileApiNoNextAccountsStubbing() {
         when(companyProfileApi.getAccounts()).thenReturn(companyAccountApi);
     }
 }

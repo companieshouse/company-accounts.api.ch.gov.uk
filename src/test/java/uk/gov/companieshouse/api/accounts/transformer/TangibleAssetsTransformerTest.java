@@ -26,7 +26,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.tangibleass
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class TangibleAssetsTransformerTest {
-
     private static final Long NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD = 1L;
     private static final Long NET_BOOK_VALUE_AT_END_OF_PREVIOUS_PERIOD = 2L;
     private static final Long COST_ADDITIONS = 3L;
@@ -46,12 +45,11 @@ class TangibleAssetsTransformerTest {
     private static final String KIND = "kind";
     private static final Map<String, String> LINKS = new HashMap<>();
 
-    private TangibleAssetsTransformer transformer = new TangibleAssetsTransformer();
+    private final TangibleAssetsTransformer transformer = new TangibleAssetsTransformer();
 
     @Test
     @DisplayName("Test fixtures and fittings fields map from the REST object when the nested cost object is not null")
     void TestFixturesAndFittingsMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setFixturesAndFittings(createTangibleAssetsResource(false, true));
 
@@ -79,7 +77,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the REST object when the nested depreciation object is not null")
     void TestFixturesAndFittingsMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setFixturesAndFittings(createTangibleAssetsResource(true, false));
 
@@ -107,7 +104,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestFixturesAndFittingsMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setFixturesAndFittings(createTangibleAssetsResource(false, false));
 
@@ -135,7 +131,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the REST object when the nested cost and depreciation objects are null")
     void TestFixturesAndFittingsMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setFixturesAndFittings(createTangibleAssetsResource(true, true));
 
@@ -161,7 +156,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the REST object when the nested cost object is not null")
     void TestLandAndBuildingsMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setLandAndBuildings(createTangibleAssetsResource(false, true));
 
@@ -189,7 +183,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the REST object when the nested depreciation object is not null")
     void TestLandAndBuildingsMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setLandAndBuildings(createTangibleAssetsResource(true, false));
 
@@ -217,7 +210,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestLandAndBuildingsMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setLandAndBuildings(createTangibleAssetsResource(false, false));
 
@@ -245,7 +237,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the REST object when the nested cost and depreciation objects are null")
     void TestLandAndBuildingsMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setLandAndBuildings(createTangibleAssetsResource(true, true));
 
@@ -271,7 +262,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the REST object when the nested cost object is not null")
     void TestMotorVehiclesMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setMotorVehicles(createTangibleAssetsResource(false, true));
 
@@ -299,7 +289,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the REST object when the nested depreciation object is not null")
     void TestMotorVehiclesMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setMotorVehicles(createTangibleAssetsResource(true, false));
 
@@ -327,7 +316,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestMotorVehiclesMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setMotorVehicles(createTangibleAssetsResource(false, false));
 
@@ -355,7 +343,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the REST object when the nested cost and depreciation objects are null")
     void TestMotorVehiclesMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setMotorVehicles(createTangibleAssetsResource(true, true));
 
@@ -381,7 +368,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the REST object when the nested cost object is not null")
     void TestOfficeEquipmentMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setOfficeEquipment(createTangibleAssetsResource(false, true));
 
@@ -409,7 +395,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the REST object when the nested depreciation object is not null")
     void TestOfficeEquipmentMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setOfficeEquipment(createTangibleAssetsResource(true, false));
 
@@ -437,7 +422,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestOfficeEquipmentMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setOfficeEquipment(createTangibleAssetsResource(false, false));
 
@@ -465,7 +449,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the REST object when the nested cost and depreciation objects are null")
     void TestOfficeEquipmentMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setOfficeEquipment(createTangibleAssetsResource(true, true));
 
@@ -491,7 +474,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the REST object when the nested cost object is not null")
     void TestPlantAndMachineryMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setPlantAndMachinery(createTangibleAssetsResource(false, true));
 
@@ -519,7 +501,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the REST object when the nested depreciation object is not null")
     void TestPlantAndMachineryMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setPlantAndMachinery(createTangibleAssetsResource(true, false));
 
@@ -547,7 +528,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestPlantAndMachineryMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setPlantAndMachinery(createTangibleAssetsResource(false, false));
 
@@ -575,7 +555,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the REST object when the nested cost and depreciation objects are null")
     void TestPlantAndMachineryMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setPlantAndMachinery(createTangibleAssetsResource(true, true));
 
@@ -601,7 +580,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the REST object when the nested cost object is not null")
     void TestTotalMapFromRestObjectCostNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setTotal(createTangibleAssetsResource(false, true));
 
@@ -629,7 +607,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the REST object when the nested depreciation object is not null")
     void TestTotalMapFromRestObjectDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setTotal(createTangibleAssetsResource(true, false));
 
@@ -657,7 +634,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the REST object when the nested cost and depreciation objects are not null")
     void TestTotalMapFromRestObjectCostAndDepreciationNotNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setTotal(createTangibleAssetsResource(false, false));
 
@@ -685,7 +661,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the REST object when the nested cost and depreciation objects are null")
     void TestTotalMapFromRestObjectCostAndDepreciationNull() {
-
         TangibleAssets tangibleAssets = createTangibleAssets();
         tangibleAssets.setTotal(createTangibleAssetsResource(true, true));
 
@@ -711,7 +686,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the database object when the nested cost object is not null")
     void TestFixturesAndFittingsMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setFixturesAndFittings(
                 createTangibleAssetsResourceEntity(false, true));
@@ -742,7 +716,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the database object when the nested depreciation object is not null")
     void TestFixturesAndFittingsMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setFixturesAndFittings(
                 createTangibleAssetsResourceEntity(true, false));
@@ -773,7 +746,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the database object when the nested cost and depreciation objects are not null")
     void TestFixturesAndFittingsMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setFixturesAndFittings(
                 createTangibleAssetsResourceEntity(false, false));
@@ -804,7 +776,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test fixtures and fittings fields map from the database object when the nested cost and depreciation objects are null")
     void TestFixturesAndFittingsMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setFixturesAndFittings(
                 createTangibleAssetsResourceEntity(true, true));
@@ -833,7 +804,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the database object when the nested cost object is not null")
     void TestLandAndBuildingsMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setLandAndBuildings(
                 createTangibleAssetsResourceEntity(false, true));
@@ -864,7 +834,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the database object when the nested depreciation object is not null")
     void TestLandAndBuildingsMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setLandAndBuildings(
                 createTangibleAssetsResourceEntity(true, false));
@@ -895,7 +864,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the database object when the nested cost and depreciation objects are not null")
     void TestLandAndBuildingsMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setLandAndBuildings(
                 createTangibleAssetsResourceEntity(false, false));
@@ -926,7 +894,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test land and buildings fields map from the database object when the nested cost and depreciation objects are null")
     void TestLandAndBuildingsMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setLandAndBuildings(
                 createTangibleAssetsResourceEntity(true, true));
@@ -955,7 +922,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the database object when the nested cost object is not null")
     void TestMotorVehiclesMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setMotorVehicles(
                 createTangibleAssetsResourceEntity(false, true));
@@ -986,7 +952,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the database object when the nested depreciation object is not null")
     void TestMotorVehiclesMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setMotorVehicles(
                 createTangibleAssetsResourceEntity(true, false));
@@ -1017,7 +982,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the database object when the nested cost and depreciation objects are not null")
     void TestMotorVehiclesMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setMotorVehicles(
                 createTangibleAssetsResourceEntity(false, false));
@@ -1048,7 +1012,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test motor vehicles fields map from the database object when the nested cost and depreciation objects are null")
     void TestMotorVehiclesMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setMotorVehicles(
                 createTangibleAssetsResourceEntity(true, true));
@@ -1077,7 +1040,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the database object when the nested cost object is not null")
     void TestOfficeEquipmentMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setOfficeEquipment(
                 createTangibleAssetsResourceEntity(false, true));
@@ -1108,7 +1070,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the database object when the nested depreciation object is not null")
     void TestOfficeEquipmentMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setOfficeEquipment(
                 createTangibleAssetsResourceEntity(true, false));
@@ -1139,7 +1100,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the database object when the nested cost and depreciation objects are not null")
     void TestOfficeEquipmentMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setOfficeEquipment(
                 createTangibleAssetsResourceEntity(false, false));
@@ -1170,7 +1130,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test office equipment fields map from the database object when the nested cost and depreciation objects are null")
     void TestOfficeEquipmentMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setOfficeEquipment(
                 createTangibleAssetsResourceEntity(true, true));
@@ -1199,7 +1158,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the database object when the nested cost object is not null")
     void TestPlantAndMachineryMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setPlantAndMachinery(
                 createTangibleAssetsResourceEntity(false, true));
@@ -1230,7 +1188,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the database object when the nested depreciation object is not null")
     void TestPlantAndMachineryMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setPlantAndMachinery(
                 createTangibleAssetsResourceEntity(true, false));
@@ -1261,7 +1218,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the database object when the nested cost and depreciation objects are not null")
     void TestPlantAndMachineryMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setPlantAndMachinery(
                 createTangibleAssetsResourceEntity(false, false));
@@ -1292,7 +1248,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test plant and machinery fields map from the database object when the nested cost and depreciation objects are null")
     void TestPlantAndMachineryMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setPlantAndMachinery(
                 createTangibleAssetsResourceEntity(true, true));
@@ -1321,7 +1276,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the database object when the nested cost object is not null")
     void TestTotalMapFromDatabaseObjectCostNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setTotal(
                 createTangibleAssetsResourceEntity(false, true));
@@ -1352,7 +1306,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the database object when the nested depreciation object is not null")
     void TestTotalMapFromDatabaseObjectDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setTotal(
                 createTangibleAssetsResourceEntity(true, false));
@@ -1383,7 +1336,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the database object when the nested cost and depreciation objects are not null")
     void TestTotalMapFromDatabaseObjectCostAndDepreciationNotNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setTotal(
                 createTangibleAssetsResourceEntity(false, false));
@@ -1414,7 +1366,6 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total fields map from the database object when the nested cost and depreciation objects are null")
     void TestTotalMapFromDatabaseObjectCostAndDepreciationNull() {
-
         TangibleAssetsDataEntity tangibleAssetsDataEntity = createTangibleAssetsDataEntity();
         tangibleAssetsDataEntity.setTotal(
                 createTangibleAssetsResourceEntity(true, true));
@@ -1443,12 +1394,10 @@ class TangibleAssetsTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_TANGIBLE_ASSETS, transformer.getAccountingNoteType());
     }
     
     private TangibleAssets createTangibleAssets() {
-
         TangibleAssets tangibleAssets = new TangibleAssets();
         tangibleAssets.setAdditionalInformation(ADDITIONAL_INFORMATION);
         tangibleAssets.setEtag(ETAG);
@@ -1459,7 +1408,6 @@ class TangibleAssetsTransformerTest {
 
     private TangibleAssetsResource createTangibleAssetsResource(boolean costNull,
                                                                 boolean depreciationNull) {
-
         TangibleAssetsResource tangibleAssetsResource = new TangibleAssetsResource();
         tangibleAssetsResource
                 .setNetBookValueAtEndOfCurrentPeriod(NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD);
@@ -1478,7 +1426,6 @@ class TangibleAssetsTransformerTest {
     }
 
     private Cost createCost() {
-
         Cost cost = new Cost();
         cost.setAdditions(COST_ADDITIONS);
         cost.setAtPeriodEnd(COST_AT_PERIOD_END);
@@ -1490,7 +1437,6 @@ class TangibleAssetsTransformerTest {
     }
 
     private Depreciation createDepreciation() {
-
         Depreciation depreciation = new Depreciation();
         depreciation.setAtPeriodEnd(DEPRECIATION_AT_PERIOD_END);
         depreciation.setAtPeriodStart(DEPRECIATION_AT_PERIOD_START);
@@ -1501,7 +1447,6 @@ class TangibleAssetsTransformerTest {
     }
 
     private TangibleAssetsDataEntity createTangibleAssetsDataEntity() {
-
         TangibleAssetsDataEntity dataEntity = new TangibleAssetsDataEntity();
         dataEntity.setAdditionalInformation(ADDITIONAL_INFORMATION);
         dataEntity.setEtag(ETAG);
@@ -1512,7 +1457,6 @@ class TangibleAssetsTransformerTest {
 
     private TangibleAssetsResourceEntity createTangibleAssetsResourceEntity(boolean costNull,
                                                                             boolean depreciationNull) {
-
         TangibleAssetsResourceEntity tangibleAssetsResourceEntity = new TangibleAssetsResourceEntity();
         tangibleAssetsResourceEntity
                 .setNetBookValueAtEndOfCurrentPeriod(NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD);
@@ -1531,7 +1475,6 @@ class TangibleAssetsTransformerTest {
     }
 
     private CostEntity createCostEntity() {
-
         CostEntity cost = new CostEntity();
         cost.setAdditions(COST_ADDITIONS);
         cost.setAtPeriodEnd(COST_AT_PERIOD_END);
@@ -1543,7 +1486,6 @@ class TangibleAssetsTransformerTest {
     }
 
     private DepreciationEntity createDepreciationEntity() {
-
         DepreciationEntity depreciation = new DepreciationEntity();
         depreciation.setAtPeriodEnd(DEPRECIATION_AT_PERIOD_END);
         depreciation.setAtPeriodStart(DEPRECIATION_AT_PERIOD_START);

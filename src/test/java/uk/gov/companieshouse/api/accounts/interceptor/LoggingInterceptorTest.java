@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoggingInterceptorTest {
-
     @InjectMocks
     private LoggingInterceptor loggingInterceptor;
 
@@ -37,7 +36,7 @@ class LoggingInterceptorTest {
     @DisplayName("Test the pre-handle")
     void testPreHandle() {
         when(httpServletRequestMock.getSession()).thenReturn(httpSession);
-        boolean value = loggingInterceptor.preHandle(httpServletRequestMock,httpServletResponseMock,new Object());
+        boolean value = loggingInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object());
         assertTrue(value);
     }
 
@@ -46,7 +45,7 @@ class LoggingInterceptorTest {
     void testPostHandle() {
         when(httpServletRequestMock.getSession()).thenReturn(httpSession);
         when(httpServletRequestMock.getSession().getAttribute(anyString())).thenReturn(1L);
-        loggingInterceptor.postHandle(httpServletRequestMock,httpServletResponseMock,new Object(), new ModelAndView());
+        loggingInterceptor.postHandle(httpServletRequestMock, httpServletResponseMock, new Object(), new ModelAndView());
         verify(httpServletRequestMock, times(2)).getSession();
     }
 }

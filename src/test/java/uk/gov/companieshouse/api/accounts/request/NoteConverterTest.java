@@ -19,16 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NoteConverterTest {
-
-    private NoteType noteType = NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS;
-    private String otherType = "otherType";
-    private Map<String, NoteType> ACCOUNT_TYPE_MAP = new HashMap<>();
+    private final NoteType noteType = NoteType.OFF_BALANCE_SHEET_ARRANGEMENTS;
+    private final String otherType = "otherType";
+    private final Map<String, NoteType> ACCOUNT_TYPE_MAP = new HashMap<>();
 
     private NoteConverter converter;
 
     @BeforeEach
-    private void setup() {
-
+    public void setUp() {
         ACCOUNT_TYPE_MAP.put(noteType.getType(), noteType);
         converter = new NoteConverter();
     }
@@ -36,9 +34,7 @@ class NoteConverterTest {
     @Test
     @DisplayName("Get note type for the converter with the value from the map")
     void getNoteTypeForTheConverterSuccess() {
-
-        assertEquals(noteType,
-                ACCOUNT_TYPE_MAP.get(noteType.getType()));
+        assertEquals(noteType, ACCOUNT_TYPE_MAP.get(noteType.getType()));
         converter.setAsText(noteType.getType());
         assertEquals(noteType, converter.getValue());
     }
@@ -46,12 +42,10 @@ class NoteConverterTest {
     @Test
     @DisplayName("Get note type for the converter throws invalid parameter exception")
     void getNoteTypeForTheConverterThrowsInvalidParameterException() {
-
         NoteType type = ACCOUNT_TYPE_MAP.get(otherType);
         converter.setValue(type);
 
-        assertThrows(InvalidPathParameterException.class,
-                () -> converter.setAsText(otherType));
+        assertThrows(InvalidPathParameterException.class, () -> converter.setAsText(otherType));
         assertNull(converter.getValue());
     }
 }

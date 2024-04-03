@@ -17,18 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoanTransformerTest {
-
-    private LoanBreakdownResource loanBreakdownResource = new LoanBreakdownResource();
+    private final LoanBreakdownResource loanBreakdownResource = new LoanBreakdownResource();
 
     private static final String DIRECTOR_NAME = "name";
     private static final String DESCRIPTION = "description";
 
-    private LoanTransformer transformer = new LoanTransformer();
+    private final LoanTransformer transformer = new LoanTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         Loan loan = new Loan();
         loan.setDirectorName(DIRECTOR_NAME);
         loan.setDescription(DESCRIPTION);
@@ -46,7 +44,6 @@ class LoanTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
-
         Loan loan = transformer.transform(getLoanEntity());
 
         assertNotNull(loan);
@@ -56,7 +53,6 @@ class LoanTransformerTest {
     @Test
     @DisplayName("Transform entity array to rest object array")
     void entityArrayToRestArray() {
-
         LoanEntity[] entities = new LoanEntity[]{getLoanEntity(), getLoanEntity()};
 
         Loan[] loans = transformer.transform(entities);
@@ -68,7 +64,6 @@ class LoanTransformerTest {
     }
 
     private LoanEntity getLoanEntity() {
-
         LoanBreakdownResourceEntity loanBreakdownResourceEntity = new LoanBreakdownResourceEntity();
         loanBreakdownResourceEntity.setAdvancesCreditsMade(1L);
         loanBreakdownResourceEntity.setAdvancesCreditsRepaid(1L);

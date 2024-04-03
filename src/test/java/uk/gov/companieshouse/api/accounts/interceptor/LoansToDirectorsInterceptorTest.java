@@ -38,7 +38,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class LoansToDirectorsInterceptorTest {
-
     @Mock
     private LoansToDirectorsServiceImpl loansToDirectorsService;
 
@@ -58,7 +57,7 @@ class LoansToDirectorsInterceptorTest {
     private LoansToDirectors loansToDirectors;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<LoansToDirectors> responseObject;
 
     @Mock
     private SmallFull smallFull;
@@ -75,7 +74,6 @@ class LoansToDirectorsInterceptorTest {
 
     @BeforeEach
     void setUp () {
-
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         Map<String, String> pathVariables = new HashMap<>();
@@ -87,7 +85,6 @@ class LoansToDirectorsInterceptorTest {
     @Test
     @DisplayName("Loans to directors interceptor - success")
     void loansToDirectorsInterceptorSuccess() throws DataException {
-
         when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(loansToDirectors);
@@ -98,8 +95,7 @@ class LoansToDirectorsInterceptorTest {
                 LOANS_TO_DIRECTORS_SELF_LINK);
 
         when(loansToDirectors.getLinks()).thenReturn(loansToDirectorsLinks);
-        when(loansToDirectorsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                LOANS_TO_DIRECTORS_SELF_LINK);
+        when(loansToDirectorsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(LOANS_TO_DIRECTORS_SELF_LINK);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());
 
@@ -111,7 +107,6 @@ class LoansToDirectorsInterceptorTest {
     @Test
     @DisplayName("Loan to directors interceptor - loans to directors not found")
     void loansToDirectorsInterceptorLoansToDirectorsNotFound() throws DataException {
-
         when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -125,7 +120,6 @@ class LoansToDirectorsInterceptorTest {
     @Test
     @DisplayName("Loans to directors interceptor - parent link not found")
     void loansToDirectorsInterceptorParentLinkNotFound() throws DataException {
-
         when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(loansToDirectors);
@@ -135,8 +129,7 @@ class LoansToDirectorsInterceptorTest {
         when(smallFullLinks.get(SmallFullLinkType.LOANS_TO_DIRECTORS.getLink())).thenReturn(null);
 
         when(loansToDirectors.getLinks()).thenReturn(loansToDirectorsLinks);
-        when(loansToDirectorsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                LOANS_TO_DIRECTORS_SELF_LINK);
+        when(loansToDirectorsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(LOANS_TO_DIRECTORS_SELF_LINK);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());
 
@@ -148,7 +141,6 @@ class LoansToDirectorsInterceptorTest {
     @Test
     @DisplayName("Loans to directors interceptor - data exception")
     void loansToDirectorsInterceptorDataException() throws DataException {
-
         when(loansToDirectorsService.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());

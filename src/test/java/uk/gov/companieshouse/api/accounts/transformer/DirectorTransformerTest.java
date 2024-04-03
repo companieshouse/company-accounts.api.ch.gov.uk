@@ -16,17 +16,15 @@ import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorTransformerTest {
-
     private static final String NAME = "name";
     private static final LocalDate APPOINTMENT_DATE = LocalDate.of(2018, 1, 1);
     private static final LocalDate RESIGNATION_DATE = LocalDate.of(2019, 1, 1);
 
-    private DirectorTransformer transformer = new DirectorTransformer();
+    private final DirectorTransformer transformer = new DirectorTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         Director director = new Director();
         director.setName(NAME);
         director.setAppointmentDate(APPOINTMENT_DATE);
@@ -44,7 +42,6 @@ class DirectorTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
-
         Director director = transformer.transform(getDirectorEntity());
 
         assertNotNull(director);
@@ -54,7 +51,6 @@ class DirectorTransformerTest {
     @Test
     @DisplayName("Transform entity array to rest object array")
     void entityArrayToRestArray() {
-
         DirectorEntity[] entities = new DirectorEntity[]{getDirectorEntity(), getDirectorEntity()};
 
         Director[] directors = transformer.transform(entities);
@@ -66,7 +62,6 @@ class DirectorTransformerTest {
     }
 
     private DirectorEntity getDirectorEntity() {
-
         DirectorDataEntity directorDataEntity = new DirectorDataEntity();
         directorDataEntity.setName(NAME);
         directorDataEntity.setAppointmentDate(APPOINTMENT_DATE);

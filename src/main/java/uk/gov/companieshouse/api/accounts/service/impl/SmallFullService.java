@@ -131,7 +131,7 @@ public class SmallFullService implements ResourceService<SmallFull>, LinkService
     }
 
     @Override
-    public ResponseObject<SmallFull> delete(String companyAccountsId,HttpServletRequest request) throws DataException {
+    public ResponseObject<SmallFull> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
         return null;
     }
 

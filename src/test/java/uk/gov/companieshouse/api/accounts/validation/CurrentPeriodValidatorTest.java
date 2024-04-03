@@ -23,7 +23,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CurrentPeriodValidatorTest {
-
     @Mock
     private BalanceSheetValidator balanceSheetValidator;
 
@@ -44,12 +43,12 @@ class CurrentPeriodValidatorTest {
     @Test
     @DisplayName("Validate current period")
     void validateCurrentPeriod() throws DataException {
-
         when(currentPeriod.getBalanceSheet()).thenReturn(balanceSheet);
 
         Errors errors = validator.validateCurrentPeriod(currentPeriod, transaction);
 
         assertNotNull(errors);
-        verify(balanceSheetValidator).validateBalanceSheet(eq(balanceSheet), eq(transaction), eq(PERIOD_PATH), any(Errors.class));
+        verify(balanceSheetValidator).validateBalanceSheet(eq(balanceSheet), eq(transaction), eq(PERIOD_PATH),
+                any(Errors.class));
     }
 }

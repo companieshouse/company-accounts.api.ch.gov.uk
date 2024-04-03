@@ -46,7 +46,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         validateGrossProfitTotal(profitAndLoss.getGrossProfitOrLoss(), errors);
         validateOperatingTotal(profitAndLoss, errors);
-        validateProfitOrLossBeforeTax(profitAndLoss,errors);
+        validateProfitOrLossBeforeTax(profitAndLoss, errors);
         validateProfitOrLossForFinancialYear(profitAndLoss, errors);
 
         return errors;
@@ -120,7 +120,7 @@ public class ProfitAndLossValidator extends BaseValidator {
 
         Long distributionCosts = getDistributionCosts(profitAndLoss.getOperatingProfitOrLoss());
 
-        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
+        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss());
 
         Long otherOperatingIncome = getOtherOperatingIncome(profitAndLoss.getOperatingProfitOrLoss());
 
@@ -164,7 +164,7 @@ public class ProfitAndLossValidator extends BaseValidator {
     }
 
     private void validateProfitOrLossBeforeTax(ProfitAndLoss profitAndLoss,  Errors errors) {
-        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss()) ;
+        Long operatingProfitAndLossTotal = getOperatingTotal(profitAndLoss.getOperatingProfitOrLoss());
 
         long interestPayableAndSimilarCharges = getInterestPayableAndSimilarCharges(profitAndLoss.getProfitOrLossBeforeTax());
 

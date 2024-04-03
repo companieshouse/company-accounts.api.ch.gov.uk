@@ -23,10 +23,9 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class FilingControllerTest {
-
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
     private static final String ACCOUNTS_ID = "1234561";
-    private ResponseEntity response;
+    private ResponseEntity<?> response;
 
     @Mock
     private FilingService filingServiceMock;
@@ -45,11 +44,9 @@ class FilingControllerTest {
     void shouldGenerateFiling() {
         mockHttpServletRequestAllAttributesSet();
 
-        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount))
-            .thenReturn(new Filing());
+        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount)).thenReturn(new Filing());
 
-        response =
-            filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+        response = filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
     }
@@ -57,13 +54,10 @@ class FilingControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful creation of the ixbrl - filing is null")
     void shouldNotGenerateFiling() {
-
         mockHttpServletRequestAllAttributesSet();
-        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount))
-            .thenReturn(null);
+        when(filingServiceMock.generateAccountFiling(transactionMock, companyAccount)).thenReturn(null);
 
-        response =
-            filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+        response = filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
@@ -71,11 +65,9 @@ class FilingControllerTest {
     @Test
     @DisplayName("Tests the transaction not being set in the request's attribute")
     void shouldFailTransactionAsNotSetInRequest() {
-
         when(httpServletRequestMock.getAttribute(anyString())).thenReturn(null);
 
-        response =
-            filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+        response = filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
@@ -83,20 +75,14 @@ class FilingControllerTest {
     @Test
     @DisplayName("Tests the company account not being set in the request's attribute")
     void shouldFailAsCompanyAccountNotSetInRequest() {
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(null);
 
-        when(httpServletRequestMock.getAttribute(anyString()))
-            .thenReturn(transactionMock)
-            .thenReturn(null);
-
-        response =
-            filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
+        response = filingController.generateFiling(TRANSACTION_ID, ACCOUNTS_ID, httpServletRequestMock);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
     }
 
     private void mockHttpServletRequestAllAttributesSet() {
-        when(httpServletRequestMock.getAttribute(anyString()))
-            .thenReturn(transactionMock)
-            .thenReturn(companyAccount);
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(companyAccount);
     }
 }

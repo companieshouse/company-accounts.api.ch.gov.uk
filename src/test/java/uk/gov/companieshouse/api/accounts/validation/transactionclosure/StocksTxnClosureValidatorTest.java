@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StocksTxnClosureValidatorTest {
-
     private static final String STOCKS_LINK = "stocksLink";
 
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -98,14 +97,17 @@ class StocksTxnClosureValidatorTest {
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
-        when(stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, COMPANY_ACCOUNTS_ID)).thenReturn(noteResponseObject);
+        when(stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, COMPANY_ACCOUNTS_ID))
+                .thenReturn(noteResponseObject);
         when(noteResponseObject.getData()).thenReturn(stocks);
 
         when(noteValidatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS)).thenReturn(noteValidator);
 
-        when(noteValidator.validateSubmission(noteResponseObject.getData(), transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(emptyErrors);
+        when(noteValidator.validateSubmission(noteResponseObject.getData(), transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(emptyErrors);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, previousPeriodBs);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(emptyErrors, responseErrors);
@@ -115,20 +117,24 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - has stocks note - errors found")
     void validateStocksTnClosureHasErrors() throws DataException {
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
+        errors.addError(createError());
 
-        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY,
+                MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(true));
 
-        when(stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, COMPANY_ACCOUNTS_ID)).thenReturn(noteResponseObject);
+        when(stocksNoteService.find(AccountingNoteType.SMALL_FULL_STOCKS, COMPANY_ACCOUNTS_ID))
+                .thenReturn(noteResponseObject);
         when(noteResponseObject.getData()).thenReturn(stocks);
 
         when(noteValidatorFactory.getValidator(AccountingNoteType.SMALL_FULL_STOCKS)).thenReturn(noteValidator);
 
-        when(noteValidator.validateSubmission(noteResponseObject.getData(), transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
+        when(noteValidator.validateSubmission(noteResponseObject.getData(), transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(errors);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, errors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                errors, currentPeriodBs, previousPeriodBs);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(errors, responseErrors);
@@ -146,7 +152,8 @@ class StocksTxnClosureValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, null);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, null);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(emptyErrors, responseErrors);
@@ -156,9 +163,10 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data - SF")
     void validateStocksTnClosureNoNoteErrorsSF() throws ServiceException, DataException {
         Errors emptyErrors = new Errors();
-        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
+        emptyErrors.addError(createError());
 
-        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY,
+                MANDATORY_ELEMENT_MISSING);
 
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
@@ -168,7 +176,8 @@ class StocksTxnClosureValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, null);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, null);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(emptyErrors, responseErrors);
@@ -188,7 +197,8 @@ class StocksTxnClosureValidatorTest {
         when(previousPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
         when(currentAssets.getStocks()).thenReturn(null);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, previousPeriodBs);
 
         assertFalse(responseErrors.hasErrors());
         assertEquals(emptyErrors, responseErrors);
@@ -198,9 +208,10 @@ class StocksTxnClosureValidatorTest {
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data - MF")
     void validateStocksTnClosureNoNoteErrorsMF() throws ServiceException, DataException {
         Errors emptyErrors = new Errors();
-        emptyErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_STOCKS_PATH));
+        emptyErrors.addError(createError());
 
-        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY, MANDATORY_ELEMENT_MISSING);
+        ReflectionTestUtils.setField(stocksTxnClosureValidator, MANDATORY_ELEMENT_MISSING_KEY,
+                MANDATORY_ELEMENT_MISSING);
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
 
@@ -208,7 +219,8 @@ class StocksTxnClosureValidatorTest {
         when(previousPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
         when(currentAssets.getStocks()).thenReturn(1L);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, previousPeriodBs);
 
         assertTrue(responseErrors.hasErrors());
         assertEquals(emptyErrors, responseErrors);
@@ -217,7 +229,6 @@ class StocksTxnClosureValidatorTest {
     @Test
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data contains '0' - MF")
     void validateStocksTnClosureNoNoteDoesNotErrorMF() throws ServiceException, DataException {
-
         Errors emptyErrors = new Errors();
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
@@ -226,26 +237,27 @@ class StocksTxnClosureValidatorTest {
         when(previousPeriodBs.getCurrentAssets()).thenReturn(currentAssets);
         when(currentAssets.getStocks()).thenReturn(0L);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, previousPeriodBs);
 
         assertFalse(responseErrors.hasErrors());
-        assertEquals(responseErrors.getErrorCount(), 0);
+        assertEquals(0, responseErrors.getErrorCount());
     }
 
     @Test
     @DisplayName("Validate stocks on txn closure - no stocks note - balance sheet data contains '0' - SF")
     void validateStocksTnClosureNoNoteDoesNotErrorSF() throws ServiceException, DataException {
-
         Errors emptyErrors = new Errors();
 
         when(smallFull.getLinks()).thenReturn(createSmallFullLinks(false));
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBs, previousPeriodBs);
+        Errors responseErrors = stocksTxnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBs, previousPeriodBs);
 
         assertFalse(responseErrors.hasErrors());
-        assertEquals(responseErrors.getErrorCount(), 0);
+        assertEquals(0, responseErrors.getErrorCount());
     }
 
     private Map<String, String> createSmallFullLinks(boolean includeStocksLink) {
@@ -258,8 +270,10 @@ class StocksTxnClosureValidatorTest {
         return links;
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError() {
+        return new Error(StocksTxnClosureValidatorTest.MANDATORY_ELEMENT_MISSING,
+                StocksTxnClosureValidatorTest.SMALL_FULL_STOCKS_PATH,
+                LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 }

@@ -23,8 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
@@ -37,16 +35,10 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 class CompanyAccountInterceptorTest {
 
     @Mock
-    private CompanyAccountEntity companyAccountEntity;
-
-    @Mock
-    private CompanyAccountDataEntity companyAccountDataEntity;
-
-    @Mock
     private CompanyAccount companyAccount;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<CompanyAccount> responseObject;
 
     @Mock
     private Transaction transaction;
@@ -118,7 +110,7 @@ class CompanyAccountInterceptorTest {
         verify(companyAccountService, times(1)).findById("123456", httpServletRequest);
     }
 
-    private void setUpReourceList(String linkToAdd) {
+    public void setUpReourceList(String linkToAdd) {
         Map<String, Resource> resourcesList = new HashMap<>();
         Map<String, String> link = new HashMap<>();
         link.put("resource", linkToAdd);
@@ -129,12 +121,12 @@ class CompanyAccountInterceptorTest {
         when(transaction.getResources()).thenReturn(resourcesList);
     }
 
-    private void setUpCompanyAccount() {
+    public void setUpCompanyAccount() {
         when(companyAccount.getLinks()).thenReturn(companyAccountslinks);
         when(companyAccountslinks.get("self")).thenReturn("linkToCompanyAccount");
     }
 
-    private void setUpPathVariables() {
+    public void setUpPathVariables() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("companyAccountId", "123456");
         when(httpServletRequest.getAttribute(anyString())).thenReturn(transaction)

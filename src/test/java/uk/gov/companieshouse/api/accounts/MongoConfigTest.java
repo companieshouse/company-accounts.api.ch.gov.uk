@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoConfigTest {
-
     @Mock
     MongoDatabaseFactory mongoDatabaseFactory;
 
@@ -52,7 +51,6 @@ class MongoConfigTest {
     @Test
     @DisplayName("Get the bean for mongo client settings")
     void getBeanForMongoClientSettings() {
-
         when(mongoDbConnectionPoolConfig.getConnectionString()).thenReturn(CONNECTION_STRING_TEST);
 
         MongoClientSettings bean = mongoConfig.mongoClientSettings(mongoDbConnectionPoolConfig);

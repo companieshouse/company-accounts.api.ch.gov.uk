@@ -19,7 +19,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossBefo
 import uk.gov.companieshouse.api.accounts.model.rest.profitloss.ProfitOrLossForFinancialYear;
 
 class ProfitAndLossTransformerTest {
-
     private static final Long TURNOVER = 1L;
     private static final Long COST_OF_SALES = 2L;
     private static final Long GROSS_TOTAL = 3L;
@@ -36,12 +35,11 @@ class ProfitAndLossTransformerTest {
     private static final Long TAX = 11L;
     private static final Long TOTAL_FOR_YEAR = 12L;
 
-    private ProfitAndLossTransformer transformer = new ProfitAndLossTransformer();
+    private final ProfitAndLossTransformer transformer = new ProfitAndLossTransformer();
 
     @Test
     @DisplayName("Tests rest to entity transform for empty rest object")
     void testRestToEntityTransformWithEmptyObject() {
-
         ProfitAndLossEntity entity = transformer.transform(new ProfitAndLoss());
 
         assertNotNull(entity);
@@ -55,7 +53,6 @@ class ProfitAndLossTransformerTest {
     @Test
     @DisplayName("Tests rest to entity transform for full rest object")
     void testRestToEntityTransformWithFullyPopulatedObject() {
-
         ProfitAndLoss profitAndLoss = new ProfitAndLoss();
 
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
@@ -111,7 +108,6 @@ class ProfitAndLossTransformerTest {
     @Test
     @DisplayName("Tests entity to rest transform for empty entity")
     void testEntityToRestTransformWithEmptyObject() {
-
         ProfitAndLossEntity entity = new ProfitAndLossEntity();
         entity.setData(new ProfitAndLossDataEntity());
 
@@ -127,7 +123,6 @@ class ProfitAndLossTransformerTest {
     @Test
     @DisplayName("Tests entity to rest transform for full entity")
     void testEntityToRestTransformWithFullyPopulatedObject() {
-
         ProfitAndLossDataEntity dataEntity = new ProfitAndLossDataEntity();
 
         GrossProfitOrLossEntity grossProfitOrLoss = new GrossProfitOrLossEntity();

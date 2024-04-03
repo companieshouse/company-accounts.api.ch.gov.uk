@@ -34,7 +34,6 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CurrentPeriodControllerTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -63,19 +62,18 @@ class CurrentPeriodControllerTest {
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     void canCreateCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
-            currentPeriod);
+        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
 
         doReturn(responseObject).when(currentPeriodService)
             .create(any(CurrentPeriod.class), any(Transaction.class), anyString(),
                 any(HttpServletRequest.class));
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<CurrentPeriod> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
         when(apiResponseMapper
             .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
             .thenReturn(responseEntity);
 
-        ResponseEntity response = currentPeriodController
+        ResponseEntity<?> response = currentPeriodController
             .create(currentPeriod, bindingResult, "", request);
 
         assertNotNull(response);
@@ -87,13 +85,13 @@ class CurrentPeriodControllerTest {
     @DisplayName("Test the retreval of a current period resource")
     void canRetrieveCurrentPeriod() throws DataException {
         when(request.getAttribute("transaction")).thenReturn(transaction);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
-        doReturn(new ResponseObject<CurrentPeriod>(ResponseStatus.FOUND,
-            currentPeriod)).when(currentPeriodService).find("123456", request);
+        ResponseEntity<CurrentPeriod> responseEntity = ResponseEntity.status(HttpStatus.OK).body(currentPeriod);
+        doReturn(new ResponseObject<>(ResponseStatus.FOUND,
+                currentPeriod)).when(currentPeriodService).find("123456", request);
         when(apiResponseMapper.mapGetResponse(currentPeriod,
             request)).thenReturn(responseEntity);
 
-        ResponseEntity response = currentPeriodController.get("123456", request);
+        ResponseEntity<?> response = currentPeriodController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -103,24 +101,20 @@ class CurrentPeriodControllerTest {
     @Test
     @DisplayName("Tests the successful update of a currentPeriod resource")
     void canUpdateCurrentPeriod() throws DataException {
-        doReturn(smallFull).when(request)
-            .getAttribute(AttributeName.SMALLFULL.getValue());
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();
         links.put(SmallFullLinkType.CURRENT_PERIOD.getLink(), "link");
         when(smallFull.getLinks()).thenReturn(links);
-        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
-            currentPeriod);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseObject<CurrentPeriod> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, currentPeriod);
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(),
             null, responseObject.getErrors()))
             .thenReturn(responseEntity);
         doReturn(responseObject).when(currentPeriodService)
             .update(currentPeriod, null, "12345", request);
 
-        ResponseEntity response = currentPeriodController
+        ResponseEntity<?> response = currentPeriodController
             .update(currentPeriod, bindingResult, "12345", request);
-
-
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -128,15 +122,13 @@ class CurrentPeriodControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful update of a currentPeriod resource")
-    void canUpdateCurrentPeriodFail() throws DataException {
-        doReturn(smallFull).when(request)
-            .getAttribute(AttributeName.SMALLFULL.getValue());
+    void canUpdateCurrentPeriodFail() {
+        doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         HashMap<String, String> links = new HashMap<>();
         when(smallFull.getLinks()).thenReturn(links);
-        ResponseEntity response = currentPeriodController
+        ResponseEntity<?> response = currentPeriodController
             .update(currentPeriod, bindingResult, "123456", request);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
 }

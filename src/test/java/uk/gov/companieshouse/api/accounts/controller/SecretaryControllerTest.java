@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SecretaryControllerTest {
-
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String SECRETARY_LINK = "secretaryLink";
 
@@ -64,9 +63,6 @@ class SecretaryControllerTest {
     private DirectorsReport directorsReport;
 
     @Mock
-    private Map<String, String> secretaryLink;
-
-    @Mock
     private Map<String, String> directorsReportLink;
 
     @InjectMocks
@@ -75,7 +71,6 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Secretary resource created successfully")
     void createSecretaryResourceSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -85,15 +80,14 @@ class SecretaryControllerTest {
         when(secretaryService.create(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<Secretary> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.create(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.create(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -103,7 +97,6 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Create secretary has failed - data exception thrown")
     void createSecretaryResourceDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -111,14 +104,13 @@ class SecretaryControllerTest {
         when(secretaryService.create(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.create(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.create(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -128,13 +120,11 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Create secretary resource - has binding errors")
     void createSecretaryResourceBindingErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
-        ResponseEntity responseEntity =
-                secretaryController.create(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = secretaryController.create(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -143,14 +133,12 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Update secretary resource - no secretary link")
     void updateSecretaryResourceNoSecretaryLink() {
-
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
         when(directorsReport.getLinks()).thenReturn(directorsReportLink);
         when(directorsReportLink.get(DirectorsReportLinkType.SECRETARY.getLink())).thenReturn(null);
 
-        ResponseEntity responseEntity =
-                secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = secretaryController.update(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -160,15 +148,13 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Update secretary resource - has binding errors")
     void updateSecretaryResourceBindingErrors() {
-
         mockTransactionAndLinks();
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
-        ResponseEntity responseEntity =
-                secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = secretaryController.update(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -178,9 +164,7 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Update secretary resource - success")
     void updateSecretaryResourceSuccess() throws DataException {
-
         mockTransactionAndLinks();
-
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
@@ -189,14 +173,13 @@ class SecretaryControllerTest {
         when(secretaryService.update(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.update(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -206,7 +189,6 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Update secretary resource - data exception thrown")
     void updateSecretaryResourceDataException() throws DataException {
-
         mockTransactionAndLinks();
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -214,13 +196,12 @@ class SecretaryControllerTest {
         when(secretaryService.update(secretary, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.update(secretary, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.update(secretary, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -230,7 +211,6 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Get secretary resource - success")
     void getSecretaryResourceSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
@@ -238,13 +218,11 @@ class SecretaryControllerTest {
         when(secretaryService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<Secretary> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
-        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
-                .thenReturn(responseEntity);
+        when(apiResponseMapper.mapGetResponse(responseObject.getData(), request)).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -254,18 +232,17 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Get secretary resource - data exception thrown")
     void getSecretaryResourceDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
         when(secretaryService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = secretaryController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -275,23 +252,17 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Delete secretary resource - success")
     void deleteSecretaryResourceSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
-                secretary);
+        ResponseObject<Secretary> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, secretary);
 
-        when(secretaryService.delete(COMPANY_ACCOUNTS_ID, request))
-                .thenReturn(responseObject);
+        when(secretaryService.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
-        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getErrors()))
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                secretaryController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -300,19 +271,16 @@ class SecretaryControllerTest {
     @Test
     @DisplayName("Delete secretary resource - data exception thrown")
     void deleteSecretaryResourceDataException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
 
-        when(secretaryService.delete(COMPANY_ACCOUNTS_ID, request))
-                .thenThrow(dataException);
+        when(secretaryService.delete(COMPANY_ACCOUNTS_ID, request)).thenThrow(dataException);
 
-        ResponseEntity responseEntity =
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = secretaryController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = secretaryController.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

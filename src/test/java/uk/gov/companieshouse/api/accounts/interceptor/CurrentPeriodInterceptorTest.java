@@ -39,12 +39,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CurrentPeriodInterceptorTest {
-
     @Mock
     private CurrentPeriod currentPeriod;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<CurrentPeriod> responseObject;
 
     @Mock
     private Transaction transaction;
@@ -77,8 +76,7 @@ class CurrentPeriodInterceptorTest {
     private static final String NO_LINK_CURRENT_PERIOD = "noLinkToPreviousPeriod";
     private static final String URI = "../../../current-period";
 
-    private void setUp() throws NoSuchAlgorithmException {
-
+    public void setUpServletRequest() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
         pathVariables.put(COMPANY_ACCOUNT_ID, "test");
@@ -95,7 +93,7 @@ class CurrentPeriodInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
-        setUp();
+        setUpServletRequest();
         when(currentPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(currentPeriod);
@@ -113,32 +111,27 @@ class CurrentPeriodInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false on a failed CurrentPeriodEntity lookup")
     void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
-        setUp();
+        setUpServletRequest();
         doThrow(mock(DataException.class)).when(currentPeriodService).find(anyString(), any(HttpServletRequest.class));
-        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
     @DisplayName(("Test the interceptor returns true when URI ends with current-period"))
     void testReturnTrueForURIEndsWithCurrentPeriod() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("POST");
-        when (httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
 
-        assertTrue(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertTrue(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
     }
 
     @Test
     @DisplayName(("Test the interceptor when transaction is null"))
     void testTransactionIsNull() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("GET");
         doReturn(null).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -146,7 +139,6 @@ class CurrentPeriodInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor when smallFull is null"))
     void testSmallFullIsNull() throws NoSuchAlgorithmException {
-
         transaction = mock(Transaction.class);
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
@@ -156,8 +148,7 @@ class CurrentPeriodInterceptorTest {
         doReturn(pathVariables).when(httpServletRequest).getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         doReturn(transaction).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
@@ -165,13 +156,11 @@ class CurrentPeriodInterceptorTest {
     @Test
     @DisplayName("Current Period interceptor - returns not found status")
     void currentPeriodInterceptorReturnsNotFoundStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpServletRequest();
         when(currentPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
-        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -179,8 +168,7 @@ class CurrentPeriodInterceptorTest {
     @Test
     @DisplayName("Current Period interceptor - returns bad request status")
     void currentPeriodInterceptorReturnsBadRequestStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpServletRequest();
         when(currentPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(currentPeriod);
@@ -189,8 +177,7 @@ class CurrentPeriodInterceptorTest {
         when(currentPeriodLinks.get("self")).thenReturn(LINK_CURRENT_PERIOD);
         when(smallFullLinks.get(SmallFullLinkType.CURRENT_PERIOD.getLink())).thenReturn(NO_LINK_CURRENT_PERIOD);
 
-        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
-                new Object()));
+        assertFalse(currentPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse, new Object()));
 
         verify(httpServletResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }

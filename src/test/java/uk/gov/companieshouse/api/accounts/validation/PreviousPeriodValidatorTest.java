@@ -29,7 +29,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PreviousPeriodValidatorTest {
-
     @Mock
     private CompanyService companyService;
 
@@ -53,14 +52,13 @@ class PreviousPeriodValidatorTest {
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         validator = new PreviousPeriodValidator(companyService, balanceSheetValidator);
     }
     
     @Test
     @DisplayName("Validate previous period - multi year filer")
     void validatePreviousPeriodForMultiYearFiler() throws DataException, ServiceException {
-
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         when(previousPeriod.getBalanceSheet()).thenReturn(balanceSheet);
@@ -68,13 +66,13 @@ class PreviousPeriodValidatorTest {
         Errors errors = validator.validatePreviousPeriod(previousPeriod, transaction);
 
         assertNotNull(errors);
-        verify(balanceSheetValidator).validateBalanceSheet(eq(balanceSheet), eq(transaction), eq(PERIOD_PATH), any(Errors.class));
+        verify(balanceSheetValidator)
+                .validateBalanceSheet(eq(balanceSheet), eq(transaction), eq(PERIOD_PATH), any(Errors.class));
     }
 
     @Test
     @DisplayName("Validate previous period - single year filer")
     void validatePreviousPeriodForSingleYearFiler() throws DataException, ServiceException {
-
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_KEY, UNEXPECTED_DATA);
@@ -84,7 +82,7 @@ class PreviousPeriodValidatorTest {
         assertNotNull(errors);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, PERIOD_PATH)));
+        assertTrue(errors.containsError(createError()));
 
         verify(balanceSheetValidator, never())
                 .validateBalanceSheet(any(BalanceSheet.class), eq(transaction), eq(PERIOD_PATH), any(Errors.class));
@@ -93,14 +91,13 @@ class PreviousPeriodValidatorTest {
     @Test
     @DisplayName("Validate previous period - service exception thrown")
     void validatePreviousPeriodServiceException() throws ServiceException {
-
         when(companyService.isMultipleYearFiler(transaction)).thenThrow(ServiceException.class);
 
         assertThrows(DataException.class, () -> validator.validatePreviousPeriod(previousPeriod, transaction));
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+    private Error createError() {
+        return new Error(PreviousPeriodValidatorTest.UNEXPECTED_DATA, PreviousPeriodValidatorTest.PERIOD_PATH,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

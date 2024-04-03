@@ -28,9 +28,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorValidatorTest {
-
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountId";
-
     private static final String NAME = "directorName";
     private static final LocalDate RESIGNATION_DATE = LocalDate.of(2019, 1, 1);
     private static final LocalDate APPOINTMENT_DATE_AFTER_RES = RESIGNATION_DATE.plusDays(1);
@@ -57,8 +55,8 @@ class DirectorValidatorTest {
     @Test
     @DisplayName("get valid directors - found")
     void getValidDirectorsFound() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectors()));
         List<String> validNames = directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(validNames.isEmpty());
@@ -68,8 +66,8 @@ class DirectorValidatorTest {
     @Test
     @DisplayName("get valid directors - service returns null")
     void getValidDirectorsNullReturned() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.NOT_FOUND));
 
         List<String> validNames = directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -79,8 +77,8 @@ class DirectorValidatorTest {
     @Test
     @DisplayName("get no valid directors - none found")
     void getValidDirectorsNoneFound() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createInvalidDirectors()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createInvalidDirectors()));
         List<String> validNames = directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertTrue(validNames.isEmpty());
@@ -89,8 +87,8 @@ class DirectorValidatorTest {
     @Test
     @DisplayName("get director with app after res date - found")
     void getValidDirectorWithAppAfterRes() throws DataException {
-
-        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectorWithAppAfterRes()));
+        when(directorService.findAll(transaction, COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, createDirectorWithAppAfterRes()));
         List<String> validNames = directorValidator.getValidDirectorNames(transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertFalse(validNames.isEmpty());
@@ -98,7 +96,6 @@ class DirectorValidatorTest {
     }
 
     private Director[] createDirectors() {
-
         Director[] directors = new Director[1];
         directors[0] = new Director();
         directors[0].setName(NAME);
@@ -107,7 +104,6 @@ class DirectorValidatorTest {
     }
 
     private Director[] createInvalidDirectors() {
-
         Director[] directors = new Director[1];
         directors[0] = new Director();
         directors[0].setName(NAME);
@@ -117,7 +113,6 @@ class DirectorValidatorTest {
     }
 
     private Director[] createDirectorWithAppAfterRes() {
-
         Director[] directors = new Director[1];
         directors[0] = new Director();
         directors[0].setName(NAME);

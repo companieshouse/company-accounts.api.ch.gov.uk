@@ -17,7 +17,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DataTest {
-
     @InjectMocks
     private Data data;
 
@@ -31,19 +30,19 @@ class DataTest {
     @Test
     @DisplayName("Test Get BalanceSheet data")
     void testGetBalanceSheetDate() {
-        assertEquals("BalanceSheetData",data.getBalanceSheetDate());
+        assertEquals("BalanceSheetData", data.getBalanceSheetDate());
     }
 
     @Test
     @DisplayName("Test Get AccountsType data")
     void testGetAccountsType() {
-        assertEquals("CompanyAccounts",data.getAccountsType());
+        assertEquals("CompanyAccounts", data.getAccountsType());
     }
 
     @Test
     @DisplayName("Test Get CompaniesHouseRegisteredNumber")
     void testGetCompaniesHouseRegisteredNumber() {
-        assertEquals("CompaniesHouseRegisteredNumber",data.getCompaniesHouseRegisteredNumber());
+        assertEquals("CompaniesHouseRegisteredNumber", data.getCompaniesHouseRegisteredNumber());
     }
 
     @Test
@@ -53,7 +52,8 @@ class DataTest {
         Method[] methods = dataClass.getDeclaredMethods();
         for (Method m : methods) {
             if (m.getName().startsWith("get")) {
-            assertNotNull("Method :"+m.getName() + " does not have annotation XmlElement",m.getAnnotation(XmlElement.class));
+                assertNotNull("Method :"+m.getName() + " does not have annotation XmlElement",
+                        m.getAnnotation(XmlElement.class));
             }
         }
     }

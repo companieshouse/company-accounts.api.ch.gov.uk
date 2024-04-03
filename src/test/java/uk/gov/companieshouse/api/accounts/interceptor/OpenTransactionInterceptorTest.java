@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class OpenTransactionInterceptorTest {
-
     @InjectMocks
     private OpenTransactionInterceptor transactionInterceptor;
 
@@ -35,50 +34,36 @@ class OpenTransactionInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor with an existing transaction that is open - happy path")
     void testPreHandleWithOpenTransaction() {
-
-        when(httpServletRequestMock.getAttribute(anyString()))
-            .thenReturn(createDummyTransaction(true));
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createDummyTransaction(true));
         when(httpServletRequestMock.getMethod()).thenReturn("POST");
 
-        assertTrue(transactionInterceptor
-            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertTrue(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor failure when transaction is closed and not a GET")
     void testPreHandleWithClosedTransaction() {
-
-        when(httpServletRequestMock.getAttribute(anyString()))
-            .thenReturn(createDummyTransaction(false));
-
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createDummyTransaction(false));
         when(httpServletRequestMock.getMethod()).thenReturn("POST");
 
-        assertFalse(transactionInterceptor
-            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor with a GET request when transaction is closed")
     void testPreHandleWithGetClosedTransaction() {
-
-        when(httpServletRequestMock.getAttribute(anyString()))
-                .thenReturn(createDummyTransaction(false));
-
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(createDummyTransaction(false));
         when(httpServletRequestMock.getMethod()).thenReturn("GET");
 
-        assertTrue(transactionInterceptor
-                .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertTrue(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Tests the interceptor failure when transaction has not been set")
     void testPreHandleWithTransactionNotBeingSet() {
+        when(httpServletRequestMock.getAttribute(anyString())).thenReturn(null);
 
-        when(httpServletRequestMock.getAttribute(anyString()))
-            .thenReturn(null);
-
-        assertFalse(transactionInterceptor
-            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     /**
@@ -90,8 +75,7 @@ class OpenTransactionInterceptorTest {
     private Transaction createDummyTransaction(boolean isOpen) {
         Transaction transaction = new Transaction();
 
-        transaction.setStatus(
-            isOpen ? TransactionStatus.OPEN : TransactionStatus.CLOSED);
+        transaction.setStatus(isOpen ? TransactionStatus.OPEN : TransactionStatus.CLOSED);
 
         return transaction;
     }

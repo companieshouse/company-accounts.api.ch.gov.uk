@@ -41,7 +41,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
 @ExtendWith(MockitoExtension.class)
 class LoansToDirectorsAdditionalInformationServiceTest {
-
     @Mock
     private LoansToDirectorsAdditionalInformationTransformer transformer;
 
@@ -81,8 +80,7 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     private static final String ADDITIONAL_INFO_SELF_LINK = "additionalInformationSelfLink";
 
     @BeforeEach
-    private void setup() {
-
+    public void setUp() {
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName() + "-" + ResourceName.ADDITIONAL_INFO.getName()))
                 .thenReturn(GENERATED_ID);
     }
@@ -90,7 +88,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the successful creation of an additionalInformation resource")
     void createAdditionalInformationSuccess() throws DataException {
-
         when(transformer.transform(additionalInformation)).thenReturn(additionalInformationEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -114,7 +111,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the creation of a additionalInformation resource where the repository throws a duplicate key exception")
     void createAdditionalInformationDuplicateKeyException() throws DataException {
-
         when(transformer.transform(additionalInformation)).thenReturn(additionalInformationEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -136,7 +132,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the creation of a additionalInformation resource where the repository throws a Mongo exception")
     void createAdditionalInformationMongoException() throws DataException {
-
         when(transformer.transform(additionalInformation)).thenReturn(additionalInformationEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -156,7 +151,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the successful update of a additionalInformation resource")
     void updateAdditionalInformationSuccess() throws DataException {
-
         when(transformer.transform(additionalInformation)).thenReturn(additionalInformationEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -176,7 +170,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the update of a additionalInformation resource where the repository throws a Mongo exception")
     void updateAdditionalInformationMongoException() {
-
         when(transformer.transform(additionalInformation)).thenReturn(additionalInformationEntity);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
@@ -195,7 +188,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the successful retrieval of a additionalInformation resource")
     void getAdditionalInformationSuccess() throws DataException {
-
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(additionalInformationEntity));
         when(transformer.transform(additionalInformationEntity)).thenReturn(additionalInformation);
 
@@ -209,7 +201,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the retrieval of a non-existent additionalInformation resource")
     void getAdditionalInformationNotFound() throws DataException {
-
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
         ResponseObject<AdditionalInformation> response =
@@ -222,7 +213,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the retrieval of a additionalInformation resource where the repository throws a Mongo exception")
     void getAdditionalInformationMongoException() {
-
         when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
@@ -232,7 +222,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the successful deletion of a additionalInformation resource")
     void deleteAdditionalInformationSuccess() throws DataException {
-
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
         ResponseObject<AdditionalInformation> response =
@@ -247,7 +236,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the deletion of a additionalInformation resource where the repository throws a Mongo exception")
     void deleteAdditionalInformationMongoException() throws DataException {
-
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
         doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
@@ -260,7 +248,6 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     @Test
     @DisplayName("Tests the deletion of a non-existent additionalInformation resource")
     void deleteAdditionalInformationNotFound() throws DataException {
-
         when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
         ResponseObject<AdditionalInformation> response =
@@ -295,14 +282,12 @@ class LoansToDirectorsAdditionalInformationServiceTest {
     }
 
     private void assertWhetherLoansToDirectorsServiceCalledToAddLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(loansToDirectorsService, timesExpected)
                 .addLink(COMPANY_ACCOUNTS_ID, LoansToDirectorsLinkType.ADDITIONAL_INFO, ADDITIONAL_INFO_SELF_LINK, request);
     }
 
     private void assertWhetherLoansToDirectorsServiceCalledToRemoveLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(loansToDirectorsService, timesExpected)
                 .removeLink(COMPANY_ACCOUNTS_ID, LoansToDirectorsLinkType.ADDITIONAL_INFO, request);

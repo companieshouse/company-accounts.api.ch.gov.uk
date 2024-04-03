@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class TransactionInterceptorTest {
-
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
 
@@ -84,15 +83,13 @@ class TransactionInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor with an existing transaction")
     void testPreHandleExistingTransaction() {
-
-        assertTrue(transactionInterceptor
-            .preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
+        assertTrue(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
     }
 
     @Test
     @DisplayName("Transaction interceptor - throws HttpClientErrorException")
-    void testPreHandleThrowsHttpClientErrorException() throws HttpClientErrorException, ApiErrorResponseException, URIValidationException {
-
+    void testPreHandleThrowsHttpClientErrorException() throws HttpClientErrorException, ApiErrorResponseException,
+            URIValidationException {
         when(transactionGetMock.execute()).thenThrow(httpClientErrorException);
         when(httpClientErrorException.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
 
@@ -102,7 +99,6 @@ class TransactionInterceptorTest {
     @Test
     @DisplayName("Transaction interceptor - throws ApiErrorResponseException")
     void testPreHandleThrowsApiErrorResponseException() throws ApiErrorResponseException, URIValidationException {
-
         when(transactionGetMock.execute()).thenThrow(ApiErrorResponseException.class);
 
         assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));
@@ -111,7 +107,6 @@ class TransactionInterceptorTest {
     @Test
     @DisplayName("Transaction interceptor - throws URIValidationException")
     void testPreHandleThrowsURIValidationException() throws ApiErrorResponseException, URIValidationException {
-
         when(transactionGetMock.execute()).thenThrow(URIValidationException.class);
 
         assertFalse(transactionInterceptor.preHandle(httpServletRequestMock, httpServletResponseMock, new Object()));

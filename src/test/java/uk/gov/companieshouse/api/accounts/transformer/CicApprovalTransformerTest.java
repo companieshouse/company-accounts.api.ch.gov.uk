@@ -12,18 +12,16 @@ import uk.gov.companieshouse.api.accounts.model.entity.CicReportApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
 
  class CicApprovalTransformerTest {
-
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
     public static final String NAME = "name";
 
-    private CicApprovalTransformer cicApprovalTransformer = new CicApprovalTransformer();
+    private final CicApprovalTransformer cicApprovalTransformer = new CicApprovalTransformer();
 
     @Test
     @DisplayName("Tests CicApprovalTransformer with empty object which should result in null values")
     void testTransformerWithEmptyObject() {
-        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
-            .transform(new CicApproval());
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer.transform(new CicApproval());
 
         assertNotNull(cicReportApprovalEntity);
         assertNull(cicReportApprovalEntity.getData().getEtag());
@@ -33,15 +31,13 @@ import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
     @Test
     @DisplayName("Tests CicApprovalTransformer with populated Rest object and validates values returned")
     void testRestToEntityTransformerWithPopulatedObject() {
-
         CicApproval cicApproval = new CicApproval();
         cicApproval.setEtag(ETAG);
         cicApproval.setKind(KIND);
         cicApproval.setName(NAME);
         cicApproval.setLinks(new HashMap<>());
 
-        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
-            .transform(cicApproval);
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer.transform(cicApproval);
 
         CicReportApprovalDataEntity cicReportApprovalEntityData = cicReportApprovalEntity.getData();
 
@@ -55,7 +51,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
     @Test
     @DisplayName("Tests CicApprovalTransformer with populated Entity object and validates values returned")
     void testEntityToRestTransformerWithPopulatedObject() {
-
         CicReportApprovalEntity cicReportApprovalEntity = new CicReportApprovalEntity();
         CicReportApprovalDataEntity cicReportApprovalDataEntity = new CicReportApprovalDataEntity();
         cicReportApprovalDataEntity.setEtag(ETAG);
@@ -64,8 +59,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.CicApproval;
         cicReportApprovalDataEntity.setLinks(new HashMap<>());
         cicReportApprovalEntity.setData(cicReportApprovalDataEntity);
 
-        CicApproval cicApproval = cicApprovalTransformer
-            .transform(cicReportApprovalEntity);
+        CicApproval cicApproval = cicApprovalTransformer.transform(cicReportApprovalEntity);
 
         assertNotNull(cicApproval);
         assertEquals(ETAG, cicApproval.getEtag());

@@ -47,7 +47,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicReportServiceTest {
-
     @Mock
     private CicReportRepository repository;
 
@@ -99,7 +98,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Create cic report - success")
     void createCicReportSuccess() throws DataException {
-
         when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -114,8 +112,7 @@ class CicReportServiceTest {
         when(cicReport.getLinks()).thenReturn(cicReportLinks);
         when(cicReportLinks.get(CicReportLinkType.SELF.getLink())).thenReturn(CIC_REPORT_SELF_LINK);
 
-        ResponseObject<CicReport> response =
-                service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicReport> response = service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -137,12 +134,10 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Create cic report - validation errors")
     void createCicReportValidationErrors() throws DataException {
-
         when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
-        ResponseObject<CicReport> response =
-                service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicReport> response = service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
@@ -153,7 +148,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Create cic report - duplicate key exception")
     void createCicReportDuplicateKeyException() throws DataException {
-
         when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -167,8 +161,7 @@ class CicReportServiceTest {
 
         when(repository.insert(cicReportEntity)).thenThrow(DuplicateKeyException.class);
 
-        ResponseObject<CicReport> response =
-                service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicReport> response = service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
@@ -188,7 +181,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Create cic report - Mongo exception")
     void createCicReportMongoException() throws DataException {
-
         when(validator.validateCicReportCreation(transaction)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -202,18 +194,16 @@ class CicReportServiceTest {
 
         when(repository.insert(cicReportEntity)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Find cic report - success")
     void findCicReportSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.of(cicReportEntity));
 
         when(transformer.transform(cicReportEntity)).thenReturn(cicReport);
 
@@ -228,13 +218,10 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Find cic report - not found")
     void findCicReportNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        CicReportEntity cicReportEntity = null;
-
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.empty());
 
         ResponseObject<CicReport> response = service.find(COMPANY_ACCOUNTS_ID, request);
 
@@ -247,7 +234,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Find cic report - Mongo exception")
     void findCicReportMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
@@ -259,7 +245,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Delete cic report - success")
     void deleteCicReportSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
@@ -279,7 +264,6 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Delete cic report - not found")
     void deleteCicReportNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
@@ -293,14 +277,12 @@ class CicReportServiceTest {
         assertNull(response.getErrors());
 
         verify(repository, never()).deleteById(CIC_REPORT_ID);
-        verify(companyAccountService, never())
-                .removeLink(COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.CIC_REPORT);
+        verify(companyAccountService, never()).removeLink(COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.CIC_REPORT);
     }
 
     @Test
     @DisplayName("Delete cic report - Mongo exception")
     void deleteCicReportMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
@@ -309,27 +291,23 @@ class CicReportServiceTest {
         assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, request));
 
         verify(repository, never()).deleteById(CIC_REPORT_ID);
-        verify(companyAccountService, never())
-                .removeLink(COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.CIC_REPORT);
+        verify(companyAccountService, never()).removeLink(COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.CIC_REPORT);
     }
 
     @Test
     @DisplayName("Add link - success")
     void addLinkSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.of(cicReportEntity));
 
         when(cicReportEntity.getData()).thenReturn(cicReportDataEntity);
         when(cicReportDataEntity.getLinks()).thenReturn(cicReportLinks);
 
         CicReportLinkType linkType = CicReportLinkType.APPROVAL;
 
-        assertAll(() ->
-                service.addLink(
-                        COMPANY_ACCOUNTS_ID, linkType, CIC_REPORT_APPROVAL_LINK, request));
+        assertAll(() -> service.addLink(COMPANY_ACCOUNTS_ID, linkType, CIC_REPORT_APPROVAL_LINK, request));
 
         verify(cicReportLinks).put(linkType.getLink(), CIC_REPORT_APPROVAL_LINK);
         verify(repository).save(cicReportEntity);
@@ -338,50 +316,41 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Add link - not found")
     void addLinkNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        CicReportEntity cicReportEntity = null;
-
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.empty());
 
         assertThrows(DataException.class, () ->
-                service.addLink(
-                        COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, CIC_REPORT_APPROVAL_LINK, request));
+                service.addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, CIC_REPORT_APPROVAL_LINK, request));
     }
 
     @Test
     @DisplayName("Add link - Mongo exception")
     void addLinkMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
         when(repository.findById(CIC_REPORT_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
-                service.addLink(
-                        COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, CIC_REPORT_APPROVAL_LINK, request));
+                service.addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, CIC_REPORT_APPROVAL_LINK, request));
     }
 
     @Test
     @DisplayName("Remove link - success")
     void removeLinkSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.of(cicReportEntity));
 
         when(cicReportEntity.getData()).thenReturn(cicReportDataEntity);
         when(cicReportDataEntity.getLinks()).thenReturn(cicReportLinks);
 
         CicReportLinkType linkType = CicReportLinkType.APPROVAL;
 
-        assertAll(() ->
-                service.removeLink(
-                        COMPANY_ACCOUNTS_ID, linkType, request));
+        assertAll(() -> service.removeLink(COMPANY_ACCOUNTS_ID, linkType, request));
 
         verify(cicReportLinks).remove(linkType.getLink());
         verify(repository).save(cicReportEntity);
@@ -390,30 +359,24 @@ class CicReportServiceTest {
     @Test
     @DisplayName("Remove link - not found")
     void removeLinkNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
-        CicReportEntity cicReportEntity = null;
-
-        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.ofNullable(cicReportEntity));
+        when(repository.findById(CIC_REPORT_ID)).thenReturn(Optional.empty());
 
         assertThrows(DataException.class, () ->
-                service.removeLink(
-                        COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, request));
+                service.removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, request));
     }
 
     @Test
     @DisplayName("Remove link - Mongo exception")
     void removeLinkMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_REPORT.getName()))
                 .thenReturn(CIC_REPORT_ID);
 
         when(repository.findById(CIC_REPORT_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
-                service.removeLink(
-                        COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, request));
+                service.removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.APPROVAL, request));
     }
 }

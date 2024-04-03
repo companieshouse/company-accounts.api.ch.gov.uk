@@ -38,26 +38,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StocksValidatorTest {
-
     private static final String STOCKS_PATH = "$.stocks";
-    private static final String STOCKS_CURRENT_PERIOD_PATH = STOCKS_PATH +
-        ".current_period";
-    private static final String STOCKS_PREVIOUS_PERIOD_PATH = STOCKS_PATH +
-        ".previous_period";
-    private static final String STOCKS_CURRENT_PERIOD_TOTAL_PATH =
-        STOCKS_CURRENT_PERIOD_PATH + ".total";
-    private static final String STOCKS_PREVIOUS_PERIOD_TOTAL_PATH =
-        STOCKS_PREVIOUS_PERIOD_PATH + ".total";
+    private static final String STOCKS_CURRENT_PERIOD_PATH = STOCKS_PATH + ".current_period";
+    private static final String STOCKS_PREVIOUS_PERIOD_PATH = STOCKS_PATH + ".previous_period";
+    private static final String STOCKS_CURRENT_PERIOD_TOTAL_PATH = STOCKS_CURRENT_PERIOD_PATH + ".total";
+    private static final String STOCKS_PREVIOUS_PERIOD_TOTAL_PATH = STOCKS_PREVIOUS_PERIOD_PATH + ".total";
 
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_NAME = "currentBalanceSheetNotEqual";
     private static final String CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE =
-        "value_not_equal_to_current_period_on_balance_sheet";
+            "value_not_equal_to_current_period_on_balance_sheet";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME = "previousBalanceSheetNotEqual";
     private static final String PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE =
-        "value_not_equal_to_previous_period_on_balance_sheet";
+            "value_not_equal_to_previous_period_on_balance_sheet";
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
-        "mandatory_element_missing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE = "mandatory_element_missing";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
@@ -99,7 +93,6 @@ class StocksValidatorTest {
     @Test
     @DisplayName("Note validation passes with valid note for first year filer")
     void testSuccessfulFirstYearNoteValidation() throws DataException {
-
         createValidNoteCurrentPeriod();
 
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
@@ -110,7 +103,6 @@ class StocksValidatorTest {
     @Test
     @DisplayName("Note validation passes with valid note for multiple year filer")
     void testSuccessfulMultipleYearNoteValidation() throws ServiceException, DataException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -123,8 +115,8 @@ class StocksValidatorTest {
 
     @Test
     @DisplayName("Errors returned for empty note when balance sheet periods have values")
-    void testErrorsReturnedWhenNoDataPresentButBalanceSheetPeriodValuesProvided() throws ServiceException, DataException {
-
+    void testErrorsReturnedWhenNoDataPresentButBalanceSheetPeriodValuesProvided()
+            throws ServiceException, DataException {
         mockValidBalanceSheetCurrentPeriod();
         mockValidBalanceSheetPreviousPeriod();
 
@@ -136,38 +128,32 @@ class StocksValidatorTest {
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            STOCKS_CURRENT_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            STOCKS_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE, STOCKS_CURRENT_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE, STOCKS_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
     @DisplayName("Error returned for first year filer if previous period provided in note")
     void testUnexpectedDataErrorReturnedForFirstYearFiler() throws ServiceException, DataException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
         mockValidBalanceSheetCurrentPeriod();
 
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-            UNEXPECTED_DATA_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenReturn(false);
 
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-            STOCKS_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, STOCKS_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
     @DisplayName("Errors returned when total fields missing")
     void testErrorsReturnedWhenMandatoryFieldsMissing() throws ServiceException,
         DataException {
-
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setStocks(1L);
         stocks.setCurrentPeriod(currentPeriod);
@@ -185,15 +171,14 @@ class StocksValidatorTest {
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-            MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
+                STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
             STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -206,7 +191,6 @@ class StocksValidatorTest {
     @DisplayName("Errors returned when total values incorrect")
     void testErrorsReturnedWhenTotalValuesIncorrect() throws ServiceException,
         DataException {
-
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setStocks(1L);
         currentPeriod.setTotal(2L);
@@ -232,21 +216,18 @@ class StocksValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-            STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE, STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
             STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-            STOCKS_PREVIOUS_PERIOD_TOTAL_PATH)));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE, STOCKS_PREVIOUS_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE,
-            STOCKS_PREVIOUS_PERIOD_TOTAL_PATH)));
+                STOCKS_PREVIOUS_PERIOD_TOTAL_PATH)));
     }
 
     @Test
     @DisplayName("Errors returned when balance sheet period values empty but note periods not empty")
     void testErrorThrownWhenBalanceSheetPeriodValuesEmptyButNotPeriodsNotEmpty() throws ServiceException,
         DataException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -260,24 +241,20 @@ class StocksValidatorTest {
             CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE);
         ReflectionTestUtils.setField(validator, PREVIOUS_BALANCE_SHEET_NOT_EQUAL_NAME,
             PREVIOUS_BALANCE_SHEET_NOT_EQUAL_VALUE);
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-            UNEXPECTED_DATA_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
         errors = validator.validateSubmission(stocks, mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest);
 
         assertTrue(errors.hasErrors());
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-            STOCKS_PREVIOUS_PERIOD_PATH)));
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-            STOCKS_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, STOCKS_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, STOCKS_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
     @DisplayName("Errors returned when no totals provided")
     void testErrorsReturnedWhenNoTotalsProvided() throws ServiceException,
         DataException {
-
         stocks.setCurrentPeriod(new CurrentPeriod());
         stocks.setPreviousPeriod(new PreviousPeriod());
 
@@ -297,7 +274,7 @@ class StocksValidatorTest {
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-            STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
+                STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL_VALUE,
             STOCKS_CURRENT_PERIOD_TOTAL_PATH)));
         assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
@@ -309,36 +286,29 @@ class StocksValidatorTest {
     @Test
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
         when(mockCompanyService.isMultipleYearFiler(mockTransaction)).thenThrow(mockServiceException);
 
-        assertThrows(DataException.class,
-            () -> validator.validateSubmission(stocks,
-                mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+        assertThrows(DataException.class, () -> validator.validateSubmission(stocks, mockTransaction,
+                COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test
     @DisplayName("Data exception thrown when current balancesheet call fails")
-    void testDataExceptionThrownWhenCurrentBalanceSheetCallFails() throws ServiceException,
-        DataException {
-
+    void testDataExceptionThrownWhenCurrentBalanceSheetCallFails() throws DataException {
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
         when(mockCurrentPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
-        assertThrows(DataException.class,
-            () -> validator.validateSubmission(stocks,
-                mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+        assertThrows(DataException.class, () -> validator.validateSubmission(stocks, mockTransaction,
+                COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test
     @DisplayName("Data exception thrown when previous balancesheet call fails")
-    void testDataExceptionThrownWhenPreviousBalanceSheetCallFails() throws ServiceException,
-        DataException {
-
+    void testDataExceptionThrownWhenPreviousBalanceSheetCallFails() throws DataException {
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -346,15 +316,13 @@ class StocksValidatorTest {
 
         when(mockPreviousPeriodService.find(COMPANY_ACCOUNTS_ID, mockRequest)).thenThrow(new DataException(""));
 
-        assertThrows(DataException.class,
-            () -> validator.validateSubmission(stocks,
-                mockTransaction, COMPANY_ACCOUNTS_ID, mockRequest));
+        assertThrows(DataException.class, () -> validator.validateSubmission(stocks, mockTransaction,
+                COMPANY_ACCOUNTS_ID, mockRequest));
     }
 
     @Test
     @DisplayName("validator returns stocks note")
     void testStockNoteReturned() {
-
         AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_STOCKS;
 
         assertEquals(noteType, validator.getAccountingNoteType());
@@ -379,14 +347,12 @@ class StocksValidatorTest {
     }
 
     private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-            ErrorType.VALIDATION.getType());
+        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject(boolean includeNoteValue) {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-            new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                ResponseStatus.FOUND);
+            new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
             new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
@@ -407,8 +373,7 @@ class StocksValidatorTest {
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generateValidPreviousPeriodResponseObject(boolean includeNoteValue) {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
-            new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod>(
-                ResponseStatus.FOUND);
+            new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
             new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();

@@ -25,7 +25,6 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProfitAndLossValidatorTest {
-
     private ProfitAndLoss profitAndLoss;
 
     private Errors errors;
@@ -63,13 +62,13 @@ class ProfitAndLossValidatorTest {
     @Test
     @DisplayName("Test submission of empty Profit and Loss")
     void testSubmissionOfEmptyProfitAndLoss() {
-
         ReflectionTestUtils.setField(validator, VALUE_REQUIRED_KEY, VALUE_REQUIRED);
 
         errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
     }
 
     @Test
@@ -88,7 +87,6 @@ class ProfitAndLossValidatorTest {
     @Test
     @DisplayName("Test Gross profit or loss fields do no match with total")
     void grossProfitOrLossFieldsDoNotMatchTotal() {
-
         GrossProfitOrLoss grossProfitOrLoss = new GrossProfitOrLoss();
         grossProfitOrLoss.setCostOfSales(3L);
         grossProfitOrLoss.setTurnover(5L);
@@ -101,14 +99,14 @@ class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.gross_profit_or_loss.gross_total")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.profit_and_loss.gross_profit_or_loss.gross_total")));
     }
 
 
     @Test
     @DisplayName("Test successful input of operating Profit or Loss fields")
     void testOperatingTotalEntry() {
-
         createValidOperatingTotal();
         createValidTotalProfitOrLossBeforeTax();
         createValidTotalProfitOrLossForFinancialYear();
@@ -120,7 +118,6 @@ class ProfitAndLossValidatorTest {
     @Test
     @DisplayName("Test operating profit or loss fields do no match with total")
     void operatingProfitOfLossFieldsDoNotMatchTotal() {
-
         createValidOperatingTotal();
         operatingProfitOrLoss.setOperatingTotal(0L);
         profitAndLoss.setOperatingProfitOrLoss(operatingProfitOrLoss);
@@ -130,13 +127,13 @@ class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.operating_profit_or_loss.operating_total")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.profit_and_loss.operating_profit_or_loss.operating_total")));
     }
 
     @Test
     @DisplayName("Test successful input of profit or loss before tax fields")
     void testTotalProfitOrLossBeforeTaxEntry() {
-
         createValidTotalProfitOrLossBeforeTax();
         createValidTotalProfitOrLossForFinancialYear();
 
@@ -148,7 +145,6 @@ class ProfitAndLossValidatorTest {
     @Test
     @DisplayName("Test profit or loss before tax fields do no match with total")
     void profitOrLossBeforeTaxFieldsDoNotMatchTotal() {
-
         createValidTotalProfitOrLossBeforeTax();
         profitOrLossBeforeTax.setTotalProfitOrLossBeforeTax(0L);
         profitAndLoss.setProfitOrLossBeforeTax(profitOrLossBeforeTax);
@@ -158,13 +154,13 @@ class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_before_tax.total_profit_or_loss_before_tax")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.profit_and_loss.profit_or_loss_before_tax.total_profit_or_loss_before_tax")));
     }
 
     @Test
     @DisplayName("Test successful input of profit or loss for financial year fields")
     void testTotalProfitOrLossForFinancialYearEntry() {
-
         createValidTotalProfitOrLossForFinancialYear();
 
         errors = validator.validateProfitLoss(profitAndLoss);
@@ -175,7 +171,6 @@ class ProfitAndLossValidatorTest {
     @Test
     @DisplayName("Test profit or loss for financial year fields do no match with total")
     void profitOrLossForFinancialYearDoNotMatchTotal() {
-
         createValidTotalProfitOrLossForFinancialYear();
         profitOrLossForFinancialYear.setTotalProfitOrLossForFinancialYear(0L);
         profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
@@ -185,11 +180,11 @@ class ProfitAndLossValidatorTest {
         errors = validator.validateProfitLoss(profitAndLoss);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.profit_and_loss.profit_or_loss_for_financial_year.total_profit_or_loss_for_financial_year")));
     }
 
     private void createValidOperatingTotal() {
-
         createValidGrossProfitOrLoss();
         operatingProfitOrLoss = new OperatingProfitOrLoss();
         operatingProfitOrLoss.setAdministrativeExpenses(2L);
@@ -210,7 +205,6 @@ class ProfitAndLossValidatorTest {
     }
 
     private void createValidTotalProfitOrLossBeforeTax() {
-
         createValidOperatingTotal();
         profitOrLossBeforeTax = new ProfitOrLossBeforeTax();
         profitOrLossBeforeTax.setInterestPayableAndSimilarCharges(2L);
@@ -229,8 +223,6 @@ class ProfitAndLossValidatorTest {
         profitAndLoss.setProfitOrLossForFinancialYear(profitOrLossForFinancialYear);
     }
     private Error createError(String error, String path) {
-
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

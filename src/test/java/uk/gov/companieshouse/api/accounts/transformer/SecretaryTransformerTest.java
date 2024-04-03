@@ -16,15 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SecretaryTransformerTest {
-
     private static final String NAME = "name";
 
-    private SecretaryTransformer transformer = new SecretaryTransformer();
+    private final SecretaryTransformer transformer = new SecretaryTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         Secretary secretary = new Secretary();
         secretary.setName(NAME);
 
@@ -38,7 +36,6 @@ class SecretaryTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
-
         SecretaryDataEntity secretaryDataEntity = new SecretaryDataEntity();
         secretaryDataEntity.setName(NAME);
 

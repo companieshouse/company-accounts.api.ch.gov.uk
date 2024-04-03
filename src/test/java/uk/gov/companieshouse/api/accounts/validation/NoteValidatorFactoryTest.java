@@ -20,7 +20,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NoteValidatorFactoryTest {
-
     @Mock
     private NoteValidator<Note> noteValidator;
 
@@ -33,7 +32,7 @@ class NoteValidatorFactoryTest {
     private NoteValidatorFactory<Note> factory;
 
     @BeforeEach
-    private void setup() {
+    public void setUp() {
         when(noteValidator.getAccountingNoteType()).thenReturn(accountingNoteTypeWithCorrespondingValidator);
         List<NoteValidator<Note>> noteValidators = new ArrayList<>();
         noteValidators.add(noteValidator);
@@ -43,7 +42,6 @@ class NoteValidatorFactoryTest {
     @Test
     @DisplayName("Get note validator for accounting note type with corresponding validator")
     void getNoteValidatorForAccountingNoteTypeWithCorrespondingValidator() {
-
         assertEquals(noteValidator,
                 factory.getValidator(accountingNoteTypeWithCorrespondingValidator));
     }
@@ -51,7 +49,6 @@ class NoteValidatorFactoryTest {
     @Test
     @DisplayName("Get note validator for accounting note type without corresponding validator")
     void getNoteValidatorForAccountingNoteTypeWithoutCorrespondingValidator() {
-
         assertThrows(MissingInfrastructureException.class,
                 () -> factory.getValidator(accountingNoteTypeWithoutCorrespondingValidator));
     }

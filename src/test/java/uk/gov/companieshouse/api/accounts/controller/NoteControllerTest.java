@@ -42,7 +42,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NoteControllerTest {
-
     @Mock
     private BindingResult bindingResult;
 
@@ -88,7 +87,6 @@ class NoteControllerTest {
     @Test
     @DisplayName("Note resource created successfully")
     void createNoteResourceSuccess() throws DataException{
-
         when(bindingResult.hasErrors()).thenReturn(false);
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
@@ -96,13 +94,13 @@ class NoteControllerTest {
 
         ResponseObject<Note> responseObject = new ResponseObject<>(ResponseStatus.CREATED, note);
 
-        when(noteService.create(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID,request)).thenReturn(responseObject);
+        when(noteService.create(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        ResponseEntity<Note> responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
 
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors())).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = noteController.create(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> returnedResponse = noteController.create(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -112,20 +110,19 @@ class NoteControllerTest {
     @Test
     @DisplayName("Create Note resource has failed - data exception thrown")
     void createNoteResourceDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
-        when(noteService.create(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID,request)).thenThrow(DataException.class);
+        when(noteService.create(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         when(apiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 noteController.create(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType, noteType,
                          request);
 
@@ -137,11 +134,10 @@ class NoteControllerTest {
     @Test
     @DisplayName("Create Note resource - has binding errors")
     void createNoteResourceErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(eq(bindingResult), anyString())).thenReturn(new Errors());
 
-        ResponseEntity responseEntity =
+        ResponseEntity<?> responseEntity =
                 noteController.create(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(responseEntity);
@@ -151,13 +147,11 @@ class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - no parent link")
     void updateNoteResourceNoParentLink() {
-
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
 
-        ResponseEntity responseEntity =
-                noteController.update(note, bindingResult,
-                        COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> responseEntity = noteController.update(note, bindingResult, COMPANY_ACCOUNTS_ID, accountType,
+                noteType, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -167,7 +161,6 @@ class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - has binding errors")
     void updateNoteResourceBindingErrors() {
-
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
         when(parentResource.childExists(request, accountingNoteTypeWithExplicitValidation.getLinkType())).thenReturn(true);
@@ -175,7 +168,7 @@ class NoteControllerTest {
         when(errorMapper.mapBindingResultErrorsToErrorModel(eq(bindingResult), anyString())).thenReturn(new Errors());
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<?> responseEntity =
                 noteController.update(note, bindingResult,
                         COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
@@ -187,7 +180,6 @@ class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - success")
     void updateNoteResourceSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
@@ -197,17 +189,16 @@ class NoteControllerTest {
         ResponseObject<Note> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 note);
 
-        when(noteService.update(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID,request)).thenReturn(responseObject);
+        when(noteService.update(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                noteController.update(note, bindingResult,
-                        COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> returnedResponse = noteController.update(note, bindingResult, COMPANY_ACCOUNTS_ID,
+                accountType, noteType, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -217,20 +208,20 @@ class NoteControllerTest {
     @Test
     @DisplayName("Update Note resource - data exception thrown")
     void updateNoteResourceDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(parentResourceFactory.getParentResource(accountType)).thenReturn(parentResource);
         when(parentResource.childExists(request, accountingNoteTypeWithExplicitValidation.getLinkType())).thenReturn(true);
 
-        when(noteService.update(note, accountingNoteTypeWithExplicitValidation, transaction, COMPANY_ACCOUNTS_ID,request)).thenThrow(DataException.class);
+        when(noteService.update(note, accountingNoteTypeWithExplicitValidation, transaction,
+                COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 noteController.update(note, bindingResult,
                         COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
@@ -242,22 +233,20 @@ class NoteControllerTest {
     @Test
     @DisplayName("Get Note resource - success")
     void getNoteResourceSuccess() throws DataException {
-
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject<Note> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
-                note);
+        ResponseObject<Note> responseObject = new ResponseObject<>(ResponseStatus.FOUND, note);
 
         when(noteService.find(accountingNoteTypeWithExplicitValidation, COMPANY_ACCOUNTS_ID))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<Note> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 noteController.get(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(returnedResponse);
@@ -268,19 +257,18 @@ class NoteControllerTest {
     @Test
     @DisplayName("Get Note resource - data exception thrown")
     void getNoteResourceDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
 
         DataException dataException = new DataException("");
         when(noteService.find(accountingNoteTypeWithExplicitValidation, COMPANY_ACCOUNTS_ID)).thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = noteController.get(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> returnedResponse = noteController.get(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -290,7 +278,6 @@ class NoteControllerTest {
     @Test
     @DisplayName("Delete Note resource - success")
     void deleteNoteResourceSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
 
@@ -300,14 +287,12 @@ class NoteControllerTest {
         when(noteService.delete(accountingNoteTypeWithExplicitValidation, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                noteController.delete(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> returnedResponse = noteController.delete(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -316,17 +301,16 @@ class NoteControllerTest {
     @Test
     @DisplayName("Delete Note resource - data exception thrown")
     void deleteNoteResourceDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(accountsNoteConverter.getAccountsNote(accountType, noteType)).thenReturn(accountingNoteTypeWithExplicitValidation);
         when(noteService.delete(accountingNoteTypeWithExplicitValidation, COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = noteController.delete(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
+        ResponseEntity<?> returnedResponse = noteController.delete(COMPANY_ACCOUNTS_ID, accountType, noteType, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -335,7 +319,6 @@ class NoteControllerTest {
     @Test
     @DisplayName("Tests the InitBinder for Note ")
     void testInitDataBinderSuccess() {
-
         AccountTypeConverter converter = new AccountTypeConverter();
 
         AccountType type = AccountType.SMALL_FULL;

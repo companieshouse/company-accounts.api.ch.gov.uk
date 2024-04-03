@@ -45,7 +45,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicStatementsServiceTest {
-
     @Mock
     private CicStatementsRepository repository;
 
@@ -104,30 +103,23 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Create CIC statements - success path for REST object with all optional fields populated")
     void createCicStatementsSuccessWithAllFieldsPopulated() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
         when(rest.getReportStatements()).thenReturn(reportStatements);
-        when(reportStatements.getConsultationWithStakeholders())
-                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
-        when(reportStatements.getDirectorsRemuneration())
-                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
-        when(reportStatements.getTransferOfAssets())
-                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
+        when(reportStatements.getConsultationWithStakeholders()).thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration()).thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets()).thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
 
         when(transformer.transform(rest)).thenReturn(entity);
 
-        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                                    + ResourceName.CIC_STATEMENTS.getName()))
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(rest.getLinks()).thenReturn(cicStatementsLinks);
-        when(cicStatementsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                CIC_STATEMENTS_SELF_LINK);
+        when(cicStatementsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(CIC_STATEMENTS_SELF_LINK);
 
-        ResponseObject<CicStatements> response =
-                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -141,9 +133,8 @@ class CicStatementsServiceTest {
 
         verify(repository, times(1)).insert(entity);
 
-        verify(cicReportService, times(1))
-                .addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
-                        CIC_STATEMENTS_SELF_LINK, request);
+        verify(cicReportService, times(1)).addLink(COMPANY_ACCOUNTS_ID,
+                CicReportLinkType.STATEMENTS, CIC_STATEMENTS_SELF_LINK, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -154,7 +145,6 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Create CIC statements - success path for REST object without optional fields populated")
     void createCicStatementsSuccessWithoutOptionalFieldsPopulated() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -166,15 +156,12 @@ class CicStatementsServiceTest {
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(rest.getLinks()).thenReturn(cicStatementsLinks);
-        when(cicStatementsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                CIC_STATEMENTS_SELF_LINK);
+        when(cicStatementsLinks.get(BasicLinkType.SELF.getLink())).thenReturn(CIC_STATEMENTS_SELF_LINK);
 
-        ResponseObject<CicStatements> response =
-                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -184,16 +171,14 @@ class CicStatementsServiceTest {
                 .setConsultationWithStakeholders(DEFAULT_CONSULTATION_WITH_STAKEHOLDERS);
         verify(reportStatements, times(1))
                 .setDirectorsRemuneration(DEFAULT_DIRECTORS_REMUNERATION);
-        verify(reportStatements, times(1))
-                .setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
+        verify(reportStatements, times(1)).setTransferOfAssets(DEFAULT_TRANSFER_OF_ASSETS);
 
         verify(entity, times(1)).setId(RESOURCE_ID);
 
         verify(repository, times(1)).insert(entity);
 
-        verify(cicReportService, times(1))
-                .addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
-                        CIC_STATEMENTS_SELF_LINK, request);
+        verify(cicReportService, times(1)).addLink(COMPANY_ACCOUNTS_ID,
+                CicReportLinkType.STATEMENTS, CIC_STATEMENTS_SELF_LINK, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.CREATED, response.getStatus());
@@ -204,28 +189,22 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Create CIC statements - duplicate key exception")
     void createCicStatementsDuplicateKey() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
         when(rest.getReportStatements()).thenReturn(reportStatements);
-        when(reportStatements.getConsultationWithStakeholders())
-                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
-        when(reportStatements.getDirectorsRemuneration())
-                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
-        when(reportStatements.getTransferOfAssets())
-                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
+        when(reportStatements.getConsultationWithStakeholders()).thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration()).thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets()).thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
 
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.insert(entity)).thenThrow(DuplicateKeyException.class);
 
-        ResponseObject<CicStatements> response =
-                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request);
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -237,9 +216,8 @@ class CicStatementsServiceTest {
 
         verify(entity, times(1)).setId(RESOURCE_ID);
 
-        verify(cicReportService, never())
-                .addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
-                        CIC_STATEMENTS_SELF_LINK, request);
+        verify(cicReportService, never()).addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
+                CIC_STATEMENTS_SELF_LINK, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
@@ -250,28 +228,22 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Create CIC statements - Mongo exception")
     void createCicStatementsMongoException() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
         when(rest.getReportStatements()).thenReturn(reportStatements);
-        when(reportStatements.getConsultationWithStakeholders())
-                .thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
-        when(reportStatements.getDirectorsRemuneration())
-                .thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
-        when(reportStatements.getTransferOfAssets())
-                .thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
+        when(reportStatements.getConsultationWithStakeholders()).thenReturn(PROVIDED_CONSULTATION_WITH_STAKEHOLDERS);
+        when(reportStatements.getDirectorsRemuneration()).thenReturn(PROVIDED_DIRECTORS_REMUNERATION);
+        when(reportStatements.getTransferOfAssets()).thenReturn(PROVIDED_TRANSFER_OF_ASSETS);
 
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.insert(entity)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> service.create(rest, transaction, COMPANY_ACCOUNTS_ID, request));
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -283,15 +255,13 @@ class CicStatementsServiceTest {
 
         verify(entity, times(1)).setId(RESOURCE_ID);
 
-        verify(cicReportService, never())
-                .addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
-                        CIC_STATEMENTS_SELF_LINK, request);
+        verify(cicReportService, never()).addLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS,
+                CIC_STATEMENTS_SELF_LINK, request);
     }
 
     @Test
     @DisplayName("Update CIC statements - success path")
     void updateCicStatementsSuccess() throws DataException {
-
         when(validator.validateCicStatementsUpdate(rest)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -301,11 +271,9 @@ class CicStatementsServiceTest {
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
-        ResponseObject<CicStatements> response =
-                service.update(rest, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.update(rest, transaction, COMPANY_ACCOUNTS_ID, request);
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -324,7 +292,6 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Update CIC statements - Mongo exception")
     void updateCicStatementsMongoException() {
-
         when(validator.validateCicStatementsUpdate(rest)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -334,13 +301,11 @@ class CicStatementsServiceTest {
         when(transformer.transform(rest)).thenReturn(entity);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.save(entity)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                service.update(rest, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> service.update(rest, transaction, COMPANY_ACCOUNTS_ID, request));
 
         verify(rest, times(1)).setLinks(anyMap());
         verify(rest, times(1)).setEtag(anyString());
@@ -352,17 +317,14 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Find CIC statements - success path")
     void findCicStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
-        when(repository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(entity));
+        when(repository.findById(RESOURCE_ID)).thenReturn(Optional.of(entity));
 
         when(transformer.transform(entity)).thenReturn(rest);
 
-        ResponseObject<CicStatements> response =
-                service.find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.find(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.FOUND, response.getStatus());
@@ -373,17 +335,14 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Find CIC statements - not found")
     void findCicStatementsNotFound() throws DataException {
-
         CicStatementsEntity entity = null;
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(entity));
 
-        ResponseObject<CicStatements> response =
-                service.find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.find(COMPANY_ACCOUNTS_ID, request);
 
         verify(transformer, never()).transform(entity);
 
@@ -396,29 +355,23 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Find CIC statements - Mongo exception")
     void findCicStatementsMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.findById(RESOURCE_ID)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                service.find(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> service.find(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Delete CIC statements - success path")
     void deleteCicStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.existsById(RESOURCE_ID)).thenReturn(true);
 
-        ResponseObject<CicStatements> response =
-                service.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.delete(COMPANY_ACCOUNTS_ID, request);
 
         verify(repository, times(1)).deleteById(RESOURCE_ID);
         verify(cicReportService, times(1))
@@ -433,19 +386,15 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Delete CIC statements - not found")
     void deleteCicStatementsNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.existsById(RESOURCE_ID)).thenReturn(false);
 
-        ResponseObject<CicStatements> response =
-                service.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicStatements> response = service.delete(COMPANY_ACCOUNTS_ID, request);
 
         verify(repository, never()).deleteById(RESOURCE_ID);
-        verify(cicReportService, never())
-                .removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS, request);
+        verify(cicReportService, never()).removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS, request);
 
         assertNotNull(response);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -456,18 +405,14 @@ class CicStatementsServiceTest {
     @Test
     @DisplayName("Delete CIC statements - Mongo exception")
     void deleteCicStatementsMongoException() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-"
-                + ResourceName.CIC_STATEMENTS.getName()))
-                .thenReturn(RESOURCE_ID);
+                + ResourceName.CIC_STATEMENTS.getName())).thenReturn(RESOURCE_ID);
 
         when(repository.existsById(RESOURCE_ID)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                service.delete(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> service.delete(COMPANY_ACCOUNTS_ID, request));
 
         verify(repository, never()).deleteById(RESOURCE_ID);
-        verify(cicReportService, never())
-                .removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS, request);
+        verify(cicReportService, never()).removeLink(COMPANY_ACCOUNTS_ID, CicReportLinkType.STATEMENTS, request);
     }
 }

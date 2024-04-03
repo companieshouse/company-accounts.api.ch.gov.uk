@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -59,7 +60,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @TestInstance(Lifecycle.PER_CLASS)
 @PropertySource("classpath:LegalStatements.properties")
 class StatementServiceTest {
-
     private static final String ETAG = "etag";
     private static final String LEGAL_STATEMENT_ID = "abcdef";
     private static final String COMPANY_ACCOUNTS_ID = "";
@@ -81,8 +81,6 @@ class StatementServiceTest {
 
     @Mock
     private HttpServletRequest requestMock;
-    @Mock
-    private CompanyAccount companyAccountMock;
     @Mock
     private NextAccounts accountingPeriodMock;
     @Mock
@@ -130,8 +128,7 @@ class StatementServiceTest {
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
         ResponseObject<Statement> result =
                 statementService.create(statementMock, transactionMock, "", requestMock);
@@ -145,19 +142,17 @@ class StatementServiceTest {
     @Test
     @DisplayName("Tests the creation of a Statement Resource when profitAndLossService.find returns a NOT FOUND")
     void creationWhenProfitAndLossNotFound() throws DataException {
-
     	setUpStatementStubbing();
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.NOT_FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
         ResponseObject<Statement> result =
                 statementService.create(statementMock, transactionMock, "", requestMock);
 
         assertNotNull(result);
-        assertEquals(responseObject, profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD));
+        assertEquals(responseObject, profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD));
         assertEquals(statementMock, result.getData());
         assertFalse(result.getData().getLegalStatements().containsKey("no_profit_and_loss"));
     }
@@ -172,8 +167,7 @@ class StatementServiceTest {
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
         ResponseObject<Statement> result =
                 statementService.create(statementMock, transactionMock, "", requestMock);
@@ -191,8 +185,7 @@ class StatementServiceTest {
                 .thenThrow(MongoException.class);
 
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
         setUpTransactionStubbing();
         
@@ -207,11 +200,9 @@ class StatementServiceTest {
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
-        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).
-        thenReturn(responseObjectSmallFull);
+        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).thenReturn(responseObjectSmallFull);
         
         responseObjectSmallFull.setStatus(ResponseStatus.FOUND);
         when(responseObjectSmallFull.getData()).thenReturn(smallFull);
@@ -233,8 +224,7 @@ class StatementServiceTest {
     	setUpTransactionStubbing();
     	
         ResponseObject<ProfitAndLoss> responseObject = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObject);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObject);
 
         assertThrows(DataException.class,
                 () -> statementService.update(statementMock, transactionMock, "", requestMock));
@@ -245,8 +235,7 @@ class StatementServiceTest {
     void shouldFindStatementResource() throws DataException {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
-        when(statementRepositoryMock.findById(RESOURCE_ID))
-                .thenReturn(Optional.ofNullable(statementEntity));
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(statementEntity));
 
         Statement statement = createStatement();
         when(statementTransformerMock.transform(any(StatementEntity.class))).thenReturn(statement);
@@ -263,8 +252,7 @@ class StatementServiceTest {
     void shouldNotFindStatementResource() throws DataException {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
-        when(statementRepositoryMock.findById(RESOURCE_ID))
-                .thenReturn(Optional.ofNullable(null));
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.empty());
 
         ResponseObject<Statement> result = statementService.find(COMPANY_ACCOUNTS_ID, requestMock);
 
@@ -278,8 +266,7 @@ class StatementServiceTest {
     void shouldThrowMongoExceptionWhenFindingById() {
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(RESOURCE_ID);
-        when(statementRepositoryMock.findById(RESOURCE_ID))
-                .thenThrow(MongoException.class);
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class,
                 () -> statementService.find(COMPANY_ACCOUNTS_ID, requestMock));
@@ -291,8 +278,7 @@ class StatementServiceTest {
     	
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
         .thenReturn(RESOURCE_ID);
-        when(statementRepositoryMock.findById(RESOURCE_ID))
-        	.thenReturn(Optional.ofNullable(statementEntityMock));
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.of(statementEntityMock));
 
     	setUpStatementStubbingForFindAndUpdate();
     	setUpTransactionStubbing();
@@ -308,10 +294,8 @@ class StatementServiceTest {
     	
         when(keyIdGeneratorMock.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
         	.thenReturn(RESOURCE_ID);
-        when(statementRepositoryMock.findById(RESOURCE_ID))
-    		.thenReturn(null);
-        StatementEntity statementEntity = null;
-        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(statementEntity));
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(null);
+        when(statementRepositoryMock.findById(RESOURCE_ID)).thenReturn(Optional.empty());
 
         statementService.invalidateStatementsIfExisting(COMPANY_ACCOUNTS_ID, requestMock);
 
@@ -346,8 +330,7 @@ class StatementServiceTest {
 
     private Map<String, String> createSelfLink() {
         Map<String, String> selfLink = new HashMap<>();
-        selfLink
-                .put(BasicLinkType.SELF.getLink(), STATEMENT_SELF_LINK);
+        selfLink.put(BasicLinkType.SELF.getLink(), STATEMENT_SELF_LINK);
         return selfLink;
     }
 
@@ -362,7 +345,7 @@ class StatementServiceTest {
         return statement;
     }
     
-    private void setUpStatementStubbing() {
+    public void setUpStatementStubbing() {
         when(requestMock.getAttribute(anyString())).thenReturn(smallFull);
         when(smallFull.getNextAccounts()).thenReturn(accountingPeriodMock);
         when(accountingPeriodMock.getPeriodEndOn()).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 1));
@@ -370,15 +353,13 @@ class StatementServiceTest {
         when(statementTransformerMock.transform(statementMock)).thenReturn(statementEntity);
     }
     
-    private void setUpStatementStubbingForUpdate() throws DataException {
+    public void setUpStatementStubbingForUpdate() throws DataException {
         
         ResponseObject<ProfitAndLoss> responseObjectProfitAndLoss = new ResponseObject<>(ResponseStatus.FOUND);
-        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, uk.gov.companieshouse.api.accounts.enumeration.AccountingPeriod.CURRENT_PERIOD)).
-                thenReturn(responseObjectProfitAndLoss);
+        when(profitAndLossService.find(COMPANY_ACCOUNTS_ID, CURRENT_PERIOD)).thenReturn(responseObjectProfitAndLoss);
         
         responseObjectSmallFull.setStatus(ResponseStatus.FOUND);
-        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).
-                thenReturn(responseObjectSmallFull);
+        when(smallFullServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).thenReturn(responseObjectSmallFull);
         
         when(responseObjectSmallFull.getData()).thenReturn(smallFull);
         when(smallFull.getNextAccounts()).thenReturn(accountingPeriodMock);
@@ -387,14 +368,14 @@ class StatementServiceTest {
         doReturn(statementEntityMock).when(statementTransformerMock).transform(any(Statement.class));
     }
     
-    private void setUpStatementStubbingForFindAndUpdate() throws DataException {
+    public void setUpStatementStubbingForFindAndUpdate() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock).thenReturn(smallFull);
         doReturn(statementMock).when(statementTransformerMock).transform(statementEntityMock);
        
         setUpStatementStubbingForUpdate();
     }
     
-    private void setUpTransactionStubbing() {
+    public void setUpTransactionStubbing() {
         when(transactionMock.getLinks()).thenReturn(transactionLinksMock);
         when(transactionLinksMock.getSelf()).thenReturn(SELF_LINK);
     }

@@ -16,20 +16,18 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.relatedpart
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RptTransactionTransformerTest {
-
-    private RptTransactionBreakdown rptTransactionBreakdownResource = new RptTransactionBreakdown();
+    private final RptTransactionBreakdown rptTransactionBreakdownResource = new RptTransactionBreakdown();
 
     private static final String RELATED_PARTY_NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String RELATIONSHIP = "relationship";
     private static final String TRANSACTION_TYPE = "transactionType";
 
-    private RptTransactionTransformer transformer = new RptTransactionTransformer();
+    private final RptTransactionTransformer transformer = new RptTransactionTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         RptTransaction rptTransaction = new RptTransaction();
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setRelationship(RELATIONSHIP);
@@ -51,7 +49,6 @@ class RptTransactionTransformerTest {
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntityNoBreakdown() {
-
         RptTransaction rptTransaction = new RptTransaction();
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setRelationship(RELATIONSHIP);
@@ -71,7 +68,6 @@ class RptTransactionTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
-
         RptTransaction rptTransaction = transformer.transform(getRptTransactionEntity(true));
 
         assertNotNull(rptTransaction);
@@ -81,7 +77,6 @@ class RptTransactionTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRestNoBreakdown() {
-
         RptTransaction rptTransaction = transformer.transform(getRptTransactionEntity(false));
 
         assertNotNull(rptTransaction);
@@ -91,8 +86,8 @@ class RptTransactionTransformerTest {
     @Test
     @DisplayName("Transform entity array to rest object array")
     void entityArrayToRestArray() {
-
-        RptTransactionEntity[] entities = new RptTransactionEntity[]{getRptTransactionEntity(true), getRptTransactionEntity(true)};
+        RptTransactionEntity[] entities = new RptTransactionEntity[]{getRptTransactionEntity(true),
+                getRptTransactionEntity(true)};
 
         RptTransaction[] rptTransactions = transformer.transform(entities);
 
@@ -103,7 +98,6 @@ class RptTransactionTransformerTest {
     }
 
     private RptTransactionEntity getRptTransactionEntity(boolean withBreakdown) {
-
         RptTransactionBreakdownEntity rptTransactionBreakdownEntity = new RptTransactionBreakdownEntity();
         rptTransactionBreakdownEntity.setBalanceAtPeriodEnd(1L);
         rptTransactionBreakdownEntity.setBalanceAtPeriodStart(1L);
@@ -133,8 +127,10 @@ class RptTransactionTransformerTest {
         assertEquals(TRANSACTION_TYPE, rptTransaction.getTransactionType());
 
         if (withBreakdown) {
-            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodEnd(), rptTransaction.getBreakdown().getBalanceAtPeriodEnd());
-            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodStart(), rptTransaction.getBreakdown().getBalanceAtPeriodStart());
+            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodEnd(),
+                    rptTransaction.getBreakdown().getBalanceAtPeriodEnd());
+            assertEquals(rptTransactionBreakdownResource.getBalanceAtPeriodStart(),
+                    rptTransaction.getBreakdown().getBalanceAtPeriodStart());
         }
     }
 }

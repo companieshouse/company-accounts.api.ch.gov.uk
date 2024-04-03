@@ -35,7 +35,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class DirectorsReportInterceptorTest {
-
     @Mock
     private DirectorsReportServiceImpl directorsReportService;
 
@@ -55,7 +54,7 @@ class DirectorsReportInterceptorTest {
     private DirectorsReport directorsReport;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<DirectorsReport> responseObject;
 
     @Mock
     private SmallFull smallFull;
@@ -71,8 +70,7 @@ class DirectorsReportInterceptorTest {
     private static final String DIRECTORS_REPORT_SELF_LINK = "directorsReportSelfLink";
 
     @BeforeEach
-    void setUp () {
-
+    void setUp() {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         Map<String, String> pathVariables = new HashMap<>();
@@ -84,19 +82,16 @@ class DirectorsReportInterceptorTest {
     @Test
     @DisplayName("Directors report interceptor - success")
     void directorsReportInterceptorSuccess() throws DataException {
-
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(directorsReport);
 
         doReturn(smallFull).when(request).getAttribute(AttributeName.SMALLFULL.getValue());
         when(smallFull.getLinks()).thenReturn(smallFullLinks);
-        when(smallFullLinks.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn(
-                DIRECTORS_REPORT_SELF_LINK);
+        when(smallFullLinks.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn(DIRECTORS_REPORT_SELF_LINK);
 
         when(directorsReport.getLinks()).thenReturn(directorsReportLinks);
-        when(directorsReportLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                DIRECTORS_REPORT_SELF_LINK);
+        when(directorsReportLinks.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTORS_REPORT_SELF_LINK);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());
 
@@ -108,7 +103,6 @@ class DirectorsReportInterceptorTest {
     @Test
     @DisplayName("Directors report interceptor - directors report not found")
     void directorsReportInterceptorDirectorsReportNotFound() throws DataException {
-
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -122,7 +116,6 @@ class DirectorsReportInterceptorTest {
     @Test
     @DisplayName("Directors report interceptor - parent link not found")
     void directorsReportInterceptorParentLinkNotFound() throws DataException {
-
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(directorsReport);
@@ -132,8 +125,7 @@ class DirectorsReportInterceptorTest {
         when(smallFullLinks.get(SmallFullLinkType.DIRECTORS_REPORT.getLink())).thenReturn(null);
 
         when(directorsReport.getLinks()).thenReturn(directorsReportLinks);
-        when(directorsReportLinks.get(BasicLinkType.SELF.getLink())).thenReturn(
-                DIRECTORS_REPORT_SELF_LINK);
+        when(directorsReportLinks.get(BasicLinkType.SELF.getLink())).thenReturn(DIRECTORS_REPORT_SELF_LINK);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());
 
@@ -145,7 +137,6 @@ class DirectorsReportInterceptorTest {
     @Test
     @DisplayName("Directors report interceptor - data exception")
     void directorsReportInterceptorDataException() throws DataException {
-
         when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());

@@ -36,8 +36,8 @@
     <commons-io.version>2.15.1</commons-io.version>
     <json.version>20240303</json.version>
 
-    <spring-boot-dependencies.version>3.2.3</spring-boot-dependencies.version>
-    <spring-boot-maven-plugin.version>3.2.3</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.2.4</spring-boot-dependencies.version>
+    <spring-boot-maven-plugin.version>3.2.4</spring-boot-maven-plugin.version>
     <spring-core.version>6.1.5</spring-core.version>
 
     <!-- Maven and Surefire plugins -->

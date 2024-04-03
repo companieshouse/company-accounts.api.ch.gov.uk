@@ -47,7 +47,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoansToDirectorsServiceImplTest {
-
     @Mock
     private LoansToDirectorsTransformer transformer;
 
@@ -101,7 +100,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests successful creation of a loans to directors resource")
     void createLoansToDirectorsSuccess() throws DataException {
-
         when(transformer.transform(loansToDirectors)).thenReturn(loansToDirectorsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -129,7 +127,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the creation of a loans to directors resource where the repository throws a duplicate key exception")
     void createLoansToDirectorsDuplicateKeyException() throws DataException {
-
         when(transformer.transform(loansToDirectors)).thenReturn(loansToDirectorsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -150,7 +147,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the creation of a loans to directors resource where the repository throws a mongo exception")
     void createLoansToDirectorsMongoException() throws DataException {
-
         when(transformer.transform(loansToDirectors)).thenReturn(loansToDirectorsEntity);
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
@@ -168,7 +164,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the successful retrieval of a loans to directors resource")
     void getLoansToDirectorsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -185,7 +180,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of a non-existent loans to directors resource")
     void getLoansToDirectorsNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -201,7 +195,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of a loans to directors resource where the repository throws a MongoException")
     void getLoansToDirectorsThrowsMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -214,7 +207,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the successful deletion of a loans to directors resource")
     void deleteLoansToDirectorsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
@@ -237,7 +229,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a non existent loans to directors resource")
     void deleteLoansToDirectorsNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -255,7 +246,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a loans to directors resource where the repository throws a MongoException")
     void deleteLoansToDirectorsThrowsMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -270,7 +260,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests successful removal of a loan")
     void removeLoanSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -288,7 +277,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests removal of a loan when the repository throws a Mongo exception")
     void removeLoanDataException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -308,7 +296,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests removal of a loan when the resource is not found")
     void removeLoanResourceNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -323,7 +310,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests successful creation of a loan")
     void addLoanSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -341,7 +327,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests creation of a loan when the repository throws a Mongo exception")
     void addLoanMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -361,7 +346,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests creation of a loan when the resource is not found")
     void addLoanResourceNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -376,7 +360,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the successful addition of a loans to directors resource link")
     void addLinkSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -396,7 +379,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the  addition of a loans to directors resource link where the repository throws a Mongo exception")
     void addLinkMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -418,7 +400,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the  addition of a loans to directors resource link where the entity is not found")
     void addLinkLoansToDirectorsEntityNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -435,7 +416,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the successful removal of a loans to directors resource link")
     void removeLinkSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -455,7 +435,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the  removal of a loans to directors resource link where the repository throws a Mongo exception")
     void removeLinkMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -477,7 +456,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests the  removal of a loans to directors resource link where the entity is not found")
     void removeLinkLoansToDirectorsEntityNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -494,7 +472,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests successful removal of all loans")
     void removeAllLoansSuccess() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -510,7 +487,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests removal of all loans when the repository throws a Mongo exception")
     void removeAllLoansDataException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -527,7 +503,6 @@ class LoansToDirectorsServiceImplTest {
     @Test
     @DisplayName("Tests removal of all loans when the resource is not found")
     void removeAllLoansResourceNotFound() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.LOANS_TO_DIRECTORS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -558,14 +533,12 @@ class LoansToDirectorsServiceImplTest {
     }
 
     private void assertWhetherSmallFullServiceCalledToAddLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(smallFullService, timesExpected)
                 .addLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.LOANS_TO_DIRECTORS, SELF_LINK, request);
     }
 
     private void assertWhetherSmallFullServiceCalledToRemoveLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(smallFullService, timesExpected)
                 .removeLink(COMPANY_ACCOUNTS_ID, SmallFullLinkType.LOANS_TO_DIRECTORS, request);

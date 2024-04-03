@@ -24,7 +24,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CostControllerTest {
-
     @Mock
     private CostService costService;
 
@@ -40,16 +39,13 @@ class CostControllerTest {
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
 
     @BeforeEach
-    private void setUp() {
-
-        when(request.getAttribute(AttributeName.TRANSACTION.getValue()))
-                .thenReturn(transaction);
+    public void setUp() {
+        when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
     }
 
     @Test
     @DisplayName("Get costs for payable transaction")
     void getCostsForPayableTransaction() throws DataException {
-
         Cost[] costs = {new Cost()};
 
         when(costService.getCosts(transaction)).thenReturn(costs);
@@ -63,7 +59,6 @@ class CostControllerTest {
     @Test
     @DisplayName("Get costs for non-payable transaction")
     void getCostsForNonPayableTransaction() throws DataException {
-
         Cost[] costs = {};
 
         when(costService.getCosts(transaction)).thenReturn(costs);
@@ -77,7 +72,6 @@ class CostControllerTest {
     @Test
     @DisplayName("Get costs - data exception")
     void getCostsDataException() throws DataException {
-
         when(costService.getCosts(transaction)).thenThrow(DataException.class);
 
         ResponseEntity<Cost[]> response = costController.get(COMPANY_ACCOUNTS_ID, request);

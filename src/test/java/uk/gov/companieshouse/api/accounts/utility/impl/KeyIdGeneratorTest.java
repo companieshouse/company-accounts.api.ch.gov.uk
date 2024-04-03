@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KeyIdGeneratorTest {
-
     @InjectMocks
     private KeyIdGenerator keyIdGenerator;
 
@@ -29,7 +28,6 @@ class KeyIdGeneratorTest {
     @Test
     @DisplayName("Test generate a random String")
     void testGenerateRandom() {
-
         String value = keyIdGenerator.generateRandom();
         assertNotNull(value);
     }

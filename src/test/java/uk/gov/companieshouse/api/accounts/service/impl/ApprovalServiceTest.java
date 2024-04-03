@@ -42,7 +42,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class ApprovalServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -96,7 +95,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful creation of an Approval resource")
     void canCreateAnApproval() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
@@ -124,7 +122,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the creation of an Approval resource with validation errors")
     void createApprovalWithValidationErrors() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
@@ -138,7 +135,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating an Approval resource")
     void createApprovalDuplicateKey() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
@@ -162,7 +158,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating an Approval")
     void createApprovalMongoExceptionFailure() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
@@ -181,7 +176,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful update of an Approval resource")
     void canUpdateAnApproval() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
@@ -205,7 +199,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the update of an Approval resource with validation errors")
     void updateApprovalWithValidationErrors() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
 
@@ -219,7 +212,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when updating an Approval")
     void updateApprovalMongoExceptionFailure() throws DataException {
-
         when(approvalValidator.validateApproval(approval, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         when(approvalTransformer.transform(approval)).thenReturn(approvalEntity);
@@ -238,11 +230,10 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful find of an Approval resource")
     void findApproval() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
-        when(approvalRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(approvalEntity));
+        when(approvalRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(approvalEntity));
 
         when(approvalTransformer.transform(approvalEntity)).thenReturn(approval);
 
@@ -255,12 +246,11 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the find of an Approval resource which doesn't exist")
     void findApprovalNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         ApprovalEntity approvalEntity = null;
-        when(approvalRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(approvalEntity));
+        when(approvalRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
 
         ResponseObject<Approval> result = approvalService.find(COMPANY_ACCOUNTS_ID, request);
 
@@ -273,7 +263,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of an Approval resource")
     void findApprovalMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
@@ -285,7 +274,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful delete of an Approval resource")
     void deleteApproval() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
@@ -302,7 +290,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests the delete of an Approval resource which doesn't exist")
     void deleteApprovalNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
@@ -318,7 +305,6 @@ class ApprovalServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on delete of an Approval resource")
     void deleteApprovalMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 

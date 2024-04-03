@@ -12,18 +12,16 @@ import uk.gov.companieshouse.api.accounts.model.entity.ApprovalEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.Approval;
 
 class ApprovalTransformerTest {
-
     public static final String ETAG = "etag";
     public static final String KIND = "kind";
     public static final String NAME = "name";
 
-    private ApprovalTransformer approvalTransformer = new ApprovalTransformer();
+    private final ApprovalTransformer approvalTransformer = new ApprovalTransformer();
 
     @Test
     @DisplayName("Tests approval  transformer with empty object which should result in null values")
     void testTransformerWithEmptyObject() {
-        ApprovalEntity approvalEntity = approvalTransformer
-            .transform(new Approval());
+        ApprovalEntity approvalEntity = approvalTransformer.transform(new Approval());
 
         assertNotNull(approvalEntity);
         assertNull(approvalEntity.getData().getEtag());
@@ -33,15 +31,13 @@ class ApprovalTransformerTest {
     @Test
     @DisplayName("Tests approval transformer with populated Rest object and validates values returned")
     void testRestToEntityTransformerWithPopulatedObject() {
-
         Approval approval = new Approval();
         approval.setEtag(ETAG);
         approval.setKind(KIND);
         approval.setName(NAME);
         approval.setLinks(new HashMap<>());
 
-        ApprovalEntity approvalEntity = approvalTransformer
-            .transform(approval);
+        ApprovalEntity approvalEntity = approvalTransformer.transform(approval);
 
         ApprovalDataEntity approvalDataEntity = approvalEntity.getData();
 
@@ -55,7 +51,6 @@ class ApprovalTransformerTest {
     @Test
     @DisplayName("Tests approval transformer with populated Entity object and validates values returned")
     void testEntityToRestTransformerWithPopulatedObject() {
-
         ApprovalEntity approvalEntity = new ApprovalEntity();
         ApprovalDataEntity approvalDataEntity = new ApprovalDataEntity();
         approvalDataEntity.setEtag(ETAG);

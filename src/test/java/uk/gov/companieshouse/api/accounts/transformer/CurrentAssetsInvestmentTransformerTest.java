@@ -19,17 +19,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CurrentAssetsInvestmentTransformerTest {
-
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private CurrentAssetsInvestmentsTransformer currentAssetsInvestmentsTransformer = new CurrentAssetsInvestmentsTransformer();
+    private final CurrentAssetsInvestmentsTransformer currentAssetsInvestmentsTransformer =
+            new CurrentAssetsInvestmentsTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
     void testTransformerWithEmptyRestObject() {
-
         CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = currentAssetsInvestmentsTransformer
             .transform(new CurrentAssetsInvestments());
 
@@ -41,7 +40,6 @@ class CurrentAssetsInvestmentTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         CurrentAssetsInvestments currentAssetsInvestments = new CurrentAssetsInvestments();
 
         currentAssetsInvestments.setDetails(DETAILS);
@@ -62,7 +60,6 @@ class CurrentAssetsInvestmentTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     void testTransformerWithEmptyEntityObject() {
-
         CurrentAssetsInvestments currentAssetsInvestments = currentAssetsInvestmentsTransformer
             .transform(new CurrentAssetsInvestmentsEntity());
 
@@ -74,9 +71,9 @@ class CurrentAssetsInvestmentTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = new CurrentAssetsInvestmentsEntity();
-        CurrentAssetsInvestmentsDataEntity currentAssetsInvestmentsDataEntity = new CurrentAssetsInvestmentsDataEntity();
+        CurrentAssetsInvestmentsDataEntity currentAssetsInvestmentsDataEntity =
+                new CurrentAssetsInvestmentsDataEntity();
 
         currentAssetsInvestmentsDataEntity.setDetails(DETAILS);
         currentAssetsInvestmentsDataEntity.setEtag(ETAG);
@@ -98,7 +95,6 @@ class CurrentAssetsInvestmentTransformerTest {
     @Test
     @DisplayName("transformer returns correct note note")
     void testCorrectNoteReturned() {
-
         AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_CURRENT_ASSETS_INVESTMENTS;
 
         assertEquals(noteType, currentAssetsInvestmentsTransformer.getAccountingNoteType());

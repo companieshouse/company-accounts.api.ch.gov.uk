@@ -141,10 +141,8 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period/**");
 
         registry.addInterceptor(cicReportInterceptor)
-            .addPathPatterns(
-                    "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**")
-            .excludePathPatterns(
-                    "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report");
+            .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**")
+            .excludePathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report");
 
         registry.addInterceptor(directorsReportInterceptor)
                 .addPathPatterns(

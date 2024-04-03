@@ -26,7 +26,6 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ErrorMapperTest {
-
     @InjectMocks
     private ErrorMapper errorMapper;
 
@@ -44,10 +43,10 @@ class ErrorMapperTest {
         Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult);
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createRangeError("error_string", "$.object1.field1","0","9999")));
-        assertTrue(errors.containsError(createRangeError("error_string", "$.object2.field2","0","9999")));
-        assertTrue(errors.containsError(createMaxError("error_string", "$.object3.field3","0")));
-        assertTrue(errors.containsError(createError("incorrect.total", "$.object4.field4")));
+        assertTrue(errors.containsError(createRangeError("$.object1.field1")));
+        assertTrue(errors.containsError(createRangeError("$.object2.field2")));
+        assertTrue(errors.containsError(createMaxError("$.object3.field3")));
+        assertTrue(errors.containsError(createError("$.object4.field4")));
     }
 
     @Test
@@ -58,17 +57,17 @@ class ErrorMapperTest {
         Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(mockBindingResult, "objectInError");
         assertTrue(errors.hasErrors());
         assertEquals(4, errors.getErrorCount());
-        assertTrue(errors.containsError(createRangeError("error_string", "$.object_in_error.field1","0","9999")));
-        assertTrue(errors.containsError(createRangeError("error_string", "$.object_in_error.field2","0","9999")));
-        assertTrue(errors.containsError(createMaxError("error_string", "$.object_in_error.field3","0")));
-        assertTrue(errors.containsError(createError("incorrect.total", "$.object_in_error.field4")));
+        assertTrue(errors.containsError(createRangeError("$.object_in_error.field1")));
+        assertTrue(errors.containsError(createRangeError("$.object_in_error.field2")));
+        assertTrue(errors.containsError(createMaxError("$.object_in_error.field3")));
+        assertTrue(errors.containsError(createError("$.object_in_error.field4")));
     }
 
     private List<ObjectError> getAllErrors() {
-        Object[] argument = {0,0,9999};
-        FieldError fieldError1= new FieldError("object1","field1",null,true,null,argument,"value.outside.range");
-        FieldError fieldError2= new FieldError("object2","field2",null,true,null,argument,"invalid.input.length");
-        FieldError fieldError3= new FieldError("object3","field3",null,true,null,argument,"max.length.exceeded");
+        Object[] argument = {0, 0, 9999};
+        FieldError fieldError1= new FieldError("object1","field1",null, true, null, argument,"value.outside.range");
+        FieldError fieldError2= new FieldError("object2","field2", null, true, null, argument,"invalid.input.length");
+        FieldError fieldError3= new FieldError("object3","field3", null, true, null, argument,"max.length.exceeded");
         FieldError fieldError4= new FieldError("object4","field4","incorrect.total");
         List<ObjectError> errorList = new ArrayList<>();
         errorList.add(fieldError1);
@@ -78,22 +77,22 @@ class ErrorMapperTest {
         return errorList;
     }
 
-    private Error createRangeError(String error, String path, String upper, String lower) {
-        Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createRangeError(String path) {
+        Error returnError = new  Error("error_string", path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
-        returnError.addErrorValue("upper",upper);
-        returnError.addErrorValue("lower",lower);
+        returnError.addErrorValue("upper", "0");
+        returnError.addErrorValue("lower", "9999");
         return returnError;
     }
-    private Error createMaxError(String error, String path, String maxLength) {
-        Error returnError = new  Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createMaxError(String path) {
+        Error returnError = new  Error("error_string", path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
-        returnError.addErrorValue("max_length",maxLength);
+        returnError.addErrorValue("max_length", "0");
         return returnError;
     }
 
-    private Error createError(String error, String path) {
-        return new  Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError(String path) {
+        return new  Error("incorrect.total", path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
 
     }

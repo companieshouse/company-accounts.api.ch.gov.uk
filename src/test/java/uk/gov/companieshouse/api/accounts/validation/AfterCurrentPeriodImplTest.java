@@ -22,22 +22,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.links.LinkType;
-import uk.gov.companieshouse.api.accounts.model.rest.LastAccounts;
 import uk.gov.companieshouse.api.accounts.parent.ParentResource;
 import uk.gov.companieshouse.api.accounts.parent.ParentResourceFactory;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AfterCurrentPeriodImplTest {
-
     @Mock
     private HttpServletRequest request;
 
     @InjectMocks
     private AfterCurrentPeriodImpl afterCurrentPeriodImpl;
-
-    @Mock
-    private LastAccounts accountingPeriod;
 
     @Mock
     private ConstraintValidatorContext context;
@@ -53,7 +48,7 @@ class AfterCurrentPeriodImplTest {
 
     private static final LocalDate PERIOD_END_ON = LocalDate.of(2019, 1, 1);
 
-    private void setUpPeriodEnd() {
+    public void setUpPeriodEnd() {
     	when(parentResourceFactory.getParentResource(AccountType.SMALL_FULL)).thenReturn(parentResource);
         when(parentResource.getPeriodEndOn(request)).thenReturn(PERIOD_END_ON);
         when(afterCurrentPeriod.accountType()).thenReturn(AccountType.SMALL_FULL);
@@ -63,42 +58,30 @@ class AfterCurrentPeriodImplTest {
     @Test
     @DisplayName("AfterCurrentPeriod - date after period")
     void afterCurrentPeriodDateAfterPeriod() {
-        
     	setUpPeriodEnd();
     	
-        assertTrue(
-                afterCurrentPeriodImpl
-                        .isValid(LocalDate.of(2019, 1, 2),
-                                context));
+        assertTrue(afterCurrentPeriodImpl.isValid(LocalDate.of(2019, 1, 2), context));
     }
 
     @Test
     @DisplayName("AfterCurrentPeriod - date before period")
     void afterCurrentPeriodDateBeforePeriod() {
-
     	setUpPeriodEnd();
 
-        assertFalse(
-                afterCurrentPeriodImpl
-                        .isValid(LocalDate.of(2017, 12, 31),
-                                context));
+        assertFalse(afterCurrentPeriodImpl.isValid(LocalDate.of(2017, 12, 31), context));
     }
 
     @Test
     @DisplayName("AfterCurrentPeriod - date equals period end")
     void afterCurrentPeriodDateEqualsPeriodStart() {
-
     	setUpPeriodEnd();
 
-        assertFalse(
-                afterCurrentPeriodImpl
-                        .isValid(PERIOD_END_ON, context));
+        assertFalse(afterCurrentPeriodImpl.isValid(PERIOD_END_ON, context));
     }
 
     @Test
     @DisplayName("AfterCurrentPeriod - null date")
     void afterCurrentPeriodNullDate() {
-
         assertTrue(afterCurrentPeriodImpl.isValid(null, context));
 
         verify(parentResourceFactory, never()).getParentResource(any(AccountType.class));

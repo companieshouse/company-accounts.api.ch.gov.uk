@@ -18,23 +18,21 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodire
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoansToDirectorsTransformerTest {
-
     private static final Map<String, String> LOANS = new HashMap<>();
 
     private static final String LOAN_ID = "loanId";
     private static final String LOAN_LINK = "loanLink";
 
-    private LoansToDirectorsTransformer transformer = new LoansToDirectorsTransformer();
+    private final LoansToDirectorsTransformer transformer = new LoansToDirectorsTransformer();
 
     @BeforeEach
-    private void setup() {
+    public void setUp() {
         LOANS.put(LOAN_ID, LOAN_LINK);
     }
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         LoansToDirectors loansToDirectors = new LoansToDirectors();
         loansToDirectors.setLoans(LOANS);
 

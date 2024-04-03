@@ -42,7 +42,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class DirectorsControllerTest {
-
     @Mock
     private DirectorService directorService;
 
@@ -83,7 +82,6 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the successful creation of a director")
     void createDirectorSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -91,12 +89,12 @@ class DirectorsControllerTest {
         when(directorService.create(directorRest, transaction, DIRECTORS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        ResponseEntity<Director> responseEntity =
+                ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.create(directorRest, bindingResult, DIRECTORS_ID, request);
+        ResponseEntity<?> response = controller.create(directorRest, bindingResult, DIRECTORS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -113,11 +111,10 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the creation of a Director when there are binding result errors")
     void createDirectorWithBindingResultErrors() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.create(directorRest, bindingResult, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -133,17 +130,16 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the creation of a Director where the service throws a data exception")
     void createDirectorAndServiceThrowsDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(directorService)
                 .create(directorRest, transaction, DIRECTORS_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.create(directorRest, bindingResult, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -160,18 +156,17 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of a Director")
     void getDirectorSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.FOUND, directorRest);
         when(directorService.find(DIRECTORS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
+        ResponseEntity<Director> responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(DIRECTORS_ID, request);
+        ResponseEntity<?> response = controller.get(DIRECTORS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -186,7 +181,6 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the retrieval of a director when the service throws a DataException")
     void getDirectorServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(directorService).find(DIRECTORS_ID, request);
@@ -194,7 +188,7 @@ class DirectorsControllerTest {
         ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(DIRECTORS_ID, request);
+        ResponseEntity<?> response = controller.get(DIRECTORS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -209,19 +203,19 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of all Directors")
     void getAllDirectorsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         Director[] directors = new Director[0];
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, directors);
+        ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.FOUND, directors);
         when(directorService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getDataForMultipleResources());
+        ResponseEntity<Director[]> responseEntity = ResponseEntity.status(
+                HttpStatus.FOUND).body(responseObject.getDataForMultipleResources());
         when(apiResponseMapper.mapGetResponseForMultipleResources(responseObject.getDataForMultipleResources(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -231,16 +225,15 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the retrieval of all Directors when the service throws a DataException")
     void getAllDirectorsServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(directorService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -250,7 +243,6 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the successful update of a director resource")
     void updateDirectorSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
 
         when(directorsReport.getDirectors()).thenReturn(directors);
@@ -263,11 +255,11 @@ class DirectorsControllerTest {
         when(directorService.update(directorRest, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(directorRest, bindingResult, COMPANY_ACCOUNT_ID, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -283,14 +275,13 @@ class DirectorsControllerTest {
 
     @Test
     @DisplayName("Tests the update of a director when the Director ID doesnt exist")
-    void UpdateDirectorResourceWhenIdIsNull() throws DataException {
-
+    void UpdateDirectorResourceWhenIdIsNull() {
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
 
         when(directorsReport.getDirectors()).thenReturn(directors);
         when(directors.get(DIRECTORS_ID)).thenReturn(null);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(directorRest, bindingResult, COMPANY_ACCOUNT_ID, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -303,7 +294,6 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the update of a director resource when binding result errors are present")
     void updateDirectorBindingResultErrors() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
 
         when(directorsReport.getDirectors()).thenReturn(directors);
@@ -312,7 +302,7 @@ class DirectorsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(directorRest, bindingResult, COMPANY_ACCOUNT_ID, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -327,7 +317,6 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the update of a directors resource where the service throws a data exception")
     void updateDirectorsServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
 
         when(directorsReport.getDirectors()).thenReturn(directors);
@@ -338,10 +327,10 @@ class DirectorsControllerTest {
         doThrow(new DataException("")).when(directorService)
                 .update(directorRest, transaction, COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(directorRest, bindingResult, COMPANY_ACCOUNT_ID, DIRECTORS_ID, request);
 
         assertNotNull(response);
@@ -358,18 +347,17 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the successful deletion of a director resource")
     void deleteDirectorSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
+        ResponseObject<Director> responseObject = new ResponseObject<>(ResponseStatus.UPDATED);
         when(directorService.delete(COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -383,15 +371,14 @@ class DirectorsControllerTest {
     @Test
     @DisplayName("Tests the deletion of a Director resource where the service throws a data exception")
     void deleteDirectorServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(directorService).delete(COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

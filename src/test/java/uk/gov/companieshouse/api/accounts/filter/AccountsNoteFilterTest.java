@@ -22,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.utility.PackageResolver;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountsNoteFilterTest {
-
     @Mock
     private ServletResponse servletResponse;
 
@@ -46,7 +45,6 @@ class AccountsNoteFilterTest {
     @Test
     @DisplayName("Submit note")
     void submitNote() throws IOException, ServletException {
-
         MockHttpServletRequest servletRequest = new MockHttpServletRequest("POST", NOTE_URI);
         servletRequest.setContent("{}".getBytes());
         filter.doFilter(servletRequest, servletResponse, filterChain);
@@ -57,7 +55,6 @@ class AccountsNoteFilterTest {
     @Test
     @DisplayName("Get note")
     void getNote() throws IOException, ServletException {
-
         MockHttpServletRequest servletRequest = new MockHttpServletRequest("GET", NOTE_URI);
         filter.doFilter(servletRequest, servletResponse, filterChain);
 
@@ -67,7 +64,6 @@ class AccountsNoteFilterTest {
     @Test
     @DisplayName("Submit other resource")
     void submitOtherResource() throws IOException, ServletException {
-
         MockHttpServletRequest servletRequest = new MockHttpServletRequest("POST", OTHER_URI);
         servletRequest.setContent("{}".getBytes());
         filter.doFilter(servletRequest, servletResponse, filterChain);

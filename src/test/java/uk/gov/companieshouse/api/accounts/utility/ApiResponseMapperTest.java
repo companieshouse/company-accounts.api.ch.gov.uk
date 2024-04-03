@@ -22,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class ApiResponseMapperTest {
-
     @Mock
     private RestObject restObject;
 
@@ -38,7 +37,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests create response")
     void canMapCreateResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.CREATED, restObject, errors);
+        ResponseEntity<?> responseEntity = apiResponseMapper.map(ResponseStatus.CREATED, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertEquals(restObject, responseEntity.getBody());
@@ -47,7 +46,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests conflict response")
     void canMapConflictResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.DUPLICATE_KEY_ERROR, restObject, errors);
+        ResponseEntity<?> responseEntity = apiResponseMapper.map(ResponseStatus.DUPLICATE_KEY_ERROR, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
@@ -56,7 +55,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests default response")
     void canMapDefaultResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.map(ResponseStatus.FOUND, restObject, errors);
+        ResponseEntity<?> responseEntity = apiResponseMapper.map(ResponseStatus.FOUND, restObject, errors);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
@@ -65,7 +64,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests exception response")
     void canGetErrorResponse() {
-        ResponseEntity responseEntity = apiResponseMapper.getErrorResponse();
+        ResponseEntity<?> responseEntity = apiResponseMapper.getErrorResponse();
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
@@ -74,7 +73,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests get mapping response")
     void canMapGetResponseSuccess() {
-        ResponseEntity responseEntity = apiResponseMapper.mapGetResponse(restObject, request);
+        ResponseEntity<?> responseEntity = apiResponseMapper.mapGetResponse(restObject, request);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
@@ -83,7 +82,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests get mapping response")
     void canMapGetResponseFail() {
-        ResponseEntity responseEntity = apiResponseMapper.mapGetResponse(null, request);
+        ResponseEntity<?> responseEntity = apiResponseMapper.mapGetResponse(null, request);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
@@ -93,7 +92,7 @@ class ApiResponseMapperTest {
     @DisplayName("Tests get mapping response for multiple resources")
     void canMapGetResponseForMultipleResourcesSuccess() {
         RestObject[] restObjects = new RestObject[0];
-        ResponseEntity responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(restObjects, request);
+        ResponseEntity<?> responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(restObjects, request);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
@@ -102,7 +101,7 @@ class ApiResponseMapperTest {
     @Test
     @DisplayName("Tests get mapping response for multiple resources")
     void canMapGetResponseForMultipleResourcesFail() {
-        ResponseEntity responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(null, request);
+        ResponseEntity<?> responseEntity = apiResponseMapper.mapGetResponseForMultipleResources(null, request);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());

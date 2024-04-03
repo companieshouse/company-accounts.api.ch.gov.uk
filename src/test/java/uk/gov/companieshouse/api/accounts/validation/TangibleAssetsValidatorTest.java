@@ -40,7 +40,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TangibleAssetsValidatorTest {
-
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
@@ -76,14 +75,13 @@ class TangibleAssetsValidatorTest {
     private TangibleAssetsValidator validator;
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         validator = new TangibleAssetsValidator(companyService, currentPeriodService, previousPeriodService);
     }
     
     @Test
     @DisplayName("First year filer - provides only additional info in note")
     void firstYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -94,13 +92,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - provides only additional info in note")
     void multipleYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -111,14 +109,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("First year filer - provides cost at period start in sub resource")
     void firstYearFilerProvidesCostAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -136,13 +135,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
     }
 
     @Test
     @DisplayName("First year filer - provides depreciation at period start in sub resource")
     void firstYearFilerProvidesDepreciationAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -160,13 +159,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
     }
 
     @Test
     @DisplayName("First year filer - provides net book value at previous period end in sub resource")
     void firstYearFilerProvidesNetBookValueAtPreviousPeriodEndInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -181,13 +180,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("First year filer - provides only cost fields in sub resource")
     void firstYearFilerProvidesOnlyCostFieldsInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -205,13 +204,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("First year filer - provides only depreciation fields in sub resource")
     void firstYearFilerProvidesOnlyDepreciationFieldsInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -229,13 +228,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("First year filer - doesn't provide cost in sub resource")
     void firstYearFilerDoesNotProvideCostInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -250,13 +249,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("First year filer - doesn't provide cost at period start in sub resource")
     void firstYearFilerDoesNotProvideCostAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -272,13 +271,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide net book value at end of previous period in sub resource")
     void multipleYearFilerDoesNotProvideNetBookValuePreviousPeriodInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -298,13 +297,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide net book value at end of current period in sub resource")
     void multipleYearFilerDoesNotProvideNetBookValueCurrentPeriodInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -324,13 +323,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide cost in sub resource")
     void multipleYearFilerDoesNotProvideCostInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -345,14 +344,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide cost at period start in sub resource")
     void multipleYearFilerDoesNotProvideCostAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -371,13 +371,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_start")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide cost at period end in sub resource")
     void multipleYearFilerDoesNotProvideCostAtPeriodEndInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -396,13 +396,14 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide depreciation at period start or end in sub resource")
-    void multipleYearFilerDoesNotProvideDepreciationAtPeriodStartOrEndInSubResource() throws ServiceException, DataException {
-
+    void multipleYearFilerDoesNotProvideDepreciationAtPeriodStartOrEndInSubResource()
+            throws ServiceException, DataException {
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -426,14 +427,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - provides only cost fields in sub resource")
     void multipleYearFilerProvidesOnlyCostFieldsInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -450,14 +452,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - provides only depreciation fields in sub resource")
     void multipleYearFilerProvidesOnlyDepreciationFieldsInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -474,14 +477,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - cost fields don't total in sub resource")
     void singleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -500,13 +504,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Single year filer - depreciation fields don't total in sub resource")
     void singleYearFilerDepreciationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -531,13 +535,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
     }
 
     @Test
     @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
     void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -557,13 +561,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - cost fields don't total in sub resource")
     void multipleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -584,13 +588,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - depreciation fields don't total in sub resource")
     void multipleYearFilerDepreciationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -618,13 +622,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.depreciation.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - net book value at end of current period doesn't total in sub resource")
     void multipleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -646,13 +650,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - net book value at end of previous period doesn't total in sub resource")
     void multipleYearFilerPreviousNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -674,13 +678,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.fixtures_and_fittings.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - no total fields match")
     void singleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -736,22 +740,31 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(10, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.additions")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.revaluations")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.transfers")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.charge_for_year")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.on_disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.other_adjustments")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - no total fields match")
     void multipleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssetsResource fixturesAndFittings = new TangibleAssetsResource();
@@ -813,25 +826,37 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(13, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_start")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.additions")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.revaluations")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.transfers")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_start")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.charge_for_year")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.on_disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.other_adjustments")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.depreciation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.depreciation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - no current period to validate against")
     void singleYearFilerWithoutCurrentPeriod() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -877,7 +902,6 @@ class TangibleAssetsValidatorTest {
     @Test
     @DisplayName("Single year filer - current period does not match note")
     void singleYearFilerCurrentPeriodDoesNotMatchNote() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -919,13 +943,13 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - no current or previous period to validate against")
     void multipleYearFilerWithoutCurrentOrPreviousPeriod() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -976,7 +1000,6 @@ class TangibleAssetsValidatorTest {
     @Test
     @DisplayName("Multiple year filer - neither current nor previous period match note")
     void multipleYearFilerCurrentAndPreviousPeriodDoNotMatchNote() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -1022,14 +1045,15 @@ class TangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(tangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL,
+                "$.tangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - valid submission")
     void singleYearFilerValidSubmission() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -1074,7 +1098,6 @@ class TangibleAssetsValidatorTest {
     @Test
     @DisplayName("Multiple year filer - valid submission")
     void multipleYearFilerValidSubmission() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         TangibleAssets tangibleAssets = new TangibleAssets();
@@ -1122,12 +1145,10 @@ class TangibleAssetsValidatorTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_TANGIBLE_ASSETS, validator.getAccountingNoteType());
     }
 
     private TangibleAssetsResource createValidSubResource(boolean isMultipleYearFiler) {
-
         TangibleAssetsResource resource = new TangibleAssetsResource();
 
         Cost cost = new Cost();
@@ -1160,12 +1181,10 @@ class TangibleAssetsValidatorTest {
     }
 
     private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 
     private ResponseObject<CurrentPeriod> createCurrentPeriodResponseObject(Long currentPeriodTangible) {
-
         FixedAssets currentFixedAssets = new FixedAssets();
         currentFixedAssets.setTangible(currentPeriodTangible);
 
@@ -1179,7 +1198,6 @@ class TangibleAssetsValidatorTest {
     }
 
     private ResponseObject<PreviousPeriod> createPreviousPeriodResponseObject(Long previousPeriodTangible) {
-
         FixedAssets previousFixedAssets = new FixedAssets();
         previousFixedAssets.setTangible(previousPeriodTangible);
 

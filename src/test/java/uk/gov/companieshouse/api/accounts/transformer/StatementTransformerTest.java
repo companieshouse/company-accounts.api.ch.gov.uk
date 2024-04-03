@@ -22,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.Statement;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class StatementTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final String STATEMENT_KEY_1 = "statement1";

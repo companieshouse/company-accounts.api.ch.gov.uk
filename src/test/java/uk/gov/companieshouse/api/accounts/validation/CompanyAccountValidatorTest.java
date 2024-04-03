@@ -25,7 +25,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CompanyAccountValidatorTest {
-
     private static final String ERROR_PATH = "$.company_account";
 
     private Errors errors;
@@ -49,7 +48,6 @@ class CompanyAccountValidatorTest {
 
     @BeforeEach
     void setup() {
-
         validator = new CompanyAccountValidator(companyService);
         validator.dateOutsideRange = "date.outside.range";
     }
@@ -57,7 +55,6 @@ class CompanyAccountValidatorTest {
     @Test
     @DisplayName("Validate with a valid date")
     void validateCompanyAccountWithValidDate() throws ServiceException, DataException {
-
         when(companyService.getCompanyProfile(transaction.getCompanyNumber())).thenReturn(companyProfileApi);
 
         when(companyProfileApi.getAccounts()).thenReturn(accounts);
@@ -71,7 +68,6 @@ class CompanyAccountValidatorTest {
     @Test
     @DisplayName("Validate with an invalid date")
     void validateCompanyAccountWithInvalidDate() throws ServiceException, DataException {
-
         when(companyService.getCompanyProfile(transaction.getCompanyNumber())).thenReturn(companyProfileApi);
 
         when(companyProfileApi.getAccounts()).thenReturn(accounts);
@@ -81,23 +77,21 @@ class CompanyAccountValidatorTest {
         errors = validator.validateCompanyAccount(transaction);
         assertTrue(errors.hasErrors());
 
-        Error error = createError(validator.dateOutsideRange, ERROR_PATH);
+        Error error = createError(validator.dateOutsideRange);
 
         assertTrue(errors.containsError(error));
     }
 
     @Test
     @DisplayName("Validator throws service exception")
-    void validateCompanyAccountThrowsServiceException() throws ServiceException, DataException {
-
+    void validateCompanyAccountThrowsServiceException() throws ServiceException {
         when(companyService.getCompanyProfile(transaction.getCompanyNumber())).thenThrow(ServiceException.class);
 
-        assertThrows(DataException.class,
-                () -> validator.validateCompanyAccount(transaction));
+        assertThrows(DataException.class, () -> validator.validateCompanyAccount(transaction));
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError(String error) {
+        return new Error(error, CompanyAccountValidatorTest.ERROR_PATH, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 }
