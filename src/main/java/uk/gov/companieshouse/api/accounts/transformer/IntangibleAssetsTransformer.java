@@ -3,9 +3,13 @@ package uk.gov.companieshouse.api.accounts.transformer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
-import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.*;
-import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.AmortisationEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.CostEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsDataEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsEntity;
+import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.intangibleassets.IntangibleAssetsResourceEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Amortisation;
+import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.Cost;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.intangibleassets.IntangibleAssetsResource;
 
