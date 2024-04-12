@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,8 +36,9 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     private final PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public IntangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
-
+    public IntangibleAssetsValidator(CompanyService companyService,
+                                     CurrentPeriodService currentPeriodService,
+                                     PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
@@ -60,8 +61,10 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     private static final String AMORTISATION_AT_PERIOD_START = ".amortisation.at_period_start";
 
     @Override
-    public Errors validateSubmission(IntangibleAssets intangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
-    throws DataException {
+    public Errors validateSubmission(IntangibleAssets intangibleAssets,
+                                     Transaction transaction,
+                                     String companyAccountsId,
+                                     HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
@@ -81,11 +84,9 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void verifyNoteNotEmpty(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler) {
-
-        if (intangibleAssets.getGoodwill() == null &&
-                intangibleAssets.getOtherIntangibleAssets() == null &&
-                intangibleAssets.getTotal() == null) {
-
+        if (intangibleAssets.getGoodwill() == null
+                && intangibleAssets.getOtherIntangibleAssets() == null
+                && intangibleAssets.getTotal() == null) {
             addError(errors, valueRequired, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
 
             if (isMultipleYearFiler) {
@@ -94,15 +95,12 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
         }
     }
 
-    private Errors crossValidate(IntangibleAssets intangibleAssets,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
+    private void crossValidate(IntangibleAssets intangibleAssets,
+                               HttpServletRequest request,
+                               String companyAccountsId,
+                               Errors errors) throws DataException {
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
 
         if (currentPeriodBalanceSheet != null) {
             crossValidateCurrentPeriod(errors, request, companyAccountsId, intangibleAssets);
@@ -110,54 +108,68 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
         if (previousPeriodBalanceSheet != null) {
             crossValidatePreviousPeriod(errors, request, companyAccountsId, intangibleAssets);
         }
-        return errors;
     }
 
-    private void verifySubResourcesAreValid(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler, List<IntangibleSubResource> invalidSubResources) {
-
-        validateSubResource(intangibleAssets.getGoodwill(), errors,  isMultipleYearFiler, IntangibleSubResource.GOODWILL, invalidSubResources);
-        validateSubResource(intangibleAssets.getOtherIntangibleAssets(), errors, isMultipleYearFiler, IntangibleSubResource.OTHER_INTANGIBLE_ASSETS, invalidSubResources);
-        validateSubResource(intangibleAssets.getTotal(), errors, isMultipleYearFiler, IntangibleSubResource.TOTAL, invalidSubResources);
+    private void verifySubResourcesAreValid(IntangibleAssets intangibleAssets,
+                                            Errors errors,
+                                            boolean isMultipleYearFiler,
+                                            List<IntangibleSubResource> invalidSubResources) {
+        validateSubResource(intangibleAssets.getGoodwill(), errors,  isMultipleYearFiler,
+                IntangibleSubResource.GOODWILL, invalidSubResources);
+        validateSubResource(intangibleAssets.getOtherIntangibleAssets(), errors, isMultipleYearFiler,
+                IntangibleSubResource.OTHER_INTANGIBLE_ASSETS, invalidSubResources);
+        validateSubResource(intangibleAssets.getTotal(), errors, isMultipleYearFiler,
+                IntangibleSubResource.TOTAL, invalidSubResources);
     }
 
-    private void validateSubResource(IntangibleAssetsResource intangibleAssetsResource, Errors errors, boolean isMultipleYearFiler, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource ) {
-
-        if(intangibleAssetsResource != null) {
-
-            if(isMultipleYearFiler) {
-                validatePresenceOfMultipleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
+    private void validateSubResource(IntangibleAssetsResource intangibleAssetsResource,
+                                     Errors errors,
+                                     boolean isMultipleYearFiler,
+                                     IntangibleSubResource intangibleSubResource,
+                                     List<IntangibleSubResource> invalidSubResource) {
+        if (intangibleAssetsResource != null) {
+            if (isMultipleYearFiler) {
+                validatePresenceOfMultipleYearFilerFields(intangibleAssetsResource, errors,
+                        intangibleSubResource, invalidSubResource);
             } else {
-                validatePresenceOfSingleYearFilerFields(intangibleAssetsResource, errors, intangibleSubResource, invalidSubResource);
+                validatePresenceOfSingleYearFilerFields(intangibleAssetsResource, errors,
+                        intangibleSubResource, invalidSubResource);
             }
         }
     }
 
-    private void validateSubResourceTotals(IntangibleAssets intangibleAssets, Errors errors, boolean isMultipleYearFiler, List<IntangibleSubResource> invalidSubResources) {
-
-        if(intangibleAssets.getGoodwill() != null && !invalidSubResources.contains(IntangibleSubResource.GOODWILL)) {
-
-            validateSubResourceTotal(intangibleAssets.getGoodwill(), errors, isMultipleYearFiler, IntangibleSubResource.GOODWILL);
+    private void validateSubResourceTotals(IntangibleAssets intangibleAssets,
+                                           Errors errors,
+                                           boolean isMultipleYearFiler,
+                                           List<IntangibleSubResource> invalidSubResources) {
+        if (intangibleAssets.getGoodwill() != null && !invalidSubResources.contains(IntangibleSubResource.GOODWILL)) {
+            validateSubResourceTotal(intangibleAssets.getGoodwill(), errors, isMultipleYearFiler,
+                    IntangibleSubResource.GOODWILL);
         }
 
-        if(intangibleAssets.getOtherIntangibleAssets() != null && !invalidSubResources.contains(IntangibleSubResource.OTHER_INTANGIBLE_ASSETS)) {
-
-            validateSubResourceTotal(intangibleAssets.getOtherIntangibleAssets(), errors, isMultipleYearFiler, IntangibleSubResource.OTHER_INTANGIBLE_ASSETS);
+        if (intangibleAssets.getOtherIntangibleAssets() != null
+                && !invalidSubResources.contains(IntangibleSubResource.OTHER_INTANGIBLE_ASSETS)) {
+            validateSubResourceTotal(intangibleAssets.getOtherIntangibleAssets(), errors, isMultipleYearFiler,
+                    IntangibleSubResource.OTHER_INTANGIBLE_ASSETS);
         }
 
     }
 
-    private void validateSubResourceTotal(IntangibleAssetsResource intangibleAssetsResource, Errors errors, boolean isMultipleYearFiler, IntangibleSubResource subResource) {
-
+    private void validateSubResourceTotal(IntangibleAssetsResource intangibleAssetsResource,
+                                          Errors errors,
+                                          boolean isMultipleYearFiler,
+                                          IntangibleSubResource subResource) {
         validateCosts(intangibleAssetsResource, errors, subResource);
         validateAmortisation(intangibleAssetsResource, errors, subResource);
         validateCurrentNetBookValue(errors, intangibleAssetsResource, subResource);
-        if(isMultipleYearFiler) {
+        if (isMultipleYearFiler) {
             validatePreviousNetBookValue(errors, intangibleAssetsResource, subResource);
         }
     }
 
-    private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
-
+    private void validateAmortisation(IntangibleAssetsResource intangibleAssetsResource,
+                                      Errors errors,
+                                      IntangibleSubResource subResource) {
         Long chargeForYear = getChargeForYear(intangibleAssetsResource);
         Long onDisposals = getOnDisposals(intangibleAssetsResource);
         Long otherAdjustments = getOtherAdjustments(intangibleAssetsResource);
@@ -167,13 +179,12 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
         Long atPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
 
-        if(!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
+        if (!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
             addError(errors, incorrectTotal, getJsonPath(subResource, AMORTISATION_AT_PERIOD_END));
         }
     }
 
     private Long getAmortisationAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getAmortisation)
                 .map(Amortisation::getAtPeriodEnd)
@@ -182,7 +193,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getAmortisationAtPeriodStart(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getAmortisation)
                 .map(Amortisation::getAtPeriodStart)
@@ -190,7 +200,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getOtherAdjustments(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getAmortisation)
                 .map(Amortisation::getOtherAdjustments)
@@ -198,7 +207,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getOnDisposals(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getAmortisation)
                 .map(Amortisation::getOnDisposals)
@@ -206,7 +214,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getChargeForYear(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getAmortisation)
                 .map(Amortisation::getChargeForYear)
@@ -215,31 +222,23 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateAdditionsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+        Long goodwillAdditions = getAdditions(intangibleAssets.getGoodwill());
 
-        Long goodwillAdditions =
-                getAdditions(intangibleAssets.getGoodwill());
-
-        Long otherAdditions =
-                getAdditions(intangibleAssets.getOtherIntangibleAssets());
-
+        Long otherAdditions = getAdditions(intangibleAssets.getOtherIntangibleAssets());
 
         Long resourceAdditionsTotal = goodwillAdditions + otherAdditions;
 
         Long additions = getAdditions(intangibleAssets.getTotal());
 
         if (!additions.equals(resourceAdditionsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, ADDITIONS));
         }
     }
 
     private void validateDisposalsTotal(Errors errors, IntangibleAssets intangibleAssets) {
+        Long goodwillDisposals = getDisposals(intangibleAssets.getGoodwill());
 
-        Long goodwillDisposals =
-                getDisposals(intangibleAssets.getGoodwill());
-
-        Long otherDisposals =
-                getDisposals(intangibleAssets.getOtherIntangibleAssets());
+        Long otherDisposals = getDisposals(intangibleAssets.getOtherIntangibleAssets());
 
         Long resourceDisposalsTotal = goodwillDisposals + otherDisposals;
 
@@ -252,11 +251,9 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
     private void validateRevaluationsTotal(Errors errors, IntangibleAssets intangibleAssets) {
 
-        Long goodwillRevaluations =
-                getRevaluations(intangibleAssets.getGoodwill());
+        Long goodwillRevaluations = getRevaluations(intangibleAssets.getGoodwill());
 
-        Long otherRevaluations =
-                getRevaluations(intangibleAssets.getOtherIntangibleAssets());
+        Long otherRevaluations = getRevaluations(intangibleAssets.getOtherIntangibleAssets());
 
         Long resourceRevaluationsTotal = goodwillRevaluations + otherRevaluations;
 
@@ -268,7 +265,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateTransfersTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillTransfers = getTransfers(intangibleAssets.getGoodwill());
 
         Long otherTransfers = getTransfers(intangibleAssets.getOtherIntangibleAssets());
@@ -283,7 +279,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateCostAtEndTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillCostAtEnd = getCostAtPeriodEnd(intangibleAssets.getGoodwill());
 
         Long otherCostAtEnd = getCostAtPeriodEnd(intangibleAssets.getOtherIntangibleAssets());
@@ -298,7 +293,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateCostAtStartTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillCostAtStart = getCostAtPeriodStart(intangibleAssets.getGoodwill());
 
         Long otherCostAtStart = getCostAtPeriodStart(intangibleAssets.getOtherIntangibleAssets());
@@ -313,25 +307,21 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateAmortisationAtPeriodStartTotal(Errors errors, IntangibleAssets intangibleAssets) {
+        Long goodwillAmortisationAtPeriodStart = getAmortisationAtPeriodStart(intangibleAssets.getGoodwill());
 
-        Long goodwillAmortisationAtPeriodStart =
-                getAmortisationAtPeriodStart(intangibleAssets.getGoodwill());
+        Long otherAmortisationAtPeriodStart = getAmortisationAtPeriodStart(intangibleAssets.getOtherIntangibleAssets());
 
-        Long otherAmortisationAtPeriodStart =
-                getAmortisationAtPeriodStart(intangibleAssets.getOtherIntangibleAssets());
-
-        Long resourceAmortisationAtPeriodStartTotal = goodwillAmortisationAtPeriodStart + otherAmortisationAtPeriodStart;
+        Long resourceAmortisationAtPeriodStartTotal = goodwillAmortisationAtPeriodStart
+                + otherAmortisationAtPeriodStart;
 
         Long amortisationAtPeriodStart = getAmortisationAtPeriodStart(intangibleAssets.getTotal());
 
         if (!amortisationAtPeriodStart.equals(resourceAmortisationAtPeriodStartTotal)) {
             addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, AMORTISATION_AT_PERIOD_START));
         }
-
     }
 
     private void validateChargeForYearTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillChargeForYear = getChargeForYear(intangibleAssets.getGoodwill());
 
         Long otherChargeForYear = getChargeForYear(intangibleAssets.getOtherIntangibleAssets());
@@ -346,7 +336,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateOtherAdjustmentsTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillOtherAdjustments = getOtherAdjustments(intangibleAssets.getGoodwill());
 
         Long otherOtherAdjustments = getOtherAdjustments(intangibleAssets.getOtherIntangibleAssets());
@@ -361,7 +350,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateOnDisposalsTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillOnDisposals = getOnDisposals(intangibleAssets.getGoodwill());
 
         Long otherOnDisposals = getOnDisposals(intangibleAssets.getOtherIntangibleAssets());
@@ -376,12 +364,9 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private void validateAmortisationAtPeriodEndTotal(Errors errors, IntangibleAssets intangibleAssets) {
+        Long goodwillAmortisationAtPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssets.getGoodwill());
 
-        Long goodwillAmortisationAtPeriodEnd =
-                getAmortisationAtPeriodEnd(intangibleAssets.getGoodwill());
-
-        Long otherAmortisationAtPeriodEnd =
-                getAmortisationAtPeriodEnd(intangibleAssets.getOtherIntangibleAssets());
+        Long otherAmortisationAtPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssets.getOtherIntangibleAssets());
 
         Long resourceAmortisationAtPeriodEndTotal = goodwillAmortisationAtPeriodEnd + otherAmortisationAtPeriodEnd;
 
@@ -394,12 +379,12 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
 
     private void validateTotalFieldsMatch(Errors errors, IntangibleAssets intangibleAssets, boolean isMultipleYearFiler) {
-
         if (isMultipleYearFiler) {
             validateCostAtStartTotal(errors, intangibleAssets);
             validateAmortisationAtPeriodStartTotal(errors, intangibleAssets);
             validatePreviousNetBookValuesTotal(errors, intangibleAssets);
         }
+
         validateAdditionsTotal(errors, intangibleAssets);
         validateDisposalsTotal(errors, intangibleAssets);
         validateRevaluationsTotal(errors, intangibleAssets);
@@ -412,8 +397,9 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
         validateCurrentNetBookValuesTotal(errors, intangibleAssets);
     }
 
-    private void validateCosts(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource subResource) {
-
+    private void validateCosts(IntangibleAssetsResource intangibleAssetsResource,
+                               Errors errors,
+                               IntangibleSubResource subResource) {
         Long atPeriodStart = getCostAtPeriodStart(intangibleAssetsResource);
 
         Long additions = getAdditions(intangibleAssetsResource);
@@ -426,13 +412,12 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
         Long calculatedAtPeriodEnd = atPeriodStart + additions - disposals + revaluations + transfers;
 
-        if(!getCostAtPeriodEnd(intangibleAssetsResource).equals(calculatedAtPeriodEnd)) {
+        if (!getCostAtPeriodEnd(intangibleAssetsResource).equals(calculatedAtPeriodEnd)) {
             addError(errors, incorrectTotal, getJsonPath(subResource, COST_AT_PERIOD_END));
         }
     }
 
     private Long getCostAtPeriodEnd(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getCost)
                 .map(Cost::getAtPeriodEnd)
@@ -440,7 +425,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getTransfers(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getCost)
                 .map(Cost::getTransfers)
@@ -448,7 +432,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getRevaluations(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getCost)
                 .map(Cost::getRevaluations)
@@ -456,7 +439,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getDisposals(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getCost)
                 .map(Cost::getDisposals)
@@ -465,7 +447,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private Long getAdditions(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
                 .map(IntangibleAssetsResource::getCost)
                 .map(Cost::getAdditions)
@@ -479,28 +460,31 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
                 .orElse(0L);
     }
 
-    private void validatePresenceOfSingleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
-
+    private void validatePresenceOfSingleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource,
+                                                         Errors errors,
+                                                         IntangibleSubResource intangibleSubResource,
+                                                         List<IntangibleSubResource> invalidSubResource) {
         boolean subResourceInvalid = false;
 
-        if(intangibleAssetsResource.getCost() != null && intangibleAssetsResource.getCost().getAtPeriodStart() != null) {
+        if (intangibleAssetsResource.getCost() != null
+                && intangibleAssetsResource.getCost().getAtPeriodStart() != null) {
             addError(errors, unexpectedData, getJsonPath (intangibleSubResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getCost() != null
+        if (intangibleAssetsResource.getCost() != null
                 && intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getAmortisation() != null
+        if (intangibleAssetsResource.getAmortisation() != null
                 && intangibleAssetsResource.getAmortisation().getAtPeriodStart() != null) {
             addError(errors, unexpectedData, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getAmortisation() != null
+        if (intangibleAssetsResource.getAmortisation() != null
                 && hasAmortisationFieldsSet(intangibleAssetsResource.getAmortisation())
                 && intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
@@ -508,166 +492,151 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
         }
 
         if (intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
-
             addError(errors, unexpectedData,
                 getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             subResourceInvalid = true;
         }
 
         if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
-
             subResourceInvalid = isCostSingleYearSubResourceInvalid(errors, intangibleAssetsResource.getCost(),
                 intangibleSubResource, subResourceInvalid);
 
             subResourceInvalid = isAmortisationSingleYearSubResourceInvalid(errors,
                 intangibleAssetsResource.getAmortisation(), intangibleSubResource,
                 subResourceInvalid);
-        } else {
-
-            if (hasSingleYearFilerNonNetBookValueFieldsSet(intangibleAssetsResource)) {
-
-                addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
-                subResourceInvalid = true;
-            }
+        } else if (hasSingleYearFilerNonNetBookValueFieldsSet(intangibleAssetsResource)) {
+            addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
+            subResourceInvalid = true;
         }
 
-        if(subResourceInvalid) {
+        if (subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
         }
     }
 
-    private boolean isCostSingleYearSubResourceInvalid(Errors errors, Cost cost, IntangibleSubResource intangibleSubResource,
-        boolean subResourceInvalid) {
-
-        if(cost == null || cost.getAtPeriodEnd() == null) {
-
+    private boolean isCostSingleYearSubResourceInvalid(Errors errors,
+                                                       Cost cost,
+                                                       IntangibleSubResource intangibleSubResource,
+                                                       boolean subResourceInvalid) {
+        if (cost == null || cost.getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
             subResourceInvalid = true;
         }
         return subResourceInvalid;
     }
 
-    private boolean isAmortisationSingleYearSubResourceInvalid(Errors errors, Amortisation amortisation, IntangibleSubResource intangibleSubResource,
-        boolean subResourceInvalid) {
-
-        if (amortisation != null && hasAmortisationFieldsSet(amortisation)
-            && amortisation.getAtPeriodEnd() == null) {
-
+    private boolean isAmortisationSingleYearSubResourceInvalid(Errors errors,
+                                                               Amortisation amortisation,
+                                                               IntangibleSubResource intangibleSubResource,
+                                                               boolean subResourceInvalid) {
+        if (amortisation != null && hasAmortisationFieldsSet(amortisation) && amortisation.getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
             subResourceInvalid = true;
         }
         return subResourceInvalid;
     }
 
-    private void validateCurrentNetBookValue(Errors errors, IntangibleAssetsResource intangibleAssetsResource, IntangibleSubResource intangibleSubResource) {
-
+    private void validateCurrentNetBookValue(Errors errors,
+                                             IntangibleAssetsResource intangibleAssetsResource,
+                                             IntangibleSubResource intangibleSubResource) {
         Long costAtPeriodEnd = getCostAtPeriodEnd(intangibleAssetsResource);
 
         Long amortisationAtPeriodEnd = getAmortisationAtPeriodEnd(intangibleAssetsResource);
 
         Long calculatedCurrentNetBookValue = costAtPeriodEnd - amortisationAtPeriodEnd;
 
-        if(!intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod().equals(calculatedCurrentNetBookValue)) {
-
+        if (!intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod().equals(calculatedCurrentNetBookValue)) {
             addError(errors, incorrectTotal, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
-    private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource, Errors errors, IntangibleSubResource intangibleSubResource, List<IntangibleSubResource> invalidSubResource) {
-
+    private void validatePresenceOfMultipleYearFilerFields(IntangibleAssetsResource intangibleAssetsResource,
+                                                           Errors errors,
+                                                           IntangibleSubResource intangibleSubResource,
+                                                           List<IntangibleSubResource> invalidSubResource) {
         boolean subResourceInvalid = false;
 
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
+        if (intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_END));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
+        if (intangibleAssetsResource.getCost() == null || intangibleAssetsResource.getCost().getAtPeriodStart() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodStart() == null) {
-
+        if (intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodStart() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
-        if(intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
-
+        if (intangibleAssetsResource.getAmortisation() == null || intangibleAssetsResource.getAmortisation().getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_END));
             subResourceInvalid = true;
         }
 
         if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null  || intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
-
             if (intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() == null) {
-
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
                 subResourceInvalid = true;
             }
 
             if (intangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() == null) {
-
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
                 subResourceInvalid = true;
             }
 
             subResourceInvalid = isCostMultipleYearSubResourceInvalid(errors, intangibleAssetsResource.getCost(),
-                intangibleSubResource, subResourceInvalid);
+                    intangibleSubResource, subResourceInvalid);
 
-            subResourceInvalid = isAmortisationMultipleYearSubResourceInvalid(errors, intangibleAssetsResource.getAmortisation(),
-                intangibleSubResource, subResourceInvalid);
+            subResourceInvalid = isAmortisationMultipleYearSubResourceInvalid(errors,
+                    intangibleAssetsResource.getAmortisation(), intangibleSubResource, subResourceInvalid);
 
         } else {
-
             if (hasMultipleYearFilerNonNetBookValueFieldsSet(intangibleAssetsResource)) {
-
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_CURRENT_PERIOD));
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
                 subResourceInvalid = true;
             }
         }
 
-        if(subResourceInvalid) {
+        if (subResourceInvalid) {
             invalidSubResource.add(intangibleSubResource);
         }
     }
 
     private boolean hasAmortisationFieldsSet(Amortisation amortisation) {
         return Stream.of(amortisation.getChargeForYear(),
-                amortisation.getOnDisposals(),
-                amortisation.getOtherAdjustments())
+                        amortisation.getOnDisposals(),
+                        amortisation.getOtherAdjustments())
                 .anyMatch(Objects::nonNull);
-
     }
 
     private boolean hasSingleYearFilerNonNetBookValueFieldsSet(IntangibleAssetsResource intangibleAssetsResource) {
-
-        if (intangibleAssetsResource.getCost() != null &&
-            Stream.of(intangibleAssetsResource.getCost().getAdditions(),
-                intangibleAssetsResource.getCost().getDisposals(),
-                intangibleAssetsResource.getCost().getRevaluations(),
-                intangibleAssetsResource.getCost().getTransfers(),
-                intangibleAssetsResource.getCost().getAtPeriodEnd())
+        if (intangibleAssetsResource.getCost() != null
+                && Stream.of(intangibleAssetsResource.getCost().getAdditions(),
+                        intangibleAssetsResource.getCost().getDisposals(),
+                        intangibleAssetsResource.getCost().getRevaluations(),
+                        intangibleAssetsResource.getCost().getTransfers(),
+                        intangibleAssetsResource.getCost().getAtPeriodEnd())
                 .anyMatch(Objects::nonNull)) {
-
             return true;
         }
 
-        return intangibleAssetsResource.getAmortisation() != null &&
-            Stream.of(intangibleAssetsResource.getAmortisation().getChargeForYear(),
-                intangibleAssetsResource.getAmortisation().getOnDisposals(),
-                intangibleAssetsResource.getAmortisation().getOtherAdjustments(),
-                intangibleAssetsResource.getAmortisation().getAtPeriodEnd())
+        return intangibleAssetsResource.getAmortisation() != null
+                && Stream.of(intangibleAssetsResource.getAmortisation().getChargeForYear(),
+                        intangibleAssetsResource.getAmortisation().getOnDisposals(),
+                        intangibleAssetsResource.getAmortisation().getOtherAdjustments(),
+                        intangibleAssetsResource.getAmortisation().getAtPeriodEnd())
                 .anyMatch(Objects::nonNull);
     }
 
     private boolean isCostMultipleYearSubResourceInvalid(Errors errors,
-        Cost cost, IntangibleSubResource intangibleSubResource,
-        boolean subResourceInvalid) {
+                                                         Cost cost,
+                                                         IntangibleSubResource intangibleSubResource,
+                                                         boolean subResourceInvalid) {
         if (cost == null || cost.getAtPeriodStart() == null) {
-
             addError(errors, valueRequired, getJsonPath(intangibleSubResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
@@ -678,12 +647,11 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private boolean isAmortisationMultipleYearSubResourceInvalid(Errors errors,
-        Amortisation amortisation, IntangibleSubResource intangibleSubResource,
-        boolean subResourceInvalid) {
+                                                                 Amortisation amortisation,
+                                                                 IntangibleSubResource intangibleSubResource,
+                                                                 boolean subResourceInvalid) {
         if (amortisation != null && hasAmortisationFieldsSet(amortisation)) {
-
             if (amortisation.getAtPeriodStart() == null) {
-
                 addError(errors, valueRequired, getJsonPath(intangibleSubResource, AMORTISATION_AT_PERIOD_START));
                 subResourceInvalid = true;
             }
@@ -695,44 +663,41 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private boolean hasMultipleYearFilerNonNetBookValueFieldsSet(IntangibleAssetsResource intangibleAssetsResource) {
-
-        if (intangibleAssetsResource.getCost() != null &&
-            Stream.of(intangibleAssetsResource.getCost().getAtPeriodStart(),
-                intangibleAssetsResource.getCost().getAdditions(),
-                intangibleAssetsResource.getCost().getDisposals(),
-                intangibleAssetsResource.getCost().getRevaluations(),
-                intangibleAssetsResource.getCost().getTransfers(),
-                intangibleAssetsResource.getCost().getAtPeriodEnd())
+        if (intangibleAssetsResource.getCost() != null
+                && Stream.of(intangibleAssetsResource.getCost().getAtPeriodStart(),
+                        intangibleAssetsResource.getCost().getAdditions(),
+                        intangibleAssetsResource.getCost().getDisposals(),
+                        intangibleAssetsResource.getCost().getRevaluations(),
+                        intangibleAssetsResource.getCost().getTransfers(),
+                        intangibleAssetsResource.getCost().getAtPeriodEnd())
                 .anyMatch(Objects::nonNull)) {
-
             return true;
         }
 
-        return intangibleAssetsResource.getAmortisation() != null &&
-            Stream.of(intangibleAssetsResource.getAmortisation().getAtPeriodStart(),
-                intangibleAssetsResource.getAmortisation().getChargeForYear(),
-                intangibleAssetsResource.getAmortisation().getOnDisposals(),
-                intangibleAssetsResource.getAmortisation().getOtherAdjustments(),
-                intangibleAssetsResource.getAmortisation().getAtPeriodEnd())
+        return intangibleAssetsResource.getAmortisation() != null
+                && Stream.of(intangibleAssetsResource.getAmortisation().getAtPeriodStart(),
+                        intangibleAssetsResource.getAmortisation().getChargeForYear(),
+                        intangibleAssetsResource.getAmortisation().getOnDisposals(),
+                        intangibleAssetsResource.getAmortisation().getOtherAdjustments(),
+                        intangibleAssetsResource.getAmortisation().getAtPeriodEnd())
                 .anyMatch(Objects::nonNull);
     }
 
-    private void validatePreviousNetBookValue(Errors errors, IntangibleAssetsResource intangibleAssetsResource, IntangibleSubResource intangibleSubResource) {
-
+    private void validatePreviousNetBookValue(Errors errors,
+                                              IntangibleAssetsResource intangibleAssetsResource,
+                                              IntangibleSubResource intangibleSubResource) {
         Long costAtPeriodStart = getCostAtPeriodStart(intangibleAssetsResource);
 
         Long amortisationAtPeriodStart = getAmortisationAtPeriodStart(intangibleAssetsResource);
 
         Long calculatedPreviousNetBookValue = costAtPeriodStart - amortisationAtPeriodStart;
 
-        if(!intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod().equals(calculatedPreviousNetBookValue)) {
-
+        if (!intangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod().equals(calculatedPreviousNetBookValue)) {
             addError(errors, incorrectTotal, getJsonPath(intangibleSubResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
     private void validateCurrentNetBookValuesTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getGoodwill());
 
         Long otherIntangibleAssetsNetBookValue = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getOtherIntangibleAssets());
@@ -741,14 +706,12 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
         Long netBookValueAtEndOfCurrentPeriod = getNetBookValueAtEndOfCurrentPeriod(intangibleAssets.getTotal());
 
-        if(!netBookValueAtEndOfCurrentPeriod.equals(resourceNetBookValueTotal)) {
-
+        if (!netBookValueAtEndOfCurrentPeriod.equals(resourceNetBookValueTotal)) {
             addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
     private void validatePreviousNetBookValuesTotal(Errors errors, IntangibleAssets intangibleAssets) {
-
         Long goodwillNetBookValue = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getGoodwill());
 
         Long otherIntangibleAssetsNetBookValue = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getOtherIntangibleAssets());
@@ -757,79 +720,72 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
         Long netBookValueAtEndOfPreviousPeriod = getNetBookValueAtEndOfPreviousPeriod(intangibleAssets.getTotal());
 
-        if(!netBookValueAtEndOfPreviousPeriod.equals(resourceNetBookValueTotal)) {
-
+        if (!netBookValueAtEndOfPreviousPeriod.equals(resourceNetBookValueTotal)) {
             addError(errors, incorrectTotal, getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
     private Long getNetBookValueAtEndOfCurrentPeriod(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
             .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
             .orElse(0L);
     }
 
     private Long getNetBookValueAtEndOfPreviousPeriod(IntangibleAssetsResource intangibleAssetsResource) {
-
         return Optional.ofNullable(intangibleAssetsResource)
             .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
             .orElse(0L);
     }
 
-    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
+    private void crossValidateCurrentPeriod(Errors errors,
+                                            HttpServletRequest request,
+                                            String companyAccountsId,
                                             IntangibleAssets intangibleAssets) throws DataException {
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject =
                 currentPeriodService.find(companyAccountsId, request);
         CurrentPeriod currentPeriod = currentPeriodResponseObject.getData();
 
-        Long currentPeriodIntangible =
-                Optional.ofNullable(currentPeriod)
-                        .map(CurrentPeriod::getBalanceSheet)
-                        .map(BalanceSheet::getFixedAssets)
-                        .map(FixedAssets::getIntangible)
-                        .orElse(null);
+        Long currentPeriodIntangible = Optional.ofNullable(currentPeriod)
+                .map(CurrentPeriod::getBalanceSheet)
+                .map(BalanceSheet::getFixedAssets)
+                .map(FixedAssets::getIntangible)
+                .orElse(null);
 
-        Long currentNetBookValueTotal =
-                Optional.ofNullable(intangibleAssets)
-                        .map(IntangibleAssets::getTotal)
-                        .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
-                        .orElse(null);
+        Long currentNetBookValueTotal = Optional.ofNullable(intangibleAssets)
+                .map(IntangibleAssets::getTotal)
+                .map(IntangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
+                .orElse(null);
 
-        if ((currentPeriodIntangible != null || currentNetBookValueTotal != null) && (
-                (currentPeriodIntangible != null && currentNetBookValueTotal == null)
-                        || currentPeriodIntangible == null ||
-                        (!currentPeriodIntangible.equals(currentNetBookValueTotal)))) {
+        if ((currentPeriodIntangible != null || currentNetBookValueTotal != null)
+                && ((currentPeriodIntangible != null && currentNetBookValueTotal == null)
+                || currentPeriodIntangible == null || (!currentPeriodIntangible.equals(currentNetBookValueTotal)))) {
             addError(errors, currentBalanceSheetNotEqual,
                     getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
-    private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
+    private void crossValidatePreviousPeriod(Errors errors,
+                                             HttpServletRequest request,
+                                             String companyAccountsId,
                                              IntangibleAssets intangibleAssets) throws DataException {
-
         ResponseObject<PreviousPeriod> previousPeriodResponseObject =
                 previousPeriodService.find(companyAccountsId, request);
         PreviousPeriod previousPeriod = previousPeriodResponseObject.getData();
 
-        Long previousPeriodIntangible =
-                Optional.ofNullable(previousPeriod)
-                        .map(PreviousPeriod::getBalanceSheet)
-                        .map(BalanceSheet::getFixedAssets)
-                        .map(FixedAssets::getIntangible)
-                        .orElse(null);
+        Long previousPeriodIntangible = Optional.ofNullable(previousPeriod)
+                .map(PreviousPeriod::getBalanceSheet)
+                .map(BalanceSheet::getFixedAssets)
+                .map(FixedAssets::getIntangible)
+                .orElse(null);
 
-        Long previousNetBookValueTotal =
-                Optional.ofNullable(intangibleAssets)
-                        .map(IntangibleAssets::getTotal)
-                        .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
-                        .orElse(null);
+        Long previousNetBookValueTotal = Optional.ofNullable(intangibleAssets)
+                .map(IntangibleAssets::getTotal)
+                .map(IntangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
+                .orElse(null);
 
-        if ((previousPeriodIntangible != null || previousNetBookValueTotal != null) && (
-                (previousPeriodIntangible != null && previousNetBookValueTotal == null)
-                        || previousPeriodIntangible == null ||
-                        (!previousPeriodIntangible.equals(previousNetBookValueTotal)))) {
+        if ((previousPeriodIntangible != null || previousNetBookValueTotal != null)
+                && ((previousPeriodIntangible != null && previousNetBookValueTotal == null)
+                || previousPeriodIntangible == null || (!previousPeriodIntangible.equals(previousNetBookValueTotal)))) {
             addError(errors, previousBalanceSheetNotEqual,
                     getJsonPath(IntangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
@@ -837,7 +793,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
 
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
                                                       String companyAccountsId) throws DataException {
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
         currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
 
@@ -848,8 +803,7 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
-                                                      String companyAccountsId) throws DataException {
-
+                                                       String companyAccountsId) throws DataException {
         ResponseObject<PreviousPeriod> previousPeriodResponseObject;
         previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
 
@@ -860,7 +814,6 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
     }
 
     private String getJsonPath(IntangibleSubResource intangibleSubResource, String pathSuffix) {
-
         return INTANGIBLE_NOTE + "." + intangibleSubResource.getJsonPath() + pathSuffix;
     }
 
@@ -874,7 +827,7 @@ public class IntangibleAssetsValidator extends BaseValidator implements NoteVali
         OTHER_INTANGIBLE_ASSETS("other_intangible_assets"),
         TOTAL("total");
 
-        private String jsonPath;
+        private final String jsonPath;
 
         IntangibleSubResource(String jsonPath) {
             this.jsonPath = jsonPath;

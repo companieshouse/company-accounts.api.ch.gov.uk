@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -11,7 +11,7 @@ import java.time.Month;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CicApprovalValidatorTest {
-
     private static final String COMPANY_NUMBER = "12345678";
     
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
@@ -107,7 +106,7 @@ class CicApprovalValidatorTest {
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
+        assertTrue(errors.containsError(createError()));
     }
 
     @Test
@@ -118,7 +117,7 @@ class CicApprovalValidatorTest {
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
+        assertTrue(errors.containsError(createError()));
     }
 
     @Test
@@ -127,7 +126,8 @@ class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.OCTOBER, 30));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock))
+                .thenReturn(LocalDate.of(2018, Month.OCTOBER, 30));
         cicApproval.setDate(LocalDate.of(2018, Month.OCTOBER, 31));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertFalse(errors.hasErrors());
@@ -139,12 +139,13 @@ class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 3));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock))
+                .thenReturn(LocalDate.of(2018, Month.NOVEMBER, 3));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
+        assertTrue(errors.containsError(createError()));
     }
 
     @Test
@@ -153,15 +154,16 @@ class CicApprovalValidatorTest {
         when(companyAccount.getLinks()).thenReturn(getCompanyAccountLinks(true));
         doReturn(ACCOUNT_TYPE).when(accountTypeFactory).getAccountTypeForCompanyAccountLinkType(ACCOUNT_TYPE_LINK);
         when(parentResourceFactory.getParentResource(ACCOUNT_TYPE)).thenReturn(parentResource);
-        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock)).thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2 ));
+        when(parentResource.getPeriodEndOn(COMPANY_ACCOUNTS_ID, httpServletRequestMock))
+                .thenReturn(LocalDate.of(2018, Month.NOVEMBER, 2));
         cicApproval.setDate(LocalDate.of(2018, Month.NOVEMBER, 2));
         errors = validator.validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, httpServletRequestMock);
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError("date.invalid", "$.cic_approval.date")));
+        assertTrue(errors.containsError(createError()));
     }
     
-    private CompanyProfileApi createCompanyProfile(){
+    private CompanyProfileApi createCompanyProfile() {
     	CompanyProfileApi companyProfileApi = new CompanyProfileApi();
     	CompanyAccountApi companyAccountApi = new CompanyAccountApi();
         NextAccountsApi accountingPeriod = new NextAccountsApi();
@@ -171,13 +173,12 @@ class CicApprovalValidatorTest {
         return companyProfileApi;
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError() {
+        return new Error("date.invalid", "$.cic_approval.date", LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 
     private Map<String, String> getCompanyAccountLinks(boolean hasAssociatedAccounts) {
-
         Map<String, String> companyAccountsLinks = new HashMap<>();
         companyAccountsLinks.put(NON_ACCOUNT_TYPE_LINK, NON_ACCOUNT_TYPE_LINK);
         if (hasAssociatedAccounts) {

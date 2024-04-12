@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,7 +28,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicReportControllerTest {
-
     @Mock
     private CicReportService service;
 
@@ -52,19 +51,18 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Create cic report - success")
     void createCicReportSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<CicReport> responseObject = new ResponseObject<>(ResponseStatus.CREATED, cicReport);
         when(service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<CicReport> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.create(cicReport, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -75,16 +73,15 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Create cic report - data exception")
     void createCicReportDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(service.create(cicReport, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.create(cicReport, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -95,16 +92,15 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Get cic report - success")
     void getCicReportSuccess() throws DataException {
-
         ResponseObject<CicReport> responseObject = new ResponseObject<>(ResponseStatus.FOUND, cicReport);
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<CicReport> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -115,16 +111,14 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Get cic report - data exception")
     void getCicReportDataException() throws DataException {
-
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                controller.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, returnedResponse.getStatusCode());
@@ -134,15 +128,14 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Delete cic report - success")
     void deleteCicReportSuccess() throws DataException {
-
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
+        ResponseObject<CicReport> responseObject = new ResponseObject<>(ResponseStatus.UPDATED);
         when(service.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -153,15 +146,14 @@ class CicReportControllerTest {
     @Test
     @DisplayName("Delete cic report - data exception")
     void deleteCicReportDataException() throws DataException {
-
         when(service.delete(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);

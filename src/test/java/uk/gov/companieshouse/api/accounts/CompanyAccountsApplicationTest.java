@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CompanyAccountsApplicationTest {
-
     @InjectMocks
     private CompanyAccountsApplication companyAccountsApplication;
 
@@ -103,7 +102,8 @@ class CompanyAccountsApplicationTest {
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(directorsReportInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(loansToDirectorsInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(relatedPartyTransactionsInterceptor);
-        when(interceptorRegistration.addPathPatterns(Mockito.<String>any())).thenReturn(interceptorRegistration);
+        when(interceptorRegistration.addPathPatterns(anyString())).thenReturn(interceptorRegistration);
+        when(interceptorRegistration.addPathPatterns(anyString(), anyString())).thenReturn(interceptorRegistration);
         when(interceptorRegistration.excludePathPatterns(anyString())).thenReturn(interceptorRegistration);
 
         companyAccountsApplication.addInterceptors(interceptorRegistry);

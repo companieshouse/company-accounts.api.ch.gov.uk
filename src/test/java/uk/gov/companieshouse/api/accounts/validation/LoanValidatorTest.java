@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,19 +22,17 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoanValidatorTest {
-
     private static final String LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END = "$.loan.breakdown.balance_at_period_end";
 
     private static final String OTHER_NAME = "otherName";
@@ -83,7 +82,6 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Loan validation with valid loan and breakdown for multi year filer, with balance at period start")
     void testSuccessfulLoanCalculationValidationForMultiYearFiler() throws DataException, ServiceException {
-
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
 
@@ -100,7 +98,6 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Loan validation with valid loan and breakdown and no name provided")
     void testSuccessfulLoanCalculationValidationNoDirectorName() throws DataException, ServiceException {
-
         loan.setDescription(LOAN_DESCRIPTION);
 
         createValidMultiYearFilerLoanBreakdown();
@@ -115,13 +112,13 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Loan validation with valid loan and breakdown for single year filer, no balance at period start")
     void testSuccessfulLoanCalculationValidationForSingleYearFiler() throws DataException, ServiceException {
-
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
 
         createValidSingleYearFilerLoanBreakdown();
 
-        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(getDirectorsReport(false));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -131,8 +128,8 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Loan validation with missing advances_credits_made")
-    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade() throws DataException, ServiceException {
-
+    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsMade()
+            throws DataException, ServiceException {
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
 
@@ -144,7 +141,8 @@ class LoanValidatorTest {
 
         loan.setBreakdown(loanBreakdown);
 
-        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(getDirectorsReport(false));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -154,8 +152,8 @@ class LoanValidatorTest {
 
     @Test
     @DisplayName("Loan validation with missing advances_credits_repaid")
-    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid() throws DataException, ServiceException {
-
+    void testSuccessfulLoanCalculationValidationWithMissingAdvancesCreditsRepaid()
+            throws DataException, ServiceException {
         loan.setDirectorName(LOAN_DIRECTOR_NAME);
         loan.setDescription(LOAN_DESCRIPTION);
 
@@ -167,7 +165,8 @@ class LoanValidatorTest {
 
         loan.setBreakdown(loanBreakdown);
 
-        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(getDirectorsReport(false));
+        when(directorsReportService.find(COMPANY_ACCOUNTS_ID, request))
+                .thenReturn(getDirectorsReport(false));
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
@@ -178,7 +177,6 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Loan validation with incorrect loan calculation")
     void testIncorrectLoanCalculation() throws DataException, ServiceException {
-
         ReflectionTestUtils.setField(validator, INCORRECT_TOTAL_NAME,
                 INCORRECT_TOTAL_VALUE);
 
@@ -192,8 +190,8 @@ class LoanValidatorTest {
 
         errors = validator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL_VALUE,
-                LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END)));
+        assertTrue(errors.containsError(createError(
+        )));
 
         assertEquals(1, errors.getErrorCount());
     }
@@ -201,7 +199,6 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Create valid loan with DR cross validation")
     void validLoanWithCrossValidationDR() throws DataException, ServiceException {
-
         List<String> validNames = new ArrayList<>();
         validNames.add(LOAN_DIRECTOR_NAME);
 
@@ -221,7 +218,6 @@ class LoanValidatorTest {
     @Test
     @DisplayName("Create invalid loan with DR cross validation")
     void invalidLoanWithCrossValidationDR() throws DataException, ServiceException {
-
         ReflectionTestUtils.setField(validator, INVALID_DR_NAME,
                 INVALID_DR_VALUE);
 
@@ -260,17 +256,17 @@ class LoanValidatorTest {
         loan.setBreakdown(loanBreakdown);
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError() {
+        return new Error(LoanValidatorTest.INCORRECT_TOTAL_VALUE,
+                LoanValidatorTest.LOANS_BREAKDOWN_PATH_BALANCE_AT_PERIOD_END, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 
     private ResponseObject<DirectorsReport> getDirectorsReport(boolean returnFound) {
-
-        if(returnFound) {
+        if (returnFound) {
             return new ResponseObject<>(ResponseStatus.FOUND, directorsReport);
-        } else {
-            return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
+
+        return new ResponseObject<>(ResponseStatus.NOT_FOUND);
     }
 }

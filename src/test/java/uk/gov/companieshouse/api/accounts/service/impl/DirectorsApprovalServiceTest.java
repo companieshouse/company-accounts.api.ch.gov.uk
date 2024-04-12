@@ -26,7 +26,7 @@ import uk.gov.companieshouse.api.accounts.validation.DirectorsApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +46,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorsApprovalServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -92,13 +91,11 @@ class DirectorsApprovalServiceTest {
     private static final String SELF_LINK = "self_link";
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String RESOURCE_ID = "resourceId";
-    private static final String APPROVAL = "approval";
     private static final String TRANSACTION_SELF_LINK = "transactionSelfLink";
 
     @Test
     @DisplayName("Tests the successful creation of an directors approval resource")
     void canCreateADirectorsApproval() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -116,7 +113,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a directors approval resource")
     void createDirectorsApprovalDuplicateKey() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -126,7 +122,8 @@ class DirectorsApprovalServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<DirectorsApproval> response =
+                directorsApprovalService.create(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
@@ -135,7 +132,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating an directors approval")
     void createDirectorsApprovalMongoExceptionFailure() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -152,7 +148,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the creation of an directors approval resource where validation errors are present")
     void createDirectorsApprovalWithValidationErrors() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
@@ -162,22 +157,18 @@ class DirectorsApprovalServiceTest {
 
         assertEquals(ResponseStatus.VALIDATION_ERROR, response.getStatus());
         verify(directorsApprovalRepository, never()).insert(any(DirectorsApprovalEntity.class));
-        assertWhetherDirectorsReportServiceCalledaddLink(false);
+        assertWhetherDirectorsReportServiceCalledaddLink();
     }
 
     @Test
     @DisplayName("Tests the successful find of an directors approval resource")
     void findDirectorsApproval() throws DataException {
-
-        when(keyIdGenerator
-                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
-        when(directorsApprovalRepository.findById(RESOURCE_ID))
-                .thenReturn(Optional.ofNullable(directorsApprovalEntity));
+        when(directorsApprovalRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(directorsApprovalEntity));
         when(directorsApprovalTransformer.transform(directorsApprovalEntity)).thenReturn(directorsApproval);
-        ResponseObject<DirectorsApproval> result = directorsApprovalService
-                .find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<DirectorsApproval> result = directorsApprovalService.find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(directorsApproval, result.getData());
     }
@@ -185,9 +176,7 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of an director approval resource")
     void findDirectorsApprovalMongoException() {
-
-        when(keyIdGenerator
-                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(directorsApprovalRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
@@ -197,17 +186,13 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests mongo exception thrown on find of an director approval resource")
     void findDirectorsApprovalNotFound() throws DataException {
-
-        when(keyIdGenerator
-                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(directorsApprovalRepository.findById(RESOURCE_ID)).thenReturn(null);
-        DirectorsApprovalEntity directorsApprovalEntity = null;
-        when(directorsApprovalRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(directorsApprovalEntity));
+        when(directorsApprovalRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
 
-        ResponseObject<DirectorsApproval> response =
-                directorsApprovalService.find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<DirectorsApproval> response = directorsApprovalService.find(COMPANY_ACCOUNTS_ID, request);
 
         verify(directorsApprovalRepository, times(1)).findById(RESOURCE_ID);
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -217,7 +202,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful update of a directors approval resource")
     void updateDirectorsApprovalSuccess() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -242,7 +226,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the update of a directors approval resource where the repository throws a Mongo exception")
     void updateDirectorsApprovalMongoException() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
@@ -267,7 +250,6 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the update of an directors approval resource where validation errors are present")
     void updateDirectorsApprovalWithValidationErrors() throws DataException {
-
         when(validator.validateApproval(directorsApproval, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
@@ -282,14 +264,12 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful deletion of a directors approval resource")
     void deleteDirectorsApprovalSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(directorsApprovalRepository.existsById(RESOURCE_ID)).thenReturn(true);
 
-        ResponseObject<DirectorsApproval> response =
-                directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<DirectorsApproval> response = directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherDirectorsReportServiceCalledToRemoveLink(true);
@@ -300,15 +280,13 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the deletion of a directors approval resource where the repository throws a Mongo exception")
     void deleteDirectorsApprovalMongoException() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(directorsApprovalRepository.existsById(RESOURCE_ID)).thenReturn(true);
         doThrow(MongoException.class).when(directorsApprovalRepository).deleteById(RESOURCE_ID);
 
-        assertThrows(DataException.class, () ->
-                directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request));
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherDirectorsReportServiceCalledToRemoveLink(false);
@@ -317,14 +295,12 @@ class DirectorsApprovalServiceTest {
     @Test
     @DisplayName("Tests the deletion of a non-existent directors approval resource")
     void deleteDirectorsApprovalNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.APPROVAL.getName()))
                 .thenReturn(RESOURCE_ID);
 
         when(directorsApprovalRepository.existsById(RESOURCE_ID)).thenReturn(false);
 
-        ResponseObject<DirectorsApproval> response =
-                directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<DirectorsApproval> response = directorsApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
 
         verify(directorsApprovalRepository, never()).deleteById(RESOURCE_ID);
         assertWhetherDirectorsReportServiceCalledToRemoveLink(false);
@@ -351,16 +327,13 @@ class DirectorsApprovalServiceTest {
     }
 
     private void assertWhetherDirectorsReportServiceCalledToRemoveLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(directorsReportService, timesExpected)
                 .removeLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.APPROVAL, request);
     }
 
-    private void assertWhetherDirectorsReportServiceCalledaddLink(boolean isServiceExpected) throws DataException {
-
-        VerificationMode timesExpected = isServiceExpected ? times(1) : never();
-        verify(directorsReportService, timesExpected)
+    private void assertWhetherDirectorsReportServiceCalledaddLink() throws DataException {
+        verify(directorsReportService, never())
                 .addLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.APPROVAL, SELF_LINK, request);
     }
 

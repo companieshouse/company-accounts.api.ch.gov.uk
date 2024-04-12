@@ -9,7 +9,7 @@ import static org.mockito.Mockito.doReturn;
 
 import com.mongodb.MongoException;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicApprovalServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -88,19 +87,18 @@ class CicApprovalServiceTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
-        if(testInfo.getTags().contains("SkipSetUp")) {
+        if (testInfo.getTags().contains("SkipSetUp")) {
             return;
         }
-        when(keyIdGenerator
-            .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_APPROVAL.getName()))
-            .thenReturn(RESOURCE_ID);
+
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.CIC_APPROVAL.getName()))
+                .thenReturn(RESOURCE_ID);
     }
 
     @Test
     @DisplayName("Tests the successful creation of an CicApproval resource")
     void canCreateAnCicReportApproval() throws DataException {
-        when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
-            cicReportApprovalEntity);
+        when(cicApprovalTransformer.transform(cicApproval)).thenReturn(cicReportApprovalEntity);
         doReturn(new Errors()).when(cicApprovalValidator)
             .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
@@ -108,7 +106,7 @@ class CicApprovalServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<CicApproval> result = cicApprovalService
-            .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
+                .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(cicApproval, result.getData());
     }
@@ -117,12 +115,10 @@ class CicApprovalServiceTest {
     @DisplayName("Tests the duplicate key when creating an CicApproval resource")
     void createCicReportApprovalDuplicateKey() throws DataException {
         doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
-            .transform(ArgumentMatchers
-                .any(CicApproval.class));
-        when(cicReportApprovalRepository.insert(cicReportApprovalEntity))
-            .thenThrow(duplicateKeyException);
+            .transform(ArgumentMatchers.any(CicApproval.class));
+        when(cicReportApprovalRepository.insert(cicReportApprovalEntity)).thenThrow(duplicateKeyException);
         doReturn(new Errors()).when(cicApprovalValidator)
-            .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
@@ -137,18 +133,16 @@ class CicApprovalServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating an CicApproval")
     void createCicReportApprovalMongoExceptionFailure() throws DataException {
-        doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
-            .transform(ArgumentMatchers
+        doReturn(cicReportApprovalEntity).when(cicApprovalTransformer).transform(ArgumentMatchers
                 .any(CicApproval.class));
         doReturn(new Errors()).when(cicApprovalValidator)
-            .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
+                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         when(cicReportApprovalRepository.insert(cicReportApprovalEntity)).thenThrow(mongoException);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        assertThrows(DataException.class,
-            () -> cicApprovalService
+        assertThrows(DataException.class, () -> cicApprovalService
                 .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
@@ -159,8 +153,7 @@ class CicApprovalServiceTest {
         Errors errors = new Errors();
         Error error = new Error("error","location","jsonpath","validation");
         errors.addError(error);
-        doReturn(errors).when(cicApprovalValidator)
-                .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
+        doReturn(errors).when(cicApprovalValidator).validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         ResponseObject<CicApproval> response = cicApprovalService
                 .create(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
@@ -170,8 +163,7 @@ class CicApprovalServiceTest {
     @Test
     @DisplayName("Tests the successful update of an CicApproval resource")
     void canUpdateAnCicReportApproval() throws DataException {
-        when(cicApprovalTransformer.transform(cicApproval)).thenReturn(
-                cicReportApprovalEntity);
+        when(cicApprovalTransformer.transform(cicApproval)).thenReturn(cicReportApprovalEntity);
         doReturn(new Errors()).when(cicApprovalValidator)
                 .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
 
@@ -203,8 +195,7 @@ class CicApprovalServiceTest {
     @DisplayName("Tests the mongo exception when updating an CicApproval")
     void updateCicReportApprovalMongoExceptionFailure() throws DataException {
         doReturn(cicReportApprovalEntity).when(cicApprovalTransformer)
-                .transform(ArgumentMatchers
-                        .any(CicApproval.class));
+                .transform(ArgumentMatchers.any(CicApproval.class));
         doReturn(new Errors()).when(cicApprovalValidator)
                 .validateCicReportApproval(cicApproval, COMPANY_ACCOUNTS_ID, request);
         when(cicReportApprovalRepository.save(cicReportApprovalEntity)).thenThrow(mongoException);
@@ -213,19 +204,15 @@ class CicApprovalServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         assertThrows(DataException.class,
-                () -> cicApprovalService
-                        .update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request));
+                () -> cicApprovalService.update(cicApproval, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Tests the successful find of an CicApproval resource")
     void findCicReportApproval() throws DataException {
-        when(cicReportApprovalRepository.findById(RESOURCE_ID))
-            .thenReturn(Optional.ofNullable(cicReportApprovalEntity));
-        when(cicApprovalTransformer.transform(cicReportApprovalEntity))
-            .thenReturn(cicApproval);
-        ResponseObject<CicApproval> result = cicApprovalService
-            .find(COMPANY_ACCOUNTS_ID, request);
+        when(cicReportApprovalRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(cicReportApprovalEntity));
+        when(cicApprovalTransformer.transform(cicReportApprovalEntity)).thenReturn(cicApproval);
+        ResponseObject<CicApproval> result = cicApprovalService.find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(cicApproval, result.getData());
     }
@@ -233,10 +220,8 @@ class CicApprovalServiceTest {
     @Test
     @DisplayName("Tests the unsuccessful find of an CicApproval resource")
     void findCicReportApprovalUnsuccessful() throws DataException {
-        when(cicReportApprovalRepository.findById(RESOURCE_ID))
-                .thenReturn(Optional.ofNullable(null));
-        ResponseObject<CicApproval> result = cicApprovalService
-                .find(COMPANY_ACCOUNTS_ID, request);
+        when(cicReportApprovalRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
+        ResponseObject<CicApproval> result = cicApprovalService.find(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(ResponseStatus.NOT_FOUND, result.getStatus());
     }
@@ -245,8 +230,7 @@ class CicApprovalServiceTest {
     @DisplayName("Tests mongo exception thrown on find of an CicApproval resource")
     void findCicReportApprovalMongoException() {
         when(cicReportApprovalRepository.findById(RESOURCE_ID)).thenThrow(mongoException);
-        assertThrows(DataException.class, () -> cicApprovalService
-            .find(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> cicApprovalService.find(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -262,16 +246,14 @@ class CicApprovalServiceTest {
     @DisplayName("Tests mongo exception thrown on delete of an CicApproval resource")
     void deleteCicReportApprovalMongoException() {
         when(cicReportApprovalRepository.existsById(RESOURCE_ID)).thenThrow(mongoException);
-        assertThrows(DataException.class, () -> cicApprovalService
-                .delete(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> cicApprovalService.delete(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Tests the unsuccessful on delete of an CicApproval resource")
     void deleteCicReportApprovalUnsuccessful() throws DataException {
         when(cicReportApprovalRepository.existsById(RESOURCE_ID)).thenReturn(false);
-        ResponseObject<CicApproval> result = cicApprovalService
-                .delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<CicApproval> result = cicApprovalService.delete(COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(ResponseStatus.NOT_FOUND, result.getStatus());
     }

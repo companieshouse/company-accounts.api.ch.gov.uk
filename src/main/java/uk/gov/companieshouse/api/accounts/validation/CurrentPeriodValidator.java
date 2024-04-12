@@ -16,9 +16,7 @@ public class CurrentPeriodValidator {
     private static final String CURRENT_PERIOD_PATH = "$.current_period";
 
 
-    public Errors validateCurrentPeriod(CurrentPeriod currentPeriod, Transaction transaction)
-            throws DataException {
-
+    public Errors validateCurrentPeriod(CurrentPeriod currentPeriod, Transaction transaction) throws DataException {
         Errors errors = new Errors();
 
         if (currentPeriod.getBalanceSheet() != null) {

@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,8 +25,7 @@ public class CostController {
     @GetMapping
     public ResponseEntity<Cost[]> get(String companyAccountId, HttpServletRequest request) {
 
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             Cost[] costs = costService.getCosts(transaction);
@@ -35,9 +34,7 @@ public class CostController {
             }
 
             return new ResponseEntity<>(costs, HttpStatus.OK);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve costs resource", ex, request);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

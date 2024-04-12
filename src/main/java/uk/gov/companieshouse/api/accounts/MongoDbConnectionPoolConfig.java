@@ -8,10 +8,10 @@ import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 @Component
 public class MongoDbConnectionPoolConfig {
 
-    private Integer minSize;
-    private int maxConnectionIdleTimeMS;
-    private int maxConnectionLifeTimeMS;
-    private String connectionString;
+    private final Integer minSize;
+    private final int maxConnectionIdleTimeMS;
+    private final int maxConnectionLifeTimeMS;
+    private final String connectionString;
 
 
     /**
@@ -22,14 +22,11 @@ public class MongoDbConnectionPoolConfig {
         EnvironmentReader reader = new EnvironmentReaderImpl();
 
         this.minSize =
-                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY"))
-                        .orElse(1);
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_POOL_MIN_SIZE_KEY")).orElse(1);
         this.maxConnectionIdleTimeMS =
-                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY"))
-                        .orElse(0);
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_IDLE_KEY")).orElse(0);
         this.maxConnectionLifeTimeMS =
-                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY"))
-                        .orElse(0);
+                Optional.ofNullable(reader.getOptionalInteger("MONGO_CONNECTION_MAX_LIFE_KEY")).orElse(0);
         this.connectionString = Optional.ofNullable(reader.getOptionalString("TRANSACTIONS_ACCOUNTS_DB_URL"))
                 .orElse("mongodb://mongo:27017");
     }

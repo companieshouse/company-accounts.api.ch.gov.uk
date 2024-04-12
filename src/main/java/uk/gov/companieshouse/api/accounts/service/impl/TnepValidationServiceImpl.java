@@ -35,7 +35,6 @@ public class TnepValidationServiceImpl implements TnepValidationService {
     @Autowired
     public TnepValidationServiceImpl(RestTemplate restTemplate,
                                      EnvironmentReader environmentReader) {
-
         this.restTemplate = restTemplate;
         this.environmentReader = environmentReader;
     }
@@ -47,7 +46,6 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     @Override
     public boolean validate(String ixbrl, String location) {
-
         boolean isIxbrlValid = false;
 
         LOGGER.info("TnepValidationServiceImpl: Ixbrl validation has started");
@@ -59,17 +57,14 @@ public class TnepValidationServiceImpl implements TnepValidationService {
                         "Ixbrl is valid. It has passed the TNEP validation");
 
                 isIxbrlValid = true;
-
             } else {
                 addToLog(true, null, location,
                         "Ixbrl is invalid. It has failed the TNEP validation");
             }
-
         } catch (Exception e) {
             addToLog(true, e, location,
                     "Exception has been thrown when calling TNEP validator. Unable to validate Ixbrl");
         }
-
         LOGGER.info("TnepValidationServiceImpl: Ixbrl validation has finished");
 
         return isIxbrlValid;
@@ -82,11 +77,8 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      * @param ixbrl - ixbrl content to be validated.
      * @param location - ixbrl location, public location.
      * @return {@link Results} with the information from calling the Tnep service.
-     * @throws URISyntaxException
      */
-    private Results validatIxbrlAgainstTnep(String ixbrl, String location)
-            throws URISyntaxException {
-
+    private Results validatIxbrlAgainstTnep(String ixbrl, String location) throws URISyntaxException {
         LinkedMultiValueMap<String, Object> map = createFileMessageResource(ixbrl, location);
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = setHttpHeaders(map);
 
@@ -104,14 +96,13 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      */
     private Results postForValidation(HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity)
             throws URISyntaxException {
-
-        return restTemplate
-                .postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
+        return restTemplate.postForObject(new URI(getIxbrlValidatorUri()), requestEntity, Results.class);
     }
 
-    private void addToLog(boolean hasValidationFailed, Exception e,
-                          String location, String message) {
-
+    private void addToLog(boolean hasValidationFailed,
+                          Exception e,
+                          String location,
+                          String message) {
         Map<String, Object> logMap = new HashMap<>();
         logMap.put("message", message);
         logMap.put("location", location);
@@ -128,13 +119,11 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      *
      * @Return HttpEntity<>(LinkedMultiValueMap<String, Object> , HttpHeaders);
      */
-    private HttpEntity<LinkedMultiValueMap<String, Object>> setHttpHeaders(
-            LinkedMultiValueMap<String, Object> map) {
+    private HttpEntity<LinkedMultiValueMap<String, Object>> setHttpHeaders(LinkedMultiValueMap<String, Object> map) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        return new HttpEntity<>(map,
-                headers);
+        return new HttpEntity<>(map, headers);
     }
 
     private LinkedMultiValueMap<String, Object> createFileMessageResource(String ixbrl,
@@ -151,12 +140,10 @@ public class TnepValidationServiceImpl implements TnepValidationService {
      * @return String
      */
     protected String getIxbrlValidatorUri() {
-
         return environmentReader.getMandatoryString(IXBRL_VALIDATOR_URI);
     }
 
     private static class FileMessageResource extends ByteArrayResource {
-
         /**
          * The filename to be associated with the {@link MimeMessage} in the form data.
          */
@@ -184,7 +171,7 @@ public class TnepValidationServiceImpl implements TnepValidationService {
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof FileMessageResource)) {
+            if (!(o instanceof FileMessageResource that)) {
                 return false;
             }
 
@@ -192,7 +179,6 @@ public class TnepValidationServiceImpl implements TnepValidationService {
                 return false;
             }
 
-            FileMessageResource that = (FileMessageResource) o;
             return Objects.equals(filename, that.filename);
         }
 

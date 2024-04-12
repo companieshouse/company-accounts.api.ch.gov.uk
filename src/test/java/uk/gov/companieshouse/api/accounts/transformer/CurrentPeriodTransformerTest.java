@@ -32,7 +32,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.OtherLiabilitiesOrAssets;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CurrentPeriodTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final Map<String, String> LINKS = new HashMap<>();
@@ -65,16 +64,14 @@ class CurrentPeriodTransformerTest {
     private static final Long MEMBERS_FUNDS_PROFIT_AND_LOSS_ACCOUNT = 51L;
     private static final Long MEMBERS_FUNDS_TOTAL = 52L;
 
-    private CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
+    private final CurrentPeriodTransformer currentPeriodTransformer = new CurrentPeriodTransformer();
 
     @Test
     @DisplayName("Rest to entity transform - current period without balance sheet")
     void restToEntityEmptyCurrentPeriod() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -84,7 +81,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with called up share capital not paid")
     void restToEntityCurrentPeriodWithCalledUpShareCapitalNotPaid() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -92,8 +88,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -113,7 +108,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with fixed assets")
     void restToEntityCurrentPeriodWithFixedAssets() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -121,8 +115,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -142,7 +135,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with other liabilities or assets")
     void restToEntityCurrentPeriodWithOtherLiabilitiesOrAssets() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -150,8 +142,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -171,7 +162,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with current assets")
     void restToEntityCurrentPeriodWithCurrentAssets() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -179,8 +169,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -200,7 +189,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with capital and reserves")
     void restToEntityCurrentPeriodWithCapitalAndReserves() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -208,8 +196,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -229,7 +216,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Rest to entity transform - current period with members' funds")
     void restToEntityCurrentPeriodWithMembersFunds() {
-
         CurrentPeriod currentPeriod = setUpBaseCurrentPeriodRestObject();
 
         BalanceSheet balanceSheet = new BalanceSheet();
@@ -237,8 +223,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriod.setBalanceSheet(balanceSheet);
 
-        CurrentPeriodEntity currentPeriodEntity =
-                currentPeriodTransformer.transform(currentPeriod);
+        CurrentPeriodEntity currentPeriodEntity = currentPeriodTransformer.transform(currentPeriod);
 
         assertNotNull(currentPeriodEntity);
         assertBaseFieldsMapped(currentPeriodEntity.getData());
@@ -258,11 +243,9 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period without balance sheet")
     void entityToRestEmptyCurrentPeriod() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -272,7 +255,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with called up share capital not paid")
     void entityToRestCurrentPeriodWithCalledUpShareCapitalNotPaid() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -280,8 +262,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -301,7 +282,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with fixed assets")
     void entityToRestCurrentPeriodWithFixedAssets() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -309,8 +289,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -330,7 +309,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with other liabilities or assets")
     void entityToRestCurrentPeriodWithOtherLiabilitiesOrAssets() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -338,8 +316,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -360,7 +337,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with current assets")
     void entityToRestCurrentPeriodWithCurrentAssets() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -368,8 +344,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -389,7 +364,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with capital and reserves")
     void entityToRestCurrentPeriodWithCapitalAndReserves() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -397,8 +371,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -418,7 +391,6 @@ class CurrentPeriodTransformerTest {
     @Test
     @DisplayName("Entity to rest transform - current period with members' funds")
     void entityToRestCurrentPeriodWithMembersFunds() {
-
         CurrentPeriodEntity currentPeriodEntity = setUpBaseCurrentPeriodEntity();
 
         BalanceSheetEntity balanceSheetEntity = new BalanceSheetEntity();
@@ -426,8 +398,7 @@ class CurrentPeriodTransformerTest {
 
         currentPeriodEntity.getData().setBalanceSheetEntity(balanceSheetEntity);
 
-        CurrentPeriod currentPeriod =
-                currentPeriodTransformer.transform(currentPeriodEntity);
+        CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
 
         assertNotNull(currentPeriod);
         assertBaseFieldsMapped(currentPeriod);
@@ -445,7 +416,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private CurrentPeriod setUpBaseCurrentPeriodRestObject() {
-
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setEtag(ETAG);
         currentPeriod.setKind(KIND);
@@ -455,7 +425,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private CurrentPeriodEntity setUpBaseCurrentPeriodEntity() {
-
         CurrentPeriodDataEntity currentPeriodDataEntity = new CurrentPeriodDataEntity();
         currentPeriodDataEntity.setEtag(ETAG);
         currentPeriodDataEntity.setKind(KIND);
@@ -467,8 +436,7 @@ class CurrentPeriodTransformerTest {
         return currentPeriodEntity;
     }
 
-    private void setUpFixedAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
-
+    public void setUpFixedAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
         FixedAssets fixedAssets = new FixedAssets();
         fixedAssets.setTangible(FIXED_ASSETS_TANGIBLE);
         fixedAssets.setTotal(FIXED_ASSETS_TOTAL);
@@ -476,8 +444,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setFixedAssets(fixedAssets);
     }
 
-    private void setUpFixedAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
-
+    public void setUpFixedAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
         FixedAssetsEntity fixedAssets = new FixedAssetsEntity();
         fixedAssets.setTangible(FIXED_ASSETS_TANGIBLE);
         fixedAssets.setTotal(FIXED_ASSETS_TOTAL);
@@ -485,8 +452,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setFixedAssets(fixedAssets);
     }
 
-    private void setUpOtherLiabilitiesOrAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
-
+    public void setUpOtherLiabilitiesOrAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
         OtherLiabilitiesOrAssets otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssets();
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(OTHER_LIABILITIES_ACCRUALS_AND_DEFERRED_INCOME);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(OTHER_LIABILITIES_CREDITORS_AFTER);
@@ -500,8 +466,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setOtherLiabilitiesOrAssets(otherLiabilitiesOrAssets);
     }
 
-    private void setUpOtherLiabilitiesOrAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
-
+    public void setUpOtherLiabilitiesOrAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
         OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssets = new OtherLiabilitiesOrAssetsEntity();
         otherLiabilitiesOrAssets.setAccrualsAndDeferredIncome(OTHER_LIABILITIES_ACCRUALS_AND_DEFERRED_INCOME);
         otherLiabilitiesOrAssets.setCreditorsAfterOneYear(OTHER_LIABILITIES_CREDITORS_AFTER);
@@ -515,8 +480,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setOtherLiabilitiesOrAssetsEntity(otherLiabilitiesOrAssets);
     }
 
-    private void setUpCurrentAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
-
+    public void setUpCurrentAssetsOnBalanceSheet(BalanceSheet balanceSheet) {
         CurrentAssets currentAssets = new CurrentAssets();
         currentAssets.setCashAtBankAndInHand(CURRENT_ASSETS_CASH_AT_BANK_AND_IN_HAND);
         currentAssets.setDebtors(CURRENT_ASSETS_DEBTORS);
@@ -526,8 +490,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setCurrentAssets(currentAssets);
     }
 
-    private void setUpCurrentAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
-
+    public void setUpCurrentAssetsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
         CurrentAssetsEntity currentAssets = new CurrentAssetsEntity();
         currentAssets.setCashAtBankAndInHand(CURRENT_ASSETS_CASH_AT_BANK_AND_IN_HAND);
         currentAssets.setDebtors(CURRENT_ASSETS_DEBTORS);
@@ -537,8 +500,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setCurrentAssets(currentAssets);
     }
 
-    private void setUpCapitalAndReservesOnBalanceSheet(BalanceSheet balanceSheet) {
-
+    public void setUpCapitalAndReservesOnBalanceSheet(BalanceSheet balanceSheet) {
         CapitalAndReserves capitalAndReserves = new CapitalAndReserves();
         capitalAndReserves.setCalledUpShareCapital(CAPITAL_AND_RESERVES_CALLED_UP_SHARE_CAPITAL);
         capitalAndReserves.setOtherReserves(CAPITAL_AND_RESERVES_OTHER_RESERVES);
@@ -549,8 +511,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setCapitalAndReserves(capitalAndReserves);
     }
 
-    private void setUpCapitalAndReservesOnBalanceSheet(BalanceSheetEntity balanceSheet) {
-
+    public void setUpCapitalAndReservesOnBalanceSheet(BalanceSheetEntity balanceSheet) {
         CapitalAndReservesEntity capitalAndReserves = new CapitalAndReservesEntity();
         capitalAndReserves.setCalledUpShareCapital(CAPITAL_AND_RESERVES_CALLED_UP_SHARE_CAPITAL);
         capitalAndReserves.setOtherReserves(CAPITAL_AND_RESERVES_OTHER_RESERVES);
@@ -561,8 +522,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setCapitalAndReservesEntity(capitalAndReserves);
     }
 
-    private void setUpMembersFundsOnBalanceSheet(BalanceSheet balanceSheet) {
-
+    public void setUpMembersFundsOnBalanceSheet(BalanceSheet balanceSheet) {
         MembersFunds membersFunds = new MembersFunds();
         membersFunds.setProfitAndLossAccount(MEMBERS_FUNDS_PROFIT_AND_LOSS_ACCOUNT);
         membersFunds.setTotalMembersFunds(MEMBERS_FUNDS_TOTAL);
@@ -570,8 +530,7 @@ class CurrentPeriodTransformerTest {
         balanceSheet.setMembersFunds(membersFunds);
     }
 
-    private void setUpMembersFundsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
-
+    public void setUpMembersFundsOnBalanceSheet(BalanceSheetEntity balanceSheet) {
         MembersFundsEntity membersFunds = new MembersFundsEntity();
         membersFunds.setProfitAndLossAccount(MEMBERS_FUNDS_PROFIT_AND_LOSS_ACCOUNT);
         membersFunds.setTotalMembersFunds(MEMBERS_FUNDS_TOTAL);
@@ -580,7 +539,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertBaseFieldsMapped(CurrentPeriodDataEntity currentPeriodDataEntity) {
-
         assertNotNull(currentPeriodDataEntity);
         assertEquals(ETAG, currentPeriodDataEntity.getEtag());
         assertEquals(KIND, currentPeriodDataEntity.getKind());
@@ -588,28 +546,24 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertBaseFieldsMapped(CurrentPeriod currentPeriod) {
-
         assertEquals(ETAG, currentPeriod.getEtag());
         assertEquals(KIND, currentPeriod.getKind());
         assertEquals(LINKS, currentPeriod.getLinks());
     }
 
     private void assertFixedAssetsMapped(FixedAssetsEntity fixedAssetsEntity) {
-
         assertNotNull(fixedAssetsEntity);
         assertEquals(FIXED_ASSETS_TANGIBLE, fixedAssetsEntity.getTangible());
         assertEquals(FIXED_ASSETS_TOTAL, fixedAssetsEntity.getTotal());
     }
 
     private void assertFixedAssetsMapped(FixedAssets fixedAssets) {
-
         assertNotNull(fixedAssets);
         assertEquals(FIXED_ASSETS_TANGIBLE, fixedAssets.getTangible());
         assertEquals(FIXED_ASSETS_TOTAL, fixedAssets.getTotal());
     }
 
     private void assertOtherLiabilitiesOrAssetsMapped(OtherLiabilitiesOrAssetsEntity otherLiabilitiesOrAssetsEntity) {
-
         assertNotNull(otherLiabilitiesOrAssetsEntity);
         assertEquals(OTHER_LIABILITIES_ACCRUALS_AND_DEFERRED_INCOME, otherLiabilitiesOrAssetsEntity.getAccrualsAndDeferredIncome());
         assertEquals(OTHER_LIABILITIES_CREDITORS_AFTER, otherLiabilitiesOrAssetsEntity.getCreditorsAfterOneYear());
@@ -622,7 +576,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertOtherLiabilitiesOrAssetsMapped(OtherLiabilitiesOrAssets otherLiabilitiesOrAssets) {
-
         assertNotNull(otherLiabilitiesOrAssets);
         assertEquals(OTHER_LIABILITIES_ACCRUALS_AND_DEFERRED_INCOME, otherLiabilitiesOrAssets.getAccrualsAndDeferredIncome());
         assertEquals(OTHER_LIABILITIES_CREDITORS_AFTER, otherLiabilitiesOrAssets.getCreditorsAfterOneYear());
@@ -635,7 +588,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertCurrentAssetsMapped(CurrentAssetsEntity currentAssetsEntity) {
-
         assertNotNull(currentAssetsEntity);
         assertEquals(CURRENT_ASSETS_CASH_AT_BANK_AND_IN_HAND, currentAssetsEntity.getCashAtBankAndInHand());
         assertEquals(CURRENT_ASSETS_DEBTORS, currentAssetsEntity.getDebtors());
@@ -644,7 +596,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertCurrentAssetsMapped(CurrentAssets currentAssets) {
-
         assertNotNull(currentAssets);
         assertEquals(CURRENT_ASSETS_CASH_AT_BANK_AND_IN_HAND, currentAssets.getCashAtBankAndInHand());
         assertEquals(CURRENT_ASSETS_DEBTORS, currentAssets.getDebtors());
@@ -653,7 +604,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertCapitalAndReservesMapped(CapitalAndReservesEntity capitalAndReservesEntity) {
-
         assertNotNull(capitalAndReservesEntity);
         assertEquals(CAPITAL_AND_RESERVES_CALLED_UP_SHARE_CAPITAL, capitalAndReservesEntity.getCalledUpShareCapital());
         assertEquals(CAPITAL_AND_RESERVES_OTHER_RESERVES, capitalAndReservesEntity.getOtherReserves());
@@ -663,7 +613,6 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertCapitalAndReservesMapped(CapitalAndReserves capitalAndReserves) {
-
         assertNotNull(capitalAndReserves);
         assertEquals(CAPITAL_AND_RESERVES_CALLED_UP_SHARE_CAPITAL, capitalAndReserves.getCalledUpShareCapital());
         assertEquals(CAPITAL_AND_RESERVES_OTHER_RESERVES, capitalAndReserves.getOtherReserves());
@@ -673,14 +622,12 @@ class CurrentPeriodTransformerTest {
     }
 
     private void assertMembersFundsMapped(MembersFundsEntity membersFundsEntity) {
-
         assertNotNull(membersFundsEntity);
         assertEquals(MEMBERS_FUNDS_PROFIT_AND_LOSS_ACCOUNT, membersFundsEntity.getProfitAndLossAccount());
         assertEquals(MEMBERS_FUNDS_TOTAL, membersFundsEntity.getTotalMembersFunds());
     }
 
     private void assertMembersFundsMapped(MembersFunds membersFunds) {
-
         assertNotNull(membersFunds);
         assertEquals(MEMBERS_FUNDS_PROFIT_AND_LOSS_ACCOUNT, membersFunds.getProfitAndLossAccount());
         assertEquals(MEMBERS_FUNDS_TOTAL, membersFunds.getTotalMembersFunds());

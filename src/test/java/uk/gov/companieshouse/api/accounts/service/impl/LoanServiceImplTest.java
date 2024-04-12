@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,6 @@ import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoanServiceImplTest {
-
     @Mock
     private LoanTransformer transformer;
 
@@ -103,7 +102,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful creation of a loan resource")
     void createLoanSuccess() throws DataException {
-
         when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -131,7 +129,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the creation of a loan resource where the repository throws a duplicate key exception")
     void createLoanDuplicateKeyException() throws DataException {
-
         when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
 
@@ -158,7 +155,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the creation of a loan resource where the repository throws a Mongo exception")
     void createLoanMongoException() throws DataException {
-
         when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(false);
         
@@ -183,7 +179,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the creation of a loan resource where the validator returns errors")
     void createLoanWithValidationErrors() throws DataException {
-
     	when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
         
@@ -198,7 +193,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful update of a loan resource")
     void updateLoanSuccess() throws DataException {
-
         when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         when(request.getRequestURI()).thenReturn(URI);
@@ -221,7 +215,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the update of a loan resource where the repository throws a Mongo exception")
     void updateLoanMongoException() throws DataException {
-
         when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(request.getRequestURI()).thenReturn(URI);
 
@@ -243,7 +236,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the update of a loan resource where the validator returns errors")
     void updateLoanWithValidationErrors() throws DataException {
-
     	when(loanValidator.validateLoan(loan, transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
         when(errors.hasErrors()).thenReturn(true);
         
@@ -258,7 +250,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful retrieval of a loan resource")
     void getLoanSuccess() throws DataException {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.findById(LOAN_ID)).thenReturn(Optional.of(loanEntity));
@@ -275,7 +266,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of a non-existent loan resource")
     void getLoanNotFound() throws DataException {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.findById(LOAN_ID)).thenReturn(Optional.empty());
@@ -291,7 +281,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of a loan resource where the repository throws a Mongo exception")
     void getLoanMongoException() {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.findById(LOAN_ID)).thenThrow(MongoException.class);
@@ -305,7 +294,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful retrieval of all loans")
     void getAllLoansSuccess() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -324,7 +312,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of all loans where none exist")
     void getAllLoansNotFound() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -340,7 +327,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the retrieval of all loans where the repository throws a MongoException")
     void getAllLoansThrowsMongoException() {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -353,7 +339,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful deletion of a loan resource")
     void deleteLoanSuccess() throws DataException {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.existsById(LOAN_ID)).thenReturn(true);
@@ -370,7 +355,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a loan resource where the repository throws a Mongo exception")
     void deleteLoanMongoException() throws DataException {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.existsById(LOAN_ID)).thenReturn(true);
@@ -386,7 +370,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of a non-existent loan resource")
     void deleteLoanNotFound() throws DataException {
-
         when(request.getRequestURI()).thenReturn(URI);
 
         when(repository.existsById(LOAN_ID)).thenReturn(false);
@@ -403,7 +386,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the successful deletion of all loans")
     void deleteAllLoansSuccess() throws DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -418,7 +400,6 @@ class LoanServiceImplTest {
     @Test
     @DisplayName("Tests the deletion of all loans where the repository throws a MongoException")
     void deleteAllLoansThrowsMongoException() {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -455,14 +436,12 @@ class LoanServiceImplTest {
     }
 
     private void assertWhetherLoansToDirectorsServiceCalledToAddLoan(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(loansToDirectorsService, timesExpected)
                 .addLoan(COMPANY_ACCOUNTS_ID, LOAN_ID, LOAN_SELF_LINK, request);
     }
 
     private void assertWhetherLoansToDirectorsServiceCalledToRemoveLoan(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? VerificationModeFactory.times(1) : never();
         verify(loansToDirectorsService, timesExpected)
                 .removeLoan(COMPANY_ACCOUNTS_ID, LOAN_ID, request);

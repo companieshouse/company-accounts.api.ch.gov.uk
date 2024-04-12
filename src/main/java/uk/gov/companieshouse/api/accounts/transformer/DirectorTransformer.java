@@ -7,12 +7,10 @@ import uk.gov.companieshouse.api.accounts.model.entity.directorsreport.DirectorE
 import uk.gov.companieshouse.api.accounts.model.rest.directorsreport.Director;
 
 @Component
-public class DirectorTransformer implements
-        GenericTransformerForMultipleResources<Director, DirectorEntity> {
+public class DirectorTransformer implements GenericTransformerForMultipleResources<Director, DirectorEntity> {
 
     @Override
     public DirectorEntity transform(Director entity) {
-
         DirectorDataEntity directorDataEntity = new DirectorDataEntity();
         BeanUtils.copyProperties(entity, directorDataEntity);
 
@@ -24,7 +22,6 @@ public class DirectorTransformer implements
 
     @Override
     public Director transform(DirectorEntity entity) {
-
         Director director = new Director();
         BeanUtils.copyProperties(entity.getData(), director);
 
@@ -33,7 +30,6 @@ public class DirectorTransformer implements
 
     @Override
     public Director[] transform(DirectorEntity[] entity) {
-
         Director[] directors = new Director[entity.length];
 
         for (int i = 0; i < entity.length; i++) {

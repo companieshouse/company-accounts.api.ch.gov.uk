@@ -24,7 +24,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,9 +39,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class )
+@ExtendWith(MockitoExtension.class)
 class StatementsServiceTest {
-
     @Mock
     private StatementsTransformer transformer;
 
@@ -83,7 +82,6 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the successful creation of a statements resource")
     void createStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -109,7 +107,6 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the creation of a statements resource where the repository throws a duplicate key exception")
     void createStatementsDuplicateKeyException() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -134,7 +131,6 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the creation of a statements resource where the repository throws a Mongo exception")
     void createStatementsMongoException() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -157,7 +153,6 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the successful update of a statements resource")
     void updateStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -179,7 +174,6 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the update of a statements resource where the repository throws a Mongo exception")
     void updateStatementsMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
@@ -201,15 +195,13 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the successful retrieval of a statements resource")
     void getStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(repository.findById(GENERATED_ID)).thenReturn(Optional.of(statementsEntity));
         when(transformer.transform(statementsEntity)).thenReturn(statements);
 
-        ResponseObject<Statements> response =
-                statementsService.find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<Statements> response = statementsService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.FOUND, response.getStatus());
@@ -219,15 +211,12 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the retrieval of a non-existent statements resource")
     void getStatementsNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
-        StatementsEntity statementsEntity = null;
-        when(repository.findById(GENERATED_ID)).thenReturn(Optional.ofNullable(statementsEntity));
+        when(repository.findById(GENERATED_ID)).thenReturn(Optional.empty());
 
-        ResponseObject<Statements> response =
-                statementsService.find(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<Statements> response = statementsService.find(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryFindByIdCalled();
         assertEquals(ResponseStatus.NOT_FOUND, response.getStatus());
@@ -237,14 +226,12 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the retrieval of a statements resource where the repository throws a Mongo exception")
     void getStatementsMongoException() {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(repository.findById(GENERATED_ID)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                statementsService.find(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> statementsService.find(COMPANY_ACCOUNTS_ID, request));
 
         assertRepositoryFindByIdCalled();
     }
@@ -252,14 +239,12 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the successful deletion of a statements resource")
     void deleteStatementsSuccess() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
 
-        ResponseObject<Statements> response =
-                statementsService.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<Statements> response = statementsService.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherDirectorsReportServiceCalledToRemoveLink(true);
@@ -270,15 +255,13 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the deletion of a statements resource where the repository throws a Mongo exception")
     void deleteStatementsMongoException() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(true);
         doThrow(MongoException.class).when(repository).deleteById(GENERATED_ID);
 
-        assertThrows(DataException.class, () ->
-                statementsService.delete(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> statementsService.delete(COMPANY_ACCOUNTS_ID, request));
 
         assertRepositoryDeleteByIdCalled();
         assertWhetherDirectorsReportServiceCalledToRemoveLink(false);
@@ -287,14 +270,12 @@ class StatementsServiceTest {
     @Test
     @DisplayName("Tests the deletion of a non-existent statements resource")
     void deleteStatementsNotFound() throws DataException {
-
         when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.STATEMENTS.getName()))
                 .thenReturn(GENERATED_ID);
 
         when(repository.existsById(GENERATED_ID)).thenReturn(false);
 
-        ResponseObject<Statements> response =
-                statementsService.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<Statements> response = statementsService.delete(COMPANY_ACCOUNTS_ID, request);
 
         verify(repository, never()).deleteById(GENERATED_ID);
         assertWhetherDirectorsReportServiceCalledToRemoveLink(false);
@@ -329,14 +310,12 @@ class StatementsServiceTest {
     }
 
     private void assertWhetherDirectorsReportServiceCalledToAddLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(directorsReportService, timesExpected)
                 .addLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.STATEMENTS, STATEMENTS_SELF_LINK, request);
     }
 
     private void assertWhetherDirectorsReportServiceCalledToRemoveLink(boolean isServiceExpected) throws DataException {
-
         VerificationMode timesExpected = isServiceExpected ? times(1) : never();
         verify(directorsReportService, timesExpected)
                 .removeLink(COMPANY_ACCOUNTS_ID, DirectorsReportLinkType.STATEMENTS, request);

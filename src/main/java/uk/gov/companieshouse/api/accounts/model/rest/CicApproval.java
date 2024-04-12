@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

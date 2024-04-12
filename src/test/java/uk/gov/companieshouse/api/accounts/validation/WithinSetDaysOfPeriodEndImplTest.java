@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintValidatorContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,7 +27,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WithinSetDaysOfPeriodEndImplTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -62,7 +61,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - before period end within constraint")
     void beforePeriodEndWithinConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -85,7 +83,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - before period end equals constraint")
     void beforePeriodEndEqualsConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -108,7 +105,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - before period end outside of constraint")
     void beforePeriodEndOutsideOfConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -131,7 +127,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - after period end within constraint")
     void afterPeriodEndWithinConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -154,7 +149,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - after period end equals constraint")
     void afterPeriodEndEqualsConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -177,7 +171,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - after period end outside of constraint")
     void afterPeriodEndOutsideOfConstraint() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);
@@ -200,7 +193,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - null date permitted")
     void nullDatePermitted() {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5);
         when(withinSetDaysOfPeriodEnd.allowNulls()).thenReturn(true);
 
@@ -212,7 +204,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - null date not permitted")
     void nullDateNotPermitted() {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5);
         when(withinSetDaysOfPeriodEnd.allowNulls()).thenReturn(false);
 
@@ -224,7 +215,6 @@ class WithinSetDaysOfPeriodEndImplTest {
     @Test
     @DisplayName("Within set days of period end - company service exception")
     void companyServiceException() throws ServiceException {
-
         when(withinSetDaysOfPeriodEnd.numOfDays()).thenReturn(5); // constraint 5 days
 
         withinSetDaysOfPeriodEndImpl.initialize(withinSetDaysOfPeriodEnd);

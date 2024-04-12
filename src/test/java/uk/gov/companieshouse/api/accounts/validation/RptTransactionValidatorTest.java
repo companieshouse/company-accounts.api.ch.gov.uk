@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RptTransactionValidatorTest {
-
     private static final String TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START = "$.transaction.breakdown.balance_at_period_start";
 
     private static final String RELATED_PARTY_NAME = "relatedPartyName";
@@ -61,7 +60,6 @@ class RptTransactionValidatorTest {
     @Test
     @DisplayName("RptTransaction validation with valid Transaction and breakdown for multi year filer, with balance at period start")
     void testSuccessRptTransactionValidationForSingleYearFiler() throws DataException, ServiceException {
-
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
@@ -78,7 +76,6 @@ class RptTransactionValidatorTest {
     @Test
     @DisplayName("RptTransaction validation with returns validation year for single year filer with balance at period start")
     void testRptTransactionValidationForSingleYearFilerValidationError() throws DataException, ServiceException {
-
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
@@ -91,13 +88,12 @@ class RptTransactionValidatorTest {
         errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA)));
     }
 
     @Test
     @DisplayName("RptTransaction validation - multi year filer with no period start")
     void testRptTransactionValidationForMultiYearFilerValidationError() throws DataException, ServiceException {
-
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
@@ -110,14 +106,13 @@ class RptTransactionValidatorTest {
         errors = rptTransactionValidator.validateRptTransaction(rptTransaction, transaction);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING, TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING)));
     }
 
 
     @Test
     @DisplayName("RptTransaction validation - multi year filer with period start")
     void testRptTransactionValidationForMultiYearFilerValid() throws DataException, ServiceException {
-
         rptTransaction.setNameOfRelatedParty(RELATED_PARTY_NAME);
         rptTransaction.setDescriptionOfTransaction(RPT_DESCRIPTION);
 
@@ -136,24 +131,21 @@ class RptTransactionValidatorTest {
 
         if (includePeriodStart) {
             rptTransactionBreakdown.setBalanceAtPeriodStart(10L);
-
         }
 
         rptTransaction.setBreakdown(rptTransactionBreakdown);
     }
 
     private void createValidSingleYearFilerRptTransactionBreakdown() {
-
         RptTransactionBreakdown rptTransactionBreakdown = new RptTransactionBreakdown();
         rptTransactionBreakdown.setBalanceAtPeriodEnd(20L);
 
         rptTransaction.setBreakdown(rptTransactionBreakdown);
     }
 
-    private Error createError(String error, String path) {
-
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+    private Error createError(String error) {
+        return new Error(error, RptTransactionValidatorTest.TRANSACTION_BREAKDOWN_PATH_BALANCE_AT_PERIOD_START,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 
 }

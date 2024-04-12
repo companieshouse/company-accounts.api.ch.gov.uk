@@ -23,7 +23,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorsaf
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CreditorsAfterMoreThanOneYearTransformerTest {
-
     private static final Long BANK_LOANS_AND_OVERDRAFTS = 2L;
     private static final Long OTHER_CREDITORS = 3L;
     private static final Long FINANCE_LEASE = 4L;
@@ -32,13 +31,12 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private CreditorsAfterOneYearTransformer creditorsAfterOneYearTransformer =
+    private final CreditorsAfterOneYearTransformer creditorsAfterOneYearTransformer =
             new CreditorsAfterOneYearTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
     void testTransformerWithEmptyRestObject() {
-
         CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity = creditorsAfterOneYearTransformer
                 .transform(new CreditorsAfterMoreThanOneYear());
 
@@ -50,7 +48,6 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
     void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
-
         CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear = new CreditorsAfterMoreThanOneYear();
 
         creditorsAfterMoreThanOneYear.setEtag(ETAG);
@@ -73,7 +70,6 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear = new CreditorsAfterMoreThanOneYear();
 
         creditorsAfterMoreThanOneYear.setEtag(ETAG);
@@ -93,7 +89,6 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     void testTransformerWithEmptyEntityObject() {
-
         CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear = creditorsAfterOneYearTransformer
                 .transform(new CreditorsAfterMoreThanOneYearEntity());
 
@@ -105,9 +100,9 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Entity Object")
     void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
-
         CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity = new CreditorsAfterMoreThanOneYearEntity();
-        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity = new CreditorsAfterMoreThanOneYearDataEntity();
+        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity
+                = new CreditorsAfterMoreThanOneYearDataEntity();
 
         creditorsAfterMoreThanOneYearDataEntity.setEtag(ETAG);
         creditorsAfterMoreThanOneYearDataEntity.setKind(KIND);
@@ -129,9 +124,9 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity = new CreditorsAfterMoreThanOneYearEntity();
-        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity = new CreditorsAfterMoreThanOneYearDataEntity();
+        CreditorsAfterMoreThanOneYearDataEntity creditorsAfterMoreThanOneYearDataEntity
+                = new CreditorsAfterMoreThanOneYearDataEntity();
 
         creditorsAfterMoreThanOneYearDataEntity.setEtag(ETAG);
         creditorsAfterMoreThanOneYearDataEntity.setKind(KIND);
@@ -154,14 +149,12 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_CREDITORS_AFTER,
                 creditorsAfterOneYearTransformer.getAccountingNoteType());
     }
 
 
     private CurrentPeriod createCurrentPeriodRestObject() {
-
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
         currentPeriod.setOtherCreditors(OTHER_CREDITORS);
@@ -174,7 +167,6 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
 
 
     private PreviousPeriod createPreviousPeriodRestObject() {
-
         PreviousPeriod previousPeriod = new PreviousPeriod();
         previousPeriod.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
         previousPeriod.setOtherCreditors(OTHER_CREDITORS);
@@ -185,13 +177,12 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     }
 
     private void assertFieldsMappedToEntity(CreditorsAfterMoreThanOneYearEntity creditorsAfterMoreThanOneYearEntity) {
-
         assertEquals(BANK_LOANS_AND_OVERDRAFTS,
                 creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity().getBankLoansAndOverdrafts());
-        assertEquals(OTHER_CREDITORS,
-                creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity().getOtherCreditors());
-        assertEquals(FINANCE_LEASE,
-                creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(OTHER_CREDITORS, creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity()
+                .getOtherCreditors());
+        assertEquals(FINANCE_LEASE, creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity()
+                .getFinanceLeasesAndHirePurchaseContracts());
         assertEquals(TOTAL,
                 creditorsAfterMoreThanOneYearEntity.getData().getCurrentPeriodEntity().getTotal());
         assertEquals(DETAILS,
@@ -207,14 +198,14 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
             assertEquals(OTHER_CREDITORS,
                     creditorsAfterMoreThanOneYearEntity.getData().getPreviousPeriodEntity().getOtherCreditors());
             assertEquals(FINANCE_LEASE,
-                    creditorsAfterMoreThanOneYearEntity.getData().getPreviousPeriodEntity().getFinanceLeasesAndHirePurchaseContracts());
+                    creditorsAfterMoreThanOneYearEntity.getData().getPreviousPeriodEntity()
+                            .getFinanceLeasesAndHirePurchaseContracts());
             assertEquals(TOTAL,
                     creditorsAfterMoreThanOneYearEntity.getData().getPreviousPeriodEntity().getTotal());
         }
     }
 
     private CurrentPeriodEntity createCurrentPeriodEntityObject() {
-
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
         currentPeriodEntity.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
         currentPeriodEntity.setOtherCreditors(OTHER_CREDITORS);
@@ -226,7 +217,6 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     }
 
     private PreviousPeriodEntity createPreviousPeriodEntityObject() {
-
         PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
         previousPeriodEntity.setBankLoansAndOverdrafts(BANK_LOANS_AND_OVERDRAFTS);
         previousPeriodEntity.setOtherCreditors(OTHER_CREDITORS);
@@ -237,10 +227,11 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
     }
 
     private void assertFieldsMappedToRest(CreditorsAfterMoreThanOneYear creditorsAfterMoreThanOneYear) {
-
-        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterMoreThanOneYear.getCurrentPeriod().getBankLoansAndOverdrafts());
+        assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterMoreThanOneYear.getCurrentPeriod()
+                .getBankLoansAndOverdrafts());
         assertEquals(OTHER_CREDITORS, creditorsAfterMoreThanOneYear.getCurrentPeriod().getOtherCreditors());
-        assertEquals(FINANCE_LEASE, creditorsAfterMoreThanOneYear.getCurrentPeriod().getFinanceLeasesAndHirePurchaseContracts());
+        assertEquals(FINANCE_LEASE, creditorsAfterMoreThanOneYear.getCurrentPeriod()
+                .getFinanceLeasesAndHirePurchaseContracts());
         assertEquals(TOTAL, creditorsAfterMoreThanOneYear.getCurrentPeriod().getTotal());
         assertEquals(DETAILS, creditorsAfterMoreThanOneYear.getCurrentPeriod().getDetails());
 
@@ -249,10 +240,11 @@ class CreditorsAfterMoreThanOneYearTransformerTest {
         assertEquals(KIND, creditorsAfterMoreThanOneYear.getKind());
 
         if (creditorsAfterMoreThanOneYear.getPreviousPeriod() != null) {
-
-            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterMoreThanOneYear.getPreviousPeriod().getBankLoansAndOverdrafts());
+            assertEquals(BANK_LOANS_AND_OVERDRAFTS, creditorsAfterMoreThanOneYear.getPreviousPeriod()
+                    .getBankLoansAndOverdrafts());
             assertEquals(OTHER_CREDITORS, creditorsAfterMoreThanOneYear.getPreviousPeriod().getOtherCreditors());
-            assertEquals(FINANCE_LEASE, creditorsAfterMoreThanOneYear.getPreviousPeriod().getFinanceLeasesAndHirePurchaseContracts());
+            assertEquals(FINANCE_LEASE, creditorsAfterMoreThanOneYear.getPreviousPeriod()
+                    .getFinanceLeasesAndHirePurchaseContracts());
             assertEquals(TOTAL, creditorsAfterMoreThanOneYear.getPreviousPeriod().getTotal());
         }
 

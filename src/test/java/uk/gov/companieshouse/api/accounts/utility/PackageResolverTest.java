@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 
 class PackageResolverTest {
 
-    private PackageResolver packageResolver = new PackageResolver();
-
     private static final String ACCOUNT_TYPE = "account-type";
 
     private static final String ACCOUNT_TYPE_PACKAGE = "accounttype";
@@ -19,10 +17,11 @@ class PackageResolverTest {
 
     private static final String NOTE_TYPE_CLASS = "NoteType";
 
+    private final PackageResolver packageResolver = new PackageResolver();
+
     @Test
     @DisplayName("Get note package")
     void getNotePackage() {
-
         String returned = packageResolver.getNotePackage(ACCOUNT_TYPE, NOTE_TYPE);
 
         assertEquals("." + ACCOUNT_TYPE_PACKAGE + ".notes." + NOTE_TYPE_PACKAGE + "." + NOTE_TYPE_CLASS, returned);

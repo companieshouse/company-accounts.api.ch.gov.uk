@@ -12,11 +12,11 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswi
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.creditorswithinoneyear.PreviousPeriod;
 
 @Component
-public class CreditorsWithinOneYearTransformer implements NoteTransformer<CreditorsWithinOneYear, CreditorsWithinOneYearEntity> {
+public class CreditorsWithinOneYearTransformer implements NoteTransformer<CreditorsWithinOneYear,
+        CreditorsWithinOneYearEntity> {
 
     @Override
     public CreditorsWithinOneYearEntity transform(CreditorsWithinOneYear rest) {
-
         CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity = new CreditorsWithinOneYearDataEntity();
         CreditorsWithinOneYearEntity creditorsWithinOneYearEntity = new CreditorsWithinOneYearEntity();
 
@@ -41,7 +41,6 @@ public class CreditorsWithinOneYearTransformer implements NoteTransformer<Credit
 
     @Override
     public CreditorsWithinOneYear transform(CreditorsWithinOneYearEntity entity) {
-
         CreditorsWithinOneYear creditorsWithinOneYear = new CreditorsWithinOneYear();
         CreditorsWithinOneYearDataEntity creditorsWithinOneYearDataEntity;
 

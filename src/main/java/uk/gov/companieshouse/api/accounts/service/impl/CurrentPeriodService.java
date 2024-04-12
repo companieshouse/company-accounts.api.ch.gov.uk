@@ -24,13 +24,12 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class CurrentPeriodService implements
-    ResourceService<CurrentPeriod>, ParentService<CurrentPeriod,
+public class CurrentPeriodService implements ResourceService<CurrentPeriod>, ParentService<CurrentPeriod,
         CurrentPeriodLinkType> {
 
     private CurrentPeriodRepository currentPeriodRepository;
@@ -44,12 +43,11 @@ public class CurrentPeriodService implements
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public CurrentPeriodService(
-        CurrentPeriodRepository currentPeriodRepository,
-        CurrentPeriodTransformer currentPeriodTransformer,
-        CurrentPeriodValidator currentPeriodValidator,
-        SmallFullService smallFullService,
-        KeyIdGenerator keyIdGenerator) {
+    public CurrentPeriodService(CurrentPeriodRepository currentPeriodRepository,
+                                CurrentPeriodTransformer currentPeriodTransformer,
+                                CurrentPeriodValidator currentPeriodValidator,
+                                SmallFullService smallFullService,
+                                KeyIdGenerator keyIdGenerator) {
         this.currentPeriodRepository = currentPeriodRepository;
         this.currentPeriodTransformer = currentPeriodTransformer;
         this.currentPeriodValidator = currentPeriodValidator;
@@ -59,9 +57,9 @@ public class CurrentPeriodService implements
 
     @Override
     public ResponseObject<CurrentPeriod> create(CurrentPeriod currentPeriod,
-        Transaction transaction, String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
+                                                Transaction transaction,
+                                                String companyAccountId,
+                                                HttpServletRequest request) throws DataException {
         Errors errors = currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction);
 
         if (errors.hasErrors()) {
@@ -83,28 +81,26 @@ public class CurrentPeriodService implements
             throw new DataException(e);
         }
 
-        smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.CURRENT_PERIOD,
                 currentPeriod.getLinks().get(BasicLinkType.SELF.getLink()), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, currentPeriod);
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> update(CurrentPeriod rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<CurrentPeriod> update(CurrentPeriod rest,
+                                                Transaction transaction,
+                                                String companyAccountId,
+                                                HttpServletRequest request) throws DataException {
         Errors errors = currentPeriodValidator.validateCurrentPeriod(rest, transaction);
 
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
         }
 
-
         try {
-            CurrentPeriodEntity originalEntity =
-                    currentPeriodRepository.findById(generateID(companyAccountId))
-                            .orElseThrow(() -> new DataException("No current period found to update")); // We should never get here
+            CurrentPeriodEntity originalEntity = currentPeriodRepository.findById(generateID(companyAccountId))
+                    .orElseThrow(() -> new DataException("No current period found to update")); // We should never get here
 
             Map<String, String> links = originalEntity.getData().getLinks();
             populateMetadata(rest, links);
@@ -121,9 +117,8 @@ public class CurrentPeriodService implements
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> find(String companyAccountsId, HttpServletRequest request)
-        throws DataException {
-
+    public ResponseObject<CurrentPeriod> find(String companyAccountsId,
+                                              HttpServletRequest request) throws DataException {
         CurrentPeriodEntity currentPeriodEntity;
         try {
             currentPeriodEntity = currentPeriodRepository.findById(generateID(companyAccountsId)).orElse(null);
@@ -134,36 +129,38 @@ public class CurrentPeriodService implements
         if (currentPeriodEntity == null) {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
+
         CurrentPeriod currentPeriod = currentPeriodTransformer.transform(currentPeriodEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, currentPeriod);
     }
 
     @Override
-    public ResponseObject<CurrentPeriod> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<CurrentPeriod> delete(String companyAccountsId,
+                                                HttpServletRequest request) throws DataException {
         return null;
     }
 
     @Override
-    public void addLink(String id, CurrentPeriodLinkType linkType, String link, HttpServletRequest request) throws DataException {
+    public void addLink(String id,
+                        CurrentPeriodLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
 
         String smallFullId = generateID(id);
         try {
-        CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to get current period entity to add link"));
-        currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
-
+            CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(smallFullId)
+                    .orElseThrow(() -> new DataException(
+                            "Failed to get current period entity to add link"));
+            currentPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
 
             currentPeriodRepository.save(currentPeriodEntity);
         } catch (MongoException e) {
             throw new DataException(e);
         }
-
     }
 
     @Override
     public void removeLink(String id, CurrentPeriodLinkType linkType, HttpServletRequest request) throws DataException {
-
         String currentPeriodId = generateID(id);
         CurrentPeriodEntity currentPeriodEntity = currentPeriodRepository.findById(currentPeriodId)
                 .orElseThrow(() -> new DataException(
@@ -182,14 +179,12 @@ public class CurrentPeriodService implements
     }
 
     private void populateMetadata(CurrentPeriod currentPeriod, Map<String, String> links) {
-
         currentPeriod.setLinks(links);
         currentPeriod.setEtag(GenerateEtagUtil.generateEtag());
         currentPeriod.setKind(Kind.CURRENT_PERIOD.getValue());
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> links = new HashMap<>();
         links.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
         return links;

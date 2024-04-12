@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +27,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CostServiceImplTest {
-
     @Mock
     private TransactionService transactionService;
 
@@ -49,10 +48,8 @@ class CostServiceImplTest {
     private Map<String, Cost> costMap;
 
     @BeforeEach
-    private void setUp() {
-
-        when(yamlResourceMapper.fetchObjectFromYaml("costs/costs.yaml", Costs.class))
-                .thenReturn(costs);
+    public void setUp() {
+        when(yamlResourceMapper.fetchObjectFromYaml("costs/costs.yaml", Costs.class)).thenReturn(costs);
 
         this.costService = new CostServiceImpl(transactionService, yamlResourceMapper);
     }
@@ -60,9 +57,7 @@ class CostServiceImplTest {
     @Test
     @DisplayName("Get costs for payable transaction")
     void getCostsForPayableTransaction() throws ServiceException, DataException {
-
-        when(transactionService.getPayableResources(transaction))
-                .thenReturn(Arrays.asList(PayableResource.CIC));
+        when(transactionService.getPayableResources(transaction)).thenReturn(List.of(PayableResource.CIC));
 
         when(costs.getCostsMap()).thenReturn(costMap);
 
@@ -77,9 +72,7 @@ class CostServiceImplTest {
     @Test
     @DisplayName("Get costs for non-payable transaction")
     void getCostsForNonPayableTransaction() throws ServiceException, DataException {
-
-        when(transactionService.getPayableResources(transaction))
-                .thenReturn(new ArrayList<>());
+        when(transactionService.getPayableResources(transaction)).thenReturn(new ArrayList<>());
 
         Cost[] costArray = costService.getCosts(transaction);
 
@@ -89,9 +82,7 @@ class CostServiceImplTest {
     @Test
     @DisplayName("Get costs - transaction service exception")
     void getCostsTransactionServiceException() throws ServiceException {
-
-        when(transactionService.getPayableResources(transaction))
-                .thenThrow(ServiceException.class);
+        when(transactionService.getPayableResources(transaction)).thenThrow(ServiceException.class);
 
         assertThrows(DataException.class, () -> costService.getCosts(transaction));
     }

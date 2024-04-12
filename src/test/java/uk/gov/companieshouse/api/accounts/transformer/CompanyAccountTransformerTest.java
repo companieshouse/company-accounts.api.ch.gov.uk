@@ -20,13 +20,11 @@ import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CompanyAccountTransformerTest {
-
-    private CompanyAccountTransformer companyAccountTransformer = new CompanyAccountTransformer();
+    private final CompanyAccountTransformer companyAccountTransformer = new CompanyAccountTransformer();
 
     @Test
     @DisplayName("Tests rest to entity account transformer with empty object which should result in null values")
     void testRestToEntityTransformerWithEmptyObject() {
-
         CompanyAccountEntity companyAccountEntity = companyAccountTransformer.transform(new CompanyAccount());
 
         assertNotNull(companyAccountEntity);
@@ -38,7 +36,6 @@ class CompanyAccountTransformerTest {
     @Test
     @DisplayName("Tests entity to rest account transformer with empty object which should result in null values")
     void testEntityToRestTransformerWithEmptyObject() {
-
         CompanyAccountDataEntity companyAccountDataEntity = new CompanyAccountDataEntity();
 
         CompanyAccountEntity companyAccountEntity = new CompanyAccountEntity();

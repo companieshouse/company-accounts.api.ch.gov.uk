@@ -11,7 +11,6 @@ public class StatementsTransformer implements GenericTransformer<Statements, Sta
 
     @Override
     public StatementsEntity transform(Statements entity) {
-
         StatementsDataEntity statementsDataEntity = new StatementsDataEntity();
         BeanUtils.copyProperties(entity, statementsDataEntity);
 
@@ -23,7 +22,6 @@ public class StatementsTransformer implements GenericTransformer<Statements, Sta
 
     @Override
     public Statements transform(StatementsEntity entity) {
-
         Statements statements = new Statements();
         BeanUtils.copyProperties(entity.getData(), statements);
 

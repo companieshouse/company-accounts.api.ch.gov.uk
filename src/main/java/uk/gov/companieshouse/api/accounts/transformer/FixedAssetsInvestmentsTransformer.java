@@ -12,7 +12,6 @@ public class FixedAssetsInvestmentsTransformer implements NoteTransformer<FixedA
 
     @Override
     public FixedAssetsInvestmentsEntity transform(FixedAssetsInvestments rest) {
-
         FixedAssetsInvestmentsDataEntity fixedAssetsInvestmentsDataEntity = new FixedAssetsInvestmentsDataEntity();
         FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = new FixedAssetsInvestmentsEntity();
 
@@ -25,7 +24,6 @@ public class FixedAssetsInvestmentsTransformer implements NoteTransformer<FixedA
 
     @Override
     public FixedAssetsInvestments transform(FixedAssetsInvestmentsEntity entity) {
-
         FixedAssetsInvestments fixedAssetsInvestments = new FixedAssetsInvestments();
         FixedAssetsInvestmentsDataEntity fixedAssetsInvestmentsDataEntity;
 

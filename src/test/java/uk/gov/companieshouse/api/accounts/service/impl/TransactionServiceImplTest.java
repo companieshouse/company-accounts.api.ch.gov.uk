@@ -20,7 +20,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TransactionServiceImplTest {
-
     @Mock
     private CompanyService companyService;
 
@@ -33,7 +32,6 @@ class TransactionServiceImplTest {
     @Test
     @DisplayName("Get payable resources - is CIC")
     void getPayableResourcesForCIC() throws ServiceException {
-
         when(companyService.isCIC(transaction)).thenReturn(true);
 
         List<PayableResource> payableResources = transactionService.getPayableResources(transaction);
@@ -44,7 +42,6 @@ class TransactionServiceImplTest {
     @Test
     @DisplayName("Get payable resources - none present")
     void getPayableResourcesNonePresent() throws ServiceException {
-
         when(companyService.isCIC(transaction)).thenReturn(false);
 
         List<PayableResource> payableResources = transactionService.getPayableResources(transaction);

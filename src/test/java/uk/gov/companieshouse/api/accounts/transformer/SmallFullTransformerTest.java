@@ -21,7 +21,7 @@ import java.util.HashMap;
 @TestInstance(Lifecycle.PER_CLASS)
 class SmallFullTransformerTest {
     
-    private SmallFullTransformer smallFullTransformer = new SmallFullTransformer();
+    private final SmallFullTransformer smallFullTransformer = new SmallFullTransformer();
     
     private static final String ETAG = "etag";
     
@@ -63,7 +63,6 @@ class SmallFullTransformerTest {
     @Test
     @DisplayName("Rest to entity - has next and last accounts")
     void restToEntityHasNextAndLastAccounts() {
-
         SmallFull smallFull = new SmallFull();
         smallFull.setEtag(ETAG);
         smallFull.setKind(KIND);
@@ -86,11 +85,15 @@ class SmallFullTransformerTest {
         Assertions.assertEquals(KIND, smallFullEntity.getData().getKind());
         Assertions.assertEquals(new HashMap<>(), smallFullEntity.getData().getLinks());
         Assertions.assertNotNull(smallFullEntity.getData().getNextAccounts());
-        Assertions.assertEquals(NEXT_ACCOUNTS_PERIOD_START_ON, smallFullEntity.getData().getNextAccounts().getPeriodStartOn());
-        Assertions.assertEquals(NEXT_ACCOUNTS_PERIOD_END_ON, smallFullEntity.getData().getNextAccounts().getPeriodEndOn());
+        Assertions.assertEquals(NEXT_ACCOUNTS_PERIOD_START_ON,
+                smallFullEntity.getData().getNextAccounts().getPeriodStartOn());
+        Assertions.assertEquals(NEXT_ACCOUNTS_PERIOD_END_ON,
+                smallFullEntity.getData().getNextAccounts().getPeriodEndOn());
         Assertions.assertNotNull(smallFullEntity.getData().getLastAccounts());
-        Assertions.assertEquals(LAST_ACCOUNTS_PERIOD_START_ON, smallFullEntity.getData().getLastAccounts().getPeriodStartOn());
-        Assertions.assertEquals(LAST_ACCOUNTS_PERIOD_END_ON, smallFullEntity.getData().getLastAccounts().getPeriodEndOn());
+        Assertions.assertEquals(LAST_ACCOUNTS_PERIOD_START_ON,
+                smallFullEntity.getData().getLastAccounts().getPeriodStartOn());
+        Assertions.assertEquals(LAST_ACCOUNTS_PERIOD_END_ON,
+                smallFullEntity.getData().getLastAccounts().getPeriodEndOn());
     }
 
     @Test
@@ -114,7 +117,6 @@ class SmallFullTransformerTest {
     @Test
     @DisplayName("Entity to rest - has next and last accounts")
     void entityToRestHasNextAndLastAccounts() {
-
         SmallFullEntity smallFullEntity = new SmallFullEntity();
         SmallFullDataEntity smallFullDataEntity = new SmallFullDataEntity();
         smallFullDataEntity.setEtag(ETAG);

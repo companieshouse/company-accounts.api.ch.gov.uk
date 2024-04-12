@@ -2,9 +2,9 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,37 +29,27 @@ public class WithinSetDaysOfPeriodEndImpl implements ConstraintValidator<WithinS
     
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext context) {
-
         if (allowNulls && date == null) {
-
             return true;
-
         } else if (!allowNulls && date == null) {
-
         	return false;
         }
 
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            CompanyProfileApi companyProfile = companyService
-                    .getCompanyProfile(transaction.getCompanyNumber());
+            CompanyProfileApi companyProfile = companyService.getCompanyProfile(transaction.getCompanyNumber());
 
             LocalDate periodEnd = companyProfile.getAccounts().getNextAccounts().getPeriodEndOn();
 
-            return date.isBefore(periodEnd.plusDays(numOfDays)) && date
-                    .isAfter(periodEnd.minusDays(numOfDays));
-
+            return date.isBefore(periodEnd.plusDays(numOfDays)) && date.isAfter(periodEnd.minusDays(numOfDays));
         } catch (ServiceException e) {
-
             throw new UncheckedDataException("Error fetching company profile", e);
         }
-
     }
 
     @Override
     public void initialize(WithinSetDaysOfPeriodEnd constraintAnnotation) {
-
     	this.numOfDays = constraintAnnotation.numOfDays() + 1; // add one to so that if a user were to submit a date on the constraint, it is treated as valid
     	this.allowNulls = constraintAnnotation.allowNulls();
     }

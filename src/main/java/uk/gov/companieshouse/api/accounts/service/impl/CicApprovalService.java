@@ -4,7 +4,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -40,12 +40,11 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public CicApprovalService(
-        CicReportApprovalRepository cicReportApprovalRepository,
-        CicApprovalTransformer cicApprovalTransformer,
-        CicApprovalValidator cicApprovalValidator,
-        CicReportService cicReportService,
-        KeyIdGenerator keyIdGenerator) {
+    public CicApprovalService(CicReportApprovalRepository cicReportApprovalRepository,
+                              CicApprovalTransformer cicApprovalTransformer,
+                              CicApprovalValidator cicApprovalValidator,
+                              CicReportService cicReportService,
+                              KeyIdGenerator keyIdGenerator) {
         this.cicReportApprovalRepository = cicReportApprovalRepository;
         this.cicApprovalTransformer = cicApprovalTransformer;
         this.cicApprovalValidator = cicApprovalValidator;
@@ -54,9 +53,10 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     }
 
     @Override
-    public ResponseObject<CicApproval> create(CicApproval rest, Transaction transaction,
-                                              String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<CicApproval> create(CicApproval rest,
+                                              Transaction transaction,
+                                              String companyAccountId,
+                                              HttpServletRequest request) throws DataException {
         Errors errors = cicApprovalValidator.validateCicReportApproval(rest, companyAccountId, request);
 
         if (errors.hasErrors()) {
@@ -67,33 +67,29 @@ public class CicApprovalService implements ResourceService<CicApproval> {
         initLinks(rest, selfLink);
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.CIC_APPROVAL.getValue());
-        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
-            .transform(rest);
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer.transform(rest);
 
         String id = generateID(companyAccountId);
         cicReportApprovalEntity.setId(id);
 
         try {
-
             cicReportApprovalRepository.insert(cicReportApprovalEntity);
         } catch (DuplicateKeyException dke) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
-        cicReportService
-            .addLink(companyAccountId, CicReportLinkType.APPROVAL, selfLink, request);
+        cicReportService.addLink(companyAccountId, CicReportLinkType.APPROVAL, selfLink, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<CicApproval> update(CicApproval rest, Transaction transaction,
-                                              String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<CicApproval> update(CicApproval rest,
+                                              Transaction transaction,
+                                              String companyAccountId,
+                                              HttpServletRequest request) throws DataException {
         Errors errors = cicApprovalValidator.validateCicReportApproval(rest, companyAccountId, request);
 
         if (errors.hasErrors()) {
@@ -105,15 +101,12 @@ public class CicApprovalService implements ResourceService<CicApproval> {
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.CIC_APPROVAL.getValue());
 
-        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer
-            .transform(rest);
+        CicReportApprovalEntity cicReportApprovalEntity = cicApprovalTransformer.transform(rest);
         cicReportApprovalEntity.setId(generateID(companyAccountId));
 
         try {
             cicReportApprovalRepository.save(cicReportApprovalEntity);
-
         } catch (MongoException ex) {
-
             throw new DataException(ex);
         }
 
@@ -127,11 +120,8 @@ public class CicApprovalService implements ResourceService<CicApproval> {
         CicReportApprovalEntity cicReportApprovalEntity;
 
         try {
-
-            cicReportApprovalEntity = cicReportApprovalRepository
-                .findById(generateID(companyAccountsId)).orElse(null);
+            cicReportApprovalEntity = cicReportApprovalRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -139,8 +129,7 @@ public class CicApprovalService implements ResourceService<CicApproval> {
             return new ResponseObject<>(ResponseStatus.NOT_FOUND);
         }
 
-        CicApproval cicApproval = cicApprovalTransformer
-            .transform(cicReportApprovalEntity);
+        CicApproval cicApproval = cicApprovalTransformer.transform(cicReportApprovalEntity);
         return new ResponseObject<>(ResponseStatus.FOUND, cicApproval);
     }
 
@@ -152,8 +141,7 @@ public class CicApprovalService implements ResourceService<CicApproval> {
         try {
             if (cicReportApprovalRepository.existsById(id)) {
                 cicReportApprovalRepository.deleteById(id);
-                cicReportService
-                    .removeLink(companyAccountsId, CicReportLinkType.APPROVAL, request);
+                cicReportService.removeLink(companyAccountsId, CicReportLinkType.APPROVAL, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
@@ -164,8 +152,7 @@ public class CicApprovalService implements ResourceService<CicApproval> {
     }
 
     private String generateID(String companyAccountId) {
-        return keyIdGenerator
-            .generate(companyAccountId + "-" + ResourceName.CIC_APPROVAL.getName());
+        return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.CIC_APPROVAL.getName());
     }
 
     public String createSelfLink(Transaction transaction, String companyAccountId) {

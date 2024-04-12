@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class DebtorsTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final String DETAILS = "debtors note text";
@@ -34,12 +33,11 @@ class DebtorsTransformerTest {
     private static final Long TRADE_DEBTORS_PREVIOUS = 8L;
     private static final Long TOTAL_PREVIOUS = 20L;
 
-    private DebtorsTransformer debtorsTransformer = new DebtorsTransformer();
+    private final DebtorsTransformer debtorsTransformer = new DebtorsTransformer();
 
     @Test
     @DisplayName("Tests debtors transformer with empty object which should result in null values")
     void testTransformerWithEmptyObject() {
-
         DebtorsEntity debtorsEntity = debtorsTransformer.transform(new Debtors());
 
         assertNotNull(debtorsEntity);
@@ -50,7 +48,6 @@ class DebtorsTransformerTest {
     @Test
     @DisplayName("Tests debtors transformer with empty previous period")
     void testTransformerWithEmptyPreviousPeriod() {
-
         Debtors debtors = new Debtors();
         CurrentPeriod currentPeriod = new CurrentPeriod();
 
@@ -77,7 +74,6 @@ class DebtorsTransformerTest {
     @Test
     @DisplayName("Tests debtors transformer with populated Rest object and validates values returned")
     void testRestToEntityTransformerWithPopulatedObject() {
-
         Debtors debtors = new Debtors();
         CurrentPeriod currentPeriod = new CurrentPeriod();
         PreviousPeriod previousPeriod = new PreviousPeriod();
@@ -126,7 +122,6 @@ class DebtorsTransformerTest {
     @Test
     @DisplayName("Tests debtors transformer with populated Entity object and validates values returned")
     void testEntityToRestTransformerWithPopulatedObject() {
-
         DebtorsEntity debtorsEntity = new DebtorsEntity();
         DebtorsDataEntity debtorsDataEntity = new DebtorsDataEntity();
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
@@ -176,8 +171,6 @@ class DebtorsTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
-        assertEquals(AccountingNoteType.SMALL_FULL_DEBTORS,
-                debtorsTransformer.getAccountingNoteType());
+        assertEquals(AccountingNoteType.SMALL_FULL_DEBTORS, debtorsTransformer.getAccountingNoteType());
     }
 }

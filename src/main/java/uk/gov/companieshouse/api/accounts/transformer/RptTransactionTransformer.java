@@ -13,11 +13,9 @@ public class RptTransactionTransformer implements GenericTransformerForMultipleR
 
     @Override
     public RptTransaction[] transform(RptTransactionEntity[] entity) {
-
         RptTransaction[] rptTransaction = new RptTransaction[entity.length];
 
-        for(int i = 0; i < rptTransaction.length; i++) {
-
+        for (int i = 0; i < rptTransaction.length; i++) {
             rptTransaction[i] = transform(entity[i]);
         }
 
@@ -30,9 +28,7 @@ public class RptTransactionTransformer implements GenericTransformerForMultipleR
         BeanUtils.copyProperties(rest, dataEntity);
 
         if (rest.getBreakdown() != null) {
-
-            dataEntity.setBreakdown(
-                    mapRestResourceToEntityResource(rest.getBreakdown()));
+            dataEntity.setBreakdown(mapRestResourceToEntityResource(rest.getBreakdown()));
         }
 
         RptTransactionEntity rptTransactionEntity = new RptTransactionEntity();
@@ -43,22 +39,18 @@ public class RptTransactionTransformer implements GenericTransformerForMultipleR
 
     @Override
     public RptTransaction transform(RptTransactionEntity entity) {
-
         RptTransaction rptTransaction = new RptTransaction();
         RptTransactionDataEntity dataEntity = entity.getData();
         BeanUtils.copyProperties(dataEntity, rptTransaction);
 
         if (dataEntity.getBreakdown() != null) {
-
-            rptTransaction.setBreakdown(
-                    mapEntityResourceToRestResource(dataEntity.getBreakdown()));
+            rptTransaction.setBreakdown(mapEntityResourceToRestResource(dataEntity.getBreakdown()));
         }
 
         return rptTransaction;
     }
 
     private RptTransactionBreakdownEntity mapRestResourceToEntityResource(RptTransactionBreakdown restResource) {
-
         RptTransactionBreakdownEntity entityResource = new RptTransactionBreakdownEntity();
 
         BeanUtils.copyProperties(restResource, entityResource);
@@ -66,7 +58,6 @@ public class RptTransactionTransformer implements GenericTransformerForMultipleR
     }
 
     private RptTransactionBreakdown mapEntityResourceToRestResource(RptTransactionBreakdownEntity entityResource) {
-
         RptTransactionBreakdown restResource = new RptTransactionBreakdown();
 
         BeanUtils.copyProperties(entityResource, restResource);

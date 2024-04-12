@@ -8,6 +8,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -18,8 +19,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoConfigTest {
-
-
     @Mock
     MongoDatabaseFactory mongoDatabaseFactory;
 
@@ -28,6 +27,9 @@ class MongoConfigTest {
 
     @Mock
     MongoDbConnectionPoolConfig mongoDbConnectionPoolConfig;
+
+    @Mock
+    PersistenceExceptionTranslator persistenceExceptionTranslator;
 
     private MongoConfig mongoConfig;
 
@@ -41,6 +43,7 @@ class MongoConfigTest {
     @Test
     @DisplayName("Get the bean for mapping mongo converter")
     void getBeanForMappingMongoConverter() {
+        when(mongoDatabaseFactory.getExceptionTranslator()).thenReturn(persistenceExceptionTranslator);
         MappingMongoConverter bean = mongoConfig.mappingMongoConverter(mongoDatabaseFactory, context);
         assertNotNull(bean);
     }
@@ -48,7 +51,6 @@ class MongoConfigTest {
     @Test
     @DisplayName("Get the bean for mongo client settings")
     void getBeanForMongoClientSettings() {
-
         when(mongoDbConnectionPoolConfig.getConnectionString()).thenReturn(CONNECTION_STRING_TEST);
 
         MongoClientSettings bean = mongoConfig.mongoClientSettings(mongoDbConnectionPoolConfig);

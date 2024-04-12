@@ -8,31 +8,24 @@ import uk.gov.companieshouse.api.accounts.enumeration.AccountType;
 import uk.gov.companieshouse.api.accounts.links.CompanyAccountLinkType;
 
 class AccountTypeFactoryTest {
-
-    private AccountTypeFactory accountTypeFactory = new AccountTypeFactory();
+    private final AccountTypeFactory accountTypeFactory = new AccountTypeFactory();
 
     private static final String NON_ACCOUNT_LINK_TYPE = "nonAccountLinkType";
 
     @Test
     void getAccountTypeForSmallFullLinkType() {
-
-        assertEquals(AccountType.SMALL_FULL,
-                accountTypeFactory.getAccountTypeForCompanyAccountLinkType(
-                        CompanyAccountLinkType.SMALL_FULL.getLink()));
+        assertEquals(AccountType.SMALL_FULL, accountTypeFactory.getAccountTypeForCompanyAccountLinkType(
+                CompanyAccountLinkType.SMALL_FULL.getLink()));
     }
 
     @Test
     void getAccountTypeForMicroLinkType() {
-
-        assertEquals(AccountType.MICRO,
-                accountTypeFactory.getAccountTypeForCompanyAccountLinkType(
-                        CompanyAccountLinkType.MICRO.getLink()));
+        assertEquals(AccountType.MICRO, accountTypeFactory.getAccountTypeForCompanyAccountLinkType(
+                CompanyAccountLinkType.MICRO.getLink()));
     }
 
     @Test
     void getAccountTypeForNonAccountLinkType() {
-
-        assertNull(accountTypeFactory.getAccountTypeForCompanyAccountLinkType(
-                        NON_ACCOUNT_LINK_TYPE));
+        assertNull(accountTypeFactory.getAccountTypeForCompanyAccountLinkType(NON_ACCOUNT_LINK_TYPE));
     }
 }

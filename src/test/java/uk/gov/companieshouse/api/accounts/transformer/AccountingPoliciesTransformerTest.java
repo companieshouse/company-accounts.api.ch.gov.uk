@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AccountingPoliciesTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final String BASIS_OF_MEAS = "basis of measurement policy";
@@ -24,13 +23,12 @@ class AccountingPoliciesTransformerTest {
     private static final String VALUATION = "valuation policy";
     private static final String OTHER = "other policies";
 
-    private AccountingPoliciesTransformer accountingPoliciesTransformer = new AccountingPoliciesTransformer();
+    private final AccountingPoliciesTransformer accountingPoliciesTransformer = new AccountingPoliciesTransformer();
 
     @Test
     @DisplayName("Tests accountingPolicies  transformer with empty object which should result in null values")
     void testTransformerWithEmptyObject() {
-        AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer
-                .transform(new AccountingPolicies());
+        AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer.transform(new AccountingPolicies());
 
         assertNotNull(accountingPoliciesEntity);
         assertNull(accountingPoliciesEntity.getData().getEtag());
@@ -40,7 +38,6 @@ class AccountingPoliciesTransformerTest {
     @Test
     @DisplayName("Tests accountingPolicies transformer with populated Rest object and validates values returned")
     void testRestToEntityTransformerWithPopulatedObject() {
-
         AccountingPolicies accountingPolicies = new AccountingPolicies();
 
         accountingPolicies.setEtag(ETAG);
@@ -53,8 +50,7 @@ class AccountingPoliciesTransformerTest {
         accountingPolicies.setOtherAccountingPolicy(OTHER);
         accountingPolicies.setLinks(new HashMap<>());
 
-        AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer
-                .transform(accountingPolicies);
+        AccountingPoliciesEntity accountingPoliciesEntity = accountingPoliciesTransformer.transform(accountingPolicies);
 
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = accountingPoliciesEntity.getData();
 
@@ -74,7 +70,6 @@ class AccountingPoliciesTransformerTest {
     @Test
     @DisplayName("Tests accountingPolicies transformer with populated Entity object and validates values returned")
     void testEntityToRestTransformerWithPopulatedObject() {
-
         AccountingPoliciesEntity accountingPoliciesEntity = new AccountingPoliciesEntity();
         AccountingPoliciesDataEntity accountingPoliciesDataEntity = new AccountingPoliciesDataEntity();
 
@@ -89,9 +84,7 @@ class AccountingPoliciesTransformerTest {
         accountingPoliciesDataEntity.setLinks(new HashMap<>());
         accountingPoliciesEntity.setData(accountingPoliciesDataEntity);
 
-
         AccountingPolicies accountingPolicies = accountingPoliciesTransformer.transform(accountingPoliciesEntity);
-
 
         assertNotNull(accountingPolicies);
         assertEquals(ETAG, accountingPolicies.getEtag());
@@ -108,7 +101,6 @@ class AccountingPoliciesTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_ACCOUNTING_POLICIES,
                 accountingPoliciesTransformer.getAccountingNoteType());
     }

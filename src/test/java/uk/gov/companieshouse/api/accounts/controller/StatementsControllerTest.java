@@ -9,7 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -31,7 +31,6 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class StatementsControllerTest {
-
     private static final String COMPANY_ACCOUNTS_ID = "123123";
 
     @Mock
@@ -57,7 +56,7 @@ class StatementsControllerTest {
     void shouldCreateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
 
-        ResponseObject restObjectCreated = createResponseObject(ResponseStatus.CREATED);
+        ResponseObject<Statement> restObjectCreated = createResponseObject(ResponseStatus.CREATED);
 
         when(statementServiceMock.create(any(Statement.class), any(Transaction.class), anyString(),
             any(HttpServletRequest.class)))
@@ -67,7 +66,7 @@ class StatementsControllerTest {
             restObjectCreated.getErrors()))
             .thenReturn(createResponseEntity(HttpStatus.CREATED, restObjectCreated));
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
             statementsController.create(statementMock, "", requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.CREATED, true);
@@ -87,7 +86,7 @@ class StatementsControllerTest {
         when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
             statementsController.create(statementMock, "", requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
@@ -101,7 +100,7 @@ class StatementsControllerTest {
     void shouldUpdateStatement() throws DataException {
         when(requestMock.getAttribute(anyString())).thenReturn(transactionMock);
 
-        ResponseObject restObjectUpdated = createResponseObject(ResponseStatus.UPDATED);
+        ResponseObject<Statement> restObjectUpdated = createResponseObject(ResponseStatus.UPDATED);
 
         when(statementServiceMock.update(any(Statement.class), any(Transaction.class), anyString(),
             any(HttpServletRequest.class)))
@@ -111,7 +110,7 @@ class StatementsControllerTest {
             restObjectUpdated.getErrors()))
             .thenReturn(createResponseEntity(HttpStatus.NO_CONTENT, restObjectUpdated));
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
             statementsController.update(statementMock, "", requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.NO_CONTENT, true);
@@ -131,7 +130,7 @@ class StatementsControllerTest {
         when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
             statementsController.update(statementMock, "", requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
@@ -142,17 +141,14 @@ class StatementsControllerTest {
     @Test
     @DisplayName("Tests the successful request to get Statements")
     void shouldGetStatements() throws DataException {
+        ResponseObject<Statement> restObjectFound = createResponseObject(ResponseStatus.FOUND);
 
-        ResponseObject restObjectFound = createResponseObject(ResponseStatus.FOUND);
-
-        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock))
-            .thenReturn(restObjectFound);
+        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).thenReturn(restObjectFound);
 
         when(apiResponseMapperMock.mapGetResponse(restObjectFound.getData(), requestMock))
             .thenReturn(createResponseEntity(HttpStatus.OK, restObjectFound));
 
-        ResponseEntity response =
-            statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
+        ResponseEntity<?> response = statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.OK, true);
         verifyStatementServiceFind();
@@ -162,17 +158,14 @@ class StatementsControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful request to get Statements as statement id not found")
     void shouldNotGetStatementsStatementIdNotFound() throws DataException {
+        ResponseObject<Statement> restObjectNotFound = createResponseObject(ResponseStatus.NOT_FOUND);
 
-        ResponseObject restObjectNotFound = createResponseObject(ResponseStatus.NOT_FOUND);
-
-        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock))
-            .thenReturn(restObjectNotFound);
+        when(statementServiceMock.find(COMPANY_ACCOUNTS_ID, requestMock)).thenReturn(restObjectNotFound);
 
         when(apiResponseMapperMock.mapGetResponse(restObjectNotFound.getData(), requestMock))
             .thenReturn(createResponseEntity(HttpStatus.NOT_FOUND, restObjectNotFound));
 
-        ResponseEntity response =
-            statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
+        ResponseEntity<?> response = statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.NOT_FOUND, true);
         verifyStatementServiceFind();
@@ -190,7 +183,7 @@ class StatementsControllerTest {
         when(apiResponseMapperMock.getErrorResponse())
             .thenReturn(createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, null));
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
             statementsController.get(COMPANY_ACCOUNTS_ID, requestMock);
 
         assertStatementControllerResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, false);
@@ -203,13 +196,13 @@ class StatementsControllerTest {
      * Asserts the response is not null, it is equal to the status passed and the body match the
      * statementMock (no change in the object occurs). Body is assessed if flag is passed in.
      *
-     * @param response
-     * @param httpResponseStatus
-     * @param assertResponseBody
+     * @param response - response
+     * @param httpResponseStatus - http response status
+     * @param assertResponseBody - assert response body
      */
-    private void assertStatementControllerResponse(ResponseEntity response,
-        HttpStatus httpResponseStatus, boolean assertResponseBody) {
-
+    private void assertStatementControllerResponse(ResponseEntity<?> response,
+                                                   HttpStatus httpResponseStatus,
+                                                   boolean assertResponseBody) {
         assertNotNull(response);
         assertEquals(httpResponseStatus, response.getStatusCode());
 
@@ -221,9 +214,9 @@ class StatementsControllerTest {
     /**
      * Verify the apiResponseMapper.map() is called 1 time when no error occurs.
      *
-     * @param responseObject
+     * @param responseObject - response object
      */
-    private void verifyApiResponseMapperMapCallWhenNoErrors(ResponseObject responseObject) {
+    private void verifyApiResponseMapperMapCallWhenNoErrors(ResponseObject<?> responseObject) {
         verify(apiResponseMapperMock, times(1))
             .map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
@@ -232,9 +225,9 @@ class StatementsControllerTest {
     /**
      * Verify the apiResponseMapper.map() is called 1 time when no error occurs.
      *
-     * @param responseObject
+     * @param responseObject - response object
      */
-    private void verifyApiResponseMapperMapGetResponseCall(ResponseObject responseObject) {
+    private void verifyApiResponseMapperMapGetResponseCall(ResponseObject<?> responseObject) {
         verify(apiResponseMapperMock, times(1))
             .mapGetResponse(responseObject.getData(), requestMock);
     }
@@ -251,7 +244,7 @@ class StatementsControllerTest {
     /**
      * Verify statementService.update is called 1 time.
      *
-     * @throws DataException
+     * @throws DataException - exception
      */
     private void verifyStatementServiceUpdate() throws DataException {
         verify(statementServiceMock, times(1))
@@ -262,25 +255,22 @@ class StatementsControllerTest {
     /**
      * Verify statementService.update is called 1 time.
      *
-     * @throws DataException
+     * @throws DataException - exception
      */
     private void verifyStatementServiceFind() throws DataException {
-
-        verify(statementServiceMock, times(1))
-            .find(COMPANY_ACCOUNTS_ID, requestMock);
+        verify(statementServiceMock, times(1)).find(COMPANY_ACCOUNTS_ID, requestMock);
     }
 
     /**
      * Creates a response entity with the status passed in and if body exists, it will added to the
      * body.
      *
-     * @param httpStatus
-     * @param responseObjectObject
-     * @return
+     * @param httpStatus - http status
+     * @param responseObjectObject - response object
+     * @return response entity
      */
-    private ResponseEntity createResponseEntity(HttpStatus httpStatus,
-        ResponseObject responseObjectObject) {
-
+    private ResponseEntity<?> createResponseEntity(HttpStatus httpStatus,
+                                                   ResponseObject<?> responseObjectObject) {
         if (responseObjectObject != null) {
             return ResponseEntity.status(httpStatus).body(responseObjectObject.getData());
         }
@@ -289,6 +279,6 @@ class StatementsControllerTest {
     }
 
     private ResponseObject<Statement> createResponseObject(ResponseStatus responseStatus) {
-        return new ResponseObject<Statement>(responseStatus, statementMock);
+        return new ResponseObject<>(responseStatus, statementMock);
     }
 }

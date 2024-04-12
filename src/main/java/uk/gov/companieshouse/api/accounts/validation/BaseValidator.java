@@ -62,13 +62,15 @@ public class BaseValidator {
      * @param location location json path location of the error
      * @param errors errors errors object that holds any errors from submission
      */
-    protected void validateAggregateTotal(Long total, Long expectedTotal, String location,
-            Errors errors) {
+    protected void validateAggregateTotal(Long total,
+                                          Long expectedTotal,
+                                          String location,
+                                          Errors errors) {
         if (expectedTotal == null) {
-            if (total != null && ! total.equals(0L)) {
+            if (total != null && !total.equals(0L)) {
                 addError(errors, incorrectTotal, location);
             }
-        } else if (total == null || ! total.equals(expectedTotal)) {
+        } else if (total == null || !total.equals(expectedTotal)) {
             addError(errors, incorrectTotal, location);
         }
     }

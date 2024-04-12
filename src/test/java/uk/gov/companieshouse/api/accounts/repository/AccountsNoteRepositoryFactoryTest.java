@@ -21,19 +21,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountsNoteRepositoryFactoryTest {
-
     @Mock
     private AccountsNoteRepository<NoteEntity> accountsNoteRepository;
 
-    private AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS;
+    private final AccountingNoteType accountingNoteType = AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS;
 
-    private AccountingNoteType accountingNoteTypeWithoutRepository = AccountingNoteType.SMALL_FULL_DEBTORS;
+    private final AccountingNoteType accountingNoteTypeWithoutRepository = AccountingNoteType.SMALL_FULL_DEBTORS;
 
     private AccountsNoteRepositoryFactory<NoteEntity> repositoryFactory;
 
     @BeforeEach
-    private void setup() {
-
+    public void setUp() {
         when(accountsNoteRepository.getAccountsNote()).thenReturn(accountingNoteType);
 
         List<AccountsNoteRepository<NoteEntity>> noteRepositories = new ArrayList<>();
@@ -44,15 +42,12 @@ class AccountsNoteRepositoryFactoryTest {
     @Test
     @DisplayName("Get note repository for accounting note type with corresponding repository")
     void getNoteRepositoryForAccountingNoteTypeWithCorrespondingRepository() {
-
-        assertEquals(accountsNoteRepository,
-                repositoryFactory.getRepository(accountingNoteType));
+        assertEquals(accountsNoteRepository, repositoryFactory.getRepository(accountingNoteType));
     }
 
     @Test
     @DisplayName("Get note repository for accounting note type without corresponding repository")
     void getNoteRepositoryForAccountingNoteTypeWithoutCorrespondingRepository() {
-
         assertThrows(MissingInfrastructureException.class,
                 () -> repositoryFactory.getRepository(accountingNoteTypeWithoutRepository));
     }

@@ -3,14 +3,15 @@ package uk.gov.companieshouse.api.accounts.interceptor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
@@ -23,10 +24,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @Component
-public class TransactionInterceptor extends HandlerInterceptorAdapter {
+public class TransactionInterceptor implements HandlerInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     @Autowired
     private ApiClientService apiClientService;
@@ -38,8 +38,9 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
+    public boolean preHandle(HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) {
 
         final Map<String, Object> debugMap = new HashMap<>();
         debugMap.put("request_method", request.getMethod());
@@ -49,8 +50,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
             String transactionId = pathVariables.get("transactionId");
-            String passthroughHeader = request
-                .getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
+            String passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
 
             ApiClient apiClient = apiClientService.getApiClient(passthroughHeader);
 
@@ -59,21 +59,15 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
             request.setAttribute(AttributeName.TRANSACTION.getValue(), transaction);
             return true;
-
         } catch (HttpClientErrorException e) {
-
             LOGGER.errorRequest(request, e, debugMap);
             response.setStatus(e.getStatusCode().value());
             return false;
-
         } catch (ApiErrorResponseException e) {
-
             LOGGER.errorRequest(request, e, debugMap);
             response.setStatus(e.getStatusCode());
             return false;
-
         } catch (URIValidationException | IOException e) {
-
             LOGGER.errorRequest(request, e, debugMap);
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return false;

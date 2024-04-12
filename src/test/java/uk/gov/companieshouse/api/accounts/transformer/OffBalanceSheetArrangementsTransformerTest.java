@@ -19,29 +19,28 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OffBalanceSheetArrangementsTransformerTest {
-
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private OffBalanceSheetArrangementsTransformer offBalanceSheetArrangementsTransformer = new OffBalanceSheetArrangementsTransformer();
+    private final OffBalanceSheetArrangementsTransformer offBalanceSheetArrangementsTransformer =
+            new OffBalanceSheetArrangementsTransformer();
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
      void testTransformerWithEmptyRestObject() {
-
         OffBalanceSheetArrangementsEntity offBalanceSheetArrangementsEntity = offBalanceSheetArrangementsTransformer
                 .transform(new OffBalanceSheetArrangements());
 
         assertNotNull(offBalanceSheetArrangementsEntity);
         assertNull(offBalanceSheetArrangementsEntity.getData().getEtag());
         assertEquals(new HashMap<>(), offBalanceSheetArrangementsEntity.getData().getLinks());
-        assertEquals(AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS, offBalanceSheetArrangementsTransformer.getAccountingNoteType());
+        assertEquals(AccountingNoteType.SMALL_FULL_OFF_BALANCE_SHEET_ARRANGEMENTS,
+                offBalanceSheetArrangementsTransformer.getAccountingNoteType());
     }
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
      void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         OffBalanceSheetArrangements offBalanceSheetArrangements = new OffBalanceSheetArrangements();
 
         offBalanceSheetArrangements.setDetails(DETAILS);
@@ -62,7 +61,6 @@ class OffBalanceSheetArrangementsTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
      void testTransformerWithEmptyEntityObject() {
-
         OffBalanceSheetArrangements offBalanceSheetArrangements = offBalanceSheetArrangementsTransformer
                 .transform(new OffBalanceSheetArrangementsEntity());
 
@@ -74,7 +72,6 @@ class OffBalanceSheetArrangementsTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
      void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         OffBalanceSheetArrangementsEntity offBalanceSheetArrangementsEntity = new OffBalanceSheetArrangementsEntity();
         OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity = new OffBalanceSheetArrangementsDataEntity();
 

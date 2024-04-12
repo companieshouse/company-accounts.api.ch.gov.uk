@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,8 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
 @Service
-public class RelatedPartyTransactionsServiceImpl implements ParentService<RelatedPartyTransactions, RelatedPartyTransactionsLinkType>,
-        RelatedPartyTransactionsService {
+public class RelatedPartyTransactionsServiceImpl implements ParentService<RelatedPartyTransactions,
+        RelatedPartyTransactionsLinkType>, RelatedPartyTransactionsService {
 
     @Autowired
     private RelatedPartyTransactionsTransformer transformer;
@@ -45,9 +45,10 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
     RptTransactionServiceImpl rptTransactionService;
 
     @Override
-    public ResponseObject<RelatedPartyTransactions> create(RelatedPartyTransactions rest, Transaction transaction,
-                                                           String companyAccountsId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<RelatedPartyTransactions> create(RelatedPartyTransactions rest,
+                                                           Transaction transaction,
+                                                           String companyAccountsId,
+                                                           HttpServletRequest request) throws DataException {
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
         RelatedPartyTransactionsEntity entity = transformer.transform(rest);
@@ -56,10 +57,8 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -71,8 +70,7 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
     @Override
     public ResponseObject<RelatedPartyTransactions> find(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                         HttpServletRequest request) throws DataException {
         RelatedPartyTransactionsEntity entity;
 
         try {
@@ -89,12 +87,10 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
     @Override
     public ResponseObject<RelatedPartyTransactions> delete(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                           HttpServletRequest request) throws DataException {
         String id = generateID(companyAccountsId);
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         rptTransactionService.deleteAll(transaction, companyAccountsId, request);
 
@@ -107,15 +103,15 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void addLink(String id, RelatedPartyTransactionsLinkType linkType, String link,
-            HttpServletRequest request) throws DataException {
-
+    public void addLink(String id,
+                        RelatedPartyTransactionsLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         String resourceId = generateID(id);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -124,17 +120,15 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
         try {
             repository.save(entity);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void removeLink(String id, RelatedPartyTransactionsLinkType linkType, HttpServletRequest request)
-            throws DataException {
-
+    public void removeLink(String id,
+                           RelatedPartyTransactionsLinkType linkType,
+                           HttpServletRequest request) throws DataException {
         String resourceId = generateID(id);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -143,18 +137,17 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
 
         try {
             repository.save(entity);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
 
     @Override
-    public void addRptTransaction(String companyAccountsId, String rptTransactionId, String link,
-            HttpServletRequest request) throws DataException {
-
+    public void addRptTransaction(String companyAccountsId,
+                                  String rptTransactionId,
+                                  String link,
+                                  HttpServletRequest request) throws DataException {
         String resourceId = generateID(companyAccountsId);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -165,18 +158,16 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         entity.getData().getTransactions().put(rptTransactionId, link);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void removeRptTransaction(String companyAccountsId, String rptTransactionId, HttpServletRequest request)
-            throws DataException {
-
+    public void removeRptTransaction(String companyAccountsId,
+                                     String rptTransactionId,
+                                     HttpServletRequest request) throws DataException {
         String resourceId = generateID(companyAccountsId);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -185,18 +176,13 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         entity.getData().getTransactions().remove(rptTransactionId);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
-
     }
 
-    public void removeAllRptTransactions(String companyAccountsId)
-            throws DataException {
-
+    public void removeAllRptTransactions(String companyAccountsId) throws DataException {
         String resourceId = generateID(companyAccountsId);
         RelatedPartyTransactionsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -207,14 +193,12 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
         try {
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
     }
     
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
@@ -222,26 +206,24 @@ public class RelatedPartyTransactionsServiceImpl implements ParentService<Relate
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> map = new HashMap<>();
         map.put(RelatedPartyTransactionsLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
-    private void setMetadataOnRestObject(RelatedPartyTransactions rest, Transaction transaction, String companyAccountsId) {
-
+    private void setMetadataOnRestObject(RelatedPartyTransactions rest,
+                                         Transaction transaction,
+                                         String companyAccountsId) {
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.RELATED_PARTY_TRANSACTIONS.getValue());
     }
 
     private String generateID(String companyAccountId) {
-
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.RELATED_PARTY_TRANSACTIONS.getName());
     }
 
     private String getSelfLinkFromRestEntity(RelatedPartyTransactions rest) {
-
         return rest.getLinks().get(RelatedPartyTransactionsLinkType.SELF.getLink());
     }
 }

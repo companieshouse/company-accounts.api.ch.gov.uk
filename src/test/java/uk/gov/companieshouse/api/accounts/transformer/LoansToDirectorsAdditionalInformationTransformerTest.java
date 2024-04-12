@@ -15,16 +15,14 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.loanstodire
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoansToDirectorsAdditionalInformationTransformerTest {
-
     private static final String DETAILS = "details";
 
-    private LoansToDirectorsAdditionalInformationTransformer transformer =
+    private final LoansToDirectorsAdditionalInformationTransformer transformer =
             new LoansToDirectorsAdditionalInformationTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         AdditionalInformation additionalInformation = new AdditionalInformation();
         additionalInformation.setDetails(DETAILS);
 
@@ -38,7 +36,6 @@ class LoansToDirectorsAdditionalInformationTransformerTest {
     @Test
     @DisplayName("Transform entity to rest object")
     void entityToRest() {
-
         AdditionalInformationDataEntity additionalInformationDataEntity = new AdditionalInformationDataEntity();
         additionalInformationDataEntity.setDetails(DETAILS);
 

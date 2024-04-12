@@ -15,18 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StatementsTransformerTest {
-
     private static final String ADDITIONAL_INFORMATION = "additionalInfo";
     private static final String COMPANY_POLICY_ON_DISABLED_EMPLOYEES = "companyPolicy";
     private static final String POLITICAL_AND_CHARITABLE_DONATIONS = "politicalDonations";
     private static final String PRINCIPAL_ACTIVITIES = "principalActivities";
 
-    private StatementsTransformer transformer = new StatementsTransformer();
+    private final StatementsTransformer transformer = new StatementsTransformer();
 
     @Test
     @DisplayName("Transform REST object to entity")
     void restToEntity() {
-
         Statements statements = new Statements();
 
         statements.setAdditionalInformation(ADDITIONAL_INFORMATION);
@@ -50,7 +48,6 @@ class StatementsTransformerTest {
     @Test
     @DisplayName("Transform entity to REST object")
     void entityToRest() {
-
         StatementsDataEntity statementsDataEntity = new StatementsDataEntity();
 
         statementsDataEntity.setAdditionalInformation(ADDITIONAL_INFORMATION);
