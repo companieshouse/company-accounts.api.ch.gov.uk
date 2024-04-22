@@ -22,7 +22,6 @@ public class RelatedPartyTransactionsTransformer implements GenericTransformer<R
 
     @Override
     public RelatedPartyTransactions transform(RelatedPartyTransactionsEntity entity) {
-
         RelatedPartyTransactions relatedPartyTransactions = new RelatedPartyTransactions();
 
         RelatedPartyTransactionsDataEntity dataEntity = entity.getData();

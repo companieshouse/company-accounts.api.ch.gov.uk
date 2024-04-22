@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.parent;
 
 import java.time.LocalDate;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,49 +21,44 @@ public class SmallFullParentResource implements ParentResource<SmallFullLinkType
 
     @Override
     public boolean childExists(HttpServletRequest request, SmallFullLinkType linkType) {
-
-        return StringUtils.isNotBlank(
-                ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
-                        .getLinks().get(linkType.getLink()));
+        return StringUtils.isNotBlank(((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
+                .getLinks().get(linkType.getLink()));
     }
 
     @Override
-    public void addLink(String companyAccountsId, SmallFullLinkType linkType, String link,
-            HttpServletRequest request) throws DataException {
-
+    public void addLink(String companyAccountsId,
+                        SmallFullLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         smallFullService.addLink(companyAccountsId, linkType, link, request);
     }
 
     @Override
-    public void removeLink(String companyAccountsId, SmallFullLinkType linkType,
-            HttpServletRequest request) throws DataException {
-
+    public void removeLink(String companyAccountsId,
+                           SmallFullLinkType linkType,
+                           HttpServletRequest request) throws DataException {
         smallFullService.removeLink(companyAccountsId, linkType, request);
     }
 
     @Override
     public AccountType getParent() {
-
         return AccountType.SMALL_FULL;
     }
 
     @Override
     public LocalDate getPeriodStartOn(HttpServletRequest request) {
-
         return ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
-                        .getNextAccounts().getPeriodStartOn();
+                .getNextAccounts().getPeriodStartOn();
     }
 
     @Override
     public LocalDate getPeriodEndOn(HttpServletRequest request) {
-
         return ((SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue()))
                 .getNextAccounts().getPeriodEndOn();
     }
 
     @Override
     public LocalDate getPeriodEndOn(String companyAccountsId, HttpServletRequest request) {
-
         try {
             return smallFullService.find(companyAccountsId, request).getData().getNextAccounts().getPeriodEndOn();
         } catch (DataException e) {

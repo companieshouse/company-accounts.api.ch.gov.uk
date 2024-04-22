@@ -19,14 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorsApprovalTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final String NAME = "name";
     private static final LocalDate DATE = LocalDate.of(2019, 10, 1);
 
 
-    private DirectorsApprovalTransformer directorsApprovalTransformer = new DirectorsApprovalTransformer();
+    private final DirectorsApprovalTransformer directorsApprovalTransformer = new DirectorsApprovalTransformer();
 
     @Test
     @DisplayName("Tests directors approval  transformer with empty object which should result in null values")
@@ -42,7 +41,6 @@ class DirectorsApprovalTransformerTest {
     @Test
     @DisplayName("Tests directors approval transformer with populated Rest object and validates values returned")
     void testRestToEntityTransformerWithPopulatedObject() {
-
         DirectorsApproval directorsApproval = new DirectorsApproval();
         directorsApproval.setEtag(ETAG);
         directorsApproval.setKind(KIND);
@@ -50,8 +48,7 @@ class DirectorsApprovalTransformerTest {
         directorsApproval.setDate(DATE);
         directorsApproval.setLinks(new HashMap<>());
 
-        DirectorsApprovalEntity directorsApprovalEntity = directorsApprovalTransformer
-                .transform(directorsApproval);
+        DirectorsApprovalEntity directorsApprovalEntity = directorsApprovalTransformer.transform(directorsApproval);
 
         DirectorsApprovalDataEntity directorsApprovalDataEntity = directorsApprovalEntity.getData();
 
@@ -67,7 +64,6 @@ class DirectorsApprovalTransformerTest {
     @Test
     @DisplayName("Tests directors approval transformer with populated Entity object and validates values returned")
     void testEntityToRestTransformerWithPopulatedObject() {
-
         DirectorsApprovalEntity directorsApprovalEntity = new DirectorsApprovalEntity();
         DirectorsApprovalDataEntity directorsApprovalDataEntity = new DirectorsApprovalDataEntity();
         directorsApprovalDataEntity.setEtag(ETAG);

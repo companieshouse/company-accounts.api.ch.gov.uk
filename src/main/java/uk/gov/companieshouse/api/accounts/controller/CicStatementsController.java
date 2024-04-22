@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -52,18 +52,14 @@ public class CicStatementsController {
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicStatements> response =
-                    cicStatementsService
-                            .create(cicStatements, transaction, companyAccountId, request);
+            ResponseObject<CicStatements> response = cicStatementsService
+                    .create(cicStatements, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create CIC statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -73,18 +69,13 @@ public class CicStatementsController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
-
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicStatements> response =
-                    cicStatementsService.find(companyAccountId, request);
+            ResponseObject<CicStatements> response = cicStatementsService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve CIC statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -96,9 +87,7 @@ public class CicStatementsController {
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        CicReport cicReport =
-                (CicReport) request.getAttribute(AttributeName.CIC_REPORT.getValue());
+        CicReport cicReport = (CicReport) request.getAttribute(AttributeName.CIC_REPORT.getValue());
 
         if (cicReport.getLinks().get(CicReportLinkType.STATEMENTS.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -112,15 +101,11 @@ public class CicStatementsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicStatements> response =
-                    cicStatementsService
-                            .update(cicStatements, transaction, companyAccountId, request);
+            ResponseObject<CicStatements> response = cicStatementsService
+                    .update(cicStatements, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update CIC statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -131,17 +116,13 @@ public class CicStatementsController {
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
                                  HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CicStatements> response =
-                    cicStatementsService.delete(companyAccountsId, request);
+            ResponseObject<CicStatements> response = cicStatementsService.delete(companyAccountsId, request);
 
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete CIC statements resource", ex, request);
             return apiResponseMapper.getErrorResponse();

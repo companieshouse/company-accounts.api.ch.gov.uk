@@ -1,8 +1,8 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountsValidatorTest {
-
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String SMALL_FULL_LINK = "smallFullLink";
     private static final String MANDATORY_ELEMENT_MISSING_KEY = "mandatoryElementMissing";
@@ -118,7 +117,6 @@ class AccountsValidatorTest {
 
     @BeforeEach
     void setUp() throws DataException {
-
         when(companyAccountService.findById(COMPANY_ACCOUNTS_ID, request)).thenReturn(companyAccountResponseObject);
         when(companyAccountResponseObject.getData()).thenReturn(companyAccount);
         when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(true));
@@ -139,7 +137,6 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - single year filer, successful, no errors")
     void validateSubmissionSYFNoErrorsFound() throws DataException, ServiceException {
-
         Errors emptyErrors = new Errors();
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
@@ -148,8 +145,7 @@ class AccountsValidatorTest {
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                .thenReturn(emptyErrors);
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
         when(cpResponseObj.getData()).thenReturn(currentPeriod);
@@ -157,9 +153,8 @@ class AccountsValidatorTest {
 
         when (companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        when(stocksTnClosureValidator
-                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, null))
-                .thenReturn(emptyErrors);
+        when(stocksTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request,
+                emptyErrors, currentPeriodBalanceSheet, null)).thenReturn(emptyErrors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -171,7 +166,6 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - successful, no errors")
     void validateSubmissionNoErrorsFound() throws DataException, ServiceException {
-
         Errors emptyErrors = new Errors();
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
@@ -180,8 +174,7 @@ class AccountsValidatorTest {
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                        .thenReturn(emptyErrors);
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class))).thenReturn(emptyErrors);
 
         when(currentPeriodService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(cpResponseObj);
         when(cpResponseObj.getData()).thenReturn(currentPeriod);
@@ -193,9 +186,8 @@ class AccountsValidatorTest {
         when(ppResponseObj.getData()).thenReturn(previousPeriod);
         when(previousPeriod.getBalanceSheet()).thenReturn(previousPeriodBalanceSheet);
 
-        when(stocksTnClosureValidator
-                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
-                .thenReturn(emptyErrors);
+        when(stocksTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors,
+                currentPeriodBalanceSheet, previousPeriodBalanceSheet)).thenReturn(emptyErrors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -206,9 +198,8 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - failed no smallFull link, errors")
     void validateSubmissionNoSmallFullLinkErrorFound() throws DataException {
-
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PATH));
+        errors.addError(createError(SMALL_FULL_PATH));
 
         when(companyAccount.getLinks()).thenReturn(createCompanyAccountLinks(false));
 
@@ -225,9 +216,8 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - failed no current period, errors")
     void validateSubmissionNoCurrentPeriodErrorsFound() throws DataException {
-
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH));
+        errors.addError(createError(SMALL_FULL_CURRENT_PERIOD_PATH));
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
@@ -235,8 +225,7 @@ class AccountsValidatorTest {
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                        .thenReturn(errors);
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -247,9 +236,8 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - failed no previous period, errors")
     void validateSubmissionNoPreviousPeriodErrorsFound() throws DataException {
-
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH));
+        errors.addError(createError(SMALL_FULL_PREVIOUS_PERIOD_PATH));
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
@@ -257,8 +245,7 @@ class AccountsValidatorTest {
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                        .thenReturn(errors);
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -269,10 +256,9 @@ class AccountsValidatorTest {
     @Test
     @DisplayName("Validate Submission - failed no current or previous period, errors")
     void validateSubmissionNoCurrentOrPreviousPeriodErrorsFound() throws DataException {
-
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_PERIOD_PATH));
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_PREVIOUS_PERIOD_PATH));
+        errors.addError(createError(SMALL_FULL_CURRENT_PERIOD_PATH));
+        errors.addError(createError(SMALL_FULL_PREVIOUS_PERIOD_PATH));
 
         when(smallFullService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(smallFullResponseObject);
         when(smallFullResponseObject.getData()).thenReturn(smallFull);
@@ -280,8 +266,7 @@ class AccountsValidatorTest {
         when(currentPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
                 any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
         when(previousPeriodTnClosureValidator.validate(any(String.class), any(SmallFull.class),
-                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class)))
-                        .thenReturn(errors);
+                any(Transaction.class), any(HttpServletRequest.class), any(Errors.class))).thenReturn(errors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -316,10 +301,9 @@ class AccountsValidatorTest {
         when(previousPeriod.getBalanceSheet()).thenReturn(previousPeriodBalanceSheet);
 
         Errors stocksErrors = new Errors();
-        stocksErrors.addError(createError(MANDATORY_ELEMENT_MISSING, SMALL_FULL_CURRENT_STOCKS));
-        when(stocksTnClosureValidator
-                .validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors, currentPeriodBalanceSheet, previousPeriodBalanceSheet))
-                .thenReturn(stocksErrors);
+        stocksErrors.addError(createError(SMALL_FULL_CURRENT_STOCKS));
+        when(stocksTnClosureValidator.validate(COMPANY_ACCOUNTS_ID, smallFull, transaction, request, emptyErrors,
+                currentPeriodBalanceSheet, previousPeriodBalanceSheet)).thenReturn(stocksErrors);
 
         Errors responseErrors = validator.validate(transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -337,8 +321,8 @@ class AccountsValidatorTest {
         return links;
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError(String path) {
+        return new Error(AccountsValidatorTest.MANDATORY_ELEMENT_MISSING, path, LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 }

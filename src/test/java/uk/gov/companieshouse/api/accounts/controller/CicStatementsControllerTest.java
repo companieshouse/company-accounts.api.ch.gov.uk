@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,7 +35,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicStatementsControllerTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -75,7 +74,6 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Create CIC statements - success path")
     void createCicStatementsSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -83,12 +81,12 @@ class CicStatementsControllerTest {
         when(service.create(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<CicStatements> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.create(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -99,11 +97,10 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Create CIC statements - binding result errors")
     void createCicStatementsBindingResultErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.create(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -114,17 +111,16 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Create CIC statements- data exception")
     void createCicStatementsDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(service.create(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.create(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -135,18 +131,17 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Get CIC statements - success path")
     void getCicStatementsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<CicStatements> responseObject = new ResponseObject<>(ResponseStatus.FOUND, cicStatements);
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<CicStatements> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, returnedResponse.getStatusCode());
@@ -156,15 +151,14 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Get CIC statements - data exception")
     void getCicStatementsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(service.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = controller.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, returnedResponse.getStatusCode());
@@ -174,7 +168,6 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Update CIC statements - success path")
     void updateCicStatementsSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
         when(cicReport.getLinks()).thenReturn(cicReportLinks);
         when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
@@ -185,11 +178,11 @@ class CicStatementsControllerTest {
         when(service.update(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.update(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -200,13 +193,12 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Update CIC statements - not found")
     void updateCicStatementsNotFound() {
-
         when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
         when(cicReport.getLinks()).thenReturn(cicReportLinks);
         when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
                 .thenReturn(null);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.update(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -217,7 +209,6 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Update CIC statements - binding result errors")
     void updateCicStatementsBindingResultErrors() {
-
         when(request.getAttribute(AttributeName.CIC_REPORT.getValue())).thenReturn(cicReport);
         when(cicReport.getLinks()).thenReturn(cicReportLinks);
         when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
@@ -226,7 +217,7 @@ class CicStatementsControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.update(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -237,7 +228,6 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Update CIC statements - data exception")
     void updateCicStatementsDataException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(cicReport).thenReturn(transaction);
         when(cicReport.getLinks()).thenReturn(cicReportLinks);
         when(cicReportLinks.get(CicReportLinkType.STATEMENTS.getLink()))
@@ -247,10 +237,10 @@ class CicStatementsControllerTest {
         when(service.update(cicStatements, transaction, COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
+        ResponseEntity<?> returnedResponse =
                 controller.update(cicStatements, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
@@ -261,17 +251,16 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Delete CIC statements - success path")
     void deleteCicStatementsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
+        ResponseObject<CicStatements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED);
         when(service.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, returnedResponse.getStatusCode());
@@ -281,15 +270,14 @@ class CicStatementsControllerTest {
     @Test
     @DisplayName("Delete CIC statements - data exception")
     void deleteCicStatementsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(service.delete(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = controller.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, returnedResponse.getStatusCode());

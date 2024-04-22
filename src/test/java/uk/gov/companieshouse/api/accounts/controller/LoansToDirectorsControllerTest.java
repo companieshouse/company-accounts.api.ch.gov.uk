@@ -18,7 +18,7 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoansToDirectorsControllerTest {
-
     private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
 
     @Mock
@@ -53,7 +52,6 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Loans to directors create - successful")
     void createLoansToDirectorsSuccessful() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.CREATED,
@@ -69,7 +67,7 @@ class LoansToDirectorsControllerTest {
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 loansToDirectorsController.create(loansToDirectors, COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
@@ -80,7 +78,6 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Loans to directors create - Throws exception")
     void createLoansToDirectorsThrowsException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(loansToDirectorsService.create(loansToDirectors, transaction,
@@ -92,7 +89,7 @@ class LoansToDirectorsControllerTest {
         when(apiResponseMapper.getErrorResponse())
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 loansToDirectorsController.create(loansToDirectors, COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
@@ -103,7 +100,6 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Get loans to directors - success")
     void getLoansToDirectorsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
@@ -117,8 +113,7 @@ class LoansToDirectorsControllerTest {
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                loansToDirectorsController.get(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = loansToDirectorsController.get(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -128,18 +123,16 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Get loans to directors - Throws exception")
     void getLoansToDirectorsThrowsException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
-        when(loansToDirectorsService.find(COMPANY_ACCOUNT_ID, request))
-                .thenThrow(dataException);
+        when(loansToDirectorsService.find(COMPANY_ACCOUNT_ID, request)).thenThrow(dataException);
 
         ResponseEntity<LoansToDirectors> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = loansToDirectorsController.get(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = loansToDirectorsController.get(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -149,14 +142,12 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Delete loans to directors - success")
     void deleteLoansToDirectorsSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         ResponseObject<LoansToDirectors> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
                 loansToDirectors);
 
-        when(loansToDirectorsService.delete(COMPANY_ACCOUNT_ID, request))
-                .thenReturn(responseObject);
+        when(loansToDirectorsService.delete(COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
 
         ResponseEntity<LoansToDirectors> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
@@ -164,8 +155,7 @@ class LoansToDirectorsControllerTest {
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                loansToDirectorsController.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = loansToDirectorsController.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -174,7 +164,6 @@ class LoansToDirectorsControllerTest {
     @Test
     @DisplayName("Delete loans to directors - Throws exception")
     void deleteLoansToDirectorsThrowsException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
@@ -186,7 +175,7 @@ class LoansToDirectorsControllerTest {
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = loansToDirectorsController.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> returnedResponse = loansToDirectorsController.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

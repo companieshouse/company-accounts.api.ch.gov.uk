@@ -23,8 +23,8 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,10 +40,10 @@ public class DirectorsReportController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody DirectorsReport directorsReport, BindingResult bindingResult,
+    public ResponseEntity create(@Valid @RequestBody DirectorsReport directorsReport,
+                                 BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
@@ -52,11 +52,10 @@ public class DirectorsReportController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<DirectorsReport> response = directorsReportService.create(directorsReport, transaction, companyAccountId, request);
+            ResponseObject<DirectorsReport> response = directorsReportService.create(
+                    directorsReport, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction, "Failed to create directorsReport resource",
                     ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -65,32 +64,28 @@ public class DirectorsReportController {
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<DirectorsReport> response = directorsReportService.find(companyAccountId, request);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a directorsReport resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to retrieve a directorsReport resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
-
         try {
             ResponseObject<DirectorsReport> response = directorsReportService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete directorsReport resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete directorsReport resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

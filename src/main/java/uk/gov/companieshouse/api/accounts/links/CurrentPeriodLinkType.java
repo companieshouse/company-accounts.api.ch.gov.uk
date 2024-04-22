@@ -5,7 +5,7 @@ public enum CurrentPeriodLinkType implements LinkType {
     SELF("self"),
     PROFIT_AND_LOSS("profit_and_loss");
 
-    private String link;
+    private final String link;
 
     CurrentPeriodLinkType(String link) {
         this.link = link;

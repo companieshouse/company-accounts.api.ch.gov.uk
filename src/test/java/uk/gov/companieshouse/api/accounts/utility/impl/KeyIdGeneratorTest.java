@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.api.accounts.utility.impl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KeyIdGeneratorTest {
-
     @InjectMocks
     private KeyIdGenerator keyIdGenerator;
 
@@ -28,7 +28,6 @@ class KeyIdGeneratorTest {
     @Test
     @DisplayName("Test generate a random String")
     void testGenerateRandom() {
-
         String value = keyIdGenerator.generateRandom();
         assertNotNull(value);
     }

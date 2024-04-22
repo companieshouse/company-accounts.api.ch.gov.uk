@@ -11,7 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,12 +33,10 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.charset.validation.CharSetValidation;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RptTransactionsControllerTest {
-
     private static final String RPT_TRANSACTIONS_ID = "rptTransactionsId";
     private static final String COMPANY_ACCOUNT_ID = "companyAccountId";
     private static final String RPT_TRANSACTIONS_LINK = "rptTransactionsLink";
@@ -72,9 +70,6 @@ class RptTransactionsControllerTest {
 
     @Mock
     private Map<String, String> rptTransactions;
-
-    @Mock
-    private CharSetValidation charSetValidator;
     
     @InjectMocks
     private RptTransactionsController controller;
@@ -82,7 +77,6 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the successful creation of a RptTransaction")
     void createRptTransactionSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -90,11 +84,11 @@ class RptTransactionsControllerTest {
         when(rptTransactionService.create(rptTransaction, transaction, RPT_TRANSACTIONS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        ResponseEntity<RptTransaction> responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
@@ -111,12 +105,10 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the creation of an RptTransaction where the controller returns a bad request binding error for invalid length")
     void createRptTransactionReturnBadRequestForBindingErrors() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response =
-                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
+        ResponseEntity<?> response = controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -126,17 +118,15 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the creation of an RptTransaction where the service throws a data exception")
     void createRptTransactionAndServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(rptTransactionService)
                 .create(rptTransaction, transaction, RPT_TRANSACTIONS_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
+        ResponseEntity<?> response = controller.create(rptTransaction, bindingResult, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -151,18 +141,17 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of an RptTransaction")
     void getRptTransactionSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.FOUND, rptTransaction);
         when(rptTransactionService.find(RPT_TRANSACTIONS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
+        ResponseEntity<RptTransaction> responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(RPT_TRANSACTIONS_ID, request);
+        ResponseEntity<?> response = controller.get(RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -177,15 +166,14 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the retrieval of an RptTransaction when the service throws a DataException")
     void getRptTransactionServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(rptTransactionService).find(RPT_TRANSACTIONS_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(RPT_TRANSACTIONS_ID, request);
+        ResponseEntity<?> response = controller.get(RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -200,19 +188,19 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of all RptTransactions")
     void getAllRptTransactionsSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         RptTransaction[] rptTransactions = new RptTransaction[0];
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, rptTransactions);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.FOUND, rptTransactions);
         when(rptTransactionService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getDataForMultipleResources());
+        ResponseEntity<RptTransaction[]> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+                .body(responseObject.getDataForMultipleResources());
         when(apiResponseMapper.mapGetResponseForMultipleResources(responseObject.getDataForMultipleResources(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -222,16 +210,15 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the retrieval of all RptTransactions when the service throws a DataException")
     void getAllRptTransactionsServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(rptTransactionService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -241,7 +228,6 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the successful update of an RptTransaction resource")
     void updateRptTransactionSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
 
@@ -252,11 +238,11 @@ class RptTransactionsControllerTest {
         when(rptTransactionService.update(rptTransaction, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
@@ -272,12 +258,11 @@ class RptTransactionsControllerTest {
 
     @Test
     @DisplayName("Tests the updating of an RptTransaction where the controller returns a bad request binding error for invalid length")
-    void updateRptTransactionReturnBadRequestForBindingErrors() throws DataException {
-
+    void updateRptTransactionReturnBadRequestForBindingErrors() {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
@@ -287,14 +272,13 @@ class RptTransactionsControllerTest {
 
     @Test
     @DisplayName("Tests the update of an RptTransaction when the RptTransaction ID doesn't exist")
-    void updateRptTransactionResourceWhenIdIsNull() throws DataException {
-
+    void updateRptTransactionResourceWhenIdIsNull() {
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
 
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
         when(rptTransactions.get(RPT_TRANSACTIONS_ID)).thenReturn(null);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
@@ -305,7 +289,6 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the update of an RptTransaction resource where the service throws a data exception")
     void updateRptTransactionServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(relatedPartyTransactions).thenReturn(transaction);
 
         when(relatedPartyTransactions.getTransactions()).thenReturn(rptTransactions);
@@ -314,11 +297,11 @@ class RptTransactionsControllerTest {
         doThrow(new DataException("")).when(rptTransactionService)
                 .update(rptTransaction, transaction, COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.update(rptTransaction,bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
+        ResponseEntity<?> response =
+                controller.update(rptTransaction, bindingResult, COMPANY_ACCOUNT_ID, RPT_TRANSACTIONS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -333,18 +316,16 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the successful deletion of an RptTransaction resource")
     void deleteRptTransactionSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
-        when(rptTransactionService.delete(COMPANY_ACCOUNT_ID, request))
-                .thenReturn(responseObject);
+        ResponseObject<RptTransaction> responseObject = new ResponseObject<>(ResponseStatus.UPDATED);
+        when(rptTransactionService.delete(COMPANY_ACCOUNT_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -358,15 +339,14 @@ class RptTransactionsControllerTest {
     @Test
     @DisplayName("Tests the deletion of an RptTransaction resource where the service throws a data exception")
     void deleteRptTransactionServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(rptTransactionService).delete(COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

@@ -4,7 +4,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,14 +24,12 @@ public class LoggingHelper {
                                     String message,
                                     Exception exception,
                                     HttpServletRequest request) {
-
         LOGGER.errorRequest(request, exception, createDebugMap(companyAccountId, transaction, message));
     }
 
     private static Map<String, Object> createDebugMap(String companyAccountId,
                                                       Transaction transaction,
                                                       String message) {
-
         Map<String, Object> debugMap = new HashMap<>();
         debugMap.put(TRANSACTION_ID, transaction.getId());
         debugMap.put(COMPANY_ACCOUNT_ID, companyAccountId);
@@ -40,10 +38,9 @@ public class LoggingHelper {
     }
 
     public static void logInfo(String companyAccountId,
-        Transaction transaction,
-        String message,
-        HttpServletRequest request) {
-
+                               Transaction transaction,
+                               String message,
+                               HttpServletRequest request) {
         LOGGER.infoRequest(request, message, createDebugMap(companyAccountId, transaction, message));
     }
 }

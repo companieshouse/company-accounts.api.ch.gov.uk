@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class LoansControllerTest {
-
     @Mock
     private LoanServiceImpl loanService;
 
@@ -83,7 +82,6 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the successful creation of a Loan")
     void createLoanSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -91,19 +89,17 @@ class LoansControllerTest {
         when(loanService.create(loanRest, transaction, LOANS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
+        ResponseEntity<Loan> responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.create(loanRest, bindingResult, LOANS_ID, request);
+        ResponseEntity<?> response = controller.create(loanRest, bindingResult, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(loanRest, response.getBody());
 
-        verify(loanService, times(1))
-                .create(loanRest, transaction, LOANS_ID, request);
+        verify(loanService, times(1)).create(loanRest, transaction, LOANS_ID, request);
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
 
@@ -112,37 +108,32 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the creation of a Loan where the service throws a data exception")
     void createLoanAndServiceThrowsDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(loanService)
                 .create(loanRest, transaction, LOANS_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.create(loanRest, bindingResult, LOANS_ID, request);
+        ResponseEntity<?> response = controller.create(loanRest, bindingResult, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(loanService, times(1))
-                .create(loanRest, transaction, LOANS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .getErrorResponse();
+        verify(loanService, times(1)).create(loanRest, transaction, LOANS_ID, request);
+        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
     
     @Test
     @DisplayName("Tests the creation of a Loan where the controller returns a bad request binding error for invalid length")
-    void createLoanReturnBadRequestForBindingErrors() throws DataException {
-
+    void createLoanReturnBadRequestForBindingErrors() {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
         
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.create(loanRest, bindingResult, LOANS_ID, request);
 
         assertNotNull(response);
@@ -153,48 +144,43 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of a Loan")
     void getLoanSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.FOUND, loanRest);
         when(loanService.find(LOANS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
+        ResponseEntity<Loan> responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(LOANS_ID, request);
+        ResponseEntity<?> response = controller.get(LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
         assertEquals(loanRest, response.getBody());
 
-        verify(loanService, times(1))
-                .find(LOANS_ID, request);
-        verify(apiResponseMapper, times(1))
-                .mapGetResponse(responseObject.getData(), request);
+        verify(loanService, times(1)).find(LOANS_ID, request);
+        verify(apiResponseMapper, times(1)).mapGetResponse(responseObject.getData(), request);
     }
 
     @Test
     @DisplayName("Tests the retrieval of a Loan when the service throws a DataException")
     void getLoanServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(loanService).find(LOANS_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.get(LOANS_ID, request);
+        ResponseEntity<?> response = controller.get(LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(loanService, times(1))
-                .find(LOANS_ID, request);
+        verify(loanService, times(1)).find(LOANS_ID, request);
         verify(apiResponseMapper, never()).mapGetResponse(any(), any());
         verify(apiResponseMapper, times(1)).getErrorResponse();
     }
@@ -202,19 +188,19 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the successful retrieval of all Loans")
     void getAllLoansSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         Loan[] loans = new Loan[0];
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.FOUND, loans);
+        ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.FOUND, loans);
         when(loanService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND).body(responseObject.getDataForMultipleResources());
-        when(apiResponseMapper.mapGetResponseForMultipleResources(responseObject.getDataForMultipleResources(), request))
-                .thenReturn(responseEntity);
+        ResponseEntity<Loan[]> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+                .body(responseObject.getDataForMultipleResources());
+        when(apiResponseMapper.mapGetResponseForMultipleResources(
+                responseObject.getDataForMultipleResources(), request)).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -224,16 +210,15 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the retrieval of all Loans when the service throws a DataException")
     void getAllLoansServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         when(loanService.findAll(transaction, COMPANY_ACCOUNT_ID, request))
                 .thenThrow(DataException.class);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.getAll(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.getAll(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -243,7 +228,6 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the successful update of a Loan resource")
     void updateLoanSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(loansToDirectors).thenReturn(transaction);
 
@@ -254,35 +238,31 @@ class LoansControllerTest {
         when(loanService.update(loanRest, transaction, COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response =
-                controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
+        ResponseEntity<?> response = controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(loanService, times(1))
-                .update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
+        verify(loanService, times(1)).update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
         verify(apiResponseMapper, times(1))
                 .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors());
     }
 
     @Test
     @DisplayName("Tests the update of a Loan when the Loan ID doesnt exist")
-    void updateDirectorResourceWhenIdIsNull() throws DataException {
-
+    void updateDirectorResourceWhenIdIsNull() {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(loansToDirectors).thenReturn(transaction);
 
         when(loansToDirectors.getLoans()).thenReturn(loans);
         when(loans.get(LOANS_ID)).thenReturn(null);
 
-        ResponseEntity response =
-                controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
+        ResponseEntity<?> response = controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -292,41 +272,35 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the update of a Loans resource where the service throws a data exception")
     void updateLoansServiceThrowsDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(anyString())).thenReturn(loansToDirectors).thenReturn(transaction);
 
         when(loansToDirectors.getLoans()).thenReturn(loans);
         when(loans.get(LOANS_ID)).thenReturn(LOANS_LINK);
 
-        doThrow(new DataException("")).when(loanService)
-                .update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
+        doThrow(new DataException("")).when(loanService).update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response =
+        ResponseEntity<?> response =
                 controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
 
-        verify(loanService, times(1))
-                .update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
-        verify(apiResponseMapper, times(1))
-                .getErrorResponse();
+        verify(loanService, times(1)).update(loanRest, transaction, COMPANY_ACCOUNT_ID, request);
+        verify(apiResponseMapper, times(1)).getErrorResponse();
     }
     
     @Test
     @DisplayName("Tests the update of a Loan where the controller returns a bad request binding error for invalid length")
-    void updateLoanReturnBadRequestForBindingErrors() throws DataException {
-
+    void updateLoanReturnBadRequestForBindingErrors() {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
         
-        ResponseEntity response =
-                controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
+        ResponseEntity<?> response = controller.update(loanRest, bindingResult, COMPANY_ACCOUNT_ID, LOANS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -336,18 +310,17 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the successful deletion of a Loan resource")
     void deleteLoanSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
-        ResponseObject responseObject = new ResponseObject(ResponseStatus.UPDATED);
+        ResponseObject<Loan> responseObject = new ResponseObject<>(ResponseStatus.UPDATED);
         when(loanService.delete(COMPANY_ACCOUNT_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -361,15 +334,14 @@ class LoansControllerTest {
     @Test
     @DisplayName("Tests the deletion of a Loan resource where the service throws a data exception")
     void deleteLoanServiceThrowsDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         doThrow(new DataException("")).when(loanService).delete(COMPANY_ACCOUNT_ID, request);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = controller.delete(COMPANY_ACCOUNT_ID, request);
+        ResponseEntity<?> response = controller.delete(COMPANY_ACCOUNT_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

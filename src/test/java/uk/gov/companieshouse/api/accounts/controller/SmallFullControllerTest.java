@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -41,7 +41,6 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class SmallFullControllerTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -82,7 +81,6 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Create small full - success")
     void createSmallFullSuccess() throws DataException {
-
         ResponseObject<SmallFull> responseObject = new ResponseObject<>(
             ResponseStatus.CREATED,
             smallFull);
@@ -90,14 +88,14 @@ class SmallFullControllerTest {
         doReturn(transaction).when(request)
             .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<SmallFull> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
 
         doReturn(responseObject).when(smallFullService)
             .create(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
             responseObject.getData(), responseObject.getErrors());
-        ResponseEntity response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -107,12 +105,11 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Create small full - binding result errors")
     void createSmallFullBindingResultErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
 
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID,  request);
+        ResponseEntity<?> response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID,  request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -124,7 +121,6 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Create small full - DataException")
     void createSmallFullDataException() throws DataException {
-
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -133,7 +129,7 @@ class SmallFullControllerTest {
 
         when(apiResponseMapper.getErrorResponse()).thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 
-        ResponseEntity response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.create(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -143,12 +139,11 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Get small full - success")
     void getSmallFullSuccess() {
-
         doReturn(smallFull).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(smallFull);
+        ResponseEntity<SmallFull> responseEntity = ResponseEntity.status(HttpStatus.OK).body(smallFull);
         when(apiResponseMapper.mapGetResponse(smallFull, request)).thenReturn(responseEntity);
-        ResponseEntity response = smallFullController.get(request);
+        ResponseEntity<?> response = smallFullController.get(request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -158,22 +153,20 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Get small full - not found")
     void getSmallFullNotFound() {
-
         doReturn(null).when(request)
             .getAttribute(AttributeName.SMALLFULL.getValue());
         when(apiResponseMapper.mapGetResponse(null, request)).thenReturn(ResponseEntity.status(
             HttpServletResponse.SC_NOT_FOUND).build());
-        ResponseEntity response = smallFullController.get(request);
+        ResponseEntity<?> response = smallFullController.get(request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(null, response.getBody());
+        assertNull(response.getBody());
     }
 
     @Test
     @DisplayName("Update small full - success")
     void updateSmallFullSuccess() throws DataException {
-
         ResponseObject<SmallFull> responseObject = new ResponseObject<>(
                 ResponseStatus.UPDATED,
                 smallFull);
@@ -188,13 +181,13 @@ class SmallFullControllerTest {
         doReturn(transaction).when(request)
                 .getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         doReturn(responseObject).when(smallFullService)
                 .update(smallFull, transaction, COMPANY_ACCOUNTS_ID, request);
         doReturn(responseEntity).when(apiResponseMapper).map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getErrors());
-        ResponseEntity response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -204,14 +197,13 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Update small full - not found")
     void updateSmallFullNotFound() {
-
         doReturn(companyAccount).when(request)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         when(companyAccount.getLinks()).thenReturn(companyAccountLinks);
 
         when(companyAccountLinks.get(CompanyAccountLinkType.SMALL_FULL.getLink())).thenReturn(null);
-        ResponseEntity response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -221,12 +213,11 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Update small full - binding result errors")
     void updateSmallFullBindingResultErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
 
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -238,7 +229,6 @@ class SmallFullControllerTest {
     @Test
     @DisplayName("Update small full - DataException")
     void updateSmallFullDataException() throws DataException {
-
         doReturn(companyAccount).when(request)
                 .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
@@ -254,7 +244,7 @@ class SmallFullControllerTest {
 
         when(apiResponseMapper.getErrorResponse()).thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 
-        ResponseEntity response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> response = smallFullController.update(smallFull, bindingResult, COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

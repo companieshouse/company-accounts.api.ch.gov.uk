@@ -26,8 +26,8 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/directors-report/statements", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,10 +43,11 @@ public class DirectorStatementsController {
     private ApiResponseMapper apiResponseMapper;
 
     @PostMapping
-    public ResponseEntity create(@Valid @RequestBody Statements statements, BindingResult bindingResult,
-                                 @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
-        if(bindingResult.hasErrors()) {
+    public ResponseEntity create(@Valid @RequestBody Statements statements,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -54,13 +55,12 @@ public class DirectorStatementsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
-            ResponseObject<Statements> response = statementsService.create(statements, transaction, companyAccountId, request);
+            ResponseObject<Statements> response = statementsService.create(
+                    statements, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
-
         } catch(DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to create statements resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to create statements resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
@@ -69,13 +69,12 @@ public class DirectorStatementsController {
     public ResponseEntity update(@Valid @RequestBody Statements statements, BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
         DirectorsReport directorsReport = (DirectorsReport) request.getAttribute(AttributeName.DIRECTORS_REPORT.getValue());
-        if(directorsReport.getLinks().get(DirectorsReportLinkType.STATEMENTS.getLink()) == null) {
+        if (directorsReport.getLinks().get(DirectorsReportLinkType.STATEMENTS.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -83,41 +82,41 @@ public class DirectorStatementsController {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
-            ResponseObject<Statements> response = statementsService.update(statements, transaction, companyAccountId, request);
+            ResponseObject<Statements> response = statementsService.update(
+                    statements, transaction, companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch(DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to update statements resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to update statements resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-
             ResponseObject<Statements> response = statementsService.find(companyAccountId, request);
             return apiResponseMapper.mapGetResponse(response.getData(), request);
         } catch (DataException ex) {
-
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a statements resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to retrieve a statements resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Statements> response = statementsService.delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch(DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete statements resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete statements resource",
+                    ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

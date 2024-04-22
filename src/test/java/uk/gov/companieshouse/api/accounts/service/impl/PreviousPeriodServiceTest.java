@@ -29,7 +29,7 @@ import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +46,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PreviousPeriodServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -102,9 +101,8 @@ class PreviousPeriodServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(keyIdGenerator
-                .generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.PREVIOUS_PERIOD.getName()))
-                        .thenReturn(RESOURCE_ID);
+        when(keyIdGenerator.generate(COMPANY_ACCOUNTS_ID + "-" + ResourceName.PREVIOUS_PERIOD.getName()))
+                .thenReturn(RESOURCE_ID);
     }
 
     @Test
@@ -117,7 +115,7 @@ class PreviousPeriodServiceTest {
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
         ResponseObject<PreviousPeriod> result = previousPeriodService
-            .create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
+                .create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
     }
@@ -126,15 +124,15 @@ class PreviousPeriodServiceTest {
     @DisplayName("Tests the duplicate key when creating a previous period resource")
     void createSmallfullDuplicateKey() throws DataException {
         doReturn(previousPeriodEntity).when(previousPeriodTransformer).transform(ArgumentMatchers
-            .any(PreviousPeriod.class));
-        when(previousPeriodRepository.insert(previousPeriodEntity))
-            .thenThrow(duplicateKeyException);
+                .any(PreviousPeriod.class));
+        when(previousPeriodRepository.insert(previousPeriodEntity)).thenThrow(duplicateKeyException);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        ResponseObject response = previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<PreviousPeriod> response = previousPeriodService
+                .create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(response);
         assertEquals(ResponseStatus.DUPLICATE_KEY_ERROR, response.getStatus());
         assertNull(response.getData());
@@ -151,7 +149,8 @@ class PreviousPeriodServiceTest {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(SELF_LINK);
 
-        assertThrows(DataException.class, () -> previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class,
+                () -> previousPeriodService.create(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
@@ -189,7 +188,6 @@ class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Success - Previous Period")
     void canUpdatePreviousPeriod() throws DataException {
-
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
         when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
         when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
@@ -197,7 +195,8 @@ class PreviousPeriodServiceTest {
         when(previousPeriodTransformer.transform(previousPeriod)).thenReturn(previousPeriodEntity);
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
 
-        ResponseObject<PreviousPeriod> result = previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
+        ResponseObject<PreviousPeriod> result = previousPeriodService
+                .update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request);
         assertNotNull(result);
         assertEquals(previousPeriod, result.getData());
     }
@@ -205,7 +204,6 @@ class PreviousPeriodServiceTest {
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
-
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
         when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
         when(previousPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());
@@ -214,23 +212,22 @@ class PreviousPeriodServiceTest {
         when(previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction)).thenReturn(errors);
         when(previousPeriodRepository.save(any())).thenThrow(new MongoException("ERROR"));
 
-        assertThrows(DataException.class, () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class,
+                () -> previousPeriodService.update(previousPeriod, transaction, COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Add link to current period resource- success")
     void addLinkSuccess() {
-
-        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(previousPeriodEntity));
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(previousPeriodEntity));
 
         when(previousPeriodEntity.getData()).thenReturn(previousPeriodDataEntity);
         when(previousPeriodDataEntity.getLinks()).thenReturn(links);
 
         PreviousPeriodLinkType previousPeriodLinkType = PreviousPeriodLinkType.PROFIT_AND_LOSS;
 
-        assertAll(() ->
-                previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, previousPeriodLinkType, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
+        assertAll(() -> previousPeriodService.addLink(
+                COMPANY_ACCOUNTS_ID, previousPeriodLinkType, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
 
         verify(links).put(previousPeriodLinkType.getLink(), PREVIOUS_PERIOD_PROFIT_AND_LOSS);
         verify(previousPeriodRepository).save(previousPeriodEntity);
@@ -239,25 +236,18 @@ class PreviousPeriodServiceTest {
     @Test
     @DisplayName("Add link - not found")
     void addLinkNotFound() {
+        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.empty());
 
-        PreviousPeriodEntity previousPeriodEntity = null;
-
-        when(previousPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(previousPeriodEntity));
-
-        assertThrows(DataException.class, () ->
-                previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
+        assertThrows(DataException.class, () -> previousPeriodService.addLink(
+                COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
     }
 
     @Test
     @DisplayName("Add link - Mongo exception")
     void addLinkMongoException() {
-
         when(previousPeriodRepository.findById(RESOURCE_ID)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class, () ->
-                previousPeriodService.addLink(
-                        COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
+        assertThrows(DataException.class, () -> previousPeriodService.addLink(
+                COMPANY_ACCOUNTS_ID, PreviousPeriodLinkType.PROFIT_AND_LOSS, PREVIOUS_PERIOD_PROFIT_AND_LOSS, request));
     }
-
 }

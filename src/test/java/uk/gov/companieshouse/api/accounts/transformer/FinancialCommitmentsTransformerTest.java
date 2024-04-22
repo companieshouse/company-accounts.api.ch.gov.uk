@@ -19,29 +19,28 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FinancialCommitmentsTransformerTest {
-
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private FinancialCommitmentsTransformer financialCommitmentsTransformer = new FinancialCommitmentsTransformer();
+    private final FinancialCommitmentsTransformer financialCommitmentsTransformer =
+            new FinancialCommitmentsTransformer();
     @Test
-    @DisplayName("Tests transformer with empty rest object returns null values ")
+    @DisplayName("Tests transformer with empty rest object returns null values")
     void testTransformerWithEmptyRestObject() {
-
         FinancialCommitmentsEntity financialCommitmentsEntity = financialCommitmentsTransformer
                 .transform(new FinancialCommitments());
 
         assertNotNull(financialCommitmentsEntity);
         assertNull(financialCommitmentsEntity.getData().getEtag());
         assertEquals(new HashMap<>(), financialCommitmentsEntity.getData().getLinks());
-        assertEquals(AccountingNoteType.SMALL_FULL_FINANCIAL_COMMITMENTS, financialCommitmentsTransformer.getAccountingNoteType());
+        assertEquals(AccountingNoteType.SMALL_FULL_FINANCIAL_COMMITMENTS,
+                financialCommitmentsTransformer.getAccountingNoteType());
     }
 
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         FinancialCommitments financialCommitments = new FinancialCommitments();
 
         financialCommitments.setDetails(DETAILS);
@@ -62,7 +61,6 @@ class FinancialCommitmentsTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     void testTransformerWithEmptyEntityObject() {
-
         FinancialCommitments financialCommitments = financialCommitmentsTransformer
                 .transform(new FinancialCommitmentsEntity());
 
@@ -74,7 +72,6 @@ class FinancialCommitmentsTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         FinancialCommitmentsEntity financialCommitmentsEntity = new FinancialCommitmentsEntity();
         FinancialCommitmentsDataEntity financialCommitmentsDataEntity = new FinancialCommitmentsDataEntity();
 

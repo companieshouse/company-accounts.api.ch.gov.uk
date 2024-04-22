@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +27,7 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.accounts.utility.LoggingHelper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/notes/loans-to-directors/additional-information",
@@ -48,24 +48,20 @@ public class LoansToDirectorsAdditionalInformationController {
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<AdditionalInformation> responseObject =
-                    additionalInformationResourceService.create(additionalInformation, transaction, companyAccountId, request);
+            ResponseObject<AdditionalInformation> responseObject = additionalInformationResourceService
+                    .create(additionalInformation, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create additional information resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -77,9 +73,9 @@ public class LoansToDirectorsAdditionalInformationController {
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
-
-        LoansToDirectors loansToDirectors = (LoansToDirectors) request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
-        if(loansToDirectors.getLinks().get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()) == null) {
+        LoansToDirectors loansToDirectors = (LoansToDirectors)
+                request.getAttribute(AttributeName.LOANS_TO_DIRECTORS.getValue());
+        if (loansToDirectors.getLinks().get(LoansToDirectorsLinkType.ADDITIONAL_INFO.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -88,18 +84,15 @@ public class LoansToDirectorsAdditionalInformationController {
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<AdditionalInformation> responseObject =
-                    additionalInformationResourceService.update(additionalInformation, transaction, companyAccountId, request);
+            ResponseObject<AdditionalInformation> responseObject = additionalInformationResourceService
+                    .update(additionalInformation, transaction, companyAccountId, request);
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update additional information resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -109,18 +102,14 @@ public class LoansToDirectorsAdditionalInformationController {
     @GetMapping
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
                               HttpServletRequest request) {
-
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<AdditionalInformation> responseObject =
                     additionalInformationResourceService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve additional information resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -128,15 +117,17 @@ public class LoansToDirectorsAdditionalInformationController {
     }
 
     @DeleteMapping
-    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-
+    public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<AdditionalInformation> response = additionalInformationResourceService.delete(companyAccountId, request);
+            ResponseObject<AdditionalInformation> response = additionalInformationResourceService
+                    .delete(companyAccountId, request);
             return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-            LoggingHelper.logException(companyAccountId, transaction, "Failed to delete additional information resource", ex, request);
+            LoggingHelper.logException(companyAccountId, transaction,
+                    "Failed to delete additional information resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
     }

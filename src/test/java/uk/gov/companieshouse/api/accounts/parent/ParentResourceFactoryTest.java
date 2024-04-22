@@ -20,20 +20,17 @@ import uk.gov.companieshouse.api.accounts.links.LinkType;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ParentResourceFactoryTest {
-
     @Mock
     private ParentResource<LinkType> parentResource;
 
-    private AccountType accountTypeWithCorrespondingParentResource =
-            AccountType.SMALL_FULL;
+    private final AccountType accountTypeWithCorrespondingParentResource = AccountType.SMALL_FULL;
 
-    private AccountType accountTypeWithoutCorrespondingParentResource =
-            AccountType.MICRO;
+    private final AccountType accountTypeWithoutCorrespondingParentResource = AccountType.MICRO;
 
     private ParentResourceFactory<LinkType> factory;
 
     @BeforeEach
-    private void setup() {
+    public void setUp() {
         when(parentResource.getParent()).thenReturn(accountTypeWithCorrespondingParentResource);
         List<ParentResource<LinkType>> parentResources = new ArrayList<>();
         parentResources.add(parentResource);
@@ -43,15 +40,12 @@ class ParentResourceFactoryTest {
     @Test
     @DisplayName("Get parent resource for account type with corresponding parent resource")
     void getParentResourceForAccountTypeWithCorrespondingParentResource() {
-
-        assertEquals(parentResource,
-                factory.getParentResource(accountTypeWithCorrespondingParentResource));
+        assertEquals(parentResource, factory.getParentResource(accountTypeWithCorrespondingParentResource));
     }
 
     @Test
     @DisplayName("Get parent resource for account type without corresponding parent resource")
     void getParentResourceForAccountTypeWithoutCorrespondingParentResource() {
-
         assertThrows(MissingInfrastructureException.class,
                 () -> factory.getParentResource(accountTypeWithoutCorrespondingParentResource));
     }

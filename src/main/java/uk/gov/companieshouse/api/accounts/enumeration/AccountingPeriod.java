@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum AccountingPeriod {
     CURRENT_PERIOD("current-period"), PREVIOUS_PERIOD("previous-period");
 
-    private String period;
+    private final String period;
 
     AccountingPeriod(String s) {
         this.period = s;

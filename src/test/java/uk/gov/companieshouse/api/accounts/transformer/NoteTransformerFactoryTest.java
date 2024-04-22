@@ -21,20 +21,19 @@ import uk.gov.companieshouse.api.accounts.model.rest.Note;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NoteTransformerFactoryTest {
-
     @Mock
     private NoteTransformer<Note, NoteEntity> noteTransformer;
 
-    private AccountingNoteType accountingNoteTypeWithCorrespondingTransformer =
+    private final AccountingNoteType accountingNoteTypeWithCorrespondingTransformer =
             AccountingNoteType.SMALL_FULL_STOCKS;
 
-    private AccountingNoteType accountingNoteTypeWithoutCorrespondingTransformer =
+    private final AccountingNoteType accountingNoteTypeWithoutCorrespondingTransformer =
             AccountingNoteType.SMALL_FULL_DEBTORS;
 
     private NoteTransformerFactory<Note, NoteEntity> factory;
 
     @BeforeEach
-    private void setup() {
+    public void setUp() {
         when(noteTransformer.getAccountingNoteType()).thenReturn(accountingNoteTypeWithCorrespondingTransformer);
         List<NoteTransformer<Note, NoteEntity>> noteTransformers = new ArrayList<>();
         noteTransformers.add(noteTransformer);
@@ -44,15 +43,12 @@ class NoteTransformerFactoryTest {
     @Test
     @DisplayName("Get note transformer for accounting note type with corresponding transformer")
     void getNoteTransformerForAccountingNoteTypeWithCorrespondingTransformer() {
-
-        assertEquals(noteTransformer,
-                factory.getTransformer(accountingNoteTypeWithCorrespondingTransformer));
+        assertEquals(noteTransformer, factory.getTransformer(accountingNoteTypeWithCorrespondingTransformer));
     }
 
     @Test
     @DisplayName("Get note transformer for accounting note type without corresponding transformer")
     void getNoteTransformerForAccountingNoteTypeWithoutCorrespondingTransformer() {
-
         assertThrows(MissingInfrastructureException.class,
                 () -> factory.getTransformer(accountingNoteTypeWithoutCorrespondingTransformer));
     }

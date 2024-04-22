@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.accounti
 import org.springframework.data.mongodb.core.mapping.Field;
 import uk.gov.companieshouse.api.accounts.model.entity.BaseDataEntity;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class AccountingPoliciesDataEntity extends BaseDataEntity {
 

@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +36,7 @@ public class CicReportController {
                                  @PathVariable("companyAccountId") String companyAccountId,
                                  HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<CicReport> responseObject =
@@ -45,9 +44,7 @@ public class CicReportController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create cic report resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -59,15 +56,11 @@ public class CicReportController {
                               HttpServletRequest request) {
 
         try {
-            ResponseObject<CicReport> responseObject =
-                    cicReportService.find(companyAccountId, request);
+            ResponseObject<CicReport> responseObject = cicReportService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(responseObject.getData(), request);
-
         } catch (DataException ex) {
-
-            Transaction transaction = (Transaction) request
-                    .getAttribute(AttributeName.TRANSACTION.getValue());
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve cic report resource", ex, request);
@@ -80,16 +73,12 @@ public class CicReportController {
                                  HttpServletRequest request) {
 
         try {
-            ResponseObject<CicReport> responseObject =
-                    cicReportService.delete(companyAccountId, request);
+            ResponseObject<CicReport> responseObject = cicReportService.delete(companyAccountId, request);
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
-            Transaction transaction = (Transaction) request
-                    .getAttribute(AttributeName.TRANSACTION.getValue());
+            Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to delete cic report resource", ex, request);

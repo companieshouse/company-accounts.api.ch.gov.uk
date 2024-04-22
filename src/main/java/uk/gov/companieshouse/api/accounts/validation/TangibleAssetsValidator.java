@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.accounts.enumeration.AccountingNoteType;
@@ -49,16 +49,19 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     private final PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public TangibleAssetsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService, PreviousPeriodService previousPeriodService) {
+    public TangibleAssetsValidator(CompanyService companyService,
+                                   CurrentPeriodService currentPeriodService,
+                                   PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
     }
 
     @Override
-    public Errors validateSubmission(TangibleAssets tangibleAssets, Transaction transaction, String companyAccountsId, HttpServletRequest request)
-            throws DataException {
-
+    public Errors validateSubmission(TangibleAssets tangibleAssets,
+                                     Transaction transaction,
+                                     String companyAccountsId,
+                                     HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
         try {
@@ -75,9 +78,7 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
 
             validateTotalFieldsMatch(errors, tangibleAssets, isMultipleYearFiler);
             crossValidate(tangibleAssets, request, companyAccountsId, errors);
-
         } catch (ServiceException e) {
-
             throw new DataException(e.getMessage(), e);
         }
 
@@ -85,14 +86,12 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private void verifyNoteNotEmpty(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler) {
-
-        if (tangibleAssets.getFixturesAndFittings() == null &&
-                tangibleAssets.getLandAndBuildings() == null &&
-                tangibleAssets.getMotorVehicles() == null &&
-                tangibleAssets.getOfficeEquipment() == null &&
-                tangibleAssets.getPlantAndMachinery() == null &&
-                tangibleAssets.getTotal() == null) {
-
+        if (tangibleAssets.getFixturesAndFittings() == null
+                && tangibleAssets.getLandAndBuildings() == null
+                && tangibleAssets.getMotorVehicles() == null
+                && tangibleAssets.getOfficeEquipment() == null
+                && tangibleAssets.getPlantAndMachinery() == null
+                && tangibleAssets.getTotal() == null) {
             addError(errors, valueRequired, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
             if (isMultipleYearFiler) {
                 addError(errors, valueRequired, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
@@ -100,20 +99,30 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
         }
     }
 
-    private void verifySubResourcesAreValid(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
-
-        validateSubResource(errors, tangibleAssets.getFixturesAndFittings(), isMultipleYearFiler, TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
-        validateSubResource(errors, tangibleAssets.getLandAndBuildings(), isMultipleYearFiler, TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
-        validateSubResource(errors, tangibleAssets.getMotorVehicles(), isMultipleYearFiler, TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
-        validateSubResource(errors, tangibleAssets.getOfficeEquipment(), isMultipleYearFiler, TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
-        validateSubResource(errors, tangibleAssets.getPlantAndMachinery(), isMultipleYearFiler, TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
-        validateSubResource(errors, tangibleAssets.getTotal(), isMultipleYearFiler, TangibleSubResource.TOTAL, invalidSubResources);
+    private void verifySubResourcesAreValid(TangibleAssets tangibleAssets,
+                                            Errors errors,
+                                            boolean isMultipleYearFiler,
+                                            List<TangibleSubResource> invalidSubResources) {
+        validateSubResource(errors, tangibleAssets.getFixturesAndFittings(), isMultipleYearFiler,
+                TangibleSubResource.FIXTURES_AND_FITTINGS, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getLandAndBuildings(), isMultipleYearFiler,
+                TangibleSubResource.LAND_AND_BUILDINGS, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getMotorVehicles(), isMultipleYearFiler,
+                TangibleSubResource.MOTOR_VEHICLES, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getOfficeEquipment(), isMultipleYearFiler,
+                TangibleSubResource.OFFICE_EQUIPMENT, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getPlantAndMachinery(), isMultipleYearFiler,
+                TangibleSubResource.PLANT_AND_MACHINERY, invalidSubResources);
+        validateSubResource(errors, tangibleAssets.getTotal(), isMultipleYearFiler,
+                TangibleSubResource.TOTAL, invalidSubResources);
     }
 
-    private void validateSubResource(Errors errors, TangibleAssetsResource resource, boolean isMultipleYearFiler, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
-
+    private void validateSubResource(Errors errors,
+                                     TangibleAssetsResource resource,
+                                     boolean isMultipleYearFiler,
+                                     TangibleSubResource subResource,
+                                     List<TangibleSubResource> invalidSubResources) {
         if (resource != null) {
-
             if (isMultipleYearFiler) {
                 validatePresenceOfMultipleYearFilerFields(errors, resource, subResource, invalidSubResources);
             } else {
@@ -122,36 +131,45 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
         }
     }
 
-    private void validateSubResourceTotals(TangibleAssets tangibleAssets, Errors errors, boolean isMultipleYearFiler, List<TangibleSubResource> invalidSubResources) {
-
-        if (tangibleAssets.getFixturesAndFittings() != null && !invalidSubResources.contains(TangibleSubResource.FIXTURES_AND_FITTINGS)) {
-
-            validateSubResourceTotal(tangibleAssets.getFixturesAndFittings(), errors, isMultipleYearFiler, TangibleSubResource.FIXTURES_AND_FITTINGS);
+    private void validateSubResourceTotals(TangibleAssets tangibleAssets,
+                                           Errors errors,
+                                           boolean isMultipleYearFiler,
+                                           List<TangibleSubResource> invalidSubResources) {
+        if (tangibleAssets.getFixturesAndFittings() != null
+                && !invalidSubResources.contains(TangibleSubResource.FIXTURES_AND_FITTINGS)) {
+            validateSubResourceTotal(tangibleAssets.getFixturesAndFittings(), errors, isMultipleYearFiler,
+                    TangibleSubResource.FIXTURES_AND_FITTINGS);
         }
 
-        if (tangibleAssets.getLandAndBuildings() != null && !invalidSubResources.contains(TangibleSubResource.LAND_AND_BUILDINGS)) {
-
-            validateSubResourceTotal(tangibleAssets.getLandAndBuildings(), errors, isMultipleYearFiler, TangibleSubResource.LAND_AND_BUILDINGS);
+        if (tangibleAssets.getLandAndBuildings() != null
+                && !invalidSubResources.contains(TangibleSubResource.LAND_AND_BUILDINGS)) {
+            validateSubResourceTotal(tangibleAssets.getLandAndBuildings(), errors, isMultipleYearFiler,
+                    TangibleSubResource.LAND_AND_BUILDINGS);
         }
 
-        if (tangibleAssets.getMotorVehicles() != null && !invalidSubResources.contains(TangibleSubResource.MOTOR_VEHICLES)) {
-
-            validateSubResourceTotal(tangibleAssets.getMotorVehicles(), errors, isMultipleYearFiler, TangibleSubResource.MOTOR_VEHICLES);
+        if (tangibleAssets.getMotorVehicles() != null
+                && !invalidSubResources.contains(TangibleSubResource.MOTOR_VEHICLES)) {
+            validateSubResourceTotal(tangibleAssets.getMotorVehicles(), errors, isMultipleYearFiler,
+                    TangibleSubResource.MOTOR_VEHICLES);
         }
 
-        if (tangibleAssets.getOfficeEquipment() != null && !invalidSubResources.contains(TangibleSubResource.OFFICE_EQUIPMENT)) {
-
-            validateSubResourceTotal(tangibleAssets.getOfficeEquipment(), errors, isMultipleYearFiler, TangibleSubResource.OFFICE_EQUIPMENT);
+        if (tangibleAssets.getOfficeEquipment() != null
+                && !invalidSubResources.contains(TangibleSubResource.OFFICE_EQUIPMENT)) {
+            validateSubResourceTotal(tangibleAssets.getOfficeEquipment(), errors, isMultipleYearFiler,
+                    TangibleSubResource.OFFICE_EQUIPMENT);
         }
 
-        if (tangibleAssets.getPlantAndMachinery() != null && !invalidSubResources.contains(TangibleSubResource.PLANT_AND_MACHINERY)) {
-
-            validateSubResourceTotal(tangibleAssets.getPlantAndMachinery(), errors, isMultipleYearFiler, TangibleSubResource.PLANT_AND_MACHINERY);
+        if (tangibleAssets.getPlantAndMachinery() != null
+                && !invalidSubResources.contains(TangibleSubResource.PLANT_AND_MACHINERY)) {
+            validateSubResourceTotal(tangibleAssets.getPlantAndMachinery(), errors, isMultipleYearFiler,
+                    TangibleSubResource.PLANT_AND_MACHINERY);
         }
     }
 
-    private void validateSubResourceTotal(TangibleAssetsResource tangibleAssetsResource, Errors errors, boolean isMultipleYearFiler, TangibleSubResource subResource) {
-
+    private void validateSubResourceTotal(TangibleAssetsResource tangibleAssetsResource,
+                                          Errors errors,
+                                          boolean isMultipleYearFiler,
+                                          TangibleSubResource subResource) {
         validateCosts(errors, tangibleAssetsResource, subResource);
         validateDepreciation(errors, tangibleAssetsResource, subResource);
         validateCurrentNetBookValue(errors, tangibleAssetsResource, subResource);
@@ -161,7 +179,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private void validateTotalFieldsMatch(Errors errors, TangibleAssets tangibleAssets, boolean isMultipleYearFiler) {
-
         if (isMultipleYearFiler) {
             validateCostAtPeriodStartTotal(errors, tangibleAssets);
             validateDepreciationAtPeriodStartTotal(errors, tangibleAssets);
@@ -180,554 +197,426 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private void validateCostAtPeriodStartTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesCostAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesCostAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsCostAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsCostAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesCostAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesCostAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentCostAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentCostAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryCostAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryCostAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getPlantAndMachinery());
 
         Long resourceCostAtPeriodStartTotal = fixturesCostAtPeriodStart + landAndBuildingsCostAtPeriodStart +
-                                                motorVehiclesCostAtPeriodStart + officeEquipmentCostAtPeriodStart +
-                                                plantAndMachineryCostAtPeriodStart;
+                motorVehiclesCostAtPeriodStart + officeEquipmentCostAtPeriodStart + plantAndMachineryCostAtPeriodStart;
 
         Long costAtPeriodStart = getCostAtPeriodStart(tangibleAssets.getTotal());
 
         if (!costAtPeriodStart.equals(resourceCostAtPeriodStartTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, COST_AT_PERIOD_START));
         }
     }
 
     private void validateAdditionsTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesAdditions = getAdditions(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesAdditions =
-                getAdditions(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsAdditions = getAdditions(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsAdditions =
-                getAdditions(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesAdditions = getAdditions(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesAdditions =
-                getAdditions(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentAdditions = getAdditions(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentAdditions =
-                getAdditions(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryAdditions =
-                getAdditions(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryAdditions = getAdditions(tangibleAssets.getPlantAndMachinery());
 
         Long resourceAdditionsTotal = fixturesAdditions + landAndBuildingsAdditions +
-                                        motorVehiclesAdditions + officeEquipmentAdditions +
-                                        plantAndMachineryAdditions;
+                motorVehiclesAdditions + officeEquipmentAdditions + plantAndMachineryAdditions;
 
         Long additions = getAdditions(tangibleAssets.getTotal());
 
         if (!additions.equals(resourceAdditionsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, ADDITIONS));
         }
     }
 
     private void validateDisposalsTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesDisposals = getDisposals(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesDisposals =
-                getDisposals(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsDisposals = getDisposals(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsDisposals =
-                getDisposals(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesDisposals = getDisposals(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesDisposals =
-                getDisposals(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentDisposals = getDisposals(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentDisposals =
-                getDisposals(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryDisposals =
-                getDisposals(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryDisposals = getDisposals(tangibleAssets.getPlantAndMachinery());
 
         Long resourceDisposalsTotal = fixturesDisposals + landAndBuildingsDisposals +
-                                        motorVehiclesDisposals + officeEquipmentDisposals +
-                                        plantAndMachineryDisposals;
+                motorVehiclesDisposals + officeEquipmentDisposals + plantAndMachineryDisposals;
 
         Long disposals = getDisposals(tangibleAssets.getTotal());
 
         if (!disposals.equals(resourceDisposalsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DISPOSALS));
         }
     }
 
     private void validateRevaluationsTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesRevaluations = getRevaluations(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesRevaluations =
-                getRevaluations(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsRevaluations = getRevaluations(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsRevaluations =
-                getRevaluations(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesRevaluations = getRevaluations(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesRevaluations =
-                getRevaluations(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentRevaluations = getRevaluations(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentRevaluations =
-                getRevaluations(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryRevaluations =
-                getRevaluations(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryRevaluations = getRevaluations(tangibleAssets.getPlantAndMachinery());
 
         Long resourceRevaluationsTotal = fixturesRevaluations + landAndBuildingsRevaluations +
-                                            motorVehiclesRevaluations + officeEquipmentRevaluations +
-                                            plantAndMachineryRevaluations;
+                motorVehiclesRevaluations + officeEquipmentRevaluations + plantAndMachineryRevaluations;
 
         Long revaluations = getRevaluations(tangibleAssets.getTotal());
 
         if (!revaluations.equals(resourceRevaluationsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, REVALUATIONS));
         }
     }
 
     private void validateTransfersTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesTransfers = getTransfers(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesTransfers =
-                getTransfers(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsTransfers = getTransfers(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsTransfers =
-                getTransfers(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesTransfers = getTransfers(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesTransfers =
-                getTransfers(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentTransfers = getTransfers(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentTransfers =
-                getTransfers(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryTransfers =
-                getTransfers(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryTransfers = getTransfers(tangibleAssets.getPlantAndMachinery());
 
         Long resourceTransfersTotal = fixturesTransfers + landAndBuildingsTransfers +
-                                        motorVehiclesTransfers + officeEquipmentTransfers +
-                                        plantAndMachineryTransfers;
+                motorVehiclesTransfers + officeEquipmentTransfers + plantAndMachineryTransfers;
 
         Long transfers = getTransfers(tangibleAssets.getTotal());
 
         if (!transfers.equals(resourceTransfersTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, TRANSFERS));
         }
     }
 
     private void validateCostAtPeriodEndTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesCostAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesCostAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsCostAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsCostAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesCostAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesCostAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentCostAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentCostAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryCostAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryCostAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getPlantAndMachinery());
 
         Long resourceCostAtPeriodEndTotal = fixturesCostAtPeriodEnd + landAndBuildingsCostAtPeriodEnd +
-                                            motorVehiclesCostAtPeriodEnd + officeEquipmentCostAtPeriodEnd +
-                                            plantAndMachineryCostAtPeriodEnd;
+                motorVehiclesCostAtPeriodEnd + officeEquipmentCostAtPeriodEnd + plantAndMachineryCostAtPeriodEnd;
 
         Long costAtPeriodEnd = getCostAtPeriodEnd(tangibleAssets.getTotal());
 
         if (!costAtPeriodEnd.equals(resourceCostAtPeriodEndTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, COST_AT_PERIOD_END));
         }
     }
 
     private void validateDepreciationAtPeriodStartTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesDepreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesDepreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsDepreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsDepreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesDepreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesDepreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentDepreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentDepreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssets.getOfficeEquipment());
+        Long plantAndMachineryDepreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getPlantAndMachinery());
 
-        Long plantAndMachineryDepreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssets.getPlantAndMachinery());
-
-        Long resourceDepreciationAtPeriodStartTotal = fixturesDepreciationAtPeriodStart + landAndBuildingsDepreciationAtPeriodStart +
-                                                        motorVehiclesDepreciationAtPeriodStart + officeEquipmentDepreciationAtPeriodStart +
-                                                        plantAndMachineryDepreciationAtPeriodStart;
+        Long resourceDepreciationAtPeriodStartTotal = fixturesDepreciationAtPeriodStart +
+                landAndBuildingsDepreciationAtPeriodStart + motorVehiclesDepreciationAtPeriodStart +
+                officeEquipmentDepreciationAtPeriodStart + plantAndMachineryDepreciationAtPeriodStart;
 
         Long depreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssets.getTotal());
 
         if (!depreciationAtPeriodStart.equals(resourceDepreciationAtPeriodStartTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DEPRECIATION_AT_PERIOD_START));
         }
     }
 
     private void validateChargeForYearTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesChargeForYear = getChargeForYear(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesChargeForYear =
-                getChargeForYear(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsChargeForYear = getChargeForYear(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsChargeForYear =
-                getChargeForYear(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesChargeForYear = getChargeForYear(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesChargeForYear =
-                getChargeForYear(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentChargeForYear = getChargeForYear(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentChargeForYear =
-                getChargeForYear(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryChargeForYear =
-                getChargeForYear(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryChargeForYear = getChargeForYear(tangibleAssets.getPlantAndMachinery());
 
         Long resourceChargeForYearTotal = fixturesChargeForYear + landAndBuildingsChargeForYear +
-                                            motorVehiclesChargeForYear + officeEquipmentChargeForYear +
-                                            plantAndMachineryChargeForYear;
+                motorVehiclesChargeForYear + officeEquipmentChargeForYear + plantAndMachineryChargeForYear;
 
         Long chargeForYear = getChargeForYear(tangibleAssets.getTotal());
 
         if (!chargeForYear.equals(resourceChargeForYearTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, CHARGE_FOR_YEAR));
         }
     }
 
     private void validateOnDisposalsTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesOnDisposals = getOnDisposals(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesOnDisposals =
-                getOnDisposals(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsOnDisposals = getOnDisposals(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsOnDisposals =
-                getOnDisposals(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesOnDisposals = getOnDisposals(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesOnDisposals =
-                getOnDisposals(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentOnDisposals = getOnDisposals(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentOnDisposals =
-                getOnDisposals(tangibleAssets.getOfficeEquipment());
+        Long plantAndMachineryOnDisposals = getOnDisposals(tangibleAssets.getPlantAndMachinery());
 
-        Long plantAndMachineryOnDisposals =
-                getOnDisposals(tangibleAssets.getPlantAndMachinery());
-
-        Long resourceOnDisposalsTotal = fixturesOnDisposals + landAndBuildingsOnDisposals +
-                                        motorVehiclesOnDisposals + officeEquipmentOnDisposals +
-                                        plantAndMachineryOnDisposals;
+        Long resourceOnDisposalsTotal = fixturesOnDisposals + landAndBuildingsOnDisposals + motorVehiclesOnDisposals +
+                officeEquipmentOnDisposals + plantAndMachineryOnDisposals;
 
         Long onDisposals = getOnDisposals(tangibleAssets.getTotal());
 
         if (!onDisposals.equals(resourceOnDisposalsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, ON_DISPOSALS));
         }
     }
 
     private void validateOtherAdjustmentsTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesOtherAdjustments = getOtherAdjustments(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesOtherAdjustments =
-                getOtherAdjustments(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsOtherAdjustments = getOtherAdjustments(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsOtherAdjustments =
-                getOtherAdjustments(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesOtherAdjustments = getOtherAdjustments(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesOtherAdjustments =
-                getOtherAdjustments(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentOtherAdjustments = getOtherAdjustments(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentOtherAdjustments =
-                getOtherAdjustments(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryOtherAdjustments =
-                getOtherAdjustments(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryOtherAdjustments = getOtherAdjustments(tangibleAssets.getPlantAndMachinery());
 
         Long resourceOtherAdjustmentsTotal = fixturesOtherAdjustments + landAndBuildingsOtherAdjustments +
-                                                motorVehiclesOtherAdjustments + officeEquipmentOtherAdjustments +
-                                                plantAndMachineryOtherAdjustments;
+                motorVehiclesOtherAdjustments + officeEquipmentOtherAdjustments + plantAndMachineryOtherAdjustments;
 
         Long otherAdjustments = getOtherAdjustments(tangibleAssets.getTotal());
 
         if (!otherAdjustments.equals(resourceOtherAdjustmentsTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, OTHER_ADJUSTMENTS));
         }
     }
 
     private void validateDepreciationAtPeriodEndTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesDepreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesDepreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsDepreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsDepreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesDepreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesDepreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentDepreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentDepreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssets.getOfficeEquipment());
+        Long plantAndMachineryDepreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getPlantAndMachinery());
 
-        Long plantAndMachineryDepreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssets.getPlantAndMachinery());
-
-        Long resourceDepreciationAtPeriodEndTotal = fixturesDepreciationAtPeriodEnd + landAndBuildingsDepreciationAtPeriodEnd +
-                                                    motorVehiclesDepreciationAtPeriodEnd + officeEquipmentDepreciationAtPeriodEnd +
-                                                    plantAndMachineryDepreciationAtPeriodEnd;
+        Long resourceDepreciationAtPeriodEndTotal = fixturesDepreciationAtPeriodEnd +
+                landAndBuildingsDepreciationAtPeriodEnd + motorVehiclesDepreciationAtPeriodEnd +
+                officeEquipmentDepreciationAtPeriodEnd + plantAndMachineryDepreciationAtPeriodEnd;
 
         Long depreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssets.getTotal());
 
         if (!depreciationAtPeriodEnd.equals(resourceDepreciationAtPeriodEndTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, DEPRECIATION_AT_PERIOD_END));
         }
     }
 
     private void validateCurrentNetBookValuesTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesNetBookValue = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesNetBookValue =
-                getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsNetBookValue = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsNetBookValue =
-                getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesNetBookValue = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesNetBookValue =
-                getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentNetBookValue = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentNetBookValue =
-                getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryNetBookValue =
-                getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryNetBookValue = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getPlantAndMachinery());
 
         Long resourceNetBookValueTotal = fixturesNetBookValue + landAndBuildingsNetBookValue +
-                                            motorVehiclesNetBookValue + officeEquipmentNetBookValue +
-                                            plantAndMachineryNetBookValue;
+                motorVehiclesNetBookValue + officeEquipmentNetBookValue + plantAndMachineryNetBookValue;
 
         Long netBookValueAtEndOfCurrentPeriod = getNetBookValueAtEndOfCurrentPeriod(tangibleAssets.getTotal());
 
         if (!netBookValueAtEndOfCurrentPeriod.equals(resourceNetBookValueTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
     private void validatePreviousNetBookValuesTotal(Errors errors, TangibleAssets tangibleAssets) {
+        Long fixturesNetBookValue = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getFixturesAndFittings());
 
-        Long fixturesNetBookValue =
-                getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getFixturesAndFittings());
+        Long landAndBuildingsNetBookValue = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getLandAndBuildings());
 
-        Long landAndBuildingsNetBookValue =
-                getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getLandAndBuildings());
+        Long motorVehiclesNetBookValue = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getMotorVehicles());
 
-        Long motorVehiclesNetBookValue =
-                getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getMotorVehicles());
+        Long officeEquipmentNetBookValue = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getOfficeEquipment());
 
-        Long officeEquipmentNetBookValue =
-                getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getOfficeEquipment());
-
-        Long plantAndMachineryNetBookValue =
-                getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getPlantAndMachinery());
+        Long plantAndMachineryNetBookValue = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getPlantAndMachinery());
 
         Long resourceNetBookValueTotal = fixturesNetBookValue + landAndBuildingsNetBookValue +
-                                            motorVehiclesNetBookValue + officeEquipmentNetBookValue +
-                                            plantAndMachineryNetBookValue;
+                motorVehiclesNetBookValue + officeEquipmentNetBookValue + plantAndMachineryNetBookValue;
 
         Long netBookValueAtEndOfPreviousPeriod = getNetBookValueAtEndOfPreviousPeriod(tangibleAssets.getTotal());
 
         if (!netBookValueAtEndOfPreviousPeriod.equals(resourceNetBookValueTotal)) {
-
             addError(errors, incorrectTotal, getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
-    private void validateCosts(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+    private void validateCosts(Errors errors,
+                               TangibleAssetsResource tangibleAssetsResource,
+                               TangibleSubResource subResource) {
+        Long atPeriodStart = getCostAtPeriodStart(tangibleAssetsResource);
 
-        Long atPeriodStart =
-                getCostAtPeriodStart(tangibleAssetsResource);
+        Long additions = getAdditions(tangibleAssetsResource);
 
-        Long additions =
-                getAdditions(tangibleAssetsResource);
+        Long disposals = getDisposals(tangibleAssetsResource);
 
-        Long disposals =
-                getDisposals(tangibleAssetsResource);
+        Long revaluations = getRevaluations(tangibleAssetsResource);
 
-        Long revaluations =
-                getRevaluations(tangibleAssetsResource);
-
-        Long transfers =
-                getTransfers(tangibleAssetsResource);
+        Long transfers = getTransfers(tangibleAssetsResource);
 
         Long calculatedAtPeriodEnd = atPeriodStart + additions - disposals + revaluations + transfers;
 
         if (!tangibleAssetsResource.getCost().getAtPeriodEnd().equals(calculatedAtPeriodEnd)) {
-
             addError(errors, incorrectTotal, getJsonPath(subResource, COST_AT_PERIOD_END));
         }
     }
 
-    private void validateDepreciation(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+    private void validateDepreciation(Errors errors,
+                                      TangibleAssetsResource tangibleAssetsResource,
+                                      TangibleSubResource subResource) {
+        Long atPeriodStart = getDepreciationAtPeriodStart(tangibleAssetsResource);
 
-        Long atPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssetsResource);
+        Long chargeForYear = getChargeForYear(tangibleAssetsResource);
 
-        Long chargeForYear =
-                getChargeForYear(tangibleAssetsResource);
+        Long onDisposals = getOnDisposals(tangibleAssetsResource);
 
-        Long onDisposals =
-                getOnDisposals(tangibleAssetsResource);
-
-        Long otherAdjustments =
-                getOtherAdjustments(tangibleAssetsResource);
+        Long otherAdjustments = getOtherAdjustments(tangibleAssetsResource);
 
         Long calculatedAtPeriodEnd = atPeriodStart + chargeForYear - onDisposals + otherAdjustments;
 
         Long atPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssetsResource);
 
         if (!atPeriodEnd.equals(calculatedAtPeriodEnd)) {
-
             addError(errors, incorrectTotal, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
         }
     }
 
-    private void validateCurrentNetBookValue(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+    private void validateCurrentNetBookValue(Errors errors,
+                                             TangibleAssetsResource tangibleAssetsResource,
+                                             TangibleSubResource subResource) {
+        Long costAtPeriodEnd = getCostAtPeriodEnd(tangibleAssetsResource);
 
-        Long costAtPeriodEnd =
-                getCostAtPeriodEnd(tangibleAssetsResource);
-
-        Long depreciationAtPeriodEnd =
-                getDepreciationAtPeriodEnd(tangibleAssetsResource);
+        Long depreciationAtPeriodEnd = getDepreciationAtPeriodEnd(tangibleAssetsResource);
 
         Long calculatedCurrentNetBookValue = costAtPeriodEnd - depreciationAtPeriodEnd;
 
         if (!tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod().equals(calculatedCurrentNetBookValue)) {
-
             addError(errors, incorrectTotal, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
-    private void validatePreviousNetBookValue(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource) {
+    private void validatePreviousNetBookValue(Errors errors,
+                                              TangibleAssetsResource tangibleAssetsResource,
+                                              TangibleSubResource subResource) {
+        Long costAtPeriodStart = getCostAtPeriodStart(tangibleAssetsResource);
 
-        Long costAtPeriodStart =
-                getCostAtPeriodStart(tangibleAssetsResource);
-
-        Long depreciationAtPeriodStart =
-                getDepreciationAtPeriodStart(tangibleAssetsResource);
+        Long depreciationAtPeriodStart = getDepreciationAtPeriodStart(tangibleAssetsResource);
 
         Long calculatedPreviousNetBookValue = costAtPeriodStart - depreciationAtPeriodStart;
 
         if (!tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod().equals(calculatedPreviousNetBookValue)) {
-
             addError(errors, incorrectTotal, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
     }
 
-    private void validatePresenceOfMultipleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
-
+    private void validatePresenceOfMultipleYearFilerFields(Errors errors,
+                                                           TangibleAssetsResource tangibleAssetsResource,
+                                                           TangibleSubResource subResource,
+                                                           List<TangibleSubResource> invalidSubResources) {
         boolean subResourceInvalid = false;
 
-        if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null  || tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
-
+        if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null
+                || tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
             if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() == null) {
-
                 addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
                 subResourceInvalid = true;
             }
 
             if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() == null) {
-
                 addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
                 subResourceInvalid = true;
             }
 
             subResourceInvalid = isCostMultipleYearSubResourceInvalid(errors, tangibleAssetsResource.getCost(),
-                subResource, subResourceInvalid);
+                    subResource, subResourceInvalid);
 
-            subResourceInvalid = isDepreciationMultipleYearSubResourceInvalid(errors, tangibleAssetsResource.getDepreciation(),
-                subResource, subResourceInvalid);
+            subResourceInvalid = isDepreciationMultipleYearSubResourceInvalid(errors,
+                    tangibleAssetsResource.getDepreciation(), subResource, subResourceInvalid);
 
-        } else {
-
-            if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
-
-                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
-                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
-                subResourceInvalid = true;
-            }
+        } else if (hasMultipleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
+            addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
+            addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
+            subResourceInvalid = true;
         }
 
         if (subResourceInvalid) {
-
             invalidSubResources.add(subResource);
         }
     }
 
-    private void validatePresenceOfSingleYearFilerFields(Errors errors, TangibleAssetsResource tangibleAssetsResource, TangibleSubResource subResource, List<TangibleSubResource> invalidSubResources) {
-
+    private void validatePresenceOfSingleYearFilerFields(Errors errors,
+                                                         TangibleAssetsResource tangibleAssetsResource,
+                                                         TangibleSubResource subResource,
+                                                         List<TangibleSubResource> invalidSubResources) {
         boolean subResourceInvalid = false;
 
         if (tangibleAssetsResource.getCost() != null && tangibleAssetsResource.getCost().getAtPeriodStart() != null) {
-
             addError(errors, unexpectedData, getJsonPath(subResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
-        if (tangibleAssetsResource.getDepreciation() != null && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
-
+        if (tangibleAssetsResource.getDepreciation() != null
+                && tangibleAssetsResource.getDepreciation().getAtPeriodStart() != null) {
             addError(errors, unexpectedData, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfPreviousPeriod() != null) {
-
             addError(errors, unexpectedData, getJsonPath(subResource, NET_BOOK_VALUE_PREVIOUS_PERIOD));
             subResourceInvalid = true;
         }
 
         if (tangibleAssetsResource.getNetBookValueAtEndOfCurrentPeriod() != null) {
-
             subResourceInvalid = isCostSingleYearSubResourceInvalid(errors, tangibleAssetsResource.getCost(),
                 subResource, subResourceInvalid);
 
             subResourceInvalid = isDepreciationSingleYearSubResourceInvalid(errors,
-                tangibleAssetsResource.getDepreciation(), subResource,
-                subResourceInvalid);
-        } else {
-
-            if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
-
-                addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
-                subResourceInvalid = true;
-            }
+                tangibleAssetsResource.getDepreciation(), subResource, subResourceInvalid);
+        } else if (hasSingleYearFilerNonNetBookValueFieldsSet(tangibleAssetsResource)) {
+            addError(errors, valueRequired, getJsonPath(subResource, NET_BOOK_VALUE_CURRENT_PERIOD));
+            subResourceInvalid = true;
         }
 
         if (subResourceInvalid) {
-
             invalidSubResources.add(subResource);
         }
     }
 
     private boolean isCostSingleYearSubResourceInvalid(Errors errors,
-        Cost cost, TangibleSubResource subResource,
-        boolean subResourceInvalid) {
-
+                                                       Cost cost,
+                                                       TangibleSubResource subResource,
+                                                       boolean subResourceInvalid) {
         if (cost == null || cost.getAtPeriodEnd() == null) {
-
             addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_END));
             subResourceInvalid = true;
         }
@@ -735,10 +624,10 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private boolean isCostMultipleYearSubResourceInvalid(Errors errors,
-        Cost cost, TangibleSubResource subResource,
-        boolean subResourceInvalid) {
+                                                         Cost cost,
+                                                         TangibleSubResource subResource,
+                                                         boolean subResourceInvalid) {
         if (cost == null || cost.getAtPeriodStart() == null) {
-
             addError(errors, valueRequired, getJsonPath(subResource, COST_AT_PERIOD_START));
             subResourceInvalid = true;
         }
@@ -749,11 +638,10 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private boolean isDepreciationSingleYearSubResourceInvalid(Errors errors,
-        Depreciation depreciation, TangibleSubResource subResource,
-        boolean subResourceInvalid) {
-        if (depreciation != null && hasDepreciationFieldsSet(depreciation)
-            && depreciation.getAtPeriodEnd() == null) {
-
+                                                               Depreciation depreciation,
+                                                               TangibleSubResource subResource,
+                                                               boolean subResourceInvalid) {
+        if (depreciation != null && hasDepreciationFieldsSet(depreciation) && depreciation.getAtPeriodEnd() == null) {
             addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_END));
             subResourceInvalid = true;
         }
@@ -761,24 +649,23 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private boolean isDepreciationMultipleYearSubResourceInvalid(Errors errors,
-        Depreciation depreciation, TangibleSubResource subResource,
-        boolean subResourceInvalid) {
+                                                                 Depreciation depreciation,
+                                                                 TangibleSubResource subResource,
+                                                                 boolean subResourceInvalid) {
         if (depreciation != null && hasDepreciationFieldsSet(depreciation)) {
-
             if (depreciation.getAtPeriodStart() == null) {
-
                 addError(errors, valueRequired, getJsonPath(subResource, DEPRECIATION_AT_PERIOD_START));
                 subResourceInvalid = true;
             }
 
-            subResourceInvalid = isDepreciationSingleYearSubResourceInvalid(errors, depreciation, subResource, subResourceInvalid);
+            subResourceInvalid = isDepreciationSingleYearSubResourceInvalid(errors, depreciation,
+                    subResource, subResourceInvalid);
 
         }
         return subResourceInvalid;
     }
 
     private boolean hasDepreciationFieldsSet(Depreciation depreciation) {
-
         return Stream.of(depreciation.getChargeForYear(),
             depreciation.getOnDisposals(),
             depreciation.getOtherAdjustments())
@@ -786,51 +673,46 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private boolean hasSingleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
-
-        if (tangibleAssetsResource.getCost() != null &&
-                Stream.of(tangibleAssetsResource.getCost().getAdditions(),
-                            tangibleAssetsResource.getCost().getDisposals(),
-                            tangibleAssetsResource.getCost().getRevaluations(),
-                            tangibleAssetsResource.getCost().getTransfers(),
-                            tangibleAssetsResource.getCost().getAtPeriodEnd())
-                    .anyMatch(Objects::nonNull)) {
-
+        if (tangibleAssetsResource.getCost() != null
+                && Stream.of(tangibleAssetsResource.getCost().getAdditions(),
+                        tangibleAssetsResource.getCost().getDisposals(),
+                        tangibleAssetsResource.getCost().getRevaluations(),
+                        tangibleAssetsResource.getCost().getTransfers(),
+                        tangibleAssetsResource.getCost().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull)) {
             return true;
         }
 
-        return tangibleAssetsResource.getDepreciation() != null &&
-                Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
-                            tangibleAssetsResource.getDepreciation().getOnDisposals(),
-                            tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
-                            tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
-                    .anyMatch(Objects::nonNull);
+        return tangibleAssetsResource.getDepreciation() != null
+                && Stream.of(tangibleAssetsResource.getDepreciation().getChargeForYear(),
+                        tangibleAssetsResource.getDepreciation().getOnDisposals(),
+                        tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
+                        tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull);
     }
 
     private boolean hasMultipleYearFilerNonNetBookValueFieldsSet(TangibleAssetsResource tangibleAssetsResource) {
-
-        if (tangibleAssetsResource.getCost() != null &&
-                Stream.of(tangibleAssetsResource.getCost().getAtPeriodStart(),
-                    tangibleAssetsResource.getCost().getAdditions(),
-                    tangibleAssetsResource.getCost().getDisposals(),
-                    tangibleAssetsResource.getCost().getRevaluations(),
-                    tangibleAssetsResource.getCost().getTransfers(),
-                    tangibleAssetsResource.getCost().getAtPeriodEnd())
-                    .anyMatch(Objects::nonNull)) {
-
+        if (tangibleAssetsResource.getCost() != null
+                && Stream.of(tangibleAssetsResource.getCost().getAtPeriodStart(),
+                        tangibleAssetsResource.getCost().getAdditions(),
+                        tangibleAssetsResource.getCost().getDisposals(),
+                        tangibleAssetsResource.getCost().getRevaluations(),
+                        tangibleAssetsResource.getCost().getTransfers(),
+                        tangibleAssetsResource.getCost().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull)) {
             return true;
         }
 
-        return tangibleAssetsResource.getDepreciation() != null &&
-                Stream.of(tangibleAssetsResource.getDepreciation().getAtPeriodStart(),
-                    tangibleAssetsResource.getDepreciation().getChargeForYear(),
-                    tangibleAssetsResource.getDepreciation().getOnDisposals(),
-                    tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
-                    tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
-                    .anyMatch(Objects::nonNull);
+        return tangibleAssetsResource.getDepreciation() != null
+                && Stream.of(tangibleAssetsResource.getDepreciation().getAtPeriodStart(),
+                        tangibleAssetsResource.getDepreciation().getChargeForYear(),
+                        tangibleAssetsResource.getDepreciation().getOnDisposals(),
+                        tangibleAssetsResource.getDepreciation().getOtherAdjustments(),
+                        tangibleAssetsResource.getDepreciation().getAtPeriodEnd())
+                .anyMatch(Objects::nonNull);
     }
 
     private Long getCostAtPeriodStart(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getAtPeriodStart)
@@ -838,7 +720,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getAdditions(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getAdditions)
@@ -846,7 +727,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getDisposals(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getDisposals)
@@ -854,7 +734,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getRevaluations(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getRevaluations)
@@ -862,7 +741,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getTransfers(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getTransfers)
@@ -870,7 +748,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getCostAtPeriodEnd(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getCost)
                 .map(Cost::getAtPeriodEnd)
@@ -878,7 +755,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getDepreciationAtPeriodStart(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getDepreciation)
                 .map(Depreciation::getAtPeriodStart)
@@ -886,7 +762,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getChargeForYear(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getDepreciation)
                 .map(Depreciation::getChargeForYear)
@@ -894,7 +769,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getOnDisposals(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getDepreciation)
                 .map(Depreciation::getOnDisposals)
@@ -902,7 +776,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getOtherAdjustments(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getDepreciation)
                 .map(Depreciation::getOtherAdjustments)
@@ -910,7 +783,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getDepreciationAtPeriodEnd(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getDepreciation)
                 .map(Depreciation::getAtPeriodEnd)
@@ -918,33 +790,27 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
     }
 
     private Long getNetBookValueAtEndOfCurrentPeriod(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
                 .orElse(0L);
     }
 
     private Long getNetBookValueAtEndOfPreviousPeriod(TangibleAssetsResource tangibleAssetsResource) {
-
         return Optional.ofNullable(tangibleAssetsResource)
                 .map(TangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
                 .orElse(0L);
     }
 
     private String getJsonPath(TangibleSubResource subResource, String pathSuffix) {
-
         return TANGIBLE_NOTE + "." + subResource.getJsonPath() + pathSuffix;
     }
 
-    private Errors crossValidate(TangibleAssets tangibleAssets,
-                                HttpServletRequest request,
-                                String companyAccountsId,
-                                Errors errors) throws DataException {
-
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
+    private void crossValidate(TangibleAssets tangibleAssets,
+                               HttpServletRequest request,
+                               String companyAccountsId,
+                               Errors errors) throws DataException {
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
 
         if (currentPeriodBalanceSheet != null) {
             crossValidateCurrentPeriod(errors, request, companyAccountsId, tangibleAssets);
@@ -953,63 +819,59 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
         if (previousPeriodBalanceSheet != null) {
             crossValidatePreviousPeriod(errors, request, companyAccountsId, tangibleAssets);
         }
-
-        return errors;
     }
 
-    private void crossValidateCurrentPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
+    private void crossValidateCurrentPeriod(Errors errors,
+                                            HttpServletRequest request,
+                                            String companyAccountsId,
                                             TangibleAssets tangibleAssets) throws DataException {
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject =
                 currentPeriodService.find(companyAccountsId, request);
         CurrentPeriod currentPeriod = currentPeriodResponseObject.getData();
 
-        Long currentPeriodTangible =
-                Optional.ofNullable(currentPeriod)
-                        .map(CurrentPeriod::getBalanceSheet)
-                        .map(BalanceSheet::getFixedAssets)
-                        .map(FixedAssets::getTangible)
-                        .orElse(null);
+        Long currentPeriodTangible = Optional.ofNullable(currentPeriod)
+                .map(CurrentPeriod::getBalanceSheet)
+                .map(BalanceSheet::getFixedAssets)
+                .map(FixedAssets::getTangible)
+                .orElse(null);
 
-        Long currentNetBookValueTotal =
-                Optional.ofNullable(tangibleAssets)
-                        .map(TangibleAssets::getTotal)
-                        .map(TangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
-                        .orElse(null);
+        Long currentNetBookValueTotal = Optional.ofNullable(tangibleAssets)
+                .map(TangibleAssets::getTotal)
+                .map(TangibleAssetsResource::getNetBookValueAtEndOfCurrentPeriod)
+                .orElse(null);
 
-        if ((currentPeriodTangible != null || currentNetBookValueTotal != null) && (
-            (currentPeriodTangible != null && currentNetBookValueTotal == null)
-                || currentPeriodTangible == null ||
-                (!currentPeriodTangible.equals(currentNetBookValueTotal)))) {
+        if ((currentPeriodTangible != null || currentNetBookValueTotal != null)
+                && ((currentPeriodTangible != null && currentNetBookValueTotal == null)
+                || currentPeriodTangible == null
+                || (!currentPeriodTangible.equals(currentNetBookValueTotal)))) {
             addError(errors, currentBalanceSheetNotEqual,
-                getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
+                    getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_CURRENT_PERIOD));
         }
     }
 
-    private void crossValidatePreviousPeriod(Errors errors, HttpServletRequest request, String companyAccountsId,
-            TangibleAssets tangibleAssets) throws DataException {
-
+    private void crossValidatePreviousPeriod(Errors errors,
+                                             HttpServletRequest request,
+                                             String companyAccountsId,
+                                             TangibleAssets tangibleAssets) throws DataException {
         ResponseObject<PreviousPeriod> previousPeriodResponseObject =
                 previousPeriodService.find(companyAccountsId, request);
         PreviousPeriod previousPeriod = previousPeriodResponseObject.getData();
 
-        Long previousPeriodTangible =
-                Optional.ofNullable(previousPeriod)
-                    .map(PreviousPeriod::getBalanceSheet)
-                    .map(BalanceSheet::getFixedAssets)
-                    .map(FixedAssets::getTangible)
-                    .orElse(null);
+        Long previousPeriodTangible = Optional.ofNullable(previousPeriod)
+                .map(PreviousPeriod::getBalanceSheet)
+                .map(BalanceSheet::getFixedAssets)
+                .map(FixedAssets::getTangible)
+                .orElse(null);
 
-        Long previousNetBookValueTotal =
-                Optional.ofNullable(tangibleAssets)
-                    .map(TangibleAssets::getTotal)
-                    .map(TangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
-                    .orElse(null);
+        Long previousNetBookValueTotal = Optional.ofNullable(tangibleAssets)
+                .map(TangibleAssets::getTotal)
+                .map(TangibleAssetsResource::getNetBookValueAtEndOfPreviousPeriod)
+                .orElse(null);
 
-        if ((previousPeriodTangible != null || previousNetBookValueTotal != null) && (
-            (previousPeriodTangible != null && previousNetBookValueTotal == null)
-                || previousPeriodTangible == null ||
-                (!previousPeriodTangible.equals(previousNetBookValueTotal)))) {
+        if ((previousPeriodTangible != null || previousNetBookValueTotal != null)
+                && ((previousPeriodTangible != null && previousNetBookValueTotal == null)
+                || previousPeriodTangible == null
+                || (!previousPeriodTangible.equals(previousNetBookValueTotal)))) {
             addError(errors, previousBalanceSheetNotEqual,
                 getJsonPath(TangibleSubResource.TOTAL, NET_BOOK_VALUE_PREVIOUS_PERIOD));
         }
@@ -1017,7 +879,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
 
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
                                                       String companyAccountsId) throws DataException {
-
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
         currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
 
@@ -1029,7 +890,6 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
 
     private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
                                                        String companyAccountsId) throws DataException {
-
         ResponseObject<PreviousPeriod> previousPeriodResponseObject;
         previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);
 
@@ -1053,7 +913,7 @@ public class TangibleAssetsValidator extends BaseValidator implements NoteValida
         PLANT_AND_MACHINERY("plant_and_machinery"),
         TOTAL("total");
 
-        private String jsonPath;
+        private final String jsonPath;
 
         TangibleSubResource(String jsonPath) {
             this.jsonPath = jsonPath;

@@ -18,8 +18,8 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,13 +38,11 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PreviousPeriodInterceptorTest {
-
-
     @Mock
     private PreviousPeriod previousPeriod;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<PreviousPeriod> responseObject;
 
     @Mock
     private Transaction transaction;
@@ -77,8 +75,7 @@ class PreviousPeriodInterceptorTest {
     private static final String NO_LINK_PREVIOUS_PERIOD = "noLinkToPreviousPeriod";
     private static final String URI = "../../../previous-period";
 
-    private void setUp() throws NoSuchAlgorithmException {
-
+    public void setUpHttpServletRequest() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
         pathVariables.put(COMPANY_ACCOUNT_ID, "test");
@@ -95,8 +92,7 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
-
-        setUp();
+        setUpHttpServletRequest();
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(previousPeriod);
@@ -114,7 +110,7 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false on a failed PreviousPeriodEntity lookup")
     void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
-        setUp();
+        setUpHttpServletRequest();
         doThrow(mock(DataException.class)).when(previousPeriodService).find(anyString(), any(HttpServletRequest.class));
         assertFalse(previousPeriodInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
@@ -123,7 +119,6 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor returns true when URI ends with previous-period"))
     void testReturnTrueForURIEndsWithPreviousPeriod() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
@@ -134,7 +129,6 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor when transaction is null"))
     void testTransactionIsNull() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("GET");
         doReturn(null).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -147,7 +141,6 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor when smallFull is null"))
     void testSmallFullIsNull() throws NoSuchAlgorithmException {
-
         transaction = mock(Transaction.class);
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
@@ -166,8 +159,7 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName("Previous Period interceptor - returns not found status")
     void previousPeriodInterceptorReturnsNotFoundStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpHttpServletRequest();
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -180,8 +172,7 @@ class PreviousPeriodInterceptorTest {
     @Test
     @DisplayName("Previous Period interceptor - returns bad request status")
     void previousPeriodInterceptorReturnsBadRequestStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpHttpServletRequest();
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(previousPeriod);

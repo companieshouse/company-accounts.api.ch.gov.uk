@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -38,7 +38,6 @@ import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PreviousPeriodControllerTest {
-
     public static final String COMPANY_ACCOUNT_ID = "12345";
 
     @Mock
@@ -79,14 +78,13 @@ class PreviousPeriodControllerTest {
         doReturn(responseObject).when(previousPeriodService)
             .create(any(PreviousPeriod.class), any(Transaction.class), anyString(),
                 any(HttpServletRequest.class));
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<PreviousPeriod> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
             .body(responseObject.getData());
         when(apiResponseMapper
             .map(responseObject.getStatus(), responseObject.getData(), responseObject.getErrors()))
             .thenReturn(responseEntity);
 
-        ResponseEntity response = previousPeriodController
-            .create(previousPeriod, bindingResult, "", request);
+        ResponseEntity<?> response = previousPeriodController.create(previousPeriod, bindingResult, "", request);
 
         verify(apiResponseMapper, times(1)).map(any(), any(), any());
 
@@ -98,14 +96,13 @@ class PreviousPeriodControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful request to create previous period")
     void createPreviousPeriodError() throws DataException {
-
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         when(previousPeriodService.create(any(), any(), any(), any())).thenThrow(new DataException(""));
 
         when(apiResponseMapper.getErrorResponse())
-            .thenReturn(new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR));
-        ResponseEntity response = previousPeriodController
+            .thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+        ResponseEntity<?> response = previousPeriodController
             .create(previousPeriod, bindingResult, "", request);
 
         verify(previousPeriodService, times(1)).create(any(), any(), any(), any());
@@ -118,7 +115,6 @@ class PreviousPeriodControllerTest {
     @Test
     @DisplayName("Test correct response when binding result has an error")
     void badRequestWhenBindingResultHasErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
@@ -133,13 +129,13 @@ class PreviousPeriodControllerTest {
     void canRetrievePreviousPeriod() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
+        ResponseEntity<PreviousPeriod> responseEntity = ResponseEntity.status(HttpStatus.OK).body(previousPeriod);
 
         when(previousPeriodService.find(anyString(), any(HttpServletRequest.class)))
-            .thenReturn(new ResponseObject(ResponseStatus.FOUND, previousPeriod));
+            .thenReturn(new ResponseObject<>(ResponseStatus.FOUND, previousPeriod));
         when(apiResponseMapper.mapGetResponse(previousPeriod, request)).thenReturn(responseEntity);
 
-        ResponseEntity response = previousPeriodController.get("123456", request);
+        ResponseEntity<?> response = previousPeriodController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -151,12 +147,12 @@ class PreviousPeriodControllerTest {
         mockSmallFull();
         mockPreviousPeriodLinkOnSmallFullResource();
         ResponseObject<PreviousPeriod> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, previousPeriod);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        when(apiResponseMapper.map(responseObject.getStatus(),null, responseObject.getErrors()))
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        when(apiResponseMapper.map(responseObject.getStatus(), null, responseObject.getErrors()))
                 .thenReturn(responseEntity);
         doReturn(responseObject).when(previousPeriodService).update(previousPeriod, null, "12345", request);
 
-        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
+        ResponseEntity<?> response = previousPeriodController.update(previousPeriod, bindingResult, "12345", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -167,7 +163,7 @@ class PreviousPeriodControllerTest {
     void canUpdatePreviousPeriodFail() {
         mockSmallFull();
         when(smallFull.getLinks()).thenReturn(new HashMap<>());
-        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
+        ResponseEntity<?> response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -180,7 +176,7 @@ class PreviousPeriodControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(errors);
 
-        ResponseEntity response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
+        ResponseEntity<?> response = previousPeriodController.update(previousPeriod, bindingResult, "123456", request);
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -190,13 +186,11 @@ class PreviousPeriodControllerTest {
     void canRetrievePreviousPeriodFailed() throws DataException {
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(null);
-        when(previousPeriodService.find(anyString(), any(HttpServletRequest.class)))
-            .thenThrow(new DataException(""));
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        when(previousPeriodService.find(anyString(), any(HttpServletRequest.class))).thenThrow(new DataException(""));
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = previousPeriodController.get("123456", request);
+        ResponseEntity<?> response = previousPeriodController.get("123456", request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

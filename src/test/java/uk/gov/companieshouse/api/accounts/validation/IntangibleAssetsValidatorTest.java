@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class IntangibleAssetsValidatorTest {
-
     private static final String UNEXPECTED_DATA_KEY = "unexpectedData";
     private static final String UNEXPECTED_DATA = "unexpected.data";
 
@@ -83,7 +82,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("First year filer - provides only additional info in note")
     void firstYearFilerNoteOnlyContainsAdditionalInfo() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -94,14 +92,14 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
 
     }
 
     @Test
     @DisplayName("First year filer - provides cost at period start in sub resource")
     void firstYearFilerProvidesCostAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -121,13 +119,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.intangible_assets.goodwill.cost.at_period_start")));
     }
 
     @Test
     @DisplayName("Single year filer - cost fields don't total in sub resource")
     void singleYearFilerCostFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -146,13 +144,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Single year filer - amortisation fields don't total in sub resource")
     void singleYearFilerAmortisationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -177,13 +175,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
     @DisplayName("First year filer - Does not provide cost at period end in sub resource")
     void firstYearFilerDoesNotProvideCostAtPeriodEndInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -198,13 +196,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - provides only additional info in note")
     void multipleYearFilerProvidesOnlyAdditionalInfo() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -215,15 +213,16 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
 
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide cost in sub resource")
     void multipleYearFilerDoesNotProvideCostInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -245,14 +244,15 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("Multi year filer - doesn't provide cost at period start in sub resource")
     void multiYearFilerDoesNotProvideCostAtPeriodStartInSubResource() throws ServiceException, DataException{
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -277,13 +277,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_start")));
     }
 
     @Test
     @DisplayName("Multi year filer - doesn't provide cost at period end in sub resource")
     void multiYearFilerDoesNotProvideCostAtPeriodEndInSubResource() throws ServiceException, DataException{
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -307,14 +307,14 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
 
     }
 
     @Test
     @DisplayName("Multiple year filer - cost fields do not total in sub resource")
     void multipleYearFilerCostFieldDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -340,15 +340,16 @@ class IntangibleAssetsValidatorTest {
 
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
 
     }
 
     @Test
     @DisplayName("Multiple year filer - amortisation fields don't total in sub resource")
     void multipleYearFilerAmortisationFieldsDoNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -375,13 +376,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
     @DisplayName("Single year filer - no total fields match")
     void singleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -438,22 +439,31 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(10, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.charge_for_year")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - no total fields match")
     void multipleYearFilerNoTotalFieldsMatch() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -522,25 +532,37 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(13, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_start")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.additions")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.revaluations")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.transfers")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_start")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.charge_for_year")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.on_disposals")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.other_adjustments")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.amortisation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.additions")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.revaluations")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.transfers")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.at_period_start")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.charge_for_year")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.on_disposals")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.other_adjustments")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - missing NetBook values Previous and Current")
     void multupleYearFilerMissingBothNetBookValues() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
@@ -564,14 +586,15 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
 
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - missing NetBook values Previous and Current")
     void multupleYearFilerMissingBothNetBookValuesNoCost() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
@@ -590,16 +613,19 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(4, errors.getErrorCount());
 
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.cost.at_period_start")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.cost.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.cost.at_period_end")));
     }
 
     @Test
     @DisplayName("First year filer - provides only amortisation fields in sub resource")
     void firstYearFilerProvidesOnlyAmortisationFieldInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -617,14 +643,15 @@ class IntangibleAssetsValidatorTest {
 
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.cost.at_period_end")));
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.cost.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
     @DisplayName("First year filer - incorrect total for amortisation at period end")
     void firstYearFilerIncorrectTotalAmortisationAtPeriodEnd() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -651,13 +678,13 @@ class IntangibleAssetsValidatorTest {
 
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
     @DisplayName("First year filer - provides amortisation at period start in sub resource")
     void firstYearFilerProvidesAmortisationAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -683,10 +710,10 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.amortisation.at_period_start")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.intangible_assets.goodwill.amortisation.at_period_start")));
     }
     private Error createError(String error,  String path) {
-
         return new Error(error, path, LocationType.JSON_PATH.getValue(),
         ErrorType.VALIDATION.getType());
     }
@@ -694,7 +721,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("Multiple year filer - Does not provide amortisation at period start in sub resource")
     void multipleYearFilerDoesNotProvideAmortisationAtPeriodStartInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -719,13 +745,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_start")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.amortisation.at_period_start")));
     }
 
     @Test
     @DisplayName("Multiple year filer - Does not provide amortisation at period end in sub resource")
     void multipleYearFilerDoesNotProvideAmortisationAtPeriodEndInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -752,13 +778,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
     }
 
     @Test
     @DisplayName("Multiple year filer - Total does not match for sub resources")
     void multipleYearFilerTotalDoesNotMatchForSubResources() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -788,15 +814,17 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(3, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.amortisation.at_period_end")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.amortisation.at_period_end")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("First year filer - provides net book value at previous period end in sub resource")
     void firstYearFilerProvidesNetBookValueAtPreviousEndInSubResource() throws ServiceException, DataException{
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -811,13 +839,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("First year filer - fields exist but Current Net Book Value is not provided")
     void firstYearFilerProvidesAmortisationButNoNetBookValue() throws ServiceException, DataException{
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
@@ -836,13 +864,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Single year filer - net book value at end of current period doesn't total in sub resource")
     void singleYearFilerCurrentNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -867,14 +895,14 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
 
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide net book value at end of previous period in sub resource")
     void multipleYearFilerDoesNotProvideNetBookValuePreviousPeriodInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource otherIntangibleAssets = new IntangibleAssetsResource();
@@ -899,13 +927,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.other_intangible_assets.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - doesn't provide net book value at end of current period in sub resource")
     void multipleYearFilerDoesNotProvideNetBookValueCurrentPeriodInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -930,13 +958,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(VALUE_REQUIRED, "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(VALUE_REQUIRED,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - net book value at end of previous period doesn't total in sub resource")
     void multipleYearFilerPreviousNetBookValueDoesNotTotalInSubResource() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssetsResource goodwill = new IntangibleAssetsResource();
@@ -963,13 +991,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(INCORRECT_TOTAL, "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(INCORRECT_TOTAL,
+                "$.intangible_assets.goodwill.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - no current period to validate against")
     void singleYearFilerWithoutCurrentPeriod() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1013,7 +1041,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("Single year filer - current period does not match note")
     void singleYearFilerCurrentPeriodDoesNotMatchNote() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1052,13 +1079,13 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
     }
 
     @Test
     @DisplayName("Multiple year filer - no current or previous period to validate against")
     void multipleYearFilerWithoutCurrentOrPreviousPeriod() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1106,7 +1133,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("Multiple year filer - neither current nor previous period match note")
     void multipleYearFilerCurrentAndPreviousPeriodDoNotMatchNote() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1149,14 +1175,15 @@ class IntangibleAssetsValidatorTest {
         Errors errors = validator.validateSubmission(intangibleAssets, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(2, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
-        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL, "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
+        assertTrue(errors.containsError(createError(CURRENT_BALANCE_SHEET_NOT_EQUAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_current_period")));
+        assertTrue(errors.containsError(createError(PREVIOUS_BALANCE_SHEET_NOT_EQUAL,
+                "$.intangible_assets.total.net_book_value_at_end_of_previous_period")));
     }
 
     @Test
     @DisplayName("Single year filer - valid submission")
     void singleYearFilerValidSubmission() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(false);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1199,7 +1226,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("Multiple year filer - valid submission")
     void multipleYearFilerValidSubmission() throws ServiceException, DataException {
-
         when(companyService.isMultipleYearFiler(any(Transaction.class))).thenReturn(true);
 
         IntangibleAssets intangibleAssets = new IntangibleAssets();
@@ -1243,7 +1269,6 @@ class IntangibleAssetsValidatorTest {
 
 
     private IntangibleAssetsResource createValidSubResource(boolean isMultipleYearFiler) {
-
         IntangibleAssetsResource resource = new IntangibleAssetsResource();
 
         Cost cost = new Cost();
@@ -1276,7 +1301,6 @@ class IntangibleAssetsValidatorTest {
     }
 
     private ResponseObject<CurrentPeriod> createCurrentPeriodResponseObject(Long currentPeriodIntangible) {
-
         FixedAssets currentFixedAssets = new FixedAssets();
         currentFixedAssets.setIntangible(currentPeriodIntangible);
 
@@ -1290,7 +1314,6 @@ class IntangibleAssetsValidatorTest {
     }
 
     private ResponseObject<PreviousPeriod> createPreviousPeriodResponseObject(Long previousPeriodIntangible) {
-
         FixedAssets previousFixedAssets = new FixedAssets();
         previousFixedAssets.setIntangible(previousPeriodIntangible);
 
@@ -1306,7 +1329,6 @@ class IntangibleAssetsValidatorTest {
     @Test
     @DisplayName("transformer returns correct note note")
     void testCorrectNoteReturned() {
-
         AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS;
 
         assertEquals(noteType, validator.getAccountingNoteType());

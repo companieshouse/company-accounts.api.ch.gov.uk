@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,16 +42,16 @@ public class CurrentPeriodController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid CurrentPeriod currentPeriod,
-        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
@@ -60,9 +60,7 @@ public class CurrentPeriodController {
             return apiResponseMapper
                 .map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create current period resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -71,8 +69,9 @@ public class CurrentPeriodController {
 
     @PutMapping
     public ResponseEntity update(@RequestBody @Valid CurrentPeriod currentPeriod,
-        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFull.getLinks().get(SmallFullLinkType.CURRENT_PERIOD.getLink()) == null) {
@@ -84,18 +83,14 @@ public class CurrentPeriodController {
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<CurrentPeriod> responseObject = currentPeriodService
                 .update(currentPeriod, transaction, companyAccountId, request);
 
-            return apiResponseMapper
-                .map(responseObject.getStatus(), null, responseObject.getErrors());
-
+            return apiResponseMapper.map(responseObject.getStatus(), null, responseObject.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update current period resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -106,17 +101,13 @@ public class CurrentPeriodController {
     public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
         HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<CurrentPeriod> response =
-                    currentPeriodService.find(companyAccountId, request);
+            ResponseObject<CurrentPeriod> response = currentPeriodService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve current period resource", ex, request);
             return apiResponseMapper.getErrorResponse();

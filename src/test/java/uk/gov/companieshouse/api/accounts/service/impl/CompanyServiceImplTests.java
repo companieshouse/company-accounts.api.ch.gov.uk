@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -32,7 +32,6 @@ import uk.gov.companieshouse.api.model.company.account.LastAccountsApi;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CompanyServiceImplTests {
-
     @Mock
     private ApiClientService mockApiClientService;
 
@@ -65,7 +64,7 @@ class CompanyServiceImplTests {
     private static final String PLC = "plc";
 
     @BeforeEach
-    private void init() {
+    public void init() {
         when(mockApiClientService.getApiClient()).thenReturn(mockApiClient);
         when(mockApiClient.company()).thenReturn(mockCompanyResourceHandler);
         when(mockCompanyResourceHandler.get(COMPANY_URI)).thenReturn(mockCompanyGet);
@@ -74,7 +73,6 @@ class CompanyServiceImplTests {
     @Test
     @DisplayName("Get Company Profile - Success Path")
     void getCompanyProfileSuccess() throws Exception {
-
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
         CompanyProfileApi companyProfile = companyService.getCompanyProfile(COMPANY_NUMBER);
@@ -85,29 +83,22 @@ class CompanyServiceImplTests {
     @Test
     @DisplayName("Get Company Profile - Throws ApiErrorResponseException")
     void getCompanyProfileThrowsApiErrorResponseException() throws Exception {
-
         when(mockCompanyGet.execute()).thenThrow(ApiErrorResponseException.class);
 
-        assertThrows(ServiceException.class, () ->
-                companyService.getCompanyProfile(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> companyService.getCompanyProfile(COMPANY_NUMBER));
     }
 
     @Test
     @DisplayName("Get Company Profile - Throws URIValidationException")
-    void getCompanyProfileThrowsURIValidationException() throws ApiErrorResponseException,
-            URIValidationException {
-
+    void getCompanyProfileThrowsURIValidationException() throws ApiErrorResponseException, URIValidationException {
         when(mockCompanyGet.execute()).thenThrow(URIValidationException.class);
 
-        assertThrows(ServiceException.class, () ->
-                companyService.getCompanyProfile(COMPANY_NUMBER));
+        assertThrows(ServiceException.class, () -> companyService.getCompanyProfile(COMPANY_NUMBER));
     }
 
     @Test
     @DisplayName("Multiple year filer returns true")
-    void multipleYearFilerReturnsTrue() throws ServiceException, ApiErrorResponseException,
-            URIValidationException {
-
+    void multipleYearFilerReturnsTrue() throws ServiceException, ApiErrorResponseException, URIValidationException {
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(generateMultipleYearFiler());
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
@@ -117,9 +108,7 @@ class CompanyServiceImplTests {
 
     @Test
     @DisplayName("Multiple year filer returns false")
-    void multipleYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
-            URIValidationException {
-
+    void multipleYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
@@ -129,9 +118,7 @@ class CompanyServiceImplTests {
 
     @Test
     @DisplayName("First year filer returns true")
-    void firstYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException,
-            URIValidationException {
-
+    void firstYearFilerReturnsFalse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(new CompanyProfileApi());
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
@@ -142,19 +129,15 @@ class CompanyServiceImplTests {
     @Test
     @DisplayName("Service error thrown when method fails")
     void serviceErrorThrownWhenFails() throws ApiErrorResponseException, URIValidationException {
-
         when(mockCompanyGet.execute()).thenThrow(URIValidationException.class);
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
 
-        assertThrows(ServiceException.class, () ->
-                companyService.isMultipleYearFiler(mockTransaction));
+        assertThrows(ServiceException.class, () -> companyService.isMultipleYearFiler(mockTransaction));
     }
 
     @Test
     @DisplayName("isCIC returns true")
-    void isCICReturnsTrue() throws ServiceException, ApiErrorResponseException,
-            URIValidationException {
-
+    void isCICReturnsTrue() throws ServiceException, ApiErrorResponseException, URIValidationException {
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
@@ -165,9 +148,7 @@ class CompanyServiceImplTests {
 
     @Test
     @DisplayName("isCIC returns false")
-    void isCICReturnsFalse() throws ServiceException, ApiErrorResponseException,
-            URIValidationException {
-
+    void isCICReturnsFalse() throws ServiceException, ApiErrorResponseException, URIValidationException {
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
@@ -180,7 +161,6 @@ class CompanyServiceImplTests {
     @DisplayName("isLBG returns true for private limited by guarantee company")
     void isLBGForPrivateLimitedByGuaranteeCompany()
             throws ApiErrorResponseException, URIValidationException, ServiceException {
-
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
@@ -193,7 +173,6 @@ class CompanyServiceImplTests {
     @DisplayName("isLBG returns true for private limited by guarantee exempt company")
     void isLBGForPrivateLimitedByGuaranteeExemptCompany()
             throws ApiErrorResponseException, URIValidationException, ServiceException {
-
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
@@ -204,9 +183,7 @@ class CompanyServiceImplTests {
 
     @Test
     @DisplayName("isLBG returns false for plc company")
-    void isLBGForPLCCompany()
-            throws ApiErrorResponseException, URIValidationException, ServiceException {
-
+    void isLBGForPLCCompany() throws ApiErrorResponseException, URIValidationException, ServiceException {
         when(mockTransaction.getCompanyNumber()).thenReturn(COMPANY_NUMBER);
         when(mockCompanyGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(mockCompanyProfileApi);
@@ -216,7 +193,6 @@ class CompanyServiceImplTests {
     }
 
     private CompanyProfileApi generateMultipleYearFiler() {
-
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         CompanyAccountApi companyAccountApi = new CompanyAccountApi();
 

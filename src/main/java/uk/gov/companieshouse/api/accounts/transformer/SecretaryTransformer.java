@@ -11,7 +11,6 @@ public class SecretaryTransformer implements GenericTransformer<Secretary, Secre
 
     @Override
     public SecretaryEntity transform(Secretary entity) {
-
         SecretaryDataEntity secretaryDataEntity = new SecretaryDataEntity();
         BeanUtils.copyProperties(entity, secretaryDataEntity);
 
@@ -23,7 +22,6 @@ public class SecretaryTransformer implements GenericTransformer<Secretary, Secre
 
     @Override
     public Secretary transform(SecretaryEntity entity) {
-
         Secretary secretary = new Secretary();
         BeanUtils.copyProperties(entity.getData(), secretary);
 

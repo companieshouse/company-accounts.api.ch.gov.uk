@@ -73,7 +73,6 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
     private RelatedPartyTransactionsInterceptor relatedPartyTransactionsInterceptor;
 
     public static void main(String[] args) {
-
         SpringApplication application = new SpringApplication(CompanyAccountsApplication.class);
         Properties properties = new Properties();
 
@@ -89,7 +88,6 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-
         registry.addInterceptor(loggingInterceptor)
             .excludePathPatterns("/healthcheck");
 
@@ -143,10 +141,8 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                         "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/previous-period/**");
 
         registry.addInterceptor(cicReportInterceptor)
-            .addPathPatterns(
-                    "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**")
-            .excludePathPatterns(
-                    "/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report");
+            .addPathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report/**")
+            .excludePathPatterns("/transactions/{transactionId}/company-accounts/{companyAccountId}/cic-report");
 
         registry.addInterceptor(directorsReportInterceptor)
                 .addPathPatterns(

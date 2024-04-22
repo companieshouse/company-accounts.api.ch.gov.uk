@@ -5,7 +5,7 @@ import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 import uk.gov.companieshouse.api.accounts.validation.CharSetValid;
 import uk.gov.companieshouse.charset.CharSet;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public class Statements extends RestObject {
 

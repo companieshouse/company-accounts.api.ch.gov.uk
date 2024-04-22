@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CicReportInterceptorTest {
-
     @Mock
     private CicReportService cicReportService;
 
@@ -55,7 +54,7 @@ class CicReportInterceptorTest {
     private CicReport cicReport;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<CicReport> responseObject;
 
     @Mock
     private CompanyAccount companyAccount;
@@ -72,7 +71,6 @@ class CicReportInterceptorTest {
 
     @BeforeEach
     void setUp () {
-
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         Map<String, String> pathVariables = new HashMap<>();
@@ -84,7 +82,6 @@ class CicReportInterceptorTest {
     @Test
     @DisplayName("Cic report interceptor - success")
     void cicReportInterceptorSuccess() throws DataException {
-
         when(cicReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(cicReport);
@@ -106,7 +103,6 @@ class CicReportInterceptorTest {
     @Test
     @DisplayName("Cic report interceptor - cic report not found")
     void cicReportInterceptorCicReportNotFound() throws DataException {
-
         when(cicReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -120,7 +116,6 @@ class CicReportInterceptorTest {
     @Test
     @DisplayName("Cic report interceptor - parent link not found")
     void cicReportInterceptorParentLinkNotFound() throws DataException {
-
         when(cicReportService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(cicReport);
@@ -142,7 +137,6 @@ class CicReportInterceptorTest {
     @Test
     @DisplayName("Cic report interceptor - data exception")
     void cicReportInterceptorDataException() throws DataException {
-
         when(cicReportService.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());

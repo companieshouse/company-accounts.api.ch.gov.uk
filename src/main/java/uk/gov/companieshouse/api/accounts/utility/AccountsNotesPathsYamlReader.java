@@ -13,27 +13,21 @@ public class AccountsNotesPathsYamlReader {
 
     private static final String PROPERTY_PREFIX = "controller.paths.notes.";
 
-    private AccountsNotes accountsNotes;
+    private final AccountsNotes accountsNotes;
 
     public AccountsNotesPathsYamlReader(YamlResourceMapper yamlResourceMapper) {
-
-        this.accountsNotes =
-                yamlResourceMapper.fetchObjectFromYaml(NOTES_YML_FILE, AccountsNotes.class);
+        this.accountsNotes = yamlResourceMapper.fetchObjectFromYaml(NOTES_YML_FILE, AccountsNotes.class);
     }
 
     public void populatePropertiesFromYamlFile(Properties properties) {
-
         accountsNotes.getNotes().keySet().forEach(accountType -> {
-
             List<String> notes = accountsNotes.getNotes().get(accountType);
             addNotesPaths(accountType, notes, properties);
         });
     }
 
     private void addNotesPaths(String accountType, List<String> notes, Properties properties) {
-
-        StringBuilder accountNotes = new StringBuilder(
-                NOTES_PATH_PREFIX + accountType + "}/notes/{noteType:");
+        StringBuilder accountNotes = new StringBuilder(NOTES_PATH_PREFIX + accountType + "}/notes/{noteType:");
 
         for (int i = 0; i < notes.size(); i++) {
             accountNotes.append(notes.get(i));
@@ -47,7 +41,6 @@ public class AccountsNotesPathsYamlReader {
     }
 
     private String normalizeAccountType(String accountType) {
-
         return accountType.replace("-", "");
     }
 }

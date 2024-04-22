@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,8 +27,8 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator implements 
 
     @Autowired
     public CurrentAssetsInvestmentsValidator(CompanyService companyService,
-            CurrentPeriodService currentPeriodService,
-            PreviousPeriodService previousPeriodService) {
+                                             CurrentPeriodService currentPeriodService,
+                                             PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
@@ -36,32 +36,30 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator implements 
 
 
     @Override
-    public Errors validateSubmission(CurrentAssetsInvestments currentAssetsInvestments, Transaction transaction,
-                                     String companyAccountsId, HttpServletRequest request) throws DataException {
-
+    public Errors validateSubmission(CurrentAssetsInvestments currentAssetsInvestments,
+                                     Transaction transaction,
+                                     String companyAccountsId,
+                                     HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-            companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-            companyAccountsId);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
 
-        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
-            !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-            currentAssetsInvestments.getDetails() == null) {
+        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                && !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && currentAssetsInvestments.getDetails() == null) {
             addEmptyResourceError(errors, CURRENT_ASSETS_DETAILS_PATH);
         }
-        if(currentPeriodBalanceSheet!=null || previousPeriodBalanceSheet!=null) {
-            if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
-                    !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-                    currentAssetsInvestments.getDetails() != null) {
-                addError(errors, unexpectedData, CURRENT_ASSETS_DETAILS_PATH);
-            }
+        if ((currentPeriodBalanceSheet != null || previousPeriodBalanceSheet != null)
+                && ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                && !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && currentAssetsInvestments.getDetails() != null)) {
+            addError(errors, unexpectedData, CURRENT_ASSETS_DETAILS_PATH);
         }
 
-        if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) ||
-            hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-            currentAssetsInvestments.getDetails() == null) {
+        if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                || hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && currentAssetsInvestments.getDetails() == null) {
             addError(errors, mandatoryElementMissing, CURRENT_ASSETS_DETAILS_PATH);
         }
         return errors;
@@ -78,8 +76,7 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator implements 
     }
 
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,
-        String companyAccountsId) throws DataException {
-
+                                                      String companyAccountsId) throws DataException {
         ResponseObject<CurrentPeriod> currentPeriodResponseObject;
 
         currentPeriodResponseObject = currentPeriodService.find(companyAccountsId, request);
@@ -91,9 +88,8 @@ public class CurrentAssetsInvestmentsValidator extends BaseValidator implements 
         }
     }
 
-    private BalanceSheet getPreviousPeriodBalanceSheet(
-        HttpServletRequest request, String companyAccountsId) throws DataException {
-
+    private BalanceSheet getPreviousPeriodBalanceSheet(HttpServletRequest request,
+                                                       String companyAccountsId) throws DataException {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject;
 
         previousPeriodResponseObject = previousPeriodService.find(companyAccountsId, request);

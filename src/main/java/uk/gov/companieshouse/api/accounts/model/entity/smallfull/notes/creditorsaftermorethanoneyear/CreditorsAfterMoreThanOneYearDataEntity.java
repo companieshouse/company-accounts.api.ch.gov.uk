@@ -32,7 +32,7 @@ public class CreditorsAfterMoreThanOneYearDataEntity extends BaseDataEntity {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (! (o instanceof CreditorsAfterMoreThanOneYearDataEntity))
+        if (!(o instanceof CreditorsAfterMoreThanOneYearDataEntity))
             return false;
         CreditorsAfterMoreThanOneYearDataEntity that = (CreditorsAfterMoreThanOneYearDataEntity) o;
         return Objects.equals(getCurrentPeriodEntity(), that.getCurrentPeriodEntity()) &&

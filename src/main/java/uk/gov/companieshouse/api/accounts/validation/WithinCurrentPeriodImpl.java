@@ -2,9 +2,9 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,6 @@ public class WithinCurrentPeriodImpl implements ConstraintValidator<WithinCurren
 
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext constraintValidatorContext) {
-
         if (date == null) {
             return true;
         }

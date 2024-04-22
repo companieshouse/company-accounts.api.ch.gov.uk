@@ -9,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.service.impl.DirectorService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +26,8 @@ public class DirectorValidator extends BaseValidator {
     }
 
     public List<String> getValidDirectorNames(Transaction transaction,
-                                              String companyAccountId, HttpServletRequest request) throws DataException {
-
+                                              String companyAccountId,
+                                              HttpServletRequest request) throws DataException {
         ResponseObject<Director> directorsReportResponseObject = directorService.findAll(transaction, companyAccountId, request);
 
         Director[] directors = Optional.of(directorsReportResponseObject)
@@ -48,7 +48,6 @@ public class DirectorValidator extends BaseValidator {
     }
 
     private boolean isValidDirector(Director director) {
-
         return director.getResignationDate() == null
                 || (director.getAppointmentDate() != null
                 && director.getAppointmentDate().isAfter(director.getResignationDate()));

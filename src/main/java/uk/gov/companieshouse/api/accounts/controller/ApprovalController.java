@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,16 +43,16 @@ public class ApprovalController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid Approval approval,
-        BindingResult bindingResult, @PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Approval> responseObject = approvalService
@@ -60,9 +60,7 @@ public class ApprovalController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -70,19 +68,15 @@ public class ApprovalController {
     }
 
     @GetMapping
-    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId,
-        HttpServletRequest request) {
+    public ResponseEntity get(@PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Approval> response = approvalService.find(companyAccountId, request);
 
             return apiResponseMapper.mapGetResponse(response.getData(), request);
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to retrieve approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -90,8 +84,10 @@ public class ApprovalController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Valid Approval approval, BindingResult bindingResult,
-            @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
+    public ResponseEntity update(@RequestBody @Valid Approval approval,
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
 
         SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
         if (smallFull.getLinks().get(SmallFullLinkType.APPROVAL.getLink()) == null) {
@@ -103,8 +99,7 @@ public class ApprovalController {
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<Approval> responseObject = approvalService
@@ -123,20 +118,15 @@ public class ApprovalController {
 
     @DeleteMapping
     public ResponseEntity delete(@PathVariable("companyAccountId") String companyAccountsId,
-            HttpServletRequest request) {
+                                 HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
-            ResponseObject<Approval> response =
-                    approvalService.delete(companyAccountsId, request);
+            ResponseObject<Approval> response = approvalService.delete(companyAccountsId, request);
 
-            return apiResponseMapper
-                    .map(response.getStatus(), response.getData(), response.getErrors());
-
+            return apiResponseMapper.map(response.getStatus(), response.getData(), response.getErrors());
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountsId, transaction,
                     "Failed to delete approval resource", ex, request);
             return apiResponseMapper.getErrorResponse();

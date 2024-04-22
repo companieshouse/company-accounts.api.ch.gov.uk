@@ -23,7 +23,6 @@ public class CompanyAccountValidator extends BaseValidator {
     }
 
     public Errors validateCompanyAccount(Transaction transaction) throws DataException {
-
         Errors errors = new Errors();
 
         try {
@@ -37,9 +36,7 @@ public class CompanyAccountValidator extends BaseValidator {
                 errors.addError(new Error(dateOutsideRange, ERROR_PATH, LocationType.JSON_PATH.getValue(),
                         ErrorType.VALIDATION.getType()));
             }
-
         } catch (ServiceException e) {
-
             throw new DataException("Error fetching company profile", e);
         }
 

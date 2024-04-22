@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountDataEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.rest.SmallFull;
 import uk.gov.companieshouse.api.accounts.service.impl.SmallFullService;
@@ -19,8 +18,8 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,21 +38,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class SmallFullInterceptorTest {
-
     @Mock
     private SmallFull smallFull;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<SmallFull> responseObject;
 
     @Mock
     private Transaction transaction;
 
     @Mock
     private CompanyAccount companyAccount;
-
-    @Mock
-    private CompanyAccountDataEntity companyAccountDataEntity;
 
     @Mock
     private SmallFullService smallFullService;
@@ -79,8 +74,7 @@ class SmallFullInterceptorTest {
     private static final String NO_LINK_SMALL_FULL = "noLinkToSmallFull";
     private static final String URI = "../../../small-full";
 
-    private void setUp() throws NoSuchAlgorithmException {
-
+    public void setUpServletRequest() {
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put("transactionId", "5555");
         pathVariables.put("companyAccountId", "test");
@@ -96,8 +90,7 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns correctly when all is valid")
     void testReturnsCorrectlyOnValidConditions() throws NoSuchAlgorithmException, DataException {
-
-        setUp();
+        setUpServletRequest();
         when(smallFullService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);
@@ -115,8 +108,7 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName("Tests the interceptor returns false on a failed SmallFullEntity lookup")
     void testReturnsFalseForAFailedLookup() throws NoSuchAlgorithmException, DataException {
-
-        setUp();
+        setUpServletRequest();
         doThrow(mock(DataException.class)).when(smallFullService).find(anyString(), any(HttpServletRequest.class));
         assertFalse(smallFullInterceptor.preHandle(httpServletRequest, httpServletResponse,
                 new Object()));
@@ -125,7 +117,6 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor returns true when URI ends with small-full"))
     void testReturnTrueForURIEndsWithSmallFull() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("POST");
         when (httpServletRequest.getRequestURI()).thenReturn(URI);
 
@@ -136,7 +127,6 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor when transaction is null"))
     void testTransactionIsNull() throws NoSuchAlgorithmException {
-
         when(httpServletRequest.getMethod()).thenReturn("GET");
         doReturn(null).when(httpServletRequest).getAttribute(AttributeName.TRANSACTION.getValue());
 
@@ -149,7 +139,6 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName(("Test the interceptor when companyAccount is null"))
     void testCompanyAccountIsNull() throws NoSuchAlgorithmException {
-
         transaction = mock(Transaction.class);
         Map<String, String> pathVariables = new HashMap<>();
         pathVariables.put(TRANSACTION_ID, "5555");
@@ -168,8 +157,7 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName("Small Full interceptor - returns Not Found status")
     void smallFullInterceptorReturnsNotFoundStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpServletRequest();
         when(smallFullService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -182,8 +170,7 @@ class SmallFullInterceptorTest {
     @Test
     @DisplayName("Small Full interceptor - returns Bad Request status")
     void smallFullInterceptorReturnsBadRequestStatus() throws DataException, NoSuchAlgorithmException {
-
-        setUp();
+        setUpServletRequest();
         when(smallFullService.find(anyString(), any(HttpServletRequest.class))).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(smallFull);

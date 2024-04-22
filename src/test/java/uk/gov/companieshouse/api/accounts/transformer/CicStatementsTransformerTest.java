@@ -15,7 +15,6 @@ import uk.gov.companieshouse.api.accounts.model.rest.CicStatements;
 import uk.gov.companieshouse.api.accounts.model.rest.ReportStatements;
 
 class CicStatementsTransformerTest {
-
     private static final Map<String, String> LINKS = new HashMap<>();
     private static final Boolean HAS_COMPLETED_REPORT_STATEMENTS = true;
     private static final String ETAG = "etag";
@@ -25,12 +24,11 @@ class CicStatementsTransformerTest {
     private static final String DIRECTORS_REMUNERATION = "directorsRemuneration";
     private static final String TRANSFER_OF_ASSETS = "transferOfAssets";
 
-    private CicStatementsTransformer transformer = new CicStatementsTransformer();
+    private final CicStatementsTransformer transformer = new CicStatementsTransformer();
 
     @Test
     @DisplayName("REST to entity transform - fully populated object")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         CicStatements cicStatements = new CicStatements();
         cicStatements.setHasCompletedReportStatements(HAS_COMPLETED_REPORT_STATEMENTS);
         cicStatements.setEtag(ETAG);
@@ -65,7 +63,6 @@ class CicStatementsTransformerTest {
     @Test
     @DisplayName("REST to entity transform - no report statements")
     void testRestToEntityTransformerWithoutNestedReportStatements() {
-
         CicStatements cicStatements = new CicStatements();
         cicStatements.setHasCompletedReportStatements(HAS_COMPLETED_REPORT_STATEMENTS);
         cicStatements.setEtag(ETAG);
@@ -88,7 +85,6 @@ class CicStatementsTransformerTest {
     @Test
     @DisplayName("Entity to REST transform - fully populated object")
     void testEntityToRestTransformerWithFullyPopulatedObject() {
-
         CicStatementsDataEntity cicStatementsDataEntity = new CicStatementsDataEntity();
         cicStatementsDataEntity.setEtag(ETAG);
         cicStatementsDataEntity.setKind(KIND);
@@ -124,7 +120,6 @@ class CicStatementsTransformerTest {
     @Test
     @DisplayName("Entity to REST transform - no report statements")
     void testEntityToRestTransformerWithoutNestedReportStatements() {
-
         CicStatementsDataEntity cicStatementsDataEntity = new CicStatementsDataEntity();
         cicStatementsDataEntity.setEtag(ETAG);
         cicStatementsDataEntity.setKind(KIND);

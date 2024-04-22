@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.api.accounts.interceptor;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -9,13 +10,13 @@ import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
+public class OpenTransactionInterceptor implements HandlerInterceptor {
 
     private static final Logger LOGGER = LoggerFactory
         .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
@@ -25,8 +26,9 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
      * request is a GET request and if the transaction's status is open.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) {
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         String requestMethod = request.getMethod();
@@ -37,7 +39,8 @@ public class OpenTransactionInterceptor extends HandlerInterceptorAdapter {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
 
-            LOGGER.errorRequest(request, "OpenTransactionInterceptor error: no open transaction available", debugMap);
+            LOGGER.errorRequest(request, "OpenTransactionInterceptor error: no open transaction available",
+                    debugMap);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }

@@ -21,8 +21,8 @@ import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RelatedPartyTransactionsInterceptorTest {
-
     @Mock
     private RelatedPartyTransactionsServiceImpl relatedPartyTransactionsService;
 
@@ -55,7 +54,7 @@ class RelatedPartyTransactionsInterceptorTest {
     private RelatedPartyTransactions relatedPartyTransactions;
 
     @Mock
-    private ResponseObject responseObject;
+    private ResponseObject<RelatedPartyTransactions> responseObject;
 
     @Mock
     private SmallFull smallFull;
@@ -72,7 +71,6 @@ class RelatedPartyTransactionsInterceptorTest {
 
     @BeforeEach
     void setUp() {
-
         doReturn(transaction).when(request).getAttribute(AttributeName.TRANSACTION.getValue());
 
         Map<String, String> pathVariables = new HashMap<>();
@@ -84,7 +82,6 @@ class RelatedPartyTransactionsInterceptorTest {
     @Test
     @DisplayName("Related party transactions interceptor - success")
     void relatedPartyTransactionsInterceptorSuccess() throws DataException {
-
         when(relatedPartyTransactionsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(relatedPartyTransactions);
@@ -108,7 +105,6 @@ class RelatedPartyTransactionsInterceptorTest {
     @Test
     @DisplayName("Related party transactions interceptor - related party transactions not found")
     void relatedPartyTransactionsInterceptorRelatedPartyTransactionNotFound() throws DataException {
-
         when(relatedPartyTransactionsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.NOT_FOUND);
 
@@ -122,7 +118,6 @@ class RelatedPartyTransactionsInterceptorTest {
     @Test
     @DisplayName("Related party transactions interceptor - parent link not found")
     void relatedPartyTransactionsInterceptorParentLinkNotFound() throws DataException {
-
         when(relatedPartyTransactionsService.find(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
         when(responseObject.getStatus()).thenReturn(ResponseStatus.FOUND);
         when(responseObject.getData()).thenReturn(relatedPartyTransactions);
@@ -145,7 +140,6 @@ class RelatedPartyTransactionsInterceptorTest {
     @Test
     @DisplayName("Related party transactions interceptor - data exception")
     void relatedPartyTransactionsInterceptorDataException() throws DataException {
-
         when(relatedPartyTransactionsService.find(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         boolean preHandle = interceptor.preHandle(request, response, new Object());

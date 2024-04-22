@@ -29,7 +29,7 @@ import uk.gov.companieshouse.api.accounts.validation.CurrentPeriodValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,7 +48,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CurrentPeriodServiceTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -112,7 +111,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the successful creation of a currentPeriod resource")
     void canCreateCurrentPeriod() throws DataException {
-
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         when(currentPeriodTransformer.transform(currentPeriod)).thenReturn(currentPeriodEntity);
 
@@ -128,7 +126,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the duplicate key when creating a current period resource")
     void createSmallfullDuplicateKey() throws DataException {
-
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(duplicateKeyException);
@@ -145,7 +142,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the mongo exception when creating a current period")
     void createSmallFullMongoExceptionFailure() throws DataException {
-
         when(currentPeriodValidator.validateCurrentPeriod(currentPeriod, transaction)).thenReturn(errors);
         doReturn(currentPeriodEntity).when(currentPeriodTransformer).transform(any(CurrentPeriod.class));
         when(currentPeriodRepository.insert(currentPeriodEntity)).thenThrow(mongoException);
@@ -184,7 +180,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the successful removal of a current period link")
     void removeLinkSuccess() {
-
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(currentPeriodEntity));
 
         when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
@@ -200,7 +195,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the  removal of a current period link where the repository throws a Mongo exception")
     void removeLinkMongoException() {
-
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(currentPeriodEntity));
 
         when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
@@ -219,7 +213,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Tests the  removal of a current period link where the entity is not found")
     void removeLinkSmallFullEntityNotFound() {
-
         CurrentPeriodEntity currentPeriodEntity = null;
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(currentPeriodEntity));
 
@@ -234,7 +227,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Add link to current period resource- success")
     void addLinkSuccess() {
-
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(currentPeriodEntity));
 
         when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
@@ -253,7 +245,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Add link - not found")
     void addLinkNotFound() {
-
         CurrentPeriodEntity currentPeriodEntity = null;
 
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.ofNullable(currentPeriodEntity));
@@ -266,7 +257,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("Add link - Mongo exception")
     void addLinkMongoException() {
-
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenThrow(MongoException.class);
 
         assertThrows(DataException.class, () ->
@@ -277,7 +267,6 @@ class CurrentPeriodServiceTest {
     @Test
     @DisplayName("PUT - Failure - Previous Period - Mongo Exception")
     void canUpdatePreviousPeriodFailureMongoException() throws DataException {
-
         when(currentPeriodRepository.findById(RESOURCE_ID)).thenReturn(Optional.of(currentPeriodEntity));
         when(currentPeriodEntity.getData()).thenReturn(currentPeriodDataEntity);
         when(currentPeriodDataEntity.getLinks()).thenReturn(new HashMap<>());

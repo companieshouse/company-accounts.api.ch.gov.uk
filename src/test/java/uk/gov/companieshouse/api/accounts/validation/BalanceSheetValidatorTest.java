@@ -29,7 +29,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BalanceSheetValidatorTest {
-
     @Mock
     private CompanyService companyService;
 
@@ -71,7 +70,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate valid balance sheet - LBS filer")
     void validateValidBalanceSheetForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -120,7 +118,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate valid balance sheet - LBG filer")
     void validateValidBalanceSheetForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -165,7 +162,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet including members' funds - LBS filer")
     void validateBalanceSheetIncludingMembersFundsForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -217,7 +213,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet including called up share capital not paid - LBG filer")
     void validateBalanceSheetIncludingCalledUpShareCapitalNotPaidForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(1L);
 
@@ -264,7 +259,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet including capital and reserves - LBG filer")
     void validateBalanceSheetIncludingCapitalAndReservesForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -312,7 +306,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid fixed assets total - LBS filer")
     void validateBalanceSheetInvalidFixedAssetsTotalForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -362,7 +355,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid fixed assets total - LBG filer")
     void validateBalanceSheetInvalidFixedAssetsTotalForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -408,7 +400,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid current assets total - LBS filer")
     void validateBalanceSheetInvalidCurrentAssetsTotalForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -458,7 +449,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid current assets total - LBG filer")
     void validateBalanceSheetInvalidCurrentAssetsTotalForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -504,7 +494,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid net current assets - LBS filer")
     void validateBalanceSheetInvalidNetCurrentAssetsForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -554,7 +543,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid net current assets - LBG filer")
     void validateBalanceSheetInvalidNetCurrentAssetsForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -600,7 +588,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid total assets less liabilities - LBS filer")
     void validateBalanceSheetInvalidTotalAssetsLessLiabilitiesForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(4L);
 
@@ -650,7 +637,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid total assets less liabilities - LBG filer")
     void validateBalanceSheetInvalidTotalAssetsLessLiabilitiesForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -696,7 +682,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid total net assets - LBS filer")
     void validateBalanceSheetInvalidTotalNetAssetsForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -746,7 +731,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid total net assets - LBG filer")
     void validateBalanceSheetInvalidTotalNetAssetsForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -792,7 +776,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid shareholders' funds total - LBS filer")
     void validateBalanceSheetInvalidShareholdersFundsTotalForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -842,7 +825,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet shareholders' funds mismatch - LBS filer")
     void validateBalanceSheetWithShareholdersFundsMismatchForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -892,7 +874,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet without capital and reserves - LBS filer")
     void validateBalanceSheetWithoutCapitalAndReservesForLBSFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
         balanceSheet.setCalledUpShareCapitalNotPaid(3L);
 
@@ -934,7 +915,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet with invalid members' funds total - LBG filer")
     void validateBalanceSheetInvalidMembersFundsTotalForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -980,7 +960,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet members'' funds mismatch - LBG filer")
     void validateBalanceSheetWithMembersFundsMismatchForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();
@@ -1026,7 +1005,6 @@ class BalanceSheetValidatorTest {
     @Test
     @DisplayName("Validate balance sheet without members' funds - LBG filer")
     void validateBalanceSheetWithoutMembersFundsForLBGFiler() throws ServiceException, DataException {
-
         BalanceSheet balanceSheet = new BalanceSheet();
 
         FixedAssets fixedAssets = new FixedAssets();

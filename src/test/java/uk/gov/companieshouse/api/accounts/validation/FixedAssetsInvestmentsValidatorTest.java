@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import uk.gov.companieshouse.api.accounts.exception.DataException;
-import uk.gov.companieshouse.api.accounts.exception.ServiceException;
 import uk.gov.companieshouse.api.accounts.model.rest.BalanceSheet;
 import uk.gov.companieshouse.api.accounts.model.rest.FixedAssets;
 import uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod;
@@ -33,15 +32,13 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FixedAssetsInvestmentsValidatorTest {
-
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
     private static final String FIXED_ASSETS_DETAILS_PATH = "$.fixed_assets_investments.details";
     private static final String EMPTY_RESOURCE_NAME = "emptyResource";
     private static final String EMPTY_RESOURCE_VALUE = "empty_resource";
     private static final String MANDATORY_ELEMENT_MISSING_NAME = "mandatoryElementMissing";
-    private static final String MANDATORY_ELEMENT_MISSING_VALUE =
-            "mandatory_element_missing";
+    private static final String MANDATORY_ELEMENT_MISSING_VALUE = "mandatory_element_missing";
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -74,7 +71,6 @@ class FixedAssetsInvestmentsValidatorTest {
     @Test
     @DisplayName("Valid note submitted successfully")
     void testValidNote() throws DataException {
-
         mockValidBalanceSheetCurrentPeriod();
         mockValidBalanceSheetPreviousPeriod();
 
@@ -87,8 +83,7 @@ class FixedAssetsInvestmentsValidatorTest {
 
     @Test
     @DisplayName("Error thrown when note submitted with no fixed assets values in the balance sheet")
-    void testValidationWhenNoteSubmittedNoFixedAssetsInBalanceSheetValues() throws DataException,
-            ServiceException {
+    void testValidationWhenNoteSubmittedNoFixedAssetsInBalanceSheetValues() throws DataException {
         mockValidBalanceSheetCurrentPeriodWithoutFixedAssetsInvestments();
         mockValidBalanceSheetPreviousPeriodWithoutFixedAssetsInvestments();
         fixedAssetsInvestments.setDetails("test");
@@ -99,16 +94,13 @@ class FixedAssetsInvestmentsValidatorTest {
         errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                FIXED_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE)));
 
     }
 
     @Test
     @DisplayName("Valid note submitted when no balance sheet")
-    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException,
-            ServiceException {
-
+    void testValidationWhenNoteSubmittedNoBalanceSheetValues() throws DataException {
         fixedAssetsInvestments.setDetails("test");
         errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
         assertFalse(errors.hasErrors());
@@ -117,47 +109,39 @@ class FixedAssetsInvestmentsValidatorTest {
     
     @Test
     @DisplayName("Error thrown when empty note submitted when balance sheet values")
-    void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException, ServiceException {
-
+    void testValidationEmptyNoteWhenBalanceSheetValues() throws DataException {
         mockValidBalanceSheetCurrentPeriod();
         mockValidBalanceSheetPreviousPeriod();
 
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
         errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE,
-                FIXED_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE)));
 
     }
 
     @Test
     @DisplayName("Error thrown when empty resource submitted")
-    void testValidationEmptyResource() throws DataException, ServiceException {
-
-
-        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME,
-                EMPTY_RESOURCE_VALUE);
+    void testValidationEmptyResource() throws DataException {
+        ReflectionTestUtils.setField(validator, EMPTY_RESOURCE_NAME, EMPTY_RESOURCE_VALUE);
 
         errors = validator.validateSubmission(fixedAssetsInvestments, transaction, "", mockRequest);
 
         assertTrue(errors.hasErrors());
-        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE,
-                FIXED_ASSETS_DETAILS_PATH)));
+        assertTrue(errors.containsError(createError(EMPTY_RESOURCE_VALUE)));
 
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+    private Error createError(String error) {
+        return new Error(error, FixedAssetsInvestmentsValidatorTest.FIXED_ASSETS_DETAILS_PATH,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObject() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                        ResponseStatus.FOUND);
+                new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
@@ -178,7 +162,7 @@ class FixedAssetsInvestmentsValidatorTest {
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generateValidPreviousPeriodResponseObject() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
-               new ResponseObject<PreviousPeriod>(ResponseStatus.FOUND);
+               new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
@@ -199,8 +183,7 @@ class FixedAssetsInvestmentsValidatorTest {
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> generateValidCurrentPeriodResponseObjectWithoutFixedAssets() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod> currentPeriodResponseObject =
-                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod>(
-                        ResponseStatus.FOUND);
+                new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod currentPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.CurrentPeriod();
@@ -215,8 +198,7 @@ class FixedAssetsInvestmentsValidatorTest {
 
     private ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> generateValidPreviousPeriodResponseObjectWithoutFixedAssets() {
         ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod> previousPeriodResponseObject =
-                new ResponseObject<uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod>(
-                        ResponseStatus.FOUND);
+                new ResponseObject<>(ResponseStatus.FOUND);
 
         uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod previousPeriodTest =
                 new uk.gov.companieshouse.api.accounts.model.rest.PreviousPeriod();
@@ -230,8 +212,7 @@ class FixedAssetsInvestmentsValidatorTest {
     }
 
     private void mockValidBalanceSheetCurrentPeriod() throws DataException {
-        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find(
-                "", mockRequest);
+        doReturn(generateValidCurrentPeriodResponseObject()).when(mockCurrentPeriodService).find("", mockRequest);
     }
 
     private void mockValidBalanceSheetCurrentPeriodWithoutFixedAssetsInvestments() throws DataException {
@@ -240,8 +221,7 @@ class FixedAssetsInvestmentsValidatorTest {
     }
 
     private void mockValidBalanceSheetPreviousPeriod() throws DataException {
-        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).find(
-                "", mockRequest);
+        doReturn(generateValidPreviousPeriodResponseObject()).when(mockPreviousPeriodService).find("", mockRequest);
     }
 
     private void mockValidBalanceSheetPreviousPeriodWithoutFixedAssetsInvestments() throws DataException {

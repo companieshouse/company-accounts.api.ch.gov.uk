@@ -1,13 +1,6 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import java.security.NoSuchAlgorithmException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,29 +14,28 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
 import uk.gov.companieshouse.api.accounts.exception.PatchException;
-import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyAccountService;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseObject;
 import uk.gov.companieshouse.api.accounts.service.response.ResponseStatus;
-import uk.gov.companieshouse.api.accounts.transformer.CompanyAccountTransformer;
 import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.validation.CompanyAccountValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CompanyAccountControllerTest {
-
     @Mock
     private Transaction transactionMock;
-
-    @Mock
-    private CompanyAccountEntity companyAccountEntity;
-
-    @Mock
-    private CompanyAccountTransformer companyAccountTransformer;
 
     @Mock
     private CompanyAccount companyAccount;
@@ -66,7 +58,6 @@ class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the successful creation of an company account resource and patching transaction resource")
     void canCreateAccountSuccessfully() throws DataException, PatchException {
-
         Errors errors = new Errors(); //Empty.
         when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
 
@@ -76,14 +67,14 @@ class CompanyAccountControllerTest {
         when(companyAccountServiceMock
                 .create(companyAccount, transactionMock, httpServletRequestMock))
                 .thenReturn(responseObject);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<CompanyAccount> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(
                 responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = companyAccountController
+        ResponseEntity<?> response = companyAccountController
                 .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
@@ -95,7 +86,6 @@ class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to duplicate key error")
     void canCreateAccountWithDuplicateKeyError() throws DataException, PatchException {
-
         Errors errors = new Errors(); //Empty.
         when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
 
@@ -106,12 +96,12 @@ class CompanyAccountControllerTest {
                 .create(companyAccount, transactionMock, httpServletRequestMock))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         when(apiResponseMapper.map(responseObject.getStatus(),
                 responseObject.getData(), responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity response = companyAccountController
+        ResponseEntity<?> response = companyAccountController
                 .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
@@ -121,18 +111,16 @@ class CompanyAccountControllerTest {
     @Test
     @DisplayName("Tests the unsuccessful creation of an company account resource due to an internal error (MongoException")
     void canCreateAccountWithInternalError() throws DataException, PatchException {
-
         Errors errors = new Errors(); //Empty.
         when(validator.validateCompanyAccount(transactionMock)).thenReturn(errors);
 
         when(httpServletRequestMock.getAttribute("transaction")).thenReturn(transactionMock);
         doThrow(mock(DataException.class)).when(companyAccountServiceMock)
                 .create(companyAccount, transactionMock, httpServletRequestMock);
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(null);
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity response = companyAccountController
+        ResponseEntity<?> response = companyAccountController
                 .createCompanyAccount(companyAccount, httpServletRequestMock);
 
         assertNotNull(response);
@@ -141,11 +129,9 @@ class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the successful get of a company account resource")
-    void canGetCompanyAccount() throws NoSuchAlgorithmException {
-        doReturn(companyAccount).when(httpServletRequestMock)
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        ResponseEntity response = companyAccountController
-                .getCompanyAccount(httpServletRequestMock);
+    void canGetCompanyAccount() {
+        doReturn(companyAccount).when(httpServletRequestMock).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        ResponseEntity<?> response = companyAccountController.getCompanyAccount(httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -154,14 +140,12 @@ class CompanyAccountControllerTest {
 
     @Test
     @DisplayName("Tests the unsuccessful get of a company account resource")
-    void getCompanyAccountFail() throws NoSuchAlgorithmException {
-        doReturn(null).when(httpServletRequestMock)
-                .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        ResponseEntity response = companyAccountController
-                .getCompanyAccount(httpServletRequestMock);
+    void getCompanyAccountFail() {
+        doReturn(null).when(httpServletRequestMock).getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        ResponseEntity<?> response = companyAccountController.getCompanyAccount(httpServletRequestMock);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(null, response.getBody());
+        assertNull(response.getBody());
     }
 }

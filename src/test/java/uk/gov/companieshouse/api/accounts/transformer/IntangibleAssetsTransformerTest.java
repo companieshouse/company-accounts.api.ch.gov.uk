@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class IntangibleAssetsTransformerTest {
-
     private static final Long NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD = 1L;
     private static final Long NET_BOOK_VALUE_AT_END_OF_PREVIOUS_PERIOD = 2L;
     private static final Long COST_ADDITIONS = 3L;
@@ -49,12 +48,11 @@ class IntangibleAssetsTransformerTest {
     private static final String KIND = "kind";
     private static final Map<String, String> LINKS = new HashMap<>();
 
-    private IntangibleAssetsTransformer transformer = new IntangibleAssetsTransformer();
+    private final IntangibleAssetsTransformer transformer = new IntangibleAssetsTransformer();
 
     @Test
     @DisplayName("Test goodwill field map from the REST object when the nested cost object is not null")
     void TestGoodwillMapFromRestObjectCostNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setGoodwill(createIntangibleAssetsResource(false, true));
 
@@ -80,14 +78,12 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_INTANGIBLE_ASSETS, transformer.getAccountingNoteType());
     }
 
     @Test
     @DisplayName("Test goodwill field map from the REST object when the nested amortisation object is not null")
     void TestGoodwillMapFromRestObjectAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setGoodwill(createIntangibleAssetsResource(true, false));
 
@@ -113,7 +109,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the REST object when the nested amortisation and cost objects are not null")
     void TestGoodwillMapFromRestObjectCostAndAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setGoodwill(createIntangibleAssetsResource(false, false));
 
@@ -139,7 +134,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the REST object when the nested amortisation and cost objects are null")
     void TestGoodwillMapFromRestObjectCostAndAmortisationNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setGoodwill(createIntangibleAssetsResource(true, true));
 
@@ -164,7 +158,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested cost objects is not null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(false, true));
 
@@ -188,7 +181,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation object is not null")
     void TestOtherIntangibleAssetsMapFromRestObjectAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(true, false));
 
@@ -214,7 +206,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(false, false));
 
@@ -240,7 +231,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
     void TestOtherIntangibleAssetsMapFromRestObjectCostAndAmortisationNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setOtherIntangibleAssets(createIntangibleAssetsResource(true, true));
 
@@ -265,7 +255,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total field map from the REST object when the nested cost objects is not null")
     void TestTotalMapFromRestObjectCostNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setTotal(createIntangibleAssetsResource(false, true));
 
@@ -289,7 +278,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test total field map from the REST object when the nested amortisation object is not null")
     void TestTotalMapFromRestObjectAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setTotal(createIntangibleAssetsResource(true, false));
 
@@ -315,7 +303,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are not null")
     void TestTotalMapFromRestObjectCostAndAmortisationNotNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setTotal(createIntangibleAssetsResource(false, false));
 
@@ -341,7 +328,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the REST object when the nested amortisation and cost objects are null")
     void TestTotalMapFromRestObjectCostAndAmortisationNull() {
-
         IntangibleAssets intangibleassets = createIntangibleAssets();
         intangibleassets.setTotal(createIntangibleAssetsResource(true, true));
 
@@ -366,7 +352,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the entity object when the nested cost object is not null")
     void TestGoodwillMapFromEntityObjectCostNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(false, true));
 
@@ -395,7 +380,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the entity object when the nested amortisation object is not null")
     void TestGoodwillMapFromEntityObjectAmortisationNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(true, false));
 
@@ -424,7 +408,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the entity object when the nested amortisation and cost objects are not null")
     void TestGoodwillMapFromEntityObjectAmortisationAndCostNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(false, false));
 
@@ -455,7 +438,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test goodwill field map from the entity object when the nested amortisation and cost objects are null")
     void TestGoodwillMapFromEntityObjectAmortisationAndCostNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setGoodwill(createIntangibleAssetsResourceEntity(true, true));
 
@@ -482,7 +464,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the entity object when the nested cost object is not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectCostNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setOtherIntangibleAssets(createIntangibleAssetsResourceEntity(false, true));
 
@@ -511,7 +492,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation object is not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setOtherIntangibleAssets(createIntangibleAssetsResourceEntity(true, false));
 
@@ -540,7 +520,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation and cost objects are not null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationAndCostNotNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setOtherIntangibleAssets(createIntangibleAssetsResourceEntity(false, false));
 
@@ -571,7 +550,6 @@ class IntangibleAssetsTransformerTest {
     @Test
     @DisplayName("Test other intangible assets field map from the entity object when the nested amortisation and cost objects are null")
     void TestOtherIntangibleAssetsMapFromEntityObjectAmortisationAndCostNull() {
-
         IntangibleAssetsDataEntity intangibleAssetsDataEntity = createIntangibleAssetsDataEntity();
         intangibleAssetsDataEntity.setOtherIntangibleAssets(createIntangibleAssetsResourceEntity(true, true));
 
@@ -693,7 +671,6 @@ class IntangibleAssetsTransformerTest {
 
 
     private IntangibleAssets createIntangibleAssets() {
-
         IntangibleAssets intangibleAssets = new IntangibleAssets();
         intangibleAssets.setAdditionalInformation(ADDITIONAL_INFORMATION);
         intangibleAssets.setEtag(ETAG);
@@ -704,7 +681,6 @@ class IntangibleAssetsTransformerTest {
 
     private IntangibleAssetsResource createIntangibleAssetsResource(boolean costNull,
                                                                     boolean amortisationNull) {
-
         IntangibleAssetsResource intangibleAssetsResource = new IntangibleAssetsResource();
         intangibleAssetsResource
                 .setNetBookValueAtEndOfCurrentPeriod(NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD);
@@ -723,7 +699,6 @@ class IntangibleAssetsTransformerTest {
     }
 
     private Cost createCost() {
-
         Cost cost = new Cost();
         cost.setAdditions(COST_ADDITIONS);
         cost.setAtPeriodEnd(COST_AT_PERIOD_END);
@@ -735,7 +710,6 @@ class IntangibleAssetsTransformerTest {
     }
 
     private Amortisation createAmortisation() {
-
         Amortisation amortisation = new Amortisation();
         amortisation.setAtPeriodEnd(AMORTISATION_AT_PERIOD_END);
         amortisation.setAtPeriodStart(AMORTISATION_AT_PERIOD_START);
@@ -746,7 +720,6 @@ class IntangibleAssetsTransformerTest {
     }
 
     private IntangibleAssetsDataEntity createIntangibleAssetsDataEntity() {
-
         IntangibleAssetsDataEntity dataEntity = new IntangibleAssetsDataEntity();
         dataEntity.setAdditionalInformation(ADDITIONAL_INFORMATION);
         dataEntity.setEtag(ETAG);
@@ -757,7 +730,6 @@ class IntangibleAssetsTransformerTest {
 
     private IntangibleAssetsResourceEntity createIntangibleAssetsResourceEntity(boolean costNull,
                                                                                 boolean amortisationNull) {
-
         IntangibleAssetsResourceEntity intangibleAssetsResourceEntity = new IntangibleAssetsResourceEntity();
         intangibleAssetsResourceEntity
                 .setNetBookValueAtEndOfCurrentPeriod(NET_BOOK_VALUE_AT_END_OF_CURRENT_PERIOD);
@@ -776,7 +748,6 @@ class IntangibleAssetsTransformerTest {
     }
 
     private CostEntity createCostEntity() {
-
         CostEntity cost = new CostEntity();
         cost.setAdditions(COST_ADDITIONS);
         cost.setAtPeriodEnd(COST_AT_PERIOD_END);
@@ -788,7 +759,6 @@ class IntangibleAssetsTransformerTest {
     }
 
     private AmortisationEntity createAmortisationEntity() {
-
         AmortisationEntity amortisation = new AmortisationEntity();
         amortisation.setAtPeriodEnd(AMORTISATION_AT_PERIOD_END);
         amortisation.setAtPeriodStart(AMORTISATION_AT_PERIOD_START);

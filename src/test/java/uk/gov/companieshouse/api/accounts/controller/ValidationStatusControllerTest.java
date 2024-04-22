@@ -14,16 +14,17 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.model.validation.ValidationStatus;
 import uk.gov.companieshouse.api.accounts.service.ValidationStatusService;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidationStatusControllerTest {
-
     @Mock
     ValidationStatusService service;
 
@@ -38,25 +39,23 @@ class ValidationStatusControllerTest {
     @Test
     @DisplayName("Get - validation status with no errors | is valid")
     void getValidationStatusNoErrorsIsValid() throws DataException {
-
         Errors errors = new Errors(); //Empty, no errors.
 
         when(service.getValidationErrors(COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
 
         ResponseEntity<ValidationStatus> responseEntity = controller.getValidationStatus(COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        assertTrue(responseEntity.getBody().getIsValid());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertTrue(Objects.requireNonNull(responseEntity.getBody()).getIsValid());
     }
 
     @Test
     @DisplayName("Get - Throws Data exception")
     void getValidationStatusThrowsException() throws DataException {
-
         when(service.getValidationErrors(COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
         ResponseEntity<ValidationStatus> responseEntity = controller.getValidationStatus(COMPANY_ACCOUNTS_ID, request);
 
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 }

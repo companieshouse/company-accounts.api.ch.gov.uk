@@ -8,12 +8,10 @@ import uk.gov.companieshouse.api.accounts.model.entity.CompanyAccountEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CompanyAccount;
 
 @Component
-public class CompanyAccountTransformer implements
-        GenericTransformer<CompanyAccount, CompanyAccountEntity> {
+public class CompanyAccountTransformer implements GenericTransformer<CompanyAccount, CompanyAccountEntity> {
 
     @Override
     public CompanyAccountEntity transform(CompanyAccount companyAccount) {
-
         CompanyAccountDataEntity companyAccountDataEntity = new CompanyAccountDataEntity();
         BeanUtils.copyProperties(companyAccount, companyAccountDataEntity);
 
@@ -24,7 +22,6 @@ public class CompanyAccountTransformer implements
 
     @Override
     public CompanyAccount transform(CompanyAccountEntity entity) {
-
         CompanyAccount companyAccount = new CompanyAccount();
 
         CompanyAccountDataEntity companyAccountDataEntity = entity.getData();

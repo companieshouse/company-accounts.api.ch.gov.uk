@@ -19,7 +19,6 @@ public class RptTransactionValidator extends BaseValidator {
     }
 
     public Errors validateRptTransaction(RptTransaction rptTransaction, Transaction transaction) throws DataException {
-
         Errors errors = new Errors();
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);

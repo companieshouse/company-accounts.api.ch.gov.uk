@@ -8,12 +8,11 @@ import uk.gov.companieshouse.api.accounts.model.entity.smallfull.notes.currentas
 import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.currentassetsinvestments.CurrentAssetsInvestments;
 
 @Component
-public class CurrentAssetsInvestmentsTransformer implements NoteTransformer<CurrentAssetsInvestments, CurrentAssetsInvestmentsEntity> {
-
+public class CurrentAssetsInvestmentsTransformer implements NoteTransformer<CurrentAssetsInvestments,
+        CurrentAssetsInvestmentsEntity> {
 
     @Override
     public CurrentAssetsInvestmentsEntity transform(CurrentAssetsInvestments rest) {
-
         CurrentAssetsInvestmentsDataEntity currentAssetsInvestmentsDataEntity = new CurrentAssetsInvestmentsDataEntity();
         CurrentAssetsInvestmentsEntity currentAssetsInvestmentsEntity = new CurrentAssetsInvestmentsEntity();
 
@@ -43,7 +42,6 @@ public class CurrentAssetsInvestmentsTransformer implements NoteTransformer<Curr
 
     @Override
     public AccountingNoteType getAccountingNoteType() {
-
         return AccountingNoteType.SMALL_FULL_CURRENT_ASSETS_INVESTMENTS;
     }
 }

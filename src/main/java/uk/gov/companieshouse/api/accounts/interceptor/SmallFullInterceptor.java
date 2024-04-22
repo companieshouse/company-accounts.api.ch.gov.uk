@@ -3,12 +3,13 @@ package uk.gov.companieshouse.api.accounts.interceptor;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.exception.DataException;
@@ -30,10 +31,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * interceptor has not run prior to its own execution.
  */
 @Component
-public class SmallFullInterceptor extends HandlerInterceptorAdapter {
+public class SmallFullInterceptor implements HandlerInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     @Autowired
     private SmallFullService smallFullService;
@@ -52,8 +52,9 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) throws NoSuchAlgorithmException {
+    public boolean preHandle(HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) throws NoSuchAlgorithmException {
 
         //The GET and POST mappings are the same URL, on a POST the small-full will not exist as yet
         //so we do not want to run this interceptor.
@@ -68,8 +69,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         debugMap.put("request_method", request.getMethod());
         debugMap.put("request_id", requestId);
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
              LOGGER.errorRequest(request, "SmallFullInterceptor error: No transaction in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -84,12 +84,12 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
         debugMap.put("transaction_company_number", transaction.getCompanyNumber());
         debugMap.put("path_variables", pathVariables);
 
-        CompanyAccount companyAccount = (CompanyAccount) request
-            .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         if (companyAccount == null) {
 
-            LOGGER.errorRequest(request, "SmallFullInterceptor error: No company account in request session", debugMap);
+            LOGGER.errorRequest(request,
+                    "SmallFullInterceptor error: No company account in request session", debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
@@ -113,8 +113,7 @@ public class SmallFullInterceptor extends HandlerInterceptorAdapter {
 
         SmallFull smallFull = responseObject.getData();
 
-        String companyAccountLink = companyAccount.getLinks()
-            .get(CompanyAccountLinkType.SMALL_FULL.getLink());
+        String companyAccountLink = companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink());
         String smallFullSelf = smallFull.getLinks().get(SmallFullLinkType.SELF.getLink());
         if (!companyAccountLink.equals(smallFullSelf)) {
             LOGGER.debugRequest(request,

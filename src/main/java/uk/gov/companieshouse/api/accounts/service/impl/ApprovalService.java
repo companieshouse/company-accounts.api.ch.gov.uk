@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.ApprovalValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,12 +40,11 @@ public class ApprovalService implements ResourceService<Approval> {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public ApprovalService(
-        ApprovalRepository approvalRepository,
-        ApprovalTransformer approvalTransformer,
-        ApprovalValidator approvalValidator,
-        SmallFullService smallFullService,
-        KeyIdGenerator keyIdGenerator) {
+    public ApprovalService(ApprovalRepository approvalRepository,
+                           ApprovalTransformer approvalTransformer,
+                           ApprovalValidator approvalValidator,
+                           SmallFullService smallFullService,
+                           KeyIdGenerator keyIdGenerator) {
         this.approvalRepository = approvalRepository;
         this.approvalTransformer = approvalTransformer;
         this.approvalValidator = approvalValidator;
@@ -54,9 +53,10 @@ public class ApprovalService implements ResourceService<Approval> {
     }
 
     @Override
-    public ResponseObject<Approval> create(Approval rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Approval> create(Approval rest,
+                                           Transaction transaction,
+                                           String companyAccountId,
+                                           HttpServletRequest request) throws DataException {
         Errors errors = approvalValidator.validateApproval(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -72,26 +72,23 @@ public class ApprovalService implements ResourceService<Approval> {
         approvalEntity.setId(id);
 
         try {
-
             approvalRepository.insert(approvalEntity);
         } catch (DuplicateKeyException dke) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
-        smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.APPROVAL, selfLink, request);
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.APPROVAL, selfLink, request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, rest);
     }
 
     @Override
-    public ResponseObject<Approval> update(Approval rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Approval> update(Approval rest,
+                                           Transaction transaction,
+                                           String companyAccountId,
+                                           HttpServletRequest request) throws DataException {
         Errors errors = approvalValidator.validateApproval(rest, transaction, companyAccountId, request);
         if (errors.hasErrors()) {
             return new ResponseObject<>(ResponseStatus.VALIDATION_ERROR, errors);
@@ -107,10 +104,8 @@ public class ApprovalService implements ResourceService<Approval> {
         approvalEntity.setId(id);
 
         try {
-
             approvalRepository.save(approvalEntity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -118,14 +113,11 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Override
     public ResponseObject<Approval> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         ApprovalEntity approvalEntity;
 
         try {
-
             approvalEntity =  approvalRepository.findById(generateID(companyAccountsId)).orElse(null);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -139,23 +131,18 @@ public class ApprovalService implements ResourceService<Approval> {
 
     @Override
     public ResponseObject<Approval> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         String approvalId = generateID(companyAccountsId);
 
         try {
             if (approvalRepository.existsById(approvalId)) {
-
                 approvalRepository.deleteById(approvalId);
 
-                smallFullService
-                        .removeLink(companyAccountsId, SmallFullLinkType.APPROVAL, request);
+                smallFullService.removeLink(companyAccountsId, SmallFullLinkType.APPROVAL, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }

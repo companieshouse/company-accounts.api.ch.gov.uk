@@ -26,8 +26,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class DocumentGeneratorCaller {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String MIME_TYPE = "text/html";
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -38,9 +37,9 @@ public class DocumentGeneratorCaller {
     @Value("${documentgenerator.endpoint}")
     private String documentGeneratorEndPoint;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    private EnvironmentReader environmentReader;
+    private final EnvironmentReader environmentReader;
 
     @Autowired
     DocumentGeneratorCaller(RestTemplate restTemplate, EnvironmentReader environmentReader) {
@@ -49,11 +48,9 @@ public class DocumentGeneratorCaller {
     }
 
     public DocumentGeneratorResponse callDocumentGeneratorService(String accountsResourceUri) {
-
         DocumentGeneratorResponse documentGeneratorResponse = null;
 
         try {
-
             LOGGER.info("DocumentGeneratorCaller: Calling the document generator");
 
             ResponseEntity<DocumentGeneratorResponse> response =
@@ -65,7 +62,6 @@ public class DocumentGeneratorCaller {
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                 documentGeneratorResponse = response.getBody();
                 LOGGER.info("DocumentGeneratorCaller: Document generator call was successful");
-
             } else {
                 final Map<String, Object> debugMap = new HashMap<>();
                 debugMap.put("accounts id", accountsResourceUri);
@@ -111,7 +107,6 @@ public class DocumentGeneratorCaller {
      * @return {@link HttpEntity}
      */
     private HttpEntity createHttpEntity(String accountsResourceUri) {
-
         MultiValueMap<String, String> headers = createHeaders();
         DocumentGeneratorRequest request = createDocumentGeneratorRequest(accountsResourceUri);
 
@@ -137,8 +132,7 @@ public class DocumentGeneratorCaller {
     private String getApiKey() {
         String apiKey = environmentReader.getMandatoryString("CHS_API_KEY");
         if (apiKey.isEmpty()) {
-            throw new IllegalArgumentException(
-                "DocumentGeneratorCaller: API Key property has not been set");
+            throw new IllegalArgumentException("DocumentGeneratorCaller: API Key property has not been set");
         }
         return apiKey;
     }

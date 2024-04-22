@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 public class PackageResolver {
 
     public String getNotePackage(String accountType, String noteType) {
-
         return "." + getPackage(accountType) +
                 ".notes" +
                 "." + getPackage(noteType) +
@@ -15,12 +14,10 @@ public class PackageResolver {
     }
 
     private String getPackage(String input) {
-
         return input.replace("-", "").toLowerCase();
     }
 
     private String getClassName(String input) {
-
         return WordUtils.capitalizeFully(input.replace("-", " ")).replace(" ", "");
     }
 }

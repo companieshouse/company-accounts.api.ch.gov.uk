@@ -9,7 +9,7 @@ import uk.gov.companieshouse.api.accounts.service.ValidationStatusService;
 import uk.gov.companieshouse.api.accounts.validation.AccountsValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ValidationStatusServiceImpl implements ValidationStatusService {
@@ -19,7 +19,6 @@ public class ValidationStatusServiceImpl implements ValidationStatusService {
 
     @Override
     public Errors getValidationErrors(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         return accountsValidator.validate(transaction, companyAccountsId, request);

@@ -4,9 +4,9 @@ import static uk.gov.companieshouse.api.accounts.CompanyAccountsApplication.APPL
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,14 +53,13 @@ public class CompanyAccountController {
 
     @PostMapping
     public ResponseEntity createCompanyAccount(@Valid @RequestBody CompanyAccount companyAccount,
-        HttpServletRequest request) {
+                                               HttpServletRequest request) {
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             Errors errors = validator.validateCompanyAccount(transaction);
-            if(errors.hasErrors()) {
+            if (errors.hasErrors()) {
                 return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
             }
 
@@ -69,9 +68,7 @@ public class CompanyAccountController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (PatchException | DataException ex) {
-
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("transaction_id", transaction.getId());
             LOGGER.errorRequest(request, ex, debugMap);
@@ -86,7 +83,6 @@ public class CompanyAccountController {
         CompanyAccount companyAccount = (CompanyAccount) request
             .getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
         if (companyAccount == null) {
-
             LOGGER.error("CompanyAccountController error: No company account in request",
                 logContext);
             return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND).body(null);

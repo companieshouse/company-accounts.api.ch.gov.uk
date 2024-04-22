@@ -24,13 +24,13 @@ import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.accounts.validation.PreviousPeriodValidator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class PreviousPeriodService implements ResourceService<PreviousPeriod>
-, ParentService<PreviousPeriod, PreviousPeriodLinkType> {
+public class PreviousPeriodService implements ResourceService<PreviousPeriod>, ParentService<PreviousPeriod,
+        PreviousPeriodLinkType> {
 
     private PreviousPeriodRepository previousPeriodRepository;
 
@@ -43,12 +43,11 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public PreviousPeriodService(
-        PreviousPeriodRepository previousPeriodRepository,
-        PreviousPeriodTransformer previousPeriodTransformer,
-        PreviousPeriodValidator previousPeriodValidator,
-        SmallFullService smallFullService,
-        KeyIdGenerator keyIdGenerator) {
+    public PreviousPeriodService(PreviousPeriodRepository previousPeriodRepository,
+                                 PreviousPeriodTransformer previousPeriodTransformer,
+                                 PreviousPeriodValidator previousPeriodValidator,
+                                 SmallFullService smallFullService,
+                                 KeyIdGenerator keyIdGenerator) {
         this.previousPeriodRepository = previousPeriodRepository;
         this.previousPeriodTransformer = previousPeriodTransformer;
         this.previousPeriodValidator = previousPeriodValidator;
@@ -58,9 +57,9 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
 
     @Override
     public ResponseObject<PreviousPeriod> create(PreviousPeriod previousPeriod,
-        Transaction transaction, String companyAccountId, HttpServletRequest request)
-        throws DataException {
-
+                                                 Transaction transaction,
+                                                 String companyAccountId,
+                                                 HttpServletRequest request) throws DataException {
         Errors errors = previousPeriodValidator.validatePreviousPeriod(previousPeriod, transaction);
 
         if (errors.hasErrors()) {
@@ -82,17 +81,15 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
             throw new DataException(e);
         }
 
-        smallFullService
-            .addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD,
+        smallFullService.addLink(companyAccountId, SmallFullLinkType.PREVIOUS_PERIOD,
                     previousPeriod.getLinks().get(BasicLinkType.SELF.getLink()), request);
 
         return new ResponseObject<>(ResponseStatus.CREATED, previousPeriod);
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> find(String companyAccountsId, HttpServletRequest request)
-        throws DataException {
-
+    public ResponseObject<PreviousPeriod> find(String companyAccountsId,
+                                               HttpServletRequest request) throws DataException {
         PreviousPeriodEntity previousPeriodEntity;
 
         try {
@@ -110,20 +107,22 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     }
 
     @Override
-    public ResponseObject<PreviousPeriod> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
+    public ResponseObject<PreviousPeriod> delete(String companyAccountsId,
+                                                 HttpServletRequest request) throws DataException {
         return null;
     }
 
     @Override
-    public void addLink(String id, PreviousPeriodLinkType linkType, String link, HttpServletRequest request)
-            throws DataException {
+    public void addLink(String id,
+                        PreviousPeriodLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         String previousPeriodId = generateID(id);
         try {
         PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(previousPeriodId)
                 .orElseThrow(() -> new DataException(
                         "Failed to get previous period entity to add link"));
         previousPeriodEntity.getData().getLinks().put(linkType.getLink(), link);
-
 
             previousPeriodRepository.save(previousPeriodEntity);
         } catch (MongoException e) {
@@ -132,9 +131,9 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     }
 
     @Override
-    public void removeLink(String id, PreviousPeriodLinkType linkType, HttpServletRequest request)
-            throws DataException {
-
+    public void removeLink(String id,
+                           PreviousPeriodLinkType linkType,
+                           HttpServletRequest request) throws DataException {
         String smallFullId = generateID(id);
         PreviousPeriodEntity previousPeriodEntity = previousPeriodRepository.findById(smallFullId)
                 .orElseThrow(() -> new DataException(
@@ -148,9 +147,10 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         }
     }
 
-    public ResponseObject<PreviousPeriod> update(PreviousPeriod rest, Transaction transaction,
-        String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<PreviousPeriod> update(PreviousPeriod rest,
+                                                 Transaction transaction,
+                                                 String companyAccountId,
+                                                 HttpServletRequest request) throws DataException {
         Errors errors = previousPeriodValidator.validatePreviousPeriod(rest, transaction);
 
         if (errors.hasErrors()) {
@@ -158,8 +158,7 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
         }
 
         try {
-            PreviousPeriodEntity originalEntity =
-                    previousPeriodRepository.findById(generateID(companyAccountId))
+            PreviousPeriodEntity originalEntity = previousPeriodRepository.findById(generateID(companyAccountId))
                             .orElseThrow(() -> new DataException("No previous period found to update")); // We should never get here
 
             Map<String, String> links = originalEntity.getData().getLinks();
@@ -181,14 +180,12 @@ public class PreviousPeriodService implements ResourceService<PreviousPeriod>
     }
 
     private void populateMetadata(PreviousPeriod previousPeriod, Map<String, String> links) {
-
         previousPeriod.setLinks(links);
         previousPeriod.setEtag(GenerateEtagUtil.generateEtag());
         previousPeriod.setKind(Kind.PREVIOUS_PERIOD.getValue());
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> links = new HashMap<>();
         links.put(BasicLinkType.SELF.getLink(), createSelfLink(transaction, companyAccountsId));
         return links;

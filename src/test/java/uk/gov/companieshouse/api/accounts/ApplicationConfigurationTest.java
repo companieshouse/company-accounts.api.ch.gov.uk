@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 
 class ApplicationConfigurationTest {
-
 	private ApplicationConfiguration applicationConfiguration;
 	
 	@BeforeEach
