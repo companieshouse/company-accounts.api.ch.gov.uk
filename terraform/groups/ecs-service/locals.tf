@@ -8,7 +8,7 @@ locals {
   eric_port                  = "10000"
   docker_repo                = "company-accounts-api.ch.gov.uk"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority  = 55
+  lb_listener_rule_priority  = 58
   lb_listener_paths          = ["/transactions/*/company-accounts","/private/transactions/*/company-accounts"]
   healthcheck_path           = "/company-accounts/healthcheck" #healthcheck path for insolvency data api
   healthcheck_matcher        = "200"
