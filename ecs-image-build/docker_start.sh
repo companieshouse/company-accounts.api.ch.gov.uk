@@ -4,4 +4,4 @@
 
 PORT=8080
 
-exec java -jar -Dserver.port="${PORT}" "company-accounts-api.jar"
+exec java -jar -Dserver.port="${PORT}" "company-accounts.api.ch.gov.uk.jar"

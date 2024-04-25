@@ -124,9 +124,9 @@ variable "use_set_environment_files" {
   description = "Toggle default global and shared  environment files"
 }
 
-variable "insolvency_data_api_version" {
+variable "company_accounts_api_version" {
   type        = string
-  description = "The version of the insolvency-data-api container to run."
+  description = "The version of the company-accounts-api container to run."
 }
 
 variable "log_level" {
