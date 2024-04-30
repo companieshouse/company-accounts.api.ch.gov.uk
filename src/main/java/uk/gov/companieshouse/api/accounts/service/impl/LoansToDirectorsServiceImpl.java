@@ -22,7 +22,7 @@ import uk.gov.companieshouse.api.accounts.transformer.LoansToDirectorsTransforme
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,9 +49,10 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     private LoansToDirectorsAdditionalInformationService loansToDirectorsAdditionalInformationService;
 
     @Override
-    public ResponseObject<LoansToDirectors> create(LoansToDirectors rest, Transaction transaction,
-            String companyAccountsId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<LoansToDirectors> create(LoansToDirectors rest,
+                                                   Transaction transaction,
+                                                   String companyAccountsId,
+                                                   HttpServletRequest request) throws DataException {
         setMetadataOnRestObject(rest, transaction, companyAccountsId);
 
         LoansToDirectorsEntity entity = transformer.transform(rest);
@@ -60,10 +61,8 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -75,8 +74,7 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     @Override
     public ResponseObject<LoansToDirectors> find(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                 HttpServletRequest request) throws DataException {
         LoansToDirectorsEntity entity;
 
         try {
@@ -93,56 +91,48 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
     @Override
     public ResponseObject<LoansToDirectors> delete(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                   HttpServletRequest request) throws DataException {
         String id = generateID(companyAccountsId);
 
-        Transaction transaction = (Transaction) request
-                .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         loanService.deleteAll(transaction, companyAccountsId, request);
         loansToDirectorsAdditionalInformationService.delete(companyAccountsId, request);
 
         try {
             if (repository.existsById(id)) {
-
                 repository.deleteById(id);
-
                 smallFullService.removeLink(companyAccountsId, SmallFullLinkType.LOANS_TO_DIRECTORS, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void addLink(String id, LoansToDirectorsLinkType linkType, String link,
-            HttpServletRequest request) throws DataException {
-
+    public void addLink(String id,
+                        LoansToDirectorsLinkType linkType,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         String resourceId = generateID(id);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
-                .orElseThrow(() -> new DataException(
-                        "Failed to find loans to directors entity to which to add link"));
+                .orElseThrow(() -> new DataException("Failed to find loans to directors entity to which to add link"));
         entity.getData().getLinks().put(linkType.getLink(), link);
 
         try {
             repository.save(entity);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void removeLink(String id, LoansToDirectorsLinkType linkType, HttpServletRequest request)
-            throws DataException {
-
+    public void removeLink(String id,
+                           LoansToDirectorsLinkType linkType,
+                           HttpServletRequest request) throws DataException {
         String resourceId = generateID(id);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -151,40 +141,36 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
 
         try {
             repository.save(entity);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void addLoan(String companyAccountsId, String loanId, String link,
-            HttpServletRequest request) throws DataException {
-
+    public void addLoan(String companyAccountsId,
+                        String loanId,
+                        String link,
+                        HttpServletRequest request) throws DataException {
         String resourceId = generateID(companyAccountsId);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
                         "Failed to find loans to directors entity to which to add loan"));
         if (entity.getData().getLoans() == null) {
-
             entity.getData().setLoans(new HashMap<>());
         }
         entity.getData().getLoans().put(loanId, link);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     @Override
-    public void removeLoan(String companyAccountsId, String loanId, HttpServletRequest request)
-            throws DataException {
-
+    public void removeLoan(String companyAccountsId,
+                           String loanId,
+                           HttpServletRequest request) throws DataException {
         String resourceId = generateID(companyAccountsId);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -193,18 +179,14 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         entity.getData().getLoans().remove(loanId);
 
         try {
-
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
     }
 
-    public void removeAllLoans(String companyAccountsId)
-            throws DataException {
-
+    public void removeAllLoans(String companyAccountsId) throws DataException {
         String resourceId = generateID(companyAccountsId);
         LoansToDirectorsEntity entity = repository.findById(resourceId)
                 .orElseThrow(() -> new DataException(
@@ -215,14 +197,11 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
         try {
             repository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
-
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
@@ -230,14 +209,12 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> map = new HashMap<>();
         map.put(LoansToDirectorsLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
     private void setMetadataOnRestObject(LoansToDirectors rest, Transaction transaction, String companyAccountsId) {
-
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.LOANS_TO_DIRECTORS.getValue());
@@ -245,12 +222,10 @@ public class LoansToDirectorsServiceImpl implements ParentService<LoansToDirecto
     }
 
     private String generateID(String companyAccountId) {
-
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.LOANS_TO_DIRECTORS.getName());
     }
 
     private String getSelfLinkFromRestEntity(LoansToDirectors rest) {
-
         return rest.getLinks().get(LoansToDirectorsLinkType.SELF.getLink());
     }
 }

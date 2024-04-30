@@ -17,21 +17,19 @@ public class OffBalanceSheetArrangementsTransformer implements NoteTransformer<O
 
     @Override
     public OffBalanceSheetArrangementsEntity transform(OffBalanceSheetArrangements rest) {
-
-        OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity = new OffBalanceSheetArrangementsDataEntity();
+        OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity =
+                new OffBalanceSheetArrangementsDataEntity();
         OffBalanceSheetArrangementsEntity offBalanceSheetArrangementsEntity = new OffBalanceSheetArrangementsEntity();
 
         BeanUtils.copyProperties(rest, offBalanceSheetArrangementsDataEntity);
 
-       offBalanceSheetArrangementsEntity.setData(offBalanceSheetArrangementsDataEntity);
+        offBalanceSheetArrangementsEntity.setData(offBalanceSheetArrangementsDataEntity);
 
         return offBalanceSheetArrangementsEntity;
-
     }
 
     @Override
     public OffBalanceSheetArrangements transform(OffBalanceSheetArrangementsEntity entity) {
-
         OffBalanceSheetArrangements offBalanceSheetArrangements = new OffBalanceSheetArrangements();
 
         OffBalanceSheetArrangementsDataEntity offBalanceSheetArrangementsDataEntity;
@@ -43,6 +41,5 @@ public class OffBalanceSheetArrangementsTransformer implements NoteTransformer<O
         BeanUtils.copyProperties(offBalanceSheetArrangementsDataEntity, offBalanceSheetArrangements);
 
         return offBalanceSheetArrangements;
-
     }
 }

@@ -20,17 +20,16 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.fixedassets
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class FixedAssetsInvestmentsTransformerTest {
-
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     
-    private FixedAssetsInvestmentsTransformer fixedAssetsInvestmentsTransformer = new FixedAssetsInvestmentsTransformer();
+    private final FixedAssetsInvestmentsTransformer fixedAssetsInvestmentsTransformer =
+            new FixedAssetsInvestmentsTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
     void testTransformerWithEmptyRestObject() {
-
         FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = fixedAssetsInvestmentsTransformer
             .transform(new FixedAssetsInvestments());
 
@@ -42,7 +41,6 @@ class FixedAssetsInvestmentsTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         FixedAssetsInvestments fixedAssetsInvestments = new FixedAssetsInvestments();
 
         fixedAssetsInvestments.setDetails(DETAILS);
@@ -61,9 +59,8 @@ class FixedAssetsInvestmentsTransformerTest {
     }
 
     @Test
-    @DisplayName("Tests transformer with empty entity object returns null values ")
+    @DisplayName("Tests transformer with empty entity object returns null values")
     void testTransformerWithEmptyEntityObject() {
-
         FixedAssetsInvestments fixedAssetsInvestments = fixedAssetsInvestmentsTransformer
             .transform(new FixedAssetsInvestmentsEntity());
 
@@ -75,7 +72,6 @@ class FixedAssetsInvestmentsTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         FixedAssetsInvestmentsEntity fixedAssetsInvestmentsEntity = new FixedAssetsInvestmentsEntity();
         FixedAssetsInvestmentsDataEntity fixedAssetsInvestmentsDataEntity = new FixedAssetsInvestmentsDataEntity();
 
@@ -99,7 +95,6 @@ class FixedAssetsInvestmentsTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_FIXED_ASSETS_INVESTMENTS,
                 fixedAssetsInvestmentsTransformer.getAccountingNoteType());
     }

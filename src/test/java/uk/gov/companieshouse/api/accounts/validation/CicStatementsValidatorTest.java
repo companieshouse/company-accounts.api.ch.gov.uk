@@ -22,7 +22,6 @@ import uk.gov.companieshouse.api.accounts.service.CompanyService;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CicStatementsValidatorTest {
-
     @Mock
     private CicStatements cicStatements;
 
@@ -32,7 +31,7 @@ class CicStatementsValidatorTest {
     @Mock
     private CompanyService mockCompanyService;
 
-    private CicStatementsValidator validator = new CicStatementsValidator(mockCompanyService);
+    private final CicStatementsValidator validator = new CicStatementsValidator(mockCompanyService);
 
     private static final String CONSULTATION_WITH_STAKEHOLDERS = "consultationWithStakeholders";
     private static final String DIRECTORS_REMUNERATION = "directorsRemuneration";
@@ -53,7 +52,6 @@ class CicStatementsValidatorTest {
     @Test
     @DisplayName("Validate update of CIC statements - all fields provided")
     void validateUpdateOfCicStatementsWithAllFieldsProvided() {
-
         mockCicStatementsFieldsPopulated(true, true, true);
 
         Errors errors = validator.validateCicStatementsUpdate(cicStatements);
@@ -64,7 +62,6 @@ class CicStatementsValidatorTest {
     @Test
     @DisplayName("Validate update of CIC statements - consultation with stakeholders not provided")
     void validateUpdateOfCicStatementsConsultationWithStakeholdersNotProvided() {
-
         mockCicStatementsFieldsPopulated(false, true, true);
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
@@ -72,13 +69,13 @@ class CicStatementsValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE, CONSULTATION_WITH_STAKEHOLDERS_PATH)));
+        assertTrue(errors.containsError(createError(
+                CONSULTATION_WITH_STAKEHOLDERS_PATH)));
     }
 
     @Test
     @DisplayName("Validate update of CIC statements - directors' remuneration not provided")
     void validateUpdateOfCicStatementsDirectorsRemunerationNotProvided() {
-
         mockCicStatementsFieldsPopulated(true, false, true);
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
@@ -86,13 +83,12 @@ class CicStatementsValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE, DIRECTORS_REMUNERATION_PATH)));
+        assertTrue(errors.containsError(createError(DIRECTORS_REMUNERATION_PATH)));
     }
 
     @Test
     @DisplayName("Validate update of CIC statements - transfer of assets not provided")
     void validateUpdateOfCicStatementsTransferOfAssetsNotProvided() {
-
         mockCicStatementsFieldsPopulated(true, true, false);
         ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
@@ -100,13 +96,12 @@ class CicStatementsValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(MANDATORY_ELEMENT_MISSING_VALUE, TRANSFER_OF_ASSETS_PATH)));
+        assertTrue(errors.containsError(createError(TRANSFER_OF_ASSETS_PATH)));
     }
 
     private void mockCicStatementsFieldsPopulated(boolean hasConsultationWithStakeholders,
                                                   boolean hasDirectorsRemuneration,
                                                   boolean hasTransferOfAssets) {
-
         when(cicStatements.getReportStatements()).thenReturn(reportStatements);
 
         when(reportStatements.getConsultationWithStakeholders()).thenReturn(
@@ -115,12 +110,11 @@ class CicStatementsValidatorTest {
         when(reportStatements.getDirectorsRemuneration()).thenReturn(
                 hasDirectorsRemuneration ? DIRECTORS_REMUNERATION : null);
 
-        when(reportStatements.getTransferOfAssets()).thenReturn(
-                hasTransferOfAssets? TRANSFER_OF_ASSETS : null);
+        when(reportStatements.getTransferOfAssets()).thenReturn(hasTransferOfAssets? TRANSFER_OF_ASSETS : null);
     }
 
-    private Error createError(String error, String path) {
-
-        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
+    private Error createError(String path) {
+        return new Error(CicStatementsValidatorTest.MANDATORY_ELEMENT_MISSING_VALUE, path,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

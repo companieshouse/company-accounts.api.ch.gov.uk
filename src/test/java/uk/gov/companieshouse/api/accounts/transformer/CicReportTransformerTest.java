@@ -12,17 +12,15 @@ import uk.gov.companieshouse.api.accounts.model.entity.CicReportEntity;
 import uk.gov.companieshouse.api.accounts.model.rest.CicReport;
 
 class CicReportTransformerTest {
-
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
     private static final Map<String, String> LINKS = new HashMap<>();
 
-    private CicReportTransformer transformer = new CicReportTransformer();
+    private final CicReportTransformer transformer = new CicReportTransformer();
 
     @Test
     @DisplayName("Rest to entity transform")
     void restToEntityTransform() {
-
         CicReport cicReport = new CicReport();
         cicReport.setEtag(ETAG);
         cicReport.setKind(KIND);
@@ -41,7 +39,6 @@ class CicReportTransformerTest {
     @Test
     @DisplayName("Entity to rest transform")
     void entityToRestTransform() {
-
         CicReportDataEntity cicReportDataEntity = new CicReportDataEntity();
         cicReportDataEntity.setEtag(ETAG);
         cicReportDataEntity.setKind(KIND);

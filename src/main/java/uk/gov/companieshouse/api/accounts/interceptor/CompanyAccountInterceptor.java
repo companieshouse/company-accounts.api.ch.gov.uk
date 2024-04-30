@@ -3,12 +3,13 @@ package uk.gov.companieshouse.api.accounts.interceptor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import uk.gov.companieshouse.api.accounts.AttributeName;
 import uk.gov.companieshouse.api.accounts.CompanyAccountsApplication;
 import uk.gov.companieshouse.api.accounts.Kind;
@@ -32,10 +33,9 @@ import uk.gov.companieshouse.logging.LoggerFactory;
  * own execution.
  */
 @Component
-public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
+public class CompanyAccountInterceptor implements HandlerInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
     @Autowired
     private CompanyAccountService companyAccountService;
 
@@ -55,8 +55,9 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-        Object handler) {
+    public boolean preHandle(HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) {
 
         String requestId = request.getHeader("X-Request-Id");
 
@@ -67,13 +68,13 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         Transaction transaction = (Transaction) request
             .getAttribute(AttributeName.TRANSACTION.getValue());
         if (transaction == null) {
-            LOGGER.errorRequest(request, "CompanyAccountInterceptor error: no transaction in request session", debugMap);
+            LOGGER.errorRequest(request, "CompanyAccountInterceptor error: no transaction in request session",
+                    debugMap);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return false;
         }
 
-        Map<String, String> pathVariables = (Map) request
-            .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        Map<String, String> pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         String companyAccountId = pathVariables.get("companyAccountId");
 
         debugMap.put("transaction_id", transaction.getId());
@@ -97,9 +98,8 @@ public class CompanyAccountInterceptor extends HandlerInterceptorAdapter {
         }
 
         if (!responseObject.getStatus().equals(ResponseStatus.FOUND)) {
-            LOGGER.debugRequest(request,
-                "CompanyAccountInterceptor error: Failed to retrieve a CompanyAccount.",
-                debugMap);
+            LOGGER.debugRequest(request, "CompanyAccountInterceptor error: Failed to retrieve a CompanyAccount.",
+                    debugMap);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return false;
         }

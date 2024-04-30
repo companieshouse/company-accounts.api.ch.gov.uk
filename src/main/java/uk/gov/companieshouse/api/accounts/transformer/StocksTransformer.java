@@ -16,7 +16,6 @@ public class StocksTransformer implements NoteTransformer<Stocks, StocksEntity> 
 
     @Override
     public StocksEntity transform(Stocks rest) {
-
         StocksDataEntity stocksDataEntity = new StocksDataEntity();
         StocksEntity stocksEntity = new StocksEntity();
 
@@ -41,7 +40,6 @@ public class StocksTransformer implements NoteTransformer<Stocks, StocksEntity> 
 
     @Override
     public Stocks transform(StocksEntity entity) {
-
         Stocks stocks = new Stocks();
         StocksDataEntity stocksDataEntity;
 

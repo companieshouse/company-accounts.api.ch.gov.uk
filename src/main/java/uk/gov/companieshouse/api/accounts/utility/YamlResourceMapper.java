@@ -23,14 +23,9 @@ public class YamlResourceMapper {
      * @return an object containing the data from a yaml file
      */
     public <T> T fetchObjectFromYaml(String resourceFilePath, Class<T> clazz) {
-
         try {
-            return MAPPER.readValue(
-                    getClass().getClassLoader()
-                            .getResourceAsStream(resourceFilePath), clazz);
-
+            return MAPPER.readValue(getClass().getClassLoader().getResourceAsStream(resourceFilePath), clazz);
         } catch (IOException e) {
-
             throw new YamlMappingException("Could not fetch yaml resource for path: [" + resourceFilePath + "] and class [" + clazz + "]", e);
         }
     }

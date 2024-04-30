@@ -14,13 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RelatedPartyTransactionsTransformerTest {
-
     private final RelatedPartyTransactionsTransformer transformer = new RelatedPartyTransactionsTransformer();
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         RelatedPartyTransactions relatedPartyTransactions = new RelatedPartyTransactions();
 
         RelatedPartyTransactionsEntity relatedPartyTransactionsEntity = transformer.transform(relatedPartyTransactions);

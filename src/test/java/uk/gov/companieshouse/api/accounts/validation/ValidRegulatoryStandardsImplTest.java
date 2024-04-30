@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidRegulatoryStandardsImplTest {
-
     @Mock
     private ConstraintValidatorContext context;
 
@@ -26,36 +25,31 @@ class ValidRegulatoryStandardsImplTest {
 
     private ValidRegulatoryStandardsImpl regulatoryStandards;
     @BeforeEach
-    private void setup() {
-
+    public void setUp() {
          regulatoryStandards = new ValidRegulatoryStandardsImpl();
     }
 
     @Test
     @DisplayName("Test when regulatory standard is FRS101")
     void testRegulatoryStandardFRS101() {
-
         assertTrue(regulatoryStandards.isValid(FRS101, context));
     }
 
     @Test
     @DisplayName("Test when regulatory standard is FRS102")
     void testRegulatoryStandardFRS102() {
-
         assertTrue(regulatoryStandards.isValid(FRS102, context));
     }
 
     @Test
     @DisplayName("Test when regulatory standard is null")
     void testRegulatoryStandardNull() {
-
         assertTrue(regulatoryStandards.isValid(null, context));
     }
 
     @Test
     @DisplayName("Test when regulatory standard is other than FRS101 or FRS102")
     void testRegulatoryStandardOther() {
-
         assertFalse(regulatoryStandards.isValid(OTHER_STANDARD, context));
     }
 }

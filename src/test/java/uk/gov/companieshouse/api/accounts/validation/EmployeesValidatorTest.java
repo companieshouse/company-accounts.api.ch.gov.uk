@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,19 +20,17 @@ import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.service.CompanyService;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeesValidatorTest {
-
     private static final String EMPLOYEES_PATH = "$.employees";
-    private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH = EMPLOYEES_PATH +
-            ".previous_period";
+    private static final String EMPLOYEES_PREVIOUS_PERIOD_PATH = EMPLOYEES_PATH + ".previous_period";
     private static final String UNEXPECTED_DATA_NAME = "unexpectedData";
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
@@ -70,7 +68,6 @@ class EmployeesValidatorTest {
     @Test
     @DisplayName("Note validation with valid note for first year filer")
     void testSuccessfulFirstYearNoteValidation() throws DataException, ServiceException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -88,8 +85,7 @@ class EmployeesValidatorTest {
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(true);
 
-        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME,
-                MANDATORY_ELEMENT_MISSING_VALUE);
+        ReflectionTestUtils.setField(validator, MANDATORY_ELEMENT_MISSING_NAME, MANDATORY_ELEMENT_MISSING_VALUE);
 
         errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
@@ -105,19 +101,16 @@ class EmployeesValidatorTest {
     @Test
     @DisplayName("Note validation single year filer when previous period provided")
     void testEmptyResourceValidationSingleYearFiler() throws DataException, ServiceException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-                UNEXPECTED_DATA_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
         errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                EMPLOYEES_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, EMPLOYEES_PREVIOUS_PERIOD_PATH)));
 
         assertEquals(1, errors.getErrorCount());
     }
@@ -125,7 +118,6 @@ class EmployeesValidatorTest {
     @Test
     @DisplayName("Note validation with valid note for multiple year filer")
     void testSuccessfulMultipleYearNoteValidation() throws DataException, ServiceException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
@@ -139,26 +131,22 @@ class EmployeesValidatorTest {
     @Test
     @DisplayName("Error returned for first year filer if previous period provided in note")
     void testUnexpectedDataErrorReturnedForFirstYearFiler() throws ServiceException, DataException {
-
         createValidNoteCurrentPeriod();
         createValidNotePreviousPeriod();
 
-        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME,
-                UNEXPECTED_DATA_VALUE);
+        ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
         when(companyService.isMultipleYearFiler(transaction)).thenReturn(false);
 
         errors = validator.validateSubmission(employees, transaction, COMPANY_ACCOUNTS_ID, request);
 
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE,
-                EMPLOYEES_PREVIOUS_PERIOD_PATH)));
+        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, EMPLOYEES_PREVIOUS_PERIOD_PATH)));
     }
 
     @Test
     @DisplayName("Data exception thrown when company service API call fails")
     void testDataExceptionThrown() throws ServiceException {
-
         when(companyService.isMultipleYearFiler(transaction)).thenThrow(serviceException);
 
         assertThrows(DataException.class,
@@ -168,31 +156,25 @@ class EmployeesValidatorTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_EMPLOYEES, validator.getAccountingNoteType());
     }
 
-    private Employees createValidNoteCurrentPeriod() {
+    private void createValidNoteCurrentPeriod() {
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setAverageNumberOfEmployees(5L);
         currentPeriod.setDetails("test");
 
         employees.setCurrentPeriod(currentPeriod);
-
-        return employees;
     }
 
-    private Employees createValidNotePreviousPeriod() {
+    private void createValidNotePreviousPeriod() {
         PreviousPeriod previousPeriod = new PreviousPeriod();
         previousPeriod.setAverageNumberOfEmployees(10L);
 
         employees.setPreviousPeriod(previousPeriod);
-
-        return employees;
     }
 
     private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
-                ErrorType.VALIDATION.getType());
+        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

@@ -11,7 +11,6 @@ public class LoansToDirectorsTransformer implements GenericTransformer<LoansToDi
 
     @Override
     public LoansToDirectorsEntity transform(LoansToDirectors rest) {
-
         LoansToDirectorsDataEntity loansToDirectorsDataEntity = new LoansToDirectorsDataEntity();
         BeanUtils.copyProperties(rest, loansToDirectorsDataEntity);
 
@@ -22,7 +21,6 @@ public class LoansToDirectorsTransformer implements GenericTransformer<LoansToDi
 
     @Override
     public LoansToDirectors transform(LoansToDirectorsEntity entity) {
-
         LoansToDirectors loansToDirectors = new LoansToDirectors();
 
         LoansToDirectorsDataEntity loansToDirectorsDataEntity = entity.getData();

@@ -13,9 +13,9 @@ public enum AccountType {
         this.companyAccountLinkType = companyAccountLinkType;
     }
 
-    private String type;
+    private final String type;
 
-    private CompanyAccountLinkType companyAccountLinkType;
+    private final CompanyAccountLinkType companyAccountLinkType;
 
     public String getType() {
         return type;

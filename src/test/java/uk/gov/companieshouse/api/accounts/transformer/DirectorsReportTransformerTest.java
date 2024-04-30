@@ -18,23 +18,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorsReportTransformerTest {
-
     private static final Map<String, String> DIRECTORS = new HashMap<>();
 
     private static final String DIRECTOR_ID = "directorId";
     private static final String DIRECTOR_LINK = "directorLink";
 
-    private DirectorsReportTransformer transformer = new DirectorsReportTransformer();
+    private final DirectorsReportTransformer transformer = new DirectorsReportTransformer();
 
     @BeforeEach
-    private void setup() {
+    public void setUp() {
         DIRECTORS.put(DIRECTOR_ID, DIRECTOR_LINK);
     }
 
     @Test
     @DisplayName("Transform rest object to entity")
     void restToEntity() {
-
         DirectorsReport directorsReport = new DirectorsReport();
         directorsReport.setDirectors(DIRECTORS);
 

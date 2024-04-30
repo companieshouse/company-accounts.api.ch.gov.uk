@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StocksTransformerTest {
-
     private static final Long PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD = 1L;
     private static final Long STOCKS_CURRENT_PERIOD = 2L;
     private static final Long TOTAL_CURRENT_PERIOD = 3L;
@@ -35,14 +34,12 @@ class StocksTransformerTest {
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private StocksTransformer stocksTransformer = new StocksTransformer();
+    private final StocksTransformer stocksTransformer = new StocksTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
     void testTransformerWithEmptyRestObject() {
-
-        StocksEntity stocksEntity = stocksTransformer
-                .transform(new Stocks());
+        StocksEntity stocksEntity = stocksTransformer.transform(new Stocks());
 
         assertNotNull(stocksEntity);
         assertNull(stocksEntity.getData().getEtag());
@@ -52,7 +49,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
     void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
-
         Stocks stocks = new Stocks();
 
         stocks.setEtag(ETAG);
@@ -60,8 +56,7 @@ class StocksTransformerTest {
         stocks.setLinks(new HashMap<>());
         stocks.setCurrentPeriod(createCurrentPeriodRestObject());
 
-        StocksEntity stocksEntity = stocksTransformer
-                .transform(stocks);
+        StocksEntity stocksEntity = stocksTransformer.transform(stocks);
 
         assertNotNull(stocksEntity);
         assertNull(stocksEntity.getData().getPreviousPeriodEntity());
@@ -72,7 +67,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         Stocks stocks = new Stocks();
 
         stocks.setEtag(ETAG);
@@ -90,7 +84,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     void testTransformerWithEmptyEntityObject() {
-
         Stocks stocks = stocksTransformer.transform(new StocksEntity());
 
         assertNotNull(stocks);
@@ -101,7 +94,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Entity Object")
     void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
-
         StocksEntity stocksEntity = new StocksEntity();
         StocksDataEntity stocksDataEntity = new StocksDataEntity();
 
@@ -124,7 +116,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         StocksEntity stocksEntity = new StocksEntity();
         StocksDataEntity stocksDataEntity = new StocksDataEntity();
 
@@ -148,7 +139,6 @@ class StocksTransformerTest {
     @Test
     @DisplayName("transformer returns stocks note")
     void testStockNoteReturned() {
-
         AccountingNoteType noteType = AccountingNoteType.SMALL_FULL_STOCKS;
 
         assertEquals(noteType, stocksTransformer.getAccountingNoteType());
@@ -156,7 +146,6 @@ class StocksTransformerTest {
 
 
     private PreviousPeriodEntity createPreviousPeriodEntityObject() {
-
         PreviousPeriodEntity previousPeriodEntity = new PreviousPeriodEntity();
         previousPeriodEntity.setPaymentsOnAccount(PAYMENTS_ON_ACCOUNT_PREVIOUS_PERIOD);
         previousPeriodEntity.setStocks(STOCKS_PREVIOUS_PERIOD);
@@ -166,7 +155,6 @@ class StocksTransformerTest {
     }
 
     private CurrentPeriodEntity createCurrentPeriodEntityObject() {
-
         CurrentPeriodEntity currentPeriodEntity = new CurrentPeriodEntity();
         currentPeriodEntity.setPaymentsOnAccount(PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD);
         currentPeriodEntity.setStocks(STOCKS_CURRENT_PERIOD);
@@ -176,7 +164,6 @@ class StocksTransformerTest {
     }
 
     private PreviousPeriod createPreviousPeriodRestObject() {
-
         PreviousPeriod previousPeriod = new PreviousPeriod();
         previousPeriod.setPaymentsOnAccount(PAYMENTS_ON_ACCOUNT_PREVIOUS_PERIOD);
         previousPeriod.setStocks(STOCKS_PREVIOUS_PERIOD);
@@ -186,7 +173,6 @@ class StocksTransformerTest {
     }
 
     private CurrentPeriod createCurrentPeriodRestObject() {
-
         CurrentPeriod currentPeriod = new CurrentPeriod();
         currentPeriod.setPaymentsOnAccount(PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD);
         currentPeriod.setStocks(STOCKS_CURRENT_PERIOD);
@@ -196,7 +182,6 @@ class StocksTransformerTest {
     }
 
     private void validateStocksEntity(StocksEntity stocksEntity) {
-
         assertEquals(PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD, stocksEntity.getData().getCurrentPeriodEntity().getPaymentsOnAccount());
         assertEquals(STOCKS_CURRENT_PERIOD, stocksEntity.getData().getCurrentPeriodEntity().getStocks());
         assertEquals(TOTAL_CURRENT_PERIOD, stocksEntity.getData().getCurrentPeriodEntity().getTotal());
@@ -209,12 +194,10 @@ class StocksTransformerTest {
             assertEquals(PAYMENTS_ON_ACCOUNT_PREVIOUS_PERIOD, stocksEntity.getData().getPreviousPeriodEntity().getPaymentsOnAccount());
             assertEquals(STOCKS_PREVIOUS_PERIOD, stocksEntity.getData().getPreviousPeriodEntity().getStocks());
             assertEquals(TOTAL_PREVIOUS_PERIOD, stocksEntity.getData().getPreviousPeriodEntity().getTotal());
-
         }
     }
 
     private void assertEqualsRestObject(Stocks stocks) {
-
         assertEquals(PAYMENTS_ON_ACCOUNT_CURRENT_PERIOD, stocks.getCurrentPeriod().getPaymentsOnAccount());
         assertEquals(STOCKS_CURRENT_PERIOD, stocks.getCurrentPeriod().getStocks());
         assertEquals(TOTAL_CURRENT_PERIOD, stocks.getCurrentPeriod().getTotal());

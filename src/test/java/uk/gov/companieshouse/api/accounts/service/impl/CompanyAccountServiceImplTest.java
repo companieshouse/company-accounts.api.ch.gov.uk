@@ -1,24 +1,8 @@
 package uk.gov.companieshouse.api.accounts.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,10 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoException;
-
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.accounts.Kind;
 import uk.gov.companieshouse.api.accounts.PayableResource;
@@ -53,10 +33,26 @@ import uk.gov.companieshouse.api.handler.privatetransaction.request.PrivateTrans
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.transaction.TransactionLinks;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class CompanyAccountServiceImplTest {
-
     @Mock
     private CompanyAccountRepository repository;
 
@@ -118,7 +114,6 @@ class CompanyAccountServiceImplTest {
     @DisplayName("Create company accounts - success path with next and last accounts")
     void createCompanyAccountsSuccessPathWithNextAndLastAccounts()
             throws ServiceException, IOException, PatchException, DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -126,8 +121,7 @@ class CompanyAccountServiceImplTest {
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
 
-        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN))
-                .thenReturn(internalApiClient);
+        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN)).thenReturn(internalApiClient);
 
         when(transaction.getId()).thenReturn(TRANSACTION_ID);
 
@@ -135,7 +129,7 @@ class CompanyAccountServiceImplTest {
         when(privateTransactionResourceHandler.patch(TRANSACTION_PATCH_LINK, transaction))
                 .thenReturn(privateTransactionPatch);
 
-        when(transactionService.getPayableResources(transaction)).thenReturn(Arrays.asList(PayableResource.CIC));
+        when(transactionService.getPayableResources(transaction)).thenReturn(List.of(PayableResource.CIC));
 
         ResponseObject<CompanyAccount> response = companyAccountService.create(companyAccount, transaction, request);
 
@@ -159,7 +153,6 @@ class CompanyAccountServiceImplTest {
     @DisplayName("Create company accounts - success path with only next accounts")
     void createCompanyAccountsSuccessPathWithNextAccounts()
             throws ServiceException, IOException, PatchException, DataException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -167,8 +160,7 @@ class CompanyAccountServiceImplTest {
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
 
-        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN))
-                .thenReturn(internalApiClient);
+        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN)).thenReturn(internalApiClient);
 
         when(transaction.getId()).thenReturn(TRANSACTION_ID);
 
@@ -198,9 +190,7 @@ class CompanyAccountServiceImplTest {
 
     @Test
     @DisplayName("Create company accounts - duplicate key exception")
-    void createCompanyAccountsDuplicateKeyException()
-            throws PatchException, DataException {
-
+    void createCompanyAccountsDuplicateKeyException() throws PatchException, DataException {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -219,7 +209,6 @@ class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Create company accounts - Mongo exception")
     void createCompanyAccountsMongoException() {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -227,14 +216,12 @@ class CompanyAccountServiceImplTest {
 
         when(repository.insert(companyAccountEntity)).thenThrow(MongoException.class);
 
-        assertThrows(DataException.class,
-                () -> companyAccountService.create(companyAccount, transaction, request));
+        assertThrows(DataException.class, () -> companyAccountService.create(companyAccount, transaction, request));
     }
 
     @Test
     @DisplayName("Create company accounts - IO exception")
     void createCompanyAccountsIOException() throws IOException {
-
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -242,18 +229,14 @@ class CompanyAccountServiceImplTest {
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
 
-        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN))
-                .thenThrow(IOException.class);
+        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN)).thenThrow(IOException.class);
 
-        assertThrows(PatchException.class,
-                () -> companyAccountService.create(companyAccount, transaction, request));
+        assertThrows(PatchException.class, () -> companyAccountService.create(companyAccount, transaction, request));
     }
 
     @Test
     @DisplayName("Create company accounts - URI validation exception")
-    void createCompanyAccountsURIValidationException()
-            throws ServiceException, IOException, URIValidationException {
-
+    void createCompanyAccountsURIValidationException() throws ServiceException, IOException, URIValidationException {
         when(transaction.getLinks()).thenReturn(transactionLinks);
         when(transactionLinks.getSelf()).thenReturn(TRANSACTION_SELF_LINK);
 
@@ -261,8 +244,7 @@ class CompanyAccountServiceImplTest {
 
         when(request.getHeader(ERIC_PASSTHROUGH_TOKEN_HEADER)).thenReturn(ERIC_PASSTHROUGH_TOKEN);
 
-        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN))
-                .thenReturn(internalApiClient);
+        when(apiClientService.getInternalApiClient(ERIC_PASSTHROUGH_TOKEN)).thenReturn(internalApiClient);
 
         when(transaction.getId()).thenReturn(TRANSACTION_ID);
 
@@ -274,16 +256,13 @@ class CompanyAccountServiceImplTest {
 
         when(privateTransactionPatch.execute()).thenThrow(URIValidationException.class);
 
-        assertThrows(PatchException.class, () ->
-                companyAccountService.create(companyAccount, transaction, request));
+        assertThrows(PatchException.class, () -> companyAccountService.create(companyAccount, transaction, request));
     }
 
     @Test
     @DisplayName("Find company accounts - success path")
     void findCompanyAccountsSuccessPath() throws DataException {
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntity));
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.of(companyAccountEntity));
 
         when(transformer.transform(companyAccountEntity)).thenReturn(companyAccount);
 
@@ -298,11 +277,7 @@ class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Find company accounts - not found")
     void findCompanyAccountsNotFound() throws DataException {
-
-        CompanyAccountEntity companyAccountEntity = null;
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntity));
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.empty());
 
         ResponseObject<CompanyAccount> response = companyAccountService.findById(COMPANY_ACCOUNTS_ID, request);
 
@@ -315,25 +290,19 @@ class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Find company accounts - Mongo exception")
     void findCompanyAccountsMongoException() {
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenThrow(MongoException.class);
 
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenThrow(MongoException.class);
-
-        assertThrows(DataException.class, () ->
-                companyAccountService.findById(COMPANY_ACCOUNTS_ID, request));
+        assertThrows(DataException.class, () -> companyAccountService.findById(COMPANY_ACCOUNTS_ID, request));
     }
 
     @Test
     @DisplayName("Add link - success path")
     void addLinkSuccessPath() {
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntity));
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.of(companyAccountEntity));
 
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
 
-        companyAccountService.addLink(
-                COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.TRANSACTION, TRANSACTION_SELF_LINK);
+        companyAccountService.addLink(COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.TRANSACTION, TRANSACTION_SELF_LINK);
 
         verify(companyAccountDataEntity, times(1)).setLinks(anyMap());
 
@@ -343,23 +312,16 @@ class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Add link - company account not found")
     void addLinkCompanyAccountNotFound() {
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.empty());
 
-        CompanyAccountEntity companyAccountEntity = null;
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntity));
-
-        assertThrows(MongoException.class, () ->
-                companyAccountService.addLink(
-                        COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.TRANSACTION, TRANSACTION_SELF_LINK));
+        assertThrows(MongoException.class, () -> companyAccountService.addLink(
+                COMPANY_ACCOUNTS_ID, CompanyAccountLinkType.TRANSACTION, TRANSACTION_SELF_LINK));
     }
 
     @Test
     @DisplayName("Remove link - success path")
     void removeLinkSuccessPath() {
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntity));
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.of(companyAccountEntity));
 
         when(companyAccountEntity.getData()).thenReturn(companyAccountDataEntity);
 
@@ -376,11 +338,7 @@ class CompanyAccountServiceImplTest {
     @Test
     @DisplayName("Remove link - company account not found")
     void removeLinkCompanyAccountNotFound() {
-
-        CompanyAccountEntity companyAccountEntityMock = null;
-
-        when(repository.findById(COMPANY_ACCOUNTS_ID))
-                .thenReturn(Optional.ofNullable(companyAccountEntityMock));
+        when(repository.findById(COMPANY_ACCOUNTS_ID)).thenReturn(Optional.empty());
 
         CompanyAccountLinkType linkType = CompanyAccountLinkType.CIC_REPORT;
 

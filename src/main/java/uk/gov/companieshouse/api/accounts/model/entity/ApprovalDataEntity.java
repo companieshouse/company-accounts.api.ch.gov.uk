@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.model.entity;
 
 import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class ApprovalDataEntity extends BaseDataEntity {

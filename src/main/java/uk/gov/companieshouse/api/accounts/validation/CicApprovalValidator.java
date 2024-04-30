@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,33 +24,33 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @Component
 public class CicApprovalValidator extends BaseValidator {
 
-	private AccountTypeFactory accountTypeFactory;
+	private final AccountTypeFactory accountTypeFactory;
 
-    private ParentResourceFactory parentResourceFactory;
+    private final ParentResourceFactory parentResourceFactory;
 
     private static final String APPROVAL_PATH = "$.cic_approval";
     private static final String DATE_PATH = APPROVAL_PATH + ".date";
 
     @Autowired
-    public CicApprovalValidator(CompanyService companyService, AccountTypeFactory accountTypeFactory, ParentResourceFactory parentResourceFactory) {
+    public CicApprovalValidator(CompanyService companyService,
+                                AccountTypeFactory accountTypeFactory,
+                                ParentResourceFactory parentResourceFactory) {
         super(companyService);
         this.accountTypeFactory = accountTypeFactory;
         this.parentResourceFactory = parentResourceFactory;
     }
     
-    public Errors validateCicReportApproval(CicApproval cicApproval, String companyAccountsId, HttpServletRequest request) throws DataException {
-
+    public Errors validateCicReportApproval(CicApproval cicApproval,
+                                            String companyAccountsId,
+                                            HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
-        Transaction transaction =
-                (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
-        CompanyAccount companyAccount =
-                (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
+        CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
 
         try {
-            CompanyProfileApi companyProfile =
-                    getCompanyService().getCompanyProfile(transaction.getCompanyNumber());
+            CompanyProfileApi companyProfile = getCompanyService().getCompanyProfile(transaction.getCompanyNumber());
 
             // Take period end date from the company profile
             LocalDate periodEndDate = companyProfile.getAccounts().getNextAccounts().getPeriodEndOn();
@@ -67,7 +67,8 @@ public class CicApprovalValidator extends BaseValidator {
 
             // If an account type does exist, derive the period end date from the account type in case it has been edited via the ARD functionality
             if (accountType != null) {
-                periodEndDate = parentResourceFactory.getParentResource(accountType).getPeriodEndOn(companyAccountsId, request);
+                periodEndDate = parentResourceFactory.getParentResource(accountType)
+                        .getPeriodEndOn(companyAccountsId, request);
             }
 
             LocalDate approvalDate = cicApproval.getDate();

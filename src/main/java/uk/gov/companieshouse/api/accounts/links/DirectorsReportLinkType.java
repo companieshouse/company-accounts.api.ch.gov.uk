@@ -7,7 +7,7 @@ public enum DirectorsReportLinkType implements LinkType {
     SECRETARY("secretary"),
     APPROVAL("approval");
 
-    private String link;
+    private final String link;
 
     DirectorsReportLinkType(String link) {
         this.link = link;

@@ -18,46 +18,38 @@ public class TangibleAssetsTransformer implements NoteTransformer<TangibleAssets
 
     @Override
     public TangibleAssetsEntity transform(TangibleAssets entity) {
-
         TangibleAssetsEntity tangibleAssetsEntity = new TangibleAssetsEntity();
         TangibleAssetsDataEntity tangibleAssetsDataEntity = new TangibleAssetsDataEntity();
 
         BeanUtils.copyProperties(entity, tangibleAssetsDataEntity);
 
         if (entity.getFixturesAndFittings() != null) {
-
             tangibleAssetsDataEntity.setFixturesAndFittings(
                     mapRestResourceToEntityResource(entity.getFixturesAndFittings()));
         }
 
         if (entity.getLandAndBuildings() != null) {
-
             tangibleAssetsDataEntity.setLandAndBuildings(
                     mapRestResourceToEntityResource(entity.getLandAndBuildings()));
         }
 
         if (entity.getMotorVehicles() != null) {
-
             tangibleAssetsDataEntity.setMotorVehicles(
                     mapRestResourceToEntityResource(entity.getMotorVehicles()));
         }
 
         if (entity.getOfficeEquipment() != null) {
-
             tangibleAssetsDataEntity.setOfficeEquipment(
                     mapRestResourceToEntityResource(entity.getOfficeEquipment()));
         }
 
         if (entity.getPlantAndMachinery() != null) {
-
             tangibleAssetsDataEntity.setPlantAndMachinery(
                     mapRestResourceToEntityResource(entity.getPlantAndMachinery()));
         }
 
         if (entity.getTotal() != null) {
-
-            tangibleAssetsDataEntity.setTotal(
-                    mapRestResourceToEntityResource(entity.getTotal()));
+            tangibleAssetsDataEntity.setTotal(mapRestResourceToEntityResource(entity.getTotal()));
         }
 
         tangibleAssetsEntity.setData(tangibleAssetsDataEntity);
@@ -65,19 +57,16 @@ public class TangibleAssetsTransformer implements NoteTransformer<TangibleAssets
     }
 
     private TangibleAssetsResourceEntity mapRestResourceToEntityResource(TangibleAssetsResource restResource) {
-
         TangibleAssetsResourceEntity entityResource = new TangibleAssetsResourceEntity();
         BeanUtils.copyProperties(restResource, entityResource);
 
         if (restResource.getCost() != null) {
-
             CostEntity cost = new CostEntity();
             BeanUtils.copyProperties(restResource.getCost(), cost);
             entityResource.setCost(cost);
         }
 
         if (restResource.getDepreciation() != null) {
-
             DepreciationEntity depreciation = new DepreciationEntity();
             BeanUtils.copyProperties(restResource.getDepreciation(), depreciation);
             entityResource.setDepreciation(depreciation);
@@ -88,65 +77,54 @@ public class TangibleAssetsTransformer implements NoteTransformer<TangibleAssets
 
     @Override
     public TangibleAssets transform(TangibleAssetsEntity entity) {
-
         TangibleAssets tangibleAssets = new TangibleAssets();
         TangibleAssetsDataEntity dataEntity = entity.getData();
 
         BeanUtils.copyProperties(dataEntity, tangibleAssets);
 
         if (dataEntity.getFixturesAndFittings() != null) {
-
             tangibleAssets.setFixturesAndFittings(
                     mapEntityResourceToRestResource(dataEntity.getFixturesAndFittings()));
         }
 
         if (dataEntity.getLandAndBuildings() != null) {
-
             tangibleAssets.setLandAndBuildings(
                     mapEntityResourceToRestResource(dataEntity.getLandAndBuildings()));
         }
 
         if (dataEntity.getMotorVehicles() != null) {
-
             tangibleAssets.setMotorVehicles(
                     mapEntityResourceToRestResource(dataEntity.getMotorVehicles()));
         }
 
         if (dataEntity.getOfficeEquipment() != null) {
-
             tangibleAssets.setOfficeEquipment(
                     mapEntityResourceToRestResource(dataEntity.getOfficeEquipment()));
         }
 
         if (dataEntity.getPlantAndMachinery() != null) {
-
             tangibleAssets.setPlantAndMachinery(
                     mapEntityResourceToRestResource(dataEntity.getPlantAndMachinery()));
         }
 
         if (dataEntity.getTotal() != null) {
-
-            tangibleAssets.setTotal(
-                    mapEntityResourceToRestResource(dataEntity.getTotal()));
+            tangibleAssets.setTotal(mapEntityResourceToRestResource(dataEntity.getTotal()));
         }
 
         return tangibleAssets;
     }
 
     private TangibleAssetsResource mapEntityResourceToRestResource(TangibleAssetsResourceEntity entityResource) {
-
         TangibleAssetsResource restResource = new TangibleAssetsResource();
         BeanUtils.copyProperties(entityResource, restResource);
 
         if (entityResource.getCost() != null) {
-
             Cost cost = new Cost();
             BeanUtils.copyProperties(entityResource.getCost(), cost);
             restResource.setCost(cost);
         }
 
         if (entityResource.getDepreciation() != null) {
-
             Depreciation depreciation = new Depreciation();
             BeanUtils.copyProperties(entityResource.getDepreciation(), depreciation);
             restResource.setDepreciation(depreciation);

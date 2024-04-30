@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.validation;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,21 +23,23 @@ public class DirectorsApprovalValidator extends BaseValidator{
 	private static final String APPROVAL_PATH = "$.directors_approval";
     private static final String APPROVAL_NAME = APPROVAL_PATH + ".name";
 
-    private SecretaryService secretaryService;
+    private final SecretaryService secretaryService;
 
-    private DirectorValidator directorValidator;
+    private final DirectorValidator directorValidator;
 
     @Autowired
     public DirectorsApprovalValidator(CompanyService companyService,
-            SecretaryService secretaryService, DirectorValidator directorValidator) {
+                                      SecretaryService secretaryService,
+                                      DirectorValidator directorValidator) {
         super(companyService);
         this.secretaryService = secretaryService;
         this.directorValidator = directorValidator;
     }
 
-    public Errors validateApproval(DirectorsApproval directorsApproval, Transaction transaction,
-                                   String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public Errors validateApproval(DirectorsApproval directorsApproval,
+                                   Transaction transaction,
+                                   String companyAccountId,
+                                   HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
         ResponseObject<Secretary> secretaryResponseObject = secretaryService.find(companyAccountId, request);
@@ -54,7 +56,6 @@ public class DirectorsApprovalValidator extends BaseValidator{
         }
 
         if (!allNames.isEmpty() && !allNames.contains(directorsApproval.getName())) {
-
             addError(errors, mustMatchDirectorOrSecretary, APPROVAL_NAME);
         }
 

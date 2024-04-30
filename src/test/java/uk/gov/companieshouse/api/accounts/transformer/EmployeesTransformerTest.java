@@ -24,22 +24,18 @@ import uk.gov.companieshouse.api.accounts.model.rest.smallfull.notes.employees.P
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class EmployeesTransformerTest {
-
     private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT = 11L;
     private static final Long AVERAGE_NUMBER_OF_EMPLOYEES_PREVIOUS = 19L;
     private static final String DETAILS = "details";
     private static final String ETAG = "etag";
     private static final String KIND = "kind";
 
-    private EmployeesTransformer employeesTransformer =
-            new EmployeesTransformer();
+    private final EmployeesTransformer employeesTransformer = new EmployeesTransformer();
 
     @Test
     @DisplayName("Tests transformer with empty rest object returns null values ")
     void testTransformerWithEmptyRestObject() {
-
-        EmployeesEntity employeesEntity = employeesTransformer
-                .transform(new Employees());
+        EmployeesEntity employeesEntity = employeesTransformer.transform(new Employees());
 
         assertNotNull(employeesEntity);
         assertNull(employeesEntity.getData().getEtag());
@@ -49,7 +45,6 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Rest Object")
     void testRestToEntityTransformerWithEmptyPreviousPeriodRestObject() {
-
         Employees employees = new Employees();
 
         employees.setEtag(ETAG);
@@ -60,8 +55,7 @@ class EmployeesTransformerTest {
 
         employees.setCurrentPeriod(currentPeriod);
 
-        EmployeesEntity employeesEntity = employeesTransformer
-                .transform(employees);
+        EmployeesEntity employeesEntity = employeesTransformer.transform(employees);
 
         assertNotNull(employeesEntity);
         assertNull(employeesEntity.getData().getPreviousPeriodEntity());
@@ -72,7 +66,6 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Rest object and validates values returned")
     void testRestToEntityTransformerWithFullyPopulatedObject() {
-
         Employees employees = new Employees();
 
         employees.setEtag(ETAG);
@@ -82,8 +75,7 @@ class EmployeesTransformerTest {
         employees.setCurrentPeriod(createCurrentPeriodRestObject());
         employees.setPreviousPeriod(createPreviousPeriodRestObject());
 
-        EmployeesEntity employeesEntity = employeesTransformer
-                .transform(employees);
+        EmployeesEntity employeesEntity = employeesTransformer.transform(employees);
 
         assertNotNull(employeesEntity);
         assertFieldsMappedToEntity(employeesEntity);
@@ -92,9 +84,7 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty entity object returns null values ")
     void testTransformerWithEmptyEntityObject() {
-
-        Employees employees = employeesTransformer
-                .transform(new EmployeesEntity());
+        Employees employees = employeesTransformer.transform(new EmployeesEntity());
 
         assertNotNull(employees);
         assertNull(employees.getEtag());
@@ -104,7 +94,6 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Tests transformer with empty previous period Entity Object")
     void testEntityToRestTransformerWithEmptyPreviousPeriodEntityObject() {
-
         EmployeesEntity employeesEntity = new EmployeesEntity();
         EmployeesDataEntity employeesDataEntity = new EmployeesDataEntity();
 
@@ -115,8 +104,7 @@ class EmployeesTransformerTest {
 
         employeesEntity.setData(employeesDataEntity);
 
-        Employees employees = employeesTransformer
-                .transform(employeesEntity);
+        Employees employees = employeesTransformer.transform(employeesEntity);
 
         assertNotNull(employees);
         assertFieldsMappedToRest(employees);
@@ -128,7 +116,6 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Tests transformer with fully populated Entity object and validates values returned")
     void testEntityToRestTransformerWithFullyPopulatedEntityObject() {
-
         EmployeesEntity employeesEntity = new EmployeesEntity();
         EmployeesDataEntity employeesDataEntity = new EmployeesDataEntity();
 
@@ -140,8 +127,7 @@ class EmployeesTransformerTest {
 
         employeesEntity.setData(employeesDataEntity);
 
-        Employees employees = employeesTransformer
-                .transform(employeesEntity);
+        Employees employees = employeesTransformer.transform(employeesEntity);
 
         assertNotNull(employees);
         assertFieldsMappedToRest(employees);
@@ -153,7 +139,6 @@ class EmployeesTransformerTest {
     @Test
     @DisplayName("Get accounting note type")
     void getAccountingNoteType() {
-
         assertEquals(AccountingNoteType.SMALL_FULL_EMPLOYEES, employeesTransformer.getAccountingNoteType());
     }
 
@@ -172,13 +157,11 @@ class EmployeesTransformerTest {
     }
 
     private void assertFieldsMappedToEntity(EmployeesEntity employeesEntity) {
-
         EmployeesDataEntity employeesDataEntity = employeesEntity.getData();
         
         assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT,
                 employeesDataEntity.getCurrentPeriodEntity().getAverageNumberOfEmployees());
-        assertEquals(DETAILS,
-                employeesDataEntity.getCurrentPeriodEntity().getDetails());
+        assertEquals(DETAILS, employeesDataEntity.getCurrentPeriodEntity().getDetails());
 
         assertEquals(new HashMap<>(), employeesDataEntity.getLinks());
         assertEquals(ETAG, employeesDataEntity.getEtag());
@@ -204,7 +187,6 @@ class EmployeesTransformerTest {
     }
 
     private void assertFieldsMappedToRest(Employees employees) {
-
         assertEquals(AVERAGE_NUMBER_OF_EMPLOYEES_CURRENT, employees.getCurrentPeriod().getAverageNumberOfEmployees());
         assertEquals(DETAILS, employees.getCurrentPeriod().getDetails());
 

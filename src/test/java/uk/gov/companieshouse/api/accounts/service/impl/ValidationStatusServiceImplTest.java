@@ -18,14 +18,13 @@ import uk.gov.companieshouse.api.accounts.validation.ErrorType;
 import uk.gov.companieshouse.api.accounts.validation.LocationType;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidationStatusServiceImplTest {
-
     @Mock
     private HttpServletRequest request;
 
@@ -48,7 +47,6 @@ class ValidationStatusServiceImplTest {
     @Test
     @DisplayName("Get validation returns no errors")
     void getValidationErrorsReturnsEmptyErrors() throws DataException {
-
         Errors errors = new Errors(); // Empty.
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -62,9 +60,8 @@ class ValidationStatusServiceImplTest {
     @Test
     @DisplayName("Get validation returns errors")
     void getValidationErrorsReturnsErrors() throws DataException {
-
         Errors errors = new Errors();
-        errors.addError(createError(MANDATORY_ELEMENT_MISSING, CURRENT_PERIOD_PATH));
+        errors.addError(createError());
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
         when(validator.validate(transaction, COMPANY_ACCOUNTS_ID, request)).thenReturn(errors);
@@ -74,8 +71,10 @@ class ValidationStatusServiceImplTest {
         assertEquals(responseErrors, errors);
     }
 
-    private Error createError(String error, String path) {
-        return new Error(error, path, LocationType.JSON_PATH.getValue(),
+    private Error createError() {
+        return new Error(ValidationStatusServiceImplTest.MANDATORY_ELEMENT_MISSING,
+                ValidationStatusServiceImplTest.CURRENT_PERIOD_PATH,
+                LocationType.JSON_PATH.getValue(),
                 ErrorType.VALIDATION.getType());
     }
 }

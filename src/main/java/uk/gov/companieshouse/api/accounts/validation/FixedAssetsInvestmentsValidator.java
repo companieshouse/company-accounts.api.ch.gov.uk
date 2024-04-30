@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,12 +22,13 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator implements No
 
     private static final String FIXED_ASSETS_DETAILS_PATH = "$.fixed_assets_investments.details";
 
-    private CurrentPeriodService currentPeriodService;
-    private PreviousPeriodService previousPeriodService;
+    private final CurrentPeriodService currentPeriodService;
+    private final PreviousPeriodService previousPeriodService;
 
     @Autowired
-    public FixedAssetsInvestmentsValidator(CompanyService companyService, CurrentPeriodService currentPeriodService,
-            PreviousPeriodService previousPeriodService) {
+    public FixedAssetsInvestmentsValidator(CompanyService companyService,
+                                           CurrentPeriodService currentPeriodService,
+                                           PreviousPeriodService previousPeriodService) {
         super(companyService);
         this.currentPeriodService = currentPeriodService;
         this.previousPeriodService = previousPeriodService;
@@ -38,30 +39,25 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator implements No
                                      Transaction transaction,
                                      String companyAccountsId,
                                      HttpServletRequest request) throws DataException {
-
         Errors errors = new Errors();
 
-        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request,
-                companyAccountsId);
-        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request,
-                companyAccountsId);
+        BalanceSheet currentPeriodBalanceSheet = getCurrentPeriodBalanceSheet(request, companyAccountsId);
+        BalanceSheet previousPeriodBalanceSheet = getPreviousPeriodBalanceSheet(request, companyAccountsId);
 
-        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
-            !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-                fixedAssetsNote.getDetails() == null) {
+        if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                && !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && fixedAssetsNote.getDetails() == null) {
             addEmptyResourceError(errors, FIXED_ASSETS_DETAILS_PATH);
         }
-        if(currentPeriodBalanceSheet!=null || previousPeriodBalanceSheet!=null) {
-            if ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) &&
-                    !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-                    fixedAssetsNote.getDetails() != null) {
-                addError(errors, unexpectedData, FIXED_ASSETS_DETAILS_PATH);
-            }
+        if ((currentPeriodBalanceSheet!= null || previousPeriodBalanceSheet != null)
+                && ((!hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                && !hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && fixedAssetsNote.getDetails() != null)) {
+            addError(errors, unexpectedData, FIXED_ASSETS_DETAILS_PATH);
         }
-
-        if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet) ||
-                hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet)) &&
-                fixedAssetsNote.getDetails() == null) {
+        if ((hasCurrentBalanceSheetInvestmentsValue(currentPeriodBalanceSheet)
+                || hasPreviousBalanceSheetInvestmentsValue(previousPeriodBalanceSheet))
+                && fixedAssetsNote.getDetails() == null) {
             addError(errors, mandatoryElementMissing, FIXED_ASSETS_DETAILS_PATH);
         }
         return errors;
@@ -69,16 +65,19 @@ public class FixedAssetsInvestmentsValidator extends BaseValidator implements No
 
     @Override
     public AccountingNoteType getAccountingNoteType() {
-
         return AccountingNoteType.SMALL_FULL_FIXED_ASSETS_INVESTMENTS;
     }
 
     private boolean hasPreviousBalanceSheetInvestmentsValue(BalanceSheet previousPeriodBalanceSheet) {
-        return previousPeriodBalanceSheet != null && previousPeriodBalanceSheet.getFixedAssets() != null && previousPeriodBalanceSheet.getFixedAssets().getInvestments() != null;
+        return previousPeriodBalanceSheet != null
+                && previousPeriodBalanceSheet.getFixedAssets() != null
+                && previousPeriodBalanceSheet.getFixedAssets().getInvestments() != null;
     }
 
     private boolean hasCurrentBalanceSheetInvestmentsValue(BalanceSheet currentPeriodBalanceSheet) {
-        return currentPeriodBalanceSheet !=null && currentPeriodBalanceSheet.getFixedAssets()!= null && currentPeriodBalanceSheet.getFixedAssets().getInvestments() !=null;
+        return currentPeriodBalanceSheet != null
+                && currentPeriodBalanceSheet.getFixedAssets()!= null
+                && currentPeriodBalanceSheet.getFixedAssets().getInvestments() != null;
     }
 
     private BalanceSheet getCurrentPeriodBalanceSheet(HttpServletRequest request,

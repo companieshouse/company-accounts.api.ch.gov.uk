@@ -20,7 +20,7 @@ import uk.gov.companieshouse.api.accounts.transformer.SecretaryTransformer;
 import uk.gov.companieshouse.api.accounts.utility.impl.KeyIdGenerator;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +33,10 @@ public class SecretaryService implements ResourceService<Secretary> {
     private KeyIdGenerator keyIdGenerator;
 
     @Autowired
-    public SecretaryService(SecretaryTransformer transformer, SecretaryRepository secretaryRepository, DirectorsReportServiceImpl directorsReportService, KeyIdGenerator keyIdGenerator) {
-
+    public SecretaryService(SecretaryTransformer transformer,
+                            SecretaryRepository secretaryRepository,
+                            DirectorsReportServiceImpl directorsReportService,
+                            KeyIdGenerator keyIdGenerator) {
         this.transformer = transformer;
         this.secretaryRepository = secretaryRepository;
         this.directorsReportService = directorsReportService;
@@ -42,8 +44,10 @@ public class SecretaryService implements ResourceService<Secretary> {
     }
 
     @Override
-    public ResponseObject<Secretary> create(Secretary rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Secretary> create(Secretary rest,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
         String secretaryId = generateID(companyAccountId);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
@@ -53,14 +57,10 @@ public class SecretaryService implements ResourceService<Secretary> {
         entity.setId(secretaryId);
 
         try {
-
             secretaryRepository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
-
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -70,8 +70,10 @@ public class SecretaryService implements ResourceService<Secretary> {
     }
 
     @Override
-    public ResponseObject<Secretary> update(Secretary rest, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public ResponseObject<Secretary> update(Secretary rest,
+                                            Transaction transaction,
+                                            String companyAccountId,
+                                            HttpServletRequest request) throws DataException {
         String secretaryId = generateID(companyAccountId);
 
         setMetadataOnRestObject(rest, transaction, companyAccountId);
@@ -80,10 +82,8 @@ public class SecretaryService implements ResourceService<Secretary> {
         entity.setId(secretaryId);
 
         try {
-
             secretaryRepository.save(entity);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
         return new ResponseObject<>(ResponseStatus.UPDATED, rest);
@@ -91,15 +91,12 @@ public class SecretaryService implements ResourceService<Secretary> {
 
     @Override
     public ResponseObject<Secretary> find(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         SecretaryEntity entity;
 
         try {
-
             entity = secretaryRepository.findById(generateID(companyAccountsId)).orElse(null);
 
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -112,7 +109,6 @@ public class SecretaryService implements ResourceService<Secretary> {
 
     @Override
     public ResponseObject<Secretary> delete(String companyAccountsId, HttpServletRequest request) throws DataException {
-
         String secretaryId = generateID(companyAccountsId);
 
         try {
@@ -124,29 +120,24 @@ public class SecretaryService implements ResourceService<Secretary> {
                         .removeLink(companyAccountsId, DirectorsReportLinkType.SECRETARY, request);
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     private void setMetadataOnRestObject(Secretary rest, Transaction transaction, String companyAccountsId) {
-
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.DIRECTORS_REPORT_SECRETARY.getValue());
     }
 
     private String getSelfLink(Secretary secretary) {
-
         return secretary.getLinks().get(BasicLinkType.SELF.getLink());
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/"
@@ -155,14 +146,12 @@ public class SecretaryService implements ResourceService<Secretary> {
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
     private String generateID(String companyAccountId) {
-
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.SECRETARY.getName());
     }
 }

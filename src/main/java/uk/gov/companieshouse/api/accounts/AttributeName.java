@@ -12,7 +12,7 @@ public enum AttributeName {
     LOANS_TO_DIRECTORS("loans-to-directors"),
     RELATED_PARTY_TRANSACTIONS("related-party-transactions");
 
-    private String value;
+    private final String value;
 
     AttributeName(String value) {
         this.value = value;

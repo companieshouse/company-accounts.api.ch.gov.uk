@@ -3,7 +3,7 @@ package uk.gov.companieshouse.api.accounts.service.impl;
 import com.mongodb.MongoException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -40,9 +40,9 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
 
     @Override
     public ResponseObject<AdditionalInformation> create(AdditionalInformation rest,
-            Transaction transaction, String companyAccountId, HttpServletRequest request)
-            throws DataException {
-
+                                                        Transaction transaction,
+                                                        String companyAccountId,
+                                                        HttpServletRequest request) throws DataException {
         setMetadataOnRest(rest, transaction, companyAccountId);
 
         AdditionalInformationEntity entity = transformer.transform(rest);
@@ -51,10 +51,8 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
         try {
             repository.insert(entity);
         } catch (DuplicateKeyException e) {
-
             return new ResponseObject<>(ResponseStatus.DUPLICATE_KEY_ERROR);
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
 
@@ -66,9 +64,9 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
 
     @Override
     public ResponseObject<AdditionalInformation> update(AdditionalInformation rest,
-            Transaction transaction, String companyAccountId, HttpServletRequest request)
-            throws DataException {
-
+                                                        Transaction transaction,
+                                                        String companyAccountId,
+                                                        HttpServletRequest request) throws DataException {
         setMetadataOnRest(rest, transaction, companyAccountId);
 
         AdditionalInformationEntity entity = transformer.transform(rest);
@@ -85,8 +83,7 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
 
     @Override
     public ResponseObject<AdditionalInformation> find(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                      HttpServletRequest request) throws DataException {
         AdditionalInformationEntity entity;
 
         try {
@@ -103,8 +100,7 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
 
     @Override
     public ResponseObject<AdditionalInformation> delete(String companyAccountsId,
-            HttpServletRequest request) throws DataException {
-
+                                                        HttpServletRequest request) throws DataException {
         String id = generateID(companyAccountsId);
 
         try {
@@ -116,17 +112,14 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
 
                 return new ResponseObject<>(ResponseStatus.UPDATED);
             } else {
-
                 return new ResponseObject<>(ResponseStatus.NOT_FOUND);
             }
         } catch (MongoException e) {
-
             throw new DataException(e);
         }
     }
 
     private String generateSelfLink(Transaction transaction, String companyAccountId) {
-
         return transaction.getLinks().getSelf() + "/"
                 + ResourceName.COMPANY_ACCOUNT.getName() + "/" + companyAccountId + "/"
                 + ResourceName.SMALL_FULL.getName() + "/notes/"
@@ -135,27 +128,23 @@ public class LoansToDirectorsAdditionalInformationService implements ResourceSer
     }
 
     private Map<String, String> createLinks(Transaction transaction, String companyAccountsId) {
-
         Map<String, String> map = new HashMap<>();
         map.put(BasicLinkType.SELF.getLink(), generateSelfLink(transaction, companyAccountsId));
         return map;
     }
 
     private void setMetadataOnRest(AdditionalInformation rest, Transaction transaction, String companyAccountsId) {
-
         rest.setLinks(createLinks(transaction, companyAccountsId));
         rest.setEtag(GenerateEtagUtil.generateEtag());
         rest.setKind(Kind.LOANS_TO_DIRECTORS_ADDITIONAL_INFO.getValue());
     }
 
     private String generateID(String companyAccountId) {
-
         return keyIdGenerator.generate(companyAccountId + "-" + ResourceName.LOANS_TO_DIRECTORS.getName() +
                 "-" + ResourceName.ADDITIONAL_INFO.getName());
     }
 
     private String getSelfLinkFromRestEntity(AdditionalInformation rest) {
-
         return rest.getLinks().get(BasicLinkType.SELF.getLink());
     }
 }

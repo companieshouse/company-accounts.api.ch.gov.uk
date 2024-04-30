@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Custom configurations for Mongo
- *
+ * <p>
  * 1. MappingMongoConverter that doesn't save _class to mongo.
  * 2. MongoClientSettings that externalises the connection pooling options
  */
@@ -48,7 +48,6 @@ public class MongoConfig {
      */
     @Bean
     public MongoClientSettings mongoClientSettings(MongoDbConnectionPoolConfig connectionPoolConfig) {
-
         ConnectionString connectionString = new ConnectionString(connectionPoolConfig.getConnectionString());
 
         return MongoClientSettings.builder()

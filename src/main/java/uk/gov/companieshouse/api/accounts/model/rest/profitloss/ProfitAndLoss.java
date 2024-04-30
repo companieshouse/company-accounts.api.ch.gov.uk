@@ -2,7 +2,7 @@ package uk.gov.companieshouse.api.accounts.model.rest.profitloss;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import uk.gov.companieshouse.api.accounts.model.rest.RestObject;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

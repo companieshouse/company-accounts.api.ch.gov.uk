@@ -4,7 +4,7 @@ public enum RptTransactionLinkType implements LinkType {
 
     SELF("self");
 
-    private String link;
+    private final String link;
 
     RptTransactionLinkType(String link) {
         this.link = link;

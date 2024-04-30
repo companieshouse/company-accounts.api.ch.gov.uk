@@ -23,7 +23,7 @@ import uk.gov.companieshouse.api.accounts.utility.ApiResponseMapper;
 import uk.gov.companieshouse.api.accounts.utility.ErrorMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DirectorStatementsControllerTest {
-
     private static final String COMPANY_ACCOUNTS_ID = "companyAccountsId";
     private static final String STATEMENTS_LINK = "statementsLink";
 
@@ -64,9 +63,6 @@ class DirectorStatementsControllerTest {
     private DirectorsReport directorsReport;
 
     @Mock
-    private Map<String, String> statementsLink;
-
-    @Mock
     private Map<String, String> directorsReportLink;
 
     @InjectMocks
@@ -75,7 +71,6 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Statements resource created successfully")
     void createStatementsResourceSuccess() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
 
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
@@ -85,15 +80,14 @@ class DirectorStatementsControllerTest {
         when(statementsService.create(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.CREATED)
+        ResponseEntity<Statements> responseEntity = ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseObject.getData());
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.create(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.create(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -103,7 +97,6 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Create statements has failed - data exception thrown")
     void createStatementsResourceDataException() throws DataException {
-
         when(bindingResult.hasErrors()).thenReturn(false);
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
@@ -111,14 +104,11 @@ class DirectorStatementsControllerTest {
         when(statementsService.create(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenThrow(dataException);
 
-        ResponseEntity responseEntity =
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        when(apiResponseMapper.getErrorResponse())
-                .thenReturn(responseEntity);
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.create(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.create(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -128,13 +118,11 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Create statements resource - has binding errors")
     void createStatementsResourceBindingErrors() {
-
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
-        ResponseEntity responseEntity =
-                statementsController.create(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = statementsController.create(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -143,14 +131,12 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Update statements resource - no statements link")
     void updateStatementsResourceNoStatementsLink() {
-
         when(request.getAttribute(anyString())).thenReturn(directorsReport).thenReturn(transaction);
         when(directorsReport.getLinks()).thenReturn(directorsReportLink);
         when(directorsReportLink.get(DirectorsReportLinkType.STATEMENTS.getLink())).thenReturn(null);
 
-        ResponseEntity responseEntity =
-                statementsController.update(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = statementsController.update(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
@@ -160,15 +146,13 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Update statements resource - has binding errors")
     void updateStatementsResourceBindingErrors() {
-
         mockTransactionAndLinks();
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(errorMapper.mapBindingResultErrorsToErrorModel(bindingResult)).thenReturn(new Errors());
 
-        ResponseEntity responseEntity =
-                statementsController.update(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> responseEntity = statementsController.update(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
@@ -178,9 +162,7 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Update statements resource - success")
     void updateStatementsResourceSuccess() throws DataException {
-
         mockTransactionAndLinks();
-
 
         when(bindingResult.hasErrors()).thenReturn(false);
 
@@ -189,14 +171,13 @@ class DirectorStatementsControllerTest {
         when(statementsService.update(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                 responseObject.getErrors()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.update(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.update(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -206,7 +187,6 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Update statements resource - data exception thrown")
     void updateStatementsResourceDataException() throws DataException {
-
         mockTransactionAndLinks();
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -214,13 +194,11 @@ class DirectorStatementsControllerTest {
         when(statementsService.update(statements, transaction,
                 COMPANY_ACCOUNTS_ID, request)).thenThrow(DataException.class);
 
-        ResponseEntity responseEntity =
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.update(statements, bindingResult,
-                        COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.update(statements, bindingResult,
+                COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -230,7 +208,6 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Get statements resource - success")
     void getStatementsResourceSuccess() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.FOUND,
@@ -238,13 +215,12 @@ class DirectorStatementsControllerTest {
         when(statementsService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.FOUND)
+        ResponseEntity<Statements> responseEntity = ResponseEntity.status(HttpStatus.FOUND)
                 .body(responseObject.getData());
         when(apiResponseMapper.mapGetResponse(responseObject.getData(), request))
                 .thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.FOUND, responseEntity.getStatusCode());
@@ -254,18 +230,17 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Get statements resource - data exception thrown")
     void getStatementsResourceDataException() throws DataException {
-
         when(request.getAttribute(AttributeName.TRANSACTION.getValue())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
         when(statementsService.find(COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<?> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = statementsController.get(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.get(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -275,23 +250,17 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Delete statements resource - success")
     void deleteStatementsResourceSuccess() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
-        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED,
-                statements);
+        ResponseObject<Statements> responseObject = new ResponseObject<>(ResponseStatus.UPDATED, statements);
 
-        when(statementsService.delete(COMPANY_ACCOUNTS_ID, request))
-                .thenReturn(responseObject);
+        when(statementsService.delete(COMPANY_ACCOUNTS_ID, request)).thenReturn(responseObject);
 
-        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
+        ResponseEntity<?> responseEntity = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         when(apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
-                responseObject.getErrors()))
-                .thenReturn(responseEntity);
+                responseObject.getErrors())).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse =
-                statementsController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
@@ -300,7 +269,6 @@ class DirectorStatementsControllerTest {
     @Test
     @DisplayName("Delete statements resource - data exception thrown")
     void deleteStatementsResourceDataException() throws DataException {
-
         when(request.getAttribute(anyString())).thenReturn(transaction);
 
         DataException dataException = new DataException("");
@@ -308,11 +276,11 @@ class DirectorStatementsControllerTest {
         when(statementsService.delete(COMPANY_ACCOUNTS_ID, request))
                 .thenThrow(dataException);
 
-        ResponseEntity responseEntity =
+        ResponseEntity<Object> responseEntity =
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         when(apiResponseMapper.getErrorResponse()).thenReturn(responseEntity);
 
-        ResponseEntity returnedResponse = statementsController.delete(COMPANY_ACCOUNTS_ID, request);
+        ResponseEntity<?> returnedResponse = statementsController.delete(COMPANY_ACCOUNTS_ID, request);
 
         assertNotNull(returnedResponse);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());

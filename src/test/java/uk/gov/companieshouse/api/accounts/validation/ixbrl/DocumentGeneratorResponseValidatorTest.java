@@ -19,7 +19,6 @@ import uk.gov.companieshouse.api.accounts.model.ixbrl.documentgenerator.Links;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class DocumentGeneratorResponseValidatorTest {
-
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String PERIOD_END_ON_KEY = "period_end_on";
     private static final String PERIOD_END_ON_VALUE = "2018-01-01";
@@ -38,57 +37,44 @@ class DocumentGeneratorResponseValidatorTest {
     @Test
     @DisplayName("Document generator response validation is successful")
     void shouldPassValidation() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(IXBRL_LOCATION));
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
-        assertTrue(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertTrue(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     @Test
     @DisplayName("Document generator response validation fails when Ixbrl link is not set ")
     void shouldFailValidationAsIxbrlLocationNotSet() {
-
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
-        assertFalse(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertFalse(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     @Test
     @DisplayName("Document generator response validation fails when Ixbrl link value is null")
     void shouldFailValidationIxbrlLocationIsNull() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(null));
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
-        assertFalse(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertFalse(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     @Test
     @DisplayName("Document generator response validation fails when description is not")
     void shouldFailValidationAsDescriptionNotSetInDocGeneratorResponse() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(IXBRL_LOCATION));
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, PERIOD_END_ON_VALUE));
 
-        assertFalse(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertFalse(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     @Test
     @DisplayName("Document generator response validation fails when period end on is not set")
     void shouldFailValidationAsPeriodEndOnNotSetInDocGeneratorResponse() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(IXBRL_LOCATION));
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
 
@@ -99,37 +85,30 @@ class DocumentGeneratorResponseValidatorTest {
     @Test
     @DisplayName("Document generator response validation fails when period end on is null")
     void shouldFailValidationAsPeriodEndOnValueIsNullInDocGeneratorResponse() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(IXBRL_LOCATION));
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, null));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues(PERIOD_END_ON_KEY, null));
 
-        assertFalse(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertFalse(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     @Test
     @DisplayName("Document generator response validation fails when period end key does not exist")
     void shouldFailValidationAsPeriodEndOnKeyIsNotInDocGeneratorResponse() {
-
         documentGeneratorResponse.setLinks(createIxbrlLink(IXBRL_LOCATION));
         documentGeneratorResponse.setDescription(ACCOUNT_DESCRIPTION);
-        documentGeneratorResponse
-            .setDescriptionValues(createDescriptionValues("wrong_key", PERIOD_END_ON_VALUE));
+        documentGeneratorResponse.setDescriptionValues(createDescriptionValues("wrong_key", PERIOD_END_ON_VALUE));
 
-        assertFalse(docGeneratorResponseValidator
-            .isDocumentGeneratorResponseValid(documentGeneratorResponse));
+        assertFalse(docGeneratorResponseValidator.isDocumentGeneratorResponseValid(documentGeneratorResponse));
     }
 
     /**
      * Create links object containing the ixbrl location.
      *
      * @param ixbrlLocation Ixbrl location to be set in the links
-     * @return
+     * @return links
      */
     private Links createIxbrlLink(String ixbrlLocation) {
-
         Links links = new Links();
         links.setLocation(ixbrlLocation);
         return links;
@@ -140,10 +119,9 @@ class DocumentGeneratorResponseValidatorTest {
      *
      * @param keyId key name to use it in the map
      * @param keyValue key value to use in the map
-     * @return
+     * @return description values
      */
     private Map<String, String> createDescriptionValues(String keyId, String keyValue) {
-
         Map<String, String> descriptionValues = new HashMap<>();
         descriptionValues.put(keyId, keyValue);
         return descriptionValues;

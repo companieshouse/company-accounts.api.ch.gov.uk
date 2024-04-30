@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.api.accounts.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,16 +49,15 @@ public class SmallFullController {
 
     @PostMapping
     public ResponseEntity create(@Valid @RequestBody SmallFull smallFull,
-            BindingResult bindingResult,
-            @PathVariable("companyAccountId") String companyAccountId, HttpServletRequest request) {
-    	
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
 
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
@@ -66,9 +65,7 @@ public class SmallFullController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to create small full resource", ex, request);
             return apiResponseMapper.getErrorResponse();
@@ -77,17 +74,16 @@ public class SmallFullController {
 
     @GetMapping
     public ResponseEntity get(HttpServletRequest request) {
-
-        SmallFull smallFull = (SmallFull) request
-            .getAttribute(AttributeName.SMALLFULL.getValue());
+        SmallFull smallFull = (SmallFull) request.getAttribute(AttributeName.SMALLFULL.getValue());
 
         return apiResponseMapper.mapGetResponse(smallFull, request);
     }
     
     @PutMapping
     public ResponseEntity update(@Valid @RequestBody SmallFull smallFull,
-            BindingResult bindingResult,
-            @PathVariable("companyAccountId") String companyAccountId,HttpServletRequest request) {
+                                 BindingResult bindingResult,
+                                 @PathVariable("companyAccountId") String companyAccountId,
+                                 HttpServletRequest request) {
     	
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
@@ -95,12 +91,11 @@ public class SmallFullController {
         }
 
         CompanyAccount companyAccount = (CompanyAccount) request.getAttribute(AttributeName.COMPANY_ACCOUNT.getValue());
-        if(companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink()) == null) {
+        if (companyAccount.getLinks().get(CompanyAccountLinkType.SMALL_FULL.getLink()) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Transaction transaction = (Transaction) request
-            .getAttribute(AttributeName.TRANSACTION.getValue());
+        Transaction transaction = (Transaction) request.getAttribute(AttributeName.TRANSACTION.getValue());
     	
         try {
             ResponseObject<SmallFull> responseObject = smallFullService
@@ -108,13 +103,10 @@ public class SmallFullController {
 
             return apiResponseMapper.map(responseObject.getStatus(), responseObject.getData(),
                     responseObject.getErrors());
-
         } catch (DataException ex) {
-
             LoggingHelper.logException(companyAccountId, transaction,
                     "Failed to update small full resource", ex, request);
             return apiResponseMapper.getErrorResponse();
         }
-    	
     }
 }

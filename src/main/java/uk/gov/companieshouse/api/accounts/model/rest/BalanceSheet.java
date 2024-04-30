@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @JsonInclude(Include.NON_NULL)
 public class BalanceSheet {

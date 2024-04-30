@@ -33,11 +33,10 @@ import uk.gov.companieshouse.environment.EnvironmentReader;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class DocumentGeneratorCallerTest {
-
     private static final String TRANSACTION_ID = "1234561-1234561-1234561";
     private static final String ACCOUNTS_ID = "1234561";
     private static final String ACCOUNTS_RESOURCE_URI =
-        "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
+            "/transactions/" + TRANSACTION_ID + "/company-accounts/" + ACCOUNTS_ID;
 
     private static final String IXBRL_LOCATION = "http://test/ixbrl_bucket_location";
     private static final String PERIOD_END_ON_KEY = "period_end_on";
@@ -59,7 +58,6 @@ class DocumentGeneratorCallerTest {
     @Test
     @DisplayName("Document Generator Caller generates the DocumentGeneratorResponse successfully. Correct status code returned")
     void shouldGenerateDocumentGeneratorResponseCallDocumentGeneratorIsSuccessful() {
-
         mockTransactionServiceProperties(API_KEY_VALUE);
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.CREATED))
@@ -78,7 +76,6 @@ class DocumentGeneratorCallerTest {
     @Test
     @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. Wrong status code returned")
     void shouldNotGenerateDocumentGeneratorResponseCallDocumentGeneratorIsUnsuccessful() {
-
         mockTransactionServiceProperties(API_KEY_VALUE);
 
         doReturn(createDocumentGeneratorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR))
@@ -88,7 +85,7 @@ class DocumentGeneratorCallerTest {
                 eq(DocumentGeneratorResponse.class));
 
         DocumentGeneratorResponse response = documentGeneratorCaller
-            .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
+                .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
 
         verifyRestTemplateMockNumOfCalls();
         assertNull(response);
@@ -97,15 +94,13 @@ class DocumentGeneratorCallerTest {
     @Test
     @DisplayName("Document Generator Caller fails to generate the DocumentGeneratorResponse. An RestClientException is thrown")
     void shouldNotGenerateDocumentGeneratorResponseDocumentGeneratorThrowsException() {
-
         mockTransactionServiceProperties(API_KEY_VALUE);
 
-        when(restTemplateMock
-            .postForEntity(anyString(), any(HttpEntity.class), eq(DocumentGeneratorResponse.class)))
+        when(restTemplateMock.postForEntity(anyString(), any(HttpEntity.class), eq(DocumentGeneratorResponse.class)))
             .thenThrow(RestClientException.class);
 
         DocumentGeneratorResponse response = documentGeneratorCaller
-            .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
+                .callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI);
 
         verifyRestTemplateMockNumOfCalls();
         assertNull(response);
@@ -114,7 +109,6 @@ class DocumentGeneratorCallerTest {
     @Test
     @DisplayName("Document Generator Caller fails when api key has not been set. IllegalArgumentException thrown")
     void shouldGenerateDocumentGeneratorThrowAnExceptionAsApiKeyNotSet() {
-
         mockTransactionServiceProperties("");
         assertThrows(IllegalArgumentException.class,
             () -> documentGeneratorCaller.callDocumentGeneratorService(ACCOUNTS_RESOURCE_URI));
@@ -128,9 +122,7 @@ class DocumentGeneratorCallerTest {
      * Verifies number of calls to the postForEntity.
      */
     private void verifyRestTemplateMockNumOfCalls() {
-        verify(restTemplateMock, times(1))
-            .postForEntity(anyString(),
-                any(HttpEntity.class),
+        verify(restTemplateMock, times(1)).postForEntity(anyString(), any(HttpEntity.class),
                 eq(DocumentGeneratorResponse.class));
     }
 
@@ -139,9 +131,7 @@ class DocumentGeneratorCallerTest {
      *
      * @return ResponseEntity<> with the desired transaction
      */
-    private ResponseEntity<DocumentGeneratorResponse> createDocumentGeneratorResponseEntity(
-        HttpStatus httpStatus) {
-
+    private ResponseEntity<DocumentGeneratorResponse> createDocumentGeneratorResponseEntity(HttpStatus httpStatus) {
         DocumentGeneratorResponse documentGeneratorResponse = createDocumentGeneratorResponse();
 
         return new ResponseEntity<>(documentGeneratorResponse, httpStatus);
@@ -162,8 +152,7 @@ class DocumentGeneratorCallerTest {
         descriptionValues.put(PERIOD_END_ON_KEY, "01 January 2018");
         documentGeneratorResponse.setDescriptionValues(descriptionValues);
 
-        documentGeneratorResponse
-            .setDescription("Small full accounts made up to 18 January 2018");
+        documentGeneratorResponse.setDescription("Small full accounts made up to 18 January 2018");
 
         documentGeneratorResponse.setDescriptionIdentifier("small-full-accounts");
         documentGeneratorResponse.setSize("999999");

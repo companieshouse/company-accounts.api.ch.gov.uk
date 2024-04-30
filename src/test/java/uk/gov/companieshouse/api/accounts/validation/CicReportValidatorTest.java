@@ -25,7 +25,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CicReportValidatorTest {
-
     @Mock
     private Transaction transaction;
 
@@ -40,14 +39,13 @@ class CicReportValidatorTest {
     private static final String UNEXPECTED_DATA_VALUE = "unexpected.data";
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         validator = new CicReportValidator(companyService);
     }
     
     @Test
     @DisplayName("Validate cic report creation - CIC company")
     void validateCicReportCreationForCICCompany() throws ServiceException, DataException {
-
         when(companyService.isCIC(transaction)).thenReturn(true);
 
         Errors errors = validator.validateCicReportCreation(transaction);
@@ -58,7 +56,6 @@ class CicReportValidatorTest {
     @Test
     @DisplayName("Validate cic report creation - non CIC company")
     void validateCicReportCreationForNonCICCompany() throws ServiceException, DataException {
-
         when(companyService.isCIC(transaction)).thenReturn(false);
         ReflectionTestUtils.setField(validator, UNEXPECTED_DATA_NAME, UNEXPECTED_DATA_VALUE);
 
@@ -66,20 +63,19 @@ class CicReportValidatorTest {
 
         assertTrue(errors.hasErrors());
         assertEquals(1, errors.getErrorCount());
-        assertTrue(errors.containsError(createError(UNEXPECTED_DATA_VALUE, CIC_REPORT_PATH)));
+        assertTrue(errors.containsError(createError()));
     }
 
     @Test
     @DisplayName("Validate cic report creation - service throws exception")
     void validateCicReportCreationServiceException() throws ServiceException {
-
         when(companyService.isCIC(transaction)).thenThrow(ServiceException.class);
 
         assertThrows(DataException.class, () -> validator.validateCicReportCreation(transaction));
     }
 
-    private Error createError(String error, String path) {
-
-        return new Error(error, path, LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
+    private Error createError() {
+        return new Error(CicReportValidatorTest.UNEXPECTED_DATA_VALUE, CicReportValidatorTest.CIC_REPORT_PATH,
+                LocationType.JSON_PATH.getValue(), ErrorType.VALIDATION.getType());
     }
 }

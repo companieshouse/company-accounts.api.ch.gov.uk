@@ -14,8 +14,7 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 @Component
 public class DocumentGeneratorResponseValidator {
 
-    private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
     private static final String LOG_MESSAGE_KEY = "message";
     private static final String LOG_DOC_GENERATOR_RESPONSE_INVALID_MESSAGE_KEY =
@@ -60,7 +59,6 @@ public class DocumentGeneratorResponseValidator {
      * @return true when ixbrl location is not null nor blank.
      */
     private boolean isIxbrlInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
         if (StringUtils.isBlank(getIxbrlLocationFromDocGeneratorResponse(response))) {
             Map<String, Object> logMap = new HashMap<>();
             logMap.put(LOG_MESSAGE_KEY,
@@ -80,7 +78,6 @@ public class DocumentGeneratorResponseValidator {
      * @return true when the description not null nor blank.
      */
     private boolean isDescriptionInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
         if (StringUtils.isBlank(response.getDescription())) {
             Map<String, Object> logMap = new HashMap<>();
             logMap.put(LOG_MESSAGE_KEY,
@@ -101,7 +98,6 @@ public class DocumentGeneratorResponseValidator {
      * null nor blank.
      */
     private boolean isPeriodEndOnInDocGeneratorResponse(DocumentGeneratorResponse response) {
-
         if (response.getDescriptionValues() == null ||
             !response.getDescriptionValues().containsKey(PERIOD_END_ON) ||
             StringUtils.isBlank(response.getDescriptionValues().get(PERIOD_END_ON))) {

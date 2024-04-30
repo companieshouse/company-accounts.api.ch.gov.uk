@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.api.accounts.validation;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,33 +29,29 @@ public class EmployeesValidator extends BaseValidator implements NoteValidator<E
     }
 
     @Override
-    public Errors validateSubmission(Employees employees, Transaction transaction, String companyAccountId, HttpServletRequest request) throws DataException {
-
+    public Errors validateSubmission(Employees employees,
+                                     Transaction transaction,
+                                     String companyAccountId,
+                                     HttpServletRequest request) throws DataException {
         Errors errors = new Errors();
 
         boolean isMultipleYearFiler = getIsMultipleYearFiler(transaction);
 
         if (isMultipleYearFiler) {
-
-            if (employees.getPreviousPeriod() == null || employees.getPreviousPeriod().getAverageNumberOfEmployees() == null) {
-
+            if (employees.getPreviousPeriod() == null
+                    || employees.getPreviousPeriod().getAverageNumberOfEmployees() == null) {
                 addError(errors, mandatoryElementMissing, EMPLOYEES_PREVIOUS_PERIOD_PATH_AVERAGE_EMPLOYEES);
-
             }
 
         } else {
-
             if (employees.getPreviousPeriod() != null) {
-
                 addError(errors, unexpectedData, EMPLOYEES_PREVIOUS_PERIOD_PATH);
-
             }
         }
 
-        if (employees.getCurrentPeriod() == null || employees.getCurrentPeriod().getAverageNumberOfEmployees() == null) {
-
+        if (employees.getCurrentPeriod() == null
+                || employees.getCurrentPeriod().getAverageNumberOfEmployees() == null) {
             addError(errors, mandatoryElementMissing, EMPLOYEES_CURRENT_PERIOD_PATH_AVERAGE_EMPLOYEES);
-
         }
 
         return errors;

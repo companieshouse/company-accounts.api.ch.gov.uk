@@ -8,7 +8,7 @@ public enum LocationType {
     REQUEST_BODY("request-body"),
     JSON_PATH("json-path");
 
-    private String value;
+    private final String value;
 
     LocationType(String value) {
         this.value = value;
