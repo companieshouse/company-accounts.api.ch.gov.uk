@@ -23,6 +23,10 @@ test: test-unit
 test-unit: clean
 	mvn test
 
+.PHONY: test-integration
+test-integration:
+	mvn integration-test verify -Dskip.unit.tests=true failsafe:verify
+
 .PHONY: package
 package:
 ifndef version
