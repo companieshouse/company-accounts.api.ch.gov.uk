@@ -37,8 +37,8 @@
     <commons-io.version>2.15.1</commons-io.version>
     <json.version>20240303</json.version>
 
-    <spring-boot-dependencies.version>3.2.4</spring-boot-dependencies.version>
-    <spring-boot-maven-plugin.version>3.2.4</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.2.5</spring-boot-dependencies.version>
+    <spring-boot-maven-plugin.version>3.2.5</spring-boot-maven-plugin.version>
     <spring-core.version>6.1.5</spring-core.version>
 
     <!-- Maven and Surefire plugins -->
@@ -93,6 +93,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-actuator</artifactId>
+      </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>api-helper-java</artifactId>
@@ -255,8 +259,7 @@
                     <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-build-21:latest</image>
                 </from>
                 <to>
-                    //Once the pipeline is moved to shared services need to update this to image reference from shared services
-                    <image>169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/company-accounts.api.ch.gov.uk:latest</image>
+                    <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/company-accounts.api.ch.gov.uk:latest</image>
                 </to>
             </configuration>
       </plugin>
