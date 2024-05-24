@@ -62,36 +62,25 @@ sonar-pr-analysis:
 
 .PHONY: dependency-check
 dependency-check:
-	@ printf -- "dcsh before ifs: '%s'\n" "$${dcsh}"; \
-	if [ -d "$(DEPENDENCY_CHECK_SUPPRESSIONS_HOME)" ]; then \
-		printf -- "DEPENDENCY_CHECK_SUPPRESSIONS_HOME is a dir at: '%s'\n" "$(DEPENDENCY_CHECK_SUPPRESSIONS_HOME)"; \
+	@ if [ -d "$(DEPENDENCY_CHECK_SUPPRESSIONS_HOME)" ]; then \
 		dcsh="$${DEPENDENCY_CHECK_SUPPRESSIONS_HOME}"; \
 	fi; \
-	printf -- "dcsh between ifs: '%s'\n" "$${dcsh}"; \
 	if [ ! -d "$${dcsh}" ]; then \
-		printf -- "dcsh still not set...\n"; \
 		if [ -d "./target/dependency-check-suppressions" ]; then \
-			printf -- "dcsh already checked out\n"; \
-			dcsh="./target/dependency-check-suppressions" && \
-			export dcsh; \
+			dcsh="./target/dependency-check-suppressions"; \
 		else \
-			printf -- "dcsh: going to check it out\n"; \
 			mkdir -p "./target"; \
 			git clone $(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_URL) "target/dependency-check-suppressions" && \
-				dcsh="./target/dependency-check-suppressions" && \
-				export dcsh; \
+				dcsh="./target/dependency-check-suppressions"; \
 			if [ -d ./target/dependency-check-suppressions ] && [ -n "$(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_BRANCH)" ]; then \
 				cd ./target/dependency-check-suppressions; \
 				git checkout $(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_BRANCH); \
 				git branch ; \
 				cd -; \
 			fi; \
-			printf "dcsh='%s'\n'" "$${dcsh}"; \
 		fi \
 	fi; \
-	printf -- "dcsh at the end: '%s'\n" "$${dcsh}"; \
 	suppressions_path="$${dcsh}/suppressions/$(dependency_check_base_suppressions)"; \
-	printf -- "suppressions_path: '%s'\n" "$${suppressions_path}"; \
 	cp -av "$${suppressions_path}" $(suppressions_file); \
 	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file) -DnvdValidForHours=$(dependency_check_nvd_valid_for_hours)
 
