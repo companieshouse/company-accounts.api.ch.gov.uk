@@ -1,11 +1,15 @@
 artifact_name := company-accounts.api.ch.gov.uk
 dependency_check_base_suppressions:=base_suppressions_spring_6.xml
+
+# Dependency check variables, should not need to be edited
 dependency_check_minimum_cvss := 4
 dependency_check_assembly_analyzer_enabled := false
-dependency_check_nvd_valid_for_hours = 172
-DEPENDENCY_CHECK_SUPPRESSIONS_REPO_URL:=git@github.com:companieshouse/dependency-check-suppressions.git
-DEPENDENCY_CHECK_SUPPRESSIONS_REPO_BRANCH:=feature/suppressions-for-company-accounts-api
+dependency_check_suppressions_repo_url:=git@github.com:companieshouse/dependency-check-suppressions.git
+dependency_check_suppressions_repo_branch:=feature/suppressions-for-company-accounts-api
 suppressions_file := target/suppressions.xml
+
+# Temporary value, part of POC:
+dependency_check_nvd_valid_for_hours = 240
 
 .PHONY: all
 all: build
@@ -70,11 +74,11 @@ dependency-check:
 			dcsh="./target/dependency-check-suppressions"; \
 		else \
 			mkdir -p "./target"; \
-			git clone $(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_URL) "target/dependency-check-suppressions" && \
+			git clone $(dependency_check_suppressions_repo_url) "target/dependency-check-suppressions" && \
 				dcsh="./target/dependency-check-suppressions"; \
-			if [ -d ./target/dependency-check-suppressions ] && [ -n "$(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_BRANCH)" ]; then \
+			if [ -d ./target/dependency-check-suppressions ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
 				cd ./target/dependency-check-suppressions; \
-				git checkout $(DEPENDENCY_CHECK_SUPPRESSIONS_REPO_BRANCH); \
+				git checkout $(dependency_check_suppressions_repo_branch); \
 				git branch ; \
 				cd -; \
 			fi; \
