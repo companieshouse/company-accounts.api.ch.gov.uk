@@ -1,17 +1,17 @@
-#Edit these values, they are specific to your repo
 artifact_name := company-accounts.api.ch.gov.uk
 dependency_check_base_suppressions:=common_suppressions_spring_6.xml
 
-#This should point to "main" branch when being used for release
-dependency_check_suppressions_repo_branch:=feature/suppressions-for-company-accounts-api
+# dependency_check_suppressions_repo_branch
+# The branch of the dependency-check-suppressions repository to use
+# as the source of the suppressions file.
+# This should point to "main" branch when being used for release,
+# but can point to a different branch for experimentation/development.
+dependency_check_suppressions_repo_branch:=main
 
-#Values that should not usually be changed
 dependency_check_minimum_cvss := 4
 dependency_check_assembly_analyzer_enabled := false
 dependency_check_suppressions_repo_url:=git@github.com:companieshouse/dependency-check-suppressions.git
 suppressions_file := target/suppressions.xml
-# Temporary value, part of POC:
-dependency_check_nvd_valid_for_hours = 840
 
 .PHONY: all
 all: build
@@ -89,7 +89,7 @@ dependency-check:
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
 	cp -av "$${suppressions_path}" $(suppressions_file); \
 	if [  -f $(suppressions_file) ]; then \
-		mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file) -DnvdValidForHours=$(dependency_check_nvd_valid_for_hours); \
+	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file); \
 	else \
 		printf -- "\n ERROR Cannot find suppressions file at '%s'\n" "$(suppressions_file)" >&2; \
 		exit 1; \
