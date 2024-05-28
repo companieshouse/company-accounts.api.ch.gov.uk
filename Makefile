@@ -88,7 +88,12 @@ dependency-check:
 	fi; \
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
 	cp -av "$${suppressions_path}" $(suppressions_file); \
-	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file) -DnvdValidForHours=$(dependency_check_nvd_valid_for_hours)
+	if [  -f $(suppressions_file) ]; then \
+		mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file) -DnvdValidForHours=$(dependency_check_nvd_valid_for_hours); \
+	else \
+		printf -- "\n ERROR Cannot find suppressions file at '%s'\n" "$(suppressions_file)" >&2; \
+		exit 1; \
+	fi
 
 .PHONY: security-check
 security-check: dependency-check
