@@ -1,6 +1,6 @@
 #Edit these values, they are specific to your repo
 artifact_name := company-accounts.api.ch.gov.uk
-dependency_check_base_suppressions:=base_suppressions_spring_6.xml
+dependency_check_base_suppressions:=common_suppressions_spring_6.xml
 
 #This should point to "main" branch when being used for release
 dependency_check_suppressions_repo_branch:=feature/suppressions-for-company-accounts-api
