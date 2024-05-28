@@ -1,15 +1,17 @@
+#Edit these values, they are specific to your repo
 artifact_name := company-accounts.api.ch.gov.uk
 dependency_check_base_suppressions:=base_suppressions_spring_6.xml
 
-# Dependency check variables, should not need to be edited
+#This should point to "main" branch when being used for release
+dependency_check_suppressions_repo_branch:=feature/suppressions-for-company-accounts-api
+
+#Values that should not usually be changed
 dependency_check_minimum_cvss := 4
 dependency_check_assembly_analyzer_enabled := false
 dependency_check_suppressions_repo_url:=git@github.com:companieshouse/dependency-check-suppressions.git
-dependency_check_suppressions_repo_branch:=feature/suppressions-for-company-accounts-api
 suppressions_file := target/suppressions.xml
-
 # Temporary value, part of POC:
-dependency_check_nvd_valid_for_hours = 240
+dependency_check_nvd_valid_for_hours = 840
 
 .PHONY: all
 all: build
@@ -67,24 +69,24 @@ sonar-pr-analysis:
 .PHONY: dependency-check
 dependency-check:
 	@ if [ -d "$(DEPENDENCY_CHECK_SUPPRESSIONS_HOME)" ]; then \
-		dcsh="$${DEPENDENCY_CHECK_SUPPRESSIONS_HOME}"; \
+		suppressions_home="$${DEPENDENCY_CHECK_SUPPRESSIONS_HOME}"; \
 	fi; \
-	if [ ! -d "$${dcsh}" ]; then \
-		if [ -d "./target/dependency-check-suppressions" ]; then \
-			dcsh="./target/dependency-check-suppressions"; \
+	if [ ! -d "$${suppressions_home}" ]; then \
+	    suppressions_home_target_dir="./target/dependency-check-suppressions"; \
+		if [ -d "$${suppressions_home_target_dir}" ]; then \
+			suppressions_home="$${suppressions_home_target_dir}"; \
 		else \
 			mkdir -p "./target"; \
-			git clone $(dependency_check_suppressions_repo_url) "target/dependency-check-suppressions" && \
-				dcsh="./target/dependency-check-suppressions"; \
-			if [ -d ./target/dependency-check-suppressions ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
-				cd ./target/dependency-check-suppressions; \
+			git clone $(dependency_check_suppressions_repo_url) "$${suppressions_home_target_dir}" && \
+				suppressions_home="$${suppressions_home_target_dir}"; \
+			if [ -d "$${suppressions_home_target_dir}" ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
+				cd "$${suppressions_home}"; \
 				git checkout $(dependency_check_suppressions_repo_branch); \
-				git branch ; \
 				cd -; \
 			fi; \
-		fi \
+		fi; \
 	fi; \
-	suppressions_path="$${dcsh}/suppressions/$(dependency_check_base_suppressions)"; \
+	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
 	cp -av "$${suppressions_path}" $(suppressions_file); \
 	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file) -DnvdValidForHours=$(dependency_check_nvd_valid_for_hours)
 
