@@ -103,7 +103,7 @@ public class RptTransactionsController {
     public ResponseEntity update(@Valid @RequestBody RptTransaction rptTransaction,
                                  BindingResult bindingResult,
                                  @PathVariable("companyAccountId") String companyAccountId,
-                                 @PathVariable String rptTransactionId,
+                                 @PathVariable("rptTransactionId") String rptTransactionId,
                                  HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Errors errors = errorMapper.mapBindingResultErrorsToErrorModel(bindingResult);
