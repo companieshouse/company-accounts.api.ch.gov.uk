@@ -221,6 +221,9 @@
               <meminitial>128m</meminitial>
               <encoding>${project.build.sourceEncoding}</encoding>
               <maxmem>512m</maxmem>
+              <compilerArgs>
+                  <arg>-parameters</arg>
+              </compilerArgs>
           </configuration>
       </plugin>
       <plugin>
