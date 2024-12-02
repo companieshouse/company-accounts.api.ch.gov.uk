@@ -53,14 +53,14 @@ variable "required_memory" {
   default     = 512 # defaulted minimum required for fargate services, override for production
 }
 variable "eric_cpus" {
-  type = number
+  type        = number
   description = "The required cpu resource for eric. 1024 here is 1 vCPU"
-  default = 256
+  default     = 256
 }
 variable "eric_memory" {
-  type = number
+  type        = number
   description = "The required memory for eric"
-  default = 512
+  default     = 512
 }
 
 variable "use_fargate" {
