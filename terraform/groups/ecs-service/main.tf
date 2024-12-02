@@ -28,7 +28,7 @@ module "secrets" {
 }
 
 module "ecs-service" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.253"
+  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.294"
 
   # Environmental configuration
   environment             = var.environment
@@ -65,11 +65,13 @@ module "ecs-service" {
   docker_repo       = local.docker_repo
   container_version = var.company_accounts_api_version
   container_port    = local.container_port
+  read_only_root_filesystem = true
 
   # Service configuration
   service_name                       = local.service_name
   name_prefix                        = local.name_prefix
   desired_task_count                 = var.desired_task_count
+  min_task_count = var.min_task_count
   max_task_count                     = var.max_task_count
   required_cpus                      = var.required_cpus
   required_memory                    = var.required_memory
