@@ -41,6 +41,7 @@
 
     <spring-boot-maven-plugin.version>3.5.3</spring-boot-maven-plugin.version>
     <spring-boot-dependencies.version>3.5.3</spring-boot-dependencies.version>
+    <opentelemetry-instrumentation-bom.version>2.14.0</opentelemetry-instrumentation-bom.version>
 
     <!-- Maven and Surefire plugins -->
     <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -51,6 +52,13 @@
 
     <dependencyManagement>
         <dependencies>
+              <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${opentelemetry-instrumentation-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+              </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
@@ -86,10 +94,14 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
-      <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-actuator</artifactId>
-      </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry.instrumentation</groupId>
+      <artifactId>opentelemetry-spring-boot-starter</artifactId>
+    </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>api-helper-java</artifactId>
