@@ -13,7 +13,7 @@
   <parent>
     <groupId>uk.gov.companieshouse</groupId>
     <artifactId>companies-house-parent</artifactId>
-    <version>2.1.11</version>
+    <version>2.1.12</version>
     <relativePath/>
   </parent>
 
@@ -27,31 +27,38 @@
 
     <!-- Internal Dependency Versions -->
     <api-helper-java.version>3.0.1</api-helper-java.version>
-    <structured-logging.version>3.0.3</structured-logging.version>
+    <structured-logging.version>3.0.32</structured-logging.version>
     <company-accounts-library.version>3.0.1</company-accounts-library.version>
-    <private-api-sdk-java.version>4.0.76</private-api-sdk-java.version>
-    <api-sdk-java.version>6.0.0</api-sdk-java.version>
-    <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
+    <private-api-sdk-java.version>4.0.312</private-api-sdk-java.version>
+    <api-sdk-java.version>6.3.1</api-sdk-java.version>
+    <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
 
-    <log4j2.version>2.23.1</log4j2.version>
-    <aws-java-sdk.version>1.12.683</aws-java-sdk.version>
-    <commons-io.version>2.15.1</commons-io.version>
-    <json.version>20240303</json.version>
+    <log4j2.version>2.25.0</log4j2.version>
+    <aws-java-sdk.version>1.12.787</aws-java-sdk.version>
+    <commons-io.version>2.19.0</commons-io.version>
+    <json.version>20250517</json.version>
+    <jaxb-impl.version>4.0.5</jaxb-impl.version>
 
-    <spring-boot-dependencies.version>3.3.2</spring-boot-dependencies.version>
-    <spring-boot-maven-plugin.version>3.3.2</spring-boot-maven-plugin.version>
-    <spring-core.version>6.1.5</spring-core.version>
+    <spring-boot-maven-plugin.version>3.5.3</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.5.3</spring-boot-dependencies.version>
+    <opentelemetry-instrumentation-bom.version>2.14.0</opentelemetry-instrumentation-bom.version>
 
     <!-- Maven and Surefire plugins -->
-    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-    <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <jib-maven-plugin.version>3.4.1</jib-maven-plugin.version>
-
+    <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+    <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+    <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
   </properties>
 
     <dependencyManagement>
         <dependencies>
+              <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${opentelemetry-instrumentation-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+              </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
@@ -79,31 +86,29 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-      <dependency>
-          <!--Overriding spring-web version to remove vulnerability-->
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-web</artifactId>
-          <version>6.1.6</version>
-      </dependency>
     <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
-        <version>${spring-core.version}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
-      <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-actuator</artifactId>
-      </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry.instrumentation</groupId>
+      <artifactId>opentelemetry-spring-boot-starter</artifactId>
+    </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>api-helper-java</artifactId>
         <version>${api-helper-java.version}</version>
     </dependency>
     <dependency>
+        <!--Depreciated dependency, requires rewrite of S3Configuration implementation-->
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-s3</artifactId>
         <version>${aws-java-sdk.version}</version>
@@ -188,7 +193,7 @@
       <dependency>
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
-          <version>4.0.5</version>
+          <version>${jaxb-impl.version}</version>
           <scope>runtime</scope>
       </dependency>
   </dependencies>
