@@ -29,8 +29,8 @@
     <api-helper-java.version>3.0.1</api-helper-java.version>
     <structured-logging.version>3.0.32</structured-logging.version>
     <company-accounts-library.version>3.0.1</company-accounts-library.version>
-    <private-api-sdk-java.version>4.0.312</private-api-sdk-java.version>
-    <api-sdk-java.version>6.3.1</api-sdk-java.version>
+    <private-api-sdk-java.version>4.0.435</private-api-sdk-java.version>
+    <api-sdk-java.version>6.6.1</api-sdk-java.version>
     <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
 
     <log4j2.version>2.25.0</log4j2.version>
@@ -39,15 +39,30 @@
     <json.version>20250517</json.version>
     <jaxb-impl.version>4.0.5</jaxb-impl.version>
 
-    <spring-boot-maven-plugin.version>3.5.3</spring-boot-maven-plugin.version>
-    <spring-boot-dependencies.version>3.5.3</spring-boot-dependencies.version>
+    <spring-boot-maven-plugin.version>3.5.9</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.5.9</spring-boot-dependencies.version>
     <opentelemetry-instrumentation-bom.version>2.14.0</opentelemetry-instrumentation-bom.version>
 
     <!-- Maven and Surefire plugins -->
-    <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-    <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+
+    <!--sonar configuration-->
+    <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+    <sonar.login/>
+    <sonar.password/>
+    <sonar.projectKey>uk.gov.companieshouse:company-accounts.api.ch.gov.uk</sonar.projectKey>
+    <sonar.projectName>company-accounts.api.ch.gov.uk</sonar.projectName>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.sources>src/main</sonar.sources>
+    <sonar.tests>src/test</sonar.tests>
+    <sonar.coverage.jacoco.xmlReportPaths>
+        ${project.build.directory}/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.jacoco.reports>${project.build.directory}/site</sonar.jacoco.reports>
   </properties>
 
     <dependencyManagement>
@@ -71,6 +86,12 @@
                 <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- Temporary fix: please remove when the POM is next updated -->
+            <dependency>
+              <groupId>org.apache.commons</groupId>
+              <artifactId>commons-lang3</artifactId>
+              <version>3.20.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -256,6 +277,31 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <configuration>
+            <append>true</append>
+            <destFile>${sonar.jacoco.reports}/jacoco.exec</destFile>
+            <dataFile>${sonar.jacoco.reports}/jacoco.exec</dataFile>
+            <outputDirectory>${sonar.jacoco.reports}/jacoco</outputDirectory>
+        </configuration>
+        <executions>
+            <execution>
+                <id>pre-unit-test</id>
+                <goals>
+                    <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                    <propertyName>surefireArgLine</propertyName>
+                </configuration>
+            </execution>
+            <execution>
+                <id>post-unit-test</id>
+                <phase>verify</phase>
+                <goals>
+                    <goal>report</goal>
+                </goals>
+            </execution>
+        </executions>
       </plugin>
       <plugin>
             <groupId>com.google.cloud.tools</groupId>
