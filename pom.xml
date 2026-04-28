@@ -27,7 +27,7 @@
 
     <!-- Internal Dependency Versions -->
     <api-helper-java.version>3.0.1</api-helper-java.version>
-    <structured-logging.version>3.0.32</structured-logging.version>
+    <structured-logging.version>3.0.38</structured-logging.version>
     <company-accounts-library.version>3.0.1</company-accounts-library.version>
     <private-api-sdk-java.version>4.0.435</private-api-sdk-java.version>
     <api-sdk-java.version>6.6.1</api-sdk-java.version>
