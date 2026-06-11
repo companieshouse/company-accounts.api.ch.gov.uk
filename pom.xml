@@ -32,15 +32,14 @@
     <private-api-sdk-java.version>4.0.435</private-api-sdk-java.version>
     <api-sdk-java.version>6.6.16</api-sdk-java.version>
     <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
-
     <log4j2.version>2.25.0</log4j2.version>
     <aws-java-sdk.version>1.12.787</aws-java-sdk.version>
     <commons-io.version>2.19.0</commons-io.version>
     <json.version>20250517</json.version>
     <jaxb-impl.version>4.0.5</jaxb-impl.version>
 
-    <spring-boot-maven-plugin.version>3.5.14</spring-boot-maven-plugin.version>
-    <spring-boot-dependencies.version>3.5.14</spring-boot-dependencies.version>
+    <spring-boot-maven-plugin.version>3.5.15</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.5.15</spring-boot-dependencies.version>
     <opentelemetry-instrumentation-bom.version>2.27.0</opentelemetry-instrumentation-bom.version>
 
     <!-- Maven and Surefire plugins -->
@@ -49,9 +48,7 @@
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-
-      <!-- The tomcat-embedded dependencies can be removed if spring-boot > 3.5.12 fixed the vulnerabilities-->
-      <tomcat-embedded.version>11.0.21</tomcat-embedded.version>
+    <log4j-api.version>2.25.4</log4j-api.version>
 
       <!-- Fixes vulnerabilities for sonar plugins -->
       <plexus-utils.version>4.0.3</plexus-utils.version>
@@ -100,14 +97,22 @@
               <artifactId>commons-lang3</artifactId>
               <version>3.20.0</version>
             </dependency>
-            <!-- Temporary managed override until spring-boot-starter-logger > 3.5.9 -->
+            <!--
+                Override dependency to fix  CVE-2026-34477(6.3), CVE-2026-34479(6.9)
+                Review to see if spring-boot... > 3.5.15
+                supply an updated version of this,
+                allowing removal of this dependency.
+            -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.25.4</version>
+                <version>${log4j-api.version}</version>
             </dependency>
-
-            <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
@@ -238,21 +243,6 @@
           <version>${jaxb-impl.version}</version>
           <scope>runtime</scope>
       </dependency>
-
-      <!-- The tomcat-embedded dependencies can be removed if spring-boot > 4.0.5 fixed the vulnerabilities-->
-      <dependency>
-          <groupId>org.apache.tomcat.embed</groupId>
-          <artifactId>tomcat-embed-core</artifactId>
-          <version>${tomcat-embedded.version}</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.tomcat.embed</groupId>
-          <artifactId>tomcat-embed-websocket</artifactId>
-          <version>11.0.21</version>
-          <scope>compile</scope>
-      </dependency>
-
 
       <!-- Fixes vulnerabilities for sonar plugins -->
       <dependency>
