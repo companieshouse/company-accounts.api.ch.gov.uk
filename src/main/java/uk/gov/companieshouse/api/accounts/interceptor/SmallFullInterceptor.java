@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -35,8 +34,11 @@ public class SmallFullInterceptor implements HandlerInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyAccountsApplication.APPLICATION_NAME_SPACE);
 
-    @Autowired
     private SmallFullService smallFullService;
+
+    public SmallFullInterceptor(SmallFullService smallFullService) {
+        this.smallFullService = smallFullService;
+    }
 
     /**
      * This class validates a Small-full account exists for the given CompanyAccount. Validation is

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import uk.gov.companieshouse.api.accounts.interceptor.AuthenticationInterceptor;
+import uk.gov.companieshouse.api.accounts.interceptor.BlockOverseasCompanyInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
@@ -44,6 +45,9 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
 
     @Autowired
     private SmallFullInterceptor smallFullInterceptor;
+
+    @Autowired
+    private BlockOverseasCompanyInterceptor blockOverseasCompanyInterceptor;
 
     @Autowired
     private CurrentPeriodInterceptor currentPeriodInterceptor;
@@ -128,6 +132,11 @@ public class CompanyAccountsApplication implements WebMvcConfigurer {
                 "/private/transactions/{transactionId}/company-accounts/{companyAccountId}/**");
 
         registry.addInterceptor(smallFullInterceptor)
+            .addPathPatterns(
+                "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
+                "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
+
+        registry.addInterceptor(blockOverseasCompanyInterceptor)
             .addPathPatterns(
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full",
                 "/transactions/{transactionId}/company-accounts/{companyAccountId}/small-full/**");
