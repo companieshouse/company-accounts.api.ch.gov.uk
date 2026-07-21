@@ -1,14 +1,14 @@
 package uk.gov.companieshouse.api.accounts.utility.filetransfer;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.S3Client;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,11 +24,11 @@ public class FileTransferToolImpl implements FileTransferTool {
     private static final String S3_BUCKET = "s3://";
     private static final String PATH_DELIMITER = "/";
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     @Autowired
-    FileTransferToolImpl(AmazonS3 amazonS3) {
-        this.amazonS3 = amazonS3;
+    FileTransferToolImpl(S3Client s3Client) {
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -52,9 +52,8 @@ public class FileTransferToolImpl implements FileTransferTool {
 
     private String downloadFileFromS3(String fileLocation) {
         try {
-            S3Object s3Object = getObjectInS3(fileLocation);
-
-            return convertInputStringToString(s3Object.getObjectContent());
+            byte[] s3ObjectBytes = getObjectInS3(fileLocation).readAllBytes();
+            return new String(s3ObjectBytes);
         } catch (SdkClientException sdkEx) {
             logError(sdkEx,
                 "FileTransferImpl: SdkClientException thrown when downloading file from S3",
@@ -74,18 +73,12 @@ public class FileTransferToolImpl implements FileTransferTool {
      *
      * @param location - location
      */
-    private S3Object getObjectInS3(String location) {
+    private ResponseInputStream<GetObjectResponse> getObjectInS3(String location) {
         String locationWithoutS3 = location.replace(S3_BUCKET, "");
 
         String bucket = locationWithoutS3.split(PATH_DELIMITER)[0];
         String key = locationWithoutS3.replace(bucket + PATH_DELIMITER, "");
-
-        return amazonS3.getObject(new GetObjectRequest(bucket, key));
-    }
-
-    private String convertInputStringToString(InputStream inputStream) throws IOException {
-        byte[] byteArray = IOUtils.toByteArray(inputStream);
-        return new String(byteArray);
+        return s3Client.getObject(GetObjectRequest.builder().bucket(bucket).key(key).build());
     }
 
     private void logError(Exception exception, String errorKey, String errorMessageMessage) {

@@ -13,14 +13,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import software.amazon.awssdk.services.s3.S3Client;
 import uk.gov.companieshouse.environment.EnvironmentReader;
-import com.amazonaws.services.s3.AmazonS3;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AmazonS3ConfigurationTest {
+class S3ClientConfigurationTest {
     @InjectMocks
-    private AmazonS3Configuration amazonS3Configuration;
+    private S3ClientConfiguration s3ClientConfiguration;
 
     @Mock
     private EnvironmentReader environmentReader;
@@ -33,29 +34,9 @@ class AmazonS3ConfigurationTest {
     @Test
     @DisplayName("Test get Amazon S3 without Providing Proxy")
     void testGetAmazonS3WithoutProxy() {
-        AmazonS3 result = amazonS3Configuration.getAmazonS3();
+        S3Client result = s3ClientConfiguration.getS3Client();
         assertNotNull(result);
-        verifyProxyCheck();
         verifyRegionCheck();
-    }
-
-    @Test
-    @DisplayName("Test get Amazon S3 by Providing Proxy")
-    void testGetAmazonS3WithProxy() {
-        when(environmentReader.getOptionalInteger("HTTP_URL_CONNECTION_PROXY_PORT")).thenReturn(8080);
-        when(environmentReader.getOptionalString("IMAGE_CLOUD_PROXY_HOST")).thenReturn("PROXY_HOST");
-        AmazonS3 result = amazonS3Configuration.getAmazonS3();
-        assertNotNull(result);
-        verifyProxyCheck();
-        verifyRegionCheck();
-    }
-
-    /**
-     * Verify the proxy configuration check
-     */
-    private void verifyProxyCheck() {
-        verify(environmentReader, times(1)).getOptionalString("IMAGE_CLOUD_PROXY_HOST");
-        verify(environmentReader, times(1)).getOptionalInteger("HTTP_URL_CONNECTION_PROXY_PORT");
     }
 
     /**

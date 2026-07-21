@@ -13,7 +13,7 @@
   <parent>
     <groupId>uk.gov.companieshouse</groupId>
     <artifactId>companies-house-parent</artifactId>
-    <version>2.1.12</version>
+    <version>2.1.14</version>
     <relativePath/>
   </parent>
 
@@ -28,19 +28,20 @@
     <!-- Internal Dependency Versions -->
     <api-helper-java.version>3.0.1</api-helper-java.version>
     <structured-logging.version>3.0.38</structured-logging.version>
-    <company-accounts-library.version>3.0.1</company-accounts-library.version>
-    <private-api-sdk-java.version>4.0.435</private-api-sdk-java.version>
-    <api-sdk-java.version>6.6.16</api-sdk-java.version>
-    <api-sdk-manager-java-library.version>3.0.7</api-sdk-manager-java-library.version>
+    <company-accounts-library.version>3.0.6</company-accounts-library.version>
+    <api-sdk-java.version>7.2.0</api-sdk-java.version>
+    <private-api-sdk-java.version>7.1.0</private-api-sdk-java.version>
+    <api-sdk-manager-java-library.version>3.0.27</api-sdk-manager-java-library.version>
     <log4j2.version>2.25.0</log4j2.version>
-    <aws-java-sdk.version>1.12.787</aws-java-sdk.version>
+    <s3.version>2.47.5</s3.version>
     <commons-io.version>2.19.0</commons-io.version>
     <json.version>20250517</json.version>
     <jaxb-impl.version>4.0.5</jaxb-impl.version>
+    <ch-bom.version>0.1.13</ch-bom.version>
 
-    <spring-boot-maven-plugin.version>3.5.15</spring-boot-maven-plugin.version>
-    <spring-boot-dependencies.version>3.5.15</spring-boot-dependencies.version>
-    <opentelemetry-instrumentation-bom.version>2.27.0</opentelemetry-instrumentation-bom.version>
+    <spring-boot-maven-plugin.version>3.5.16</spring-boot-maven-plugin.version>
+    <spring-boot-dependencies.version>3.5.16</spring-boot-dependencies.version>
+    <opentelemetry-instrumentation-bom.version>2.29.0</opentelemetry-instrumentation-bom.version>
 
     <!-- Maven and Surefire plugins -->
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
@@ -84,40 +85,47 @@
                 <version>${log4j2.version}</version>
                 <type>pom</type>
             </dependency>
+            <!-- Temporarily dependencies please review and remove if not needed -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${s3.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>5.4.3</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>5.4.3</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- End of temporary dependencies -->
+            <dependency>
+                <groupId>uk.gov.companieshouse</groupId>
+                <artifactId>ch-dependency-bom</artifactId>
+                <version>${ch-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>uk.gov.companieshouse</groupId>
+                <artifactId>ch-test-bom</artifactId>
+                <version>${ch-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- Temporary fix: please remove when the POM is next updated -->
-            <dependency>
-              <groupId>org.apache.commons</groupId>
-              <artifactId>commons-lang3</artifactId>
-              <version>3.20.0</version>
-            </dependency>
-            <!--
-                Override dependency to fix  CVE-2026-34477(6.3), CVE-2026-34479(6.9)
-                Review to see if spring-boot... > 3.5.15
-                supply an updated version of this,
-                allowing removal of this dependency.
-            -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-to-slf4j</artifactId>
-                <version>${log4j-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
-                <version>2.3.21</version>
-                <scope>compile</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -155,11 +163,10 @@
         <version>${api-helper-java.version}</version>
     </dependency>
     <dependency>
-        <!--Depreciated dependency, requires rewrite of S3Configuration implementation-->
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-s3</artifactId>
-        <version>${aws-java-sdk.version}</version>
-        <scope>compile</scope>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${s3.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
