@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.api.accounts.configuration;
 
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ public class S3ClientConfiguration {
     public S3Client getS3Client() {
         return S3Client.builder()
             .region(getRegion())
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .build();
     }
 
