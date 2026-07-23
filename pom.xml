@@ -33,7 +33,7 @@
     <private-api-sdk-java.version>7.1.0</private-api-sdk-java.version>
     <api-sdk-manager-java-library.version>3.0.27</api-sdk-manager-java-library.version>
     <log4j2.version>2.25.0</log4j2.version>
-    <s3.version>2.47.5</s3.version>
+    <software.amazon.awssdk.version>2.47.5</software.amazon.awssdk.version>
     <commons-io.version>2.19.0</commons-io.version>
     <json.version>20250517</json.version>
     <jaxb-impl.version>4.0.5</jaxb-impl.version>
@@ -85,14 +85,14 @@
                 <version>${log4j2.version}</version>
                 <type>pom</type>
             </dependency>
-            <!-- Temporarily dependencies please review and remove if not needed -->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>${s3.version}</version>
+                <version>${software.amazon.awssdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Temporarily dependencies please review and remove if not needed -->
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
                 <artifactId>httpcore5</artifactId>
@@ -163,11 +163,16 @@
         <version>${api-helper-java.version}</version>
     </dependency>
     <dependency>
-      <groupId>software.amazon.awssdk</groupId>
-      <artifactId>s3</artifactId>
-      <version>${s3.version}</version>
-      <scope>compile</scope>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>${software.amazon.awssdk.version}</version>
+        <scope>compile</scope>
     </dependency>
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>apache-client</artifactId>
+        <version>${software.amazon.awssdk.version}</version>
+        </dependency>
     <dependency>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>private-api-sdk-java</artifactId>
