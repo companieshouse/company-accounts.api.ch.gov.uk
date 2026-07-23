@@ -17,20 +17,20 @@ import java.net.URI;
 public class S3ClientConfiguration {
 
     private String region;
-    private String endpoint;
+    private String host;
     private String port;
     private String protocol;
     private final ApacheHttpClient.Builder httpClientBuilder;
 
     public S3ClientConfiguration(
         @Value("${cloud.aws.s3.region}") String region,
-        @Value("${cloud.aws.s3.proxy.endpoint}") String endpoint,
+        @Value("${cloud.aws.s3.proxy.host}") String host,
         @Value("${cloud.aws.s3.proxy.port}") String port,
         @Value("${cloud.aws.s3.proxy.protocol}") String protocol,
         ApacheHttpClient.Builder httpClientBuilder
                                 ) {
         this.region = region;
-        this.endpoint = endpoint;
+        this.host = host;
         this.port = port;
         this.protocol = protocol;
         this.httpClientBuilder = httpClientBuilder;
@@ -59,7 +59,7 @@ public class S3ClientConfiguration {
     }
 
     private String getProxyHost() {
-        return endpoint;
+        return host;
     }
 
     private String getProxyProtocol() {
