@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
-import software.amazon.awssdk.http.apache.ProxyConfiguration;
+import software.amazon.awssdk.http.apache5.Apache5HttpClient;
+import software.amazon.awssdk.http.apache5.ProxyConfiguration;
 
 import java.net.URI;
 
@@ -20,14 +20,14 @@ public class S3ClientConfiguration {
     private String host;
     private String port;
     private String protocol;
-    private final ApacheHttpClient.Builder httpClientBuilder;
+    private final Apache5HttpClient.Builder httpClientBuilder;
 
     public S3ClientConfiguration(
         @Value("${cloud.aws.s3.region}") String region,
         @Value("${cloud.aws.s3.proxy.host}") String host,
         @Value("${cloud.aws.s3.proxy.port}") String port,
         @Value("${cloud.aws.s3.proxy.protocol}") String protocol,
-        ApacheHttpClient.Builder httpClientBuilder
+        Apache5HttpClient.Builder httpClientBuilder
                                 ) {
         this.region = region;
         this.host = host;

@@ -14,7 +14,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.http.apache5.Apache5HttpClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +27,7 @@ class S3ClientConfigurationTest {
     private static final String PROXY_PROTOCOL = "HTTPS";
 
     @Spy
-    private ApacheHttpClient.Builder httpClientBuilder;
+    private Apache5HttpClient.Builder httpClientBuilder;
 
     @Test
     @DisplayName("Test get Amazon S3 without Providing Proxy")
