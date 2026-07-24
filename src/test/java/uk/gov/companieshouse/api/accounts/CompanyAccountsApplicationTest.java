@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import uk.gov.companieshouse.api.accounts.interceptor.AuthenticationInterceptor;
-import uk.gov.companieshouse.api.accounts.interceptor.BlockOverseasCompanyInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CicReportInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.accounts.interceptor.CompanyAccountInterceptor;
@@ -81,9 +80,6 @@ class CompanyAccountsApplicationTest {
     private AuthenticationInterceptor authenticationInterceptor;
 
     @Mock
-    private BlockOverseasCompanyInterceptor blockOverseasCompanyInterceptor;
-
-    @Mock
     private InterceptorRegistry interceptorRegistry;
 
     @Mock
@@ -100,7 +96,6 @@ class CompanyAccountsApplicationTest {
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(closedTransactionInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(companyAccountInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(smallFullInterceptor);
-        doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(blockOverseasCompanyInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(currentPeriodInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(previousPeriodInterceptor);
         doReturn(interceptorRegistration).when(interceptorRegistry).addInterceptor(cicReportInterceptor);
