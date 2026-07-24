@@ -48,6 +48,7 @@ public class S3ClientConfiguration {
         return S3Client.builder()
             .region(getRegion())
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .httpClientBuilder(httpClientBuilder)
             .build();
     }
 

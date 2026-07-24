@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.Spy;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
@@ -25,13 +25,13 @@ class S3ClientConfigurationTest {
     private static final String PROXY_PORT = "8080";
     private static final String PROXY_PROTOCOL = "HTTPS";
 
-    @Mock
-    private Apache5HttpClient.Builder httpClientBuilder;
+    @Spy
+    private Apache5HttpClient.Builder httpClientBuilder = spy(Apache5HttpClient.builder());
 
     @Test
     @DisplayName("Test get Amazon S3 without Providing Proxy")
     void testGetAmazonS3WithoutProxy() {
-        S3ClientConfiguration s3NonProxyClientConfiguration = spy(setupNonProxyS3ClientConfiguration());
+        S3ClientConfiguration s3NonProxyClientConfiguration = setupNonProxyS3ClientConfiguration();
         S3Client result = s3NonProxyClientConfiguration.getS3Client();
         assertNotNull(result);
         verify(httpClientBuilder, times(0)).proxyConfiguration(any());
