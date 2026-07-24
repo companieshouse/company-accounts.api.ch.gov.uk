@@ -7,13 +7,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import org.apache.http.client.methods.HttpGet;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,9 +30,9 @@ class FileTransferToolImplTest {
     private static final String IXBRL = getIxbrl();
 
     @Mock
-    private AmazonS3 amazonS3Mock;
+    private S3Client s3ClientMock;
     @Mock
-    private S3Object s3ObjectMock;
+    private ResponseInputStream<GetObjectResponse> s3ObjectMock;
 
     private FileTransferTool fileTransferTool;
 
@@ -56,53 +56,47 @@ class FileTransferToolImplTest {
 
     @BeforeEach
     void setBeforeEach() {
-        fileTransferTool = new FileTransferToolImpl(amazonS3Mock);
+        fileTransferTool = new FileTransferToolImpl(s3ClientMock);
     }
 
     @Test
     @DisplayName("File is downloaded form location successfully")
-    void shouldDownloadFileSuccessfully() {
-        when(amazonS3Mock.getObject(any())).thenReturn(s3ObjectMock);
+    void shouldDownloadFileSuccessfully() throws IOException {
+        when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(s3ObjectMock);
 
-        S3ObjectInputStream s3ObjectInputStream = createS3InputStream();
-        when(s3ObjectMock.getObjectContent()).thenReturn(s3ObjectInputStream);
+        when(s3ObjectMock.readAllBytes()).thenReturn(IXBRL.getBytes());
 
         assertNotNull(fileTransferTool.downloadFileFromLocation(IXBRL_LOCATION));
-        verifyAmazonS3MockCall();
+        verifyS3ClientMockCall();
         verifyS3ObjectMockCall();
     }
 
     @Test
     @DisplayName("File not downloaded. SdkClientException thrown when getting the S3Object")
     void shouldFailToDownloadAsSdkClientExceptionThrownWhenGettingS3Object() {
-        when(amazonS3Mock.getObject(any())).thenThrow(SdkClientException.class);
+        when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenThrow(SdkClientException.class);
 
         assertNull(fileTransferTool.downloadFileFromLocation(IXBRL_LOCATION));
-        verifyAmazonS3MockCall();
+        verifyS3ClientMockCall();
     }
 
     @Test
     @DisplayName("File not downloaded. SdkClientException thrown when getting S3Object content, ixbrl")
-    void shouldFailToDownloadAsSdkClientExceptionThrownWhenGettingS3ObjectContent() {
-        when(amazonS3Mock.getObject(any())).thenReturn(s3ObjectMock);
+    void shouldFailToDownloadAsSdkClientExceptionThrownWhenGettingS3ObjectContent() throws IOException {
+        when(s3ClientMock.getObject(any(GetObjectRequest.class))).thenReturn(s3ObjectMock);
 
-        when(s3ObjectMock.getObjectContent()).thenThrow(SdkClientException.class);
+        when(s3ObjectMock.readAllBytes()).thenThrow(IOException.class);
 
         assertNull(fileTransferTool.downloadFileFromLocation(IXBRL_LOCATION));
-        verifyAmazonS3MockCall();
+        verifyS3ClientMockCall();
         verifyS3ObjectMockCall();
     }
 
-    private S3ObjectInputStream createS3InputStream() {
-        InputStream inputStreamResponse = new ByteArrayInputStream(IXBRL.getBytes());
-        return new S3ObjectInputStream(inputStreamResponse, new HttpGet());
+    private void verifyS3ObjectMockCall() throws IOException {
+        verify(s3ObjectMock, times(1)).readAllBytes();
     }
 
-    private void verifyS3ObjectMockCall() {
-        verify(s3ObjectMock, times(1)).getObjectContent();
-    }
-
-    private void verifyAmazonS3MockCall() {
-        verify(amazonS3Mock, times(1)).getObject(any());
+    private void verifyS3ClientMockCall() {
+        verify(s3ClientMock, times(1)).getObject(any(GetObjectRequest.class));
     }
 }

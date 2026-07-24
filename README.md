@@ -31,6 +31,9 @@ MONGODB_URL                            | Mongo database URL.                    
 MONGO_CONNECTION_POOL_MIN_SIZE         | Mongo Database connection pool size (Min)                                                                                                                                 | ✗         | 0       | 1
 MONGO_CONNECTION_MAX_IDLE_TIME         | Mongo Database connection idle time, 0 for no ideal time                                                                                                                  | ✗         | 0       | 0
 MONGO_CONNECTION_MAX_LIFE_TIME         | Mongo Database connection life time, 0 for infinite life time.                                                                                                            | ✗         | 0       | 0
+IMAGE_CLOUD_PROXY_HOST  | Proxy host. Used to determine if a proxy is required.    | ✗    | empty string  | foo.bar
+HTTP_URL_CONNECTION_PROXY_PORT | Proxy port | ✗    | empty string | 10023
+CLOUD_AWS_S3_PROXY_PROTOCOL | Proxy Protocol | ✗   | https | https
 
 ## Terraform ECS
 
