@@ -38,10 +38,24 @@ public class S3ClientConfiguration {
 
     @Bean
     public S3Client getS3Client() {
+        if (getProxyHost() == null || getProxyHost().isEmpty()) {
+            return getNoProxyS3Client();
+        }
+        return getProxyS3Client();
+    }
+
+    private S3Client getNoProxyS3Client() {
         return S3Client.builder()
             .region(getRegion())
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-            .httpClient(getSdkHttpClient(getProxyHost(), getProxyPort(), getProxyProtocol()))
+            .build();
+    }
+
+    private S3Client getProxyS3Client() {
+        return S3Client.builder()
+            .region(getRegion())
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .httpClientBuilder(getSdkHttpClientBuilder(getProxyHost(), getProxyPort(), getProxyProtocol()))
             .build();
     }
 
@@ -66,12 +80,7 @@ public class S3ClientConfiguration {
         return protocol;
     }
 
-    private SdkHttpClient getSdkHttpClient(String proxyHost, String proxyPort, String proxyProtocol) {
-
-        if (proxyHost == null || proxyHost.isEmpty()) {
-            return httpClientBuilder
-                .build();
-        }
+    private SdkHttpClient.Builder<Apache5HttpClient.Builder> getSdkHttpClientBuilder(String proxyHost, String proxyPort, String proxyProtocol) {
 
         String proxyEndpoint = proxyProtocol + "://" + proxyHost + ":" + proxyPort;
 
@@ -80,7 +89,6 @@ public class S3ClientConfiguration {
             .build();
 
         return httpClientBuilder
-            .proxyConfiguration(proxyConfiguration)
-            .build();
+            .proxyConfiguration(proxyConfiguration);
     }
 }

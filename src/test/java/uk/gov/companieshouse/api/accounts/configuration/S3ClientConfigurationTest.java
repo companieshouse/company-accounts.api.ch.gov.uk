@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,7 +27,7 @@ class S3ClientConfigurationTest {
     private static final String PROXY_PORT = "8080";
     private static final String PROXY_PROTOCOL = "HTTPS";
 
-    @Spy
+    @Mock
     private Apache5HttpClient.Builder httpClientBuilder;
 
     @Test
@@ -35,19 +36,15 @@ class S3ClientConfigurationTest {
         S3ClientConfiguration s3NonProxyClientConfiguration = spy(setupNonProxyS3ClientConfiguration());
         S3Client result = s3NonProxyClientConfiguration.getS3Client();
         assertNotNull(result);
-        verify(httpClientBuilder, times(1)).build();
         verify(httpClientBuilder, times(0)).proxyConfiguration(any());
     }
 
     @Test
     @DisplayName("Test get Amazon S3 by Providing Proxy")
     void testGetAmazonS3WithProxy() {
-        when(httpClientBuilder.proxyConfiguration(any())).thenReturn(httpClientBuilder);
-
-        S3ClientConfiguration s3ProxyClientConfiguration = spy(setupProxyS3ClientConfiguration());
+        S3ClientConfiguration s3ProxyClientConfiguration = setupProxyS3ClientConfiguration();
         S3Client result = s3ProxyClientConfiguration.getS3Client();
         assertNotNull(result);
-        verify(httpClientBuilder, times(1)).build();
         verify(httpClientBuilder, times(1)).proxyConfiguration(any());
     }
 
