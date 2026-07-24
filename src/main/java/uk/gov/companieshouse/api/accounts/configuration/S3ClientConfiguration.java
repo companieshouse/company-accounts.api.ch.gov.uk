@@ -55,7 +55,7 @@ public class S3ClientConfiguration {
         return S3Client.builder()
             .region(getRegion())
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-            .httpClientBuilder(getSdkHttpClientBuilder(getProxyHost(), getProxyPort(), getProxyProtocol()))
+            .httpClientBuilder(getProxySdkHttpClientBuilder(getProxyHost(), getProxyPort(), getProxyProtocol()))
             .build();
     }
 
@@ -80,7 +80,7 @@ public class S3ClientConfiguration {
         return protocol;
     }
 
-    private SdkHttpClient.Builder<Apache5HttpClient.Builder> getSdkHttpClientBuilder(String proxyHost, String proxyPort, String proxyProtocol) {
+    private SdkHttpClient.Builder<Apache5HttpClient.Builder> getProxySdkHttpClientBuilder(String proxyHost, String proxyPort, String proxyProtocol) {
 
         String proxyEndpoint = proxyProtocol + "://" + proxyHost + ":" + proxyPort;
 
