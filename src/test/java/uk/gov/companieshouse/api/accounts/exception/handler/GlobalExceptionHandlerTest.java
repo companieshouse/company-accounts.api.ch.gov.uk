@@ -18,6 +18,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import uk.gov.companieshouse.api.accounts.exception.PermissionException;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
@@ -65,6 +66,15 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<Object> entity = globalExceptionHandler.handleException(new Exception());
         assertNotNull(entity);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Handle PermissionException returns Forbidden status")
+    void testHandlePermissionException() {
+        ResponseEntity<Object> entity = globalExceptionHandler
+            .handlePermissionException(new PermissionException("Missing permissions"));
+        assertNotNull(entity);
+        assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
     }
 
     @Test

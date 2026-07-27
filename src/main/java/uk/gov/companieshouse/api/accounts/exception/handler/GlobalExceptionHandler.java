@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import uk.gov.companieshouse.api.accounts.exception.PermissionException;
 import uk.gov.companieshouse.api.accounts.model.validation.Error;
 import uk.gov.companieshouse.api.accounts.model.validation.Errors;
 import uk.gov.companieshouse.api.accounts.validation.ErrorType;
@@ -34,6 +35,8 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger STRUCTURED_LOGGER = LoggerFactory.getLogger(APPLICATION_NAME_SPACE);
+    private static final String MESSAGE_KEY = "message";
+    private static final String ERROR_KEY = "error";
 
     @Value("${invalid.value}")
     private String invalidValue;
@@ -41,10 +44,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleException(Exception ex) {
         HashMap<String, Object> message = new HashMap<>();
-        message.put("message", ex.getMessage());
-        message.put("error", ex.getClass());
+        message.put(MESSAGE_KEY, ex.getMessage());
+        message.put(ERROR_KEY, ex.getClass());
         STRUCTURED_LOGGER.error(ex.getMessage(), message);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(PermissionException.class)
+    protected ResponseEntity<Object> handlePermissionException(PermissionException ex) {
+        HashMap<String, Object> message = new HashMap<>();
+        message.put(MESSAGE_KEY, ex.getMessage());
+        message.put(ERROR_KEY, ex.getClass());
+        STRUCTURED_LOGGER.info(ex.getMessage(), message);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @Override
@@ -86,8 +98,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private void logClientError(Exception ex) {
         HashMap<String, Object> message = new HashMap<>();
-        message.put("message", ex.getMessage());
-        message.put("error", ex.getClass());
+        message.put(MESSAGE_KEY, ex.getMessage());
+        message.put(ERROR_KEY, ex.getClass());
         STRUCTURED_LOGGER.info(ex.getMessage(), message);
     }
 }
