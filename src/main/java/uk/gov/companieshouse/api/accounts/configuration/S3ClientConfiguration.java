@@ -47,7 +47,6 @@ public class S3ClientConfiguration {
     private S3Client getNoProxyS3Client() {
         return S3Client.builder()
             .region(getRegion())
-            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .httpClientBuilder(httpClientBuilder)
             .build();
     }
@@ -55,7 +54,6 @@ public class S3ClientConfiguration {
     private S3Client getProxyS3Client() {
         return S3Client.builder()
             .region(getRegion())
-            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .httpClientBuilder(getProxySdkHttpClientBuilder(getProxyHost(), getProxyPort(), getProxyProtocol()))
             .build();
     }
